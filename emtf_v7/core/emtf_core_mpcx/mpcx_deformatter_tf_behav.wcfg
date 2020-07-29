@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="mpcx_deformatter_tf_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="\$unit_mpcx_deformatter_sv " />
+            <top_module name="glbl" />
+            <top_module name="mpcx_deformatter_tf" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="399173fs"></ZoomEndTime>
+      <Cursor1Time time="480000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="330"></NameColumnWidth>
+      <ValueColumnWidth column_width="194"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="13" />
+   <wvobject type="array" fp_name="/mpcx_deformatter_tf/lct_o">
+      <obj_property name="ElementShortName">lct_o[9:1][1:0]</obj_property>
+      <obj_property name="ObjectShortName">lct_o[9:1][1:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/mpcx_deformatter_tf/cid1_bc0">
+      <obj_property name="ElementShortName">cid1_bc0[7:0]</obj_property>
+      <obj_property name="ObjectShortName">cid1_bc0[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/mpcx_deformatter_tf/crc_err">
+      <obj_property name="ElementShortName">crc_err[7:0]</obj_property>
+      <obj_property name="ObjectShortName">crc_err[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/mpcx_deformatter_tf/link_id">
+      <obj_property name="ElementShortName">link_id[7:0][9:0]</obj_property>
+      <obj_property name="ObjectShortName">link_id[7:0][9:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/mpcx_deformatter_tf/err_tst_pat">
+      <obj_property name="ElementShortName">err_tst_pat[7:0]</obj_property>
+      <obj_property name="ObjectShortName">err_tst_pat[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/mpcx_deformatter_tf/clk40">
+      <obj_property name="ElementShortName">clk40</obj_property>
+      <obj_property name="ObjectShortName">clk40</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/mpcx_deformatter_tf/cnt_19_tf">
+      <obj_property name="ElementShortName">cnt_19_tf[18:0]</obj_property>
+      <obj_property name="ObjectShortName">cnt_19_tf[18:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/mpcx_deformatter_tf/i">
+      <obj_property name="ElementShortName">i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">i[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/mpcx_deformatter_tf/uut/cnt_19[0]">
+      <obj_property name="ElementShortName">[0][18:0]</obj_property>
+      <obj_property name="ObjectShortName">[0][18:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/mpcx_deformatter_tf/rx_data_76[0]">
+      <obj_property name="ElementShortName">[0][75:0]</obj_property>
+      <obj_property name="ObjectShortName">[0][75:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/mpcx_deformatter_tf/uut/rx_data_76_r[0]">
+      <obj_property name="ElementShortName">[0][75:0]</obj_property>
+      <obj_property name="ObjectShortName">[0][75:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/mpcx_deformatter_tf/uut/lnk_val[0]">
+      <obj_property name="ElementShortName">[0]</obj_property>
+      <obj_property name="ObjectShortName">[0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/mpcx_deformatter_tf/err_tst_pat[0]">
+      <obj_property name="ElementShortName">[0]</obj_property>
+      <obj_property name="ObjectShortName">[0]</obj_property>
+   </wvobject>
+</wave_config>
