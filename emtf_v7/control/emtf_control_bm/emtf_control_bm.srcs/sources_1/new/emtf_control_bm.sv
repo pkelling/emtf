@@ -270,14 +270,14 @@ module emtf_control_bm
 	(* mark_debug = "TRUE" *) wire [9:0]  wr_req_len    = pcie_.app.PIO.PIO_EP_inst.req_len; 
 	(* mark_debug = "TRUE" *) wire        beaming_in_progress = pcie_.app.PIO.PIO_EP_inst.beaming_in_progress;
 
-	assign pcie_.app.PIO.PIO_EP_inst.beam = beam_or;
+	assign pcie_.app.PIO.PIO_EP_inst.beam      = beam_or;
 	assign pcie_.app.PIO.PIO_EP_inst.beam_addr = beam_addr_or;
 	assign pcie_.app.PIO.PIO_EP_inst.beam_data = beam_data_or;
-	assign pcie_.app.PIO.PIO_EP_inst.beam_cnt = beam_cnt_or;
+	assign pcie_.app.PIO.PIO_EP_inst.beam_cnt  = beam_cnt_or;
 	assign pcie_.app.PIO.PIO_EP_inst.beam_prep = beam_prep_or;
-	assign pcie_.app.PIO.PIO_EP_inst.busy = busy_or;
-	assign pcie_.app.PIO.PIO_EP_inst.wr_busy = busy_or;
-	assign pcie_.app.PIO.PIO_EP_inst.rd_data = rd_data_or;
+	assign pcie_.app.PIO.PIO_EP_inst.busy      = busy_or;
+	assign pcie_.app.PIO.PIO_EP_inst.wr_busy   = busy_or;
+	assign pcie_.app.PIO.PIO_EP_inst.rd_data   = rd_data_or;
 	// end of connections to PIO module
 
     //
