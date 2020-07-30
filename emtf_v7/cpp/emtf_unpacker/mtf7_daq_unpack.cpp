@@ -36,6 +36,7 @@ int main (int argc, char* argv[])
 
 #define w(s,m) (((buffer[i]) >> s) & ((1ULL << m) - 1ULL))
 #define b(m) (buffer[i] & m)
+#define inci(n) i+=n; if (i >= twc) {printf("reached end of buffer, line: %d\n", __LINE__); exit(4);}
 
 	// determine whether it's read out from AMC13 buffer or from DAQ stream
 	bool amc13_format = (buffer[0] == 0xbadc0ffeebadcafe);
@@ -45,12 +46,12 @@ int main (int argc, char* argv[])
 	for (i = 0; i < twc;)
 	{
 
-		if (amc13_format) i+=2;
-		else i+=3; //  CDF header word 1
+		if (amc13_format) {inci(2)}
+		else {inci(3)} //  CDF header word 1
 		uint64_t amc13_bx_id  = w(20,12);
 		uint64_t amc13_lv1_id = w(32,24);
 
-		i++; // CDF header word 2
+		inci(1); // CDF header word 2
 		uint64_t amc13_orn = w(4,32); 
 		uint64_t amc13_namc = w(52,4);
 
@@ -64,7 +65,7 @@ int main (int argc, char* argv[])
 		uint64_t amc_l1a, amc_l1a_bxn, amc_sp_ts, amc_me_en[5];
 		for (int j = 0; j < amc13_namc; j++) // amc loop
 		{
-			i++;
+			inci(1);
 			amc_size[j] = w(32, 24);
 			board_id[j] = w(0, 16);
 			//	  if (amc_size[j] != 3ULL)
@@ -74,18 +75,18 @@ int main (int argc, char* argv[])
 		// read AMC payloads
 		for (int j = 0; j < amc13_namc; j++) // amc loop
 		{
-			i++; // at amc header word 1
+			inci(1); // at amc header word 1
 			amc_bx_id[j] = w(20, 12);
 			amc_lv1_id[j] = w(32, 24);
 
-			i++; // at amc header word 2
+			inci(1); // at amc header word 2
 			amc_board_id[j] = w(0, 16);
 			amc_orn[j] = w(16, 16);
 
 			int payload_start = i; // remember where payload started for this AMC
 			if (amc_size[j] > 3ULL) // payload not empty
 			{
-				i++; // first payload header word
+				inci(1); // first payload header word
 				if (b(0xf000f000f000f000ULL) == 0x9000900090009000ULL)
 				{
 					amc_l1a = w(0,12) | (w(16,12) << 12);
@@ -95,7 +96,7 @@ int main (int argc, char* argv[])
 				else
 					printf ("ERROR: EMUTF head 1 does not match: %016x %016x\n", buffer[i], 0x9000900090009000ULL);
 
-				i++; // second payload header word
+				inci(1); // second payload header word
 				if (b(0xf000f000f000f000ULL) == 0xA000A000A000A000ULL)
 				{
 					amc_sp_ts = w(24, 4);
@@ -105,7 +106,7 @@ int main (int argc, char* argv[])
 				else
 					printf ("ERROR: EMUTF head 2 does not match: %016x %016x\n", buffer[i], 0xA000A000A000A000ULL);
 
-				i++; // third payload header word
+				inci(1); // third payload header word
 				if (b(0x8000800080008000ULL) == 0x0000000000008000ULL)
 				{
 					amc_me_en[1] = w(0,8);
@@ -118,7 +119,7 @@ int main (int argc, char* argv[])
 				else
 					printf ("ERROR: EMUTF head 3 does not match: %016x %016x\n", buffer[i], 0x0000000000008000ULL);
 
-				i++; // block of counters
+				inci(1); // block of counters
 				if (b(0x8000800080008000ULL) == 0x0000000080000000ULL)
 				{
 					// not implemented in fw so far
@@ -130,7 +131,7 @@ int main (int argc, char* argv[])
 				uint64_t trk_tbin, trk_phi_inner, trk_phi_outer, trk_eta, trk_pt, trk_q;
 				uint64_t trk_me_id[4], trk_me_tbin[4], trk_pt_lut_address;
 				uint64_t rpc_ph,rpc_th,rpc_ln, rpc_fr, rpc_wr, rpc_tb;
-				i++; // data records
+				inci(1); // data records
 				while (b(0xf000f000f000f000ULL) != 0xf000f000f000f000ULL) // scan data until we see the trailer
 					//while (b(0xf000f000f000f000ULL) != 0xf000e000f000f000ULL) // scan data until we see the trailer (this line is for defective fw)
 				{
@@ -192,7 +193,7 @@ int main (int argc, char* argv[])
 
 					}
 
-					i++;
+					inci(1);
 				}
 
 				// at the payload trailer word 1
@@ -200,7 +201,7 @@ int main (int argc, char* argv[])
 				amc_month = w(32,4);
 				amc_year = w(36,5) + 2000;
 
-				i++; // payload trailer word 2
+				inci(1); // payload trailer word 2
 				amc_day = w(0,5);
 				printf ("EMUTF trlr: date: %04d-%02d-%02d\n", amc_year, amc_month, amc_day);
 
@@ -211,7 +212,7 @@ int main (int argc, char* argv[])
 				printf ("payload length mismatch: i: %d should be: %d\n", i, payload_start + (amc_size[j] - 3ULL));
 
 			i = payload_start + (amc_size[j] - 3ULL); // jump at the end of payload (in case index did not end up there as it should)
-			i++;
+			inci(1);
 			// amc trailer
 			amc_data_lng[j] = w(0,20);
 			amc_lv1_id_8b[j] = w(24,8);
@@ -235,16 +236,16 @@ int main (int argc, char* argv[])
 			if (amc_lv1_id[j] != amc13_lv1_id)
 				printf ("AMC to AMC13 LV1id mismatch: AMC: %08x AMC13: %08x\n", amc_lv1_id[j], amc13_lv1_id);
 		} // amc loop
-		i++;
+		inci(1);
 		// at event trailer word
 		uint64_t amc13_lv1_id_8 = w(12,8);
 		if ((amc13_lv1_id & 0xff) != amc13_lv1_id_8)
 			printf ("AMC13 LV1id mismatch: header: %08x trailer: %02x\n", amc13_lv1_id, amc13_lv1_id_8);
 
-		i++;
+		inci(1);
 		// at cdf trailer
 
-		i++;
+		inci(1);
 		// at first word of next event
 
 	}
