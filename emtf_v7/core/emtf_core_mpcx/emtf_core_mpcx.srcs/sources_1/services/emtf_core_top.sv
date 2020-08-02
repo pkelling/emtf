@@ -175,7 +175,11 @@ module emtf_core_top
     wire force_oos            = control_reg[18];
     wire mpc_links_hr_en      = control_reg[19]; // enable mpc link reset on hard reset
     wire amc13_txresetdone    = control_reg[20]; // tell AMC13 module that TX is reset
-    wire flag_reset           = control_reg[21];
+    wire flag_reset           = control_reg[21]; // error flags reset for persisting errors in links
+    wire pcie_or_cnt_reset    = control_reg[22]; // TTC commands via PCIE, for debugging
+    wire pcie_ev_cnt_reset    = control_reg[23];
+    wire pcie_bc0             = control_reg[24];
+    
     
 	wire [8:0] daq_delay; // daq delay line depth
 	
@@ -1051,11 +1055,15 @@ module emtf_core_top
 
     reg [6:0] ttc_rx [3:0];
 
-	
 	always @(posedge clk_160)
 	begin
 		
 		{ttc_mpc_inject_rx, ttc_or_cnt_reset_rx, ttc_ev_cnt_reset_rx, ttc_bc0_rx, ttc_resync_rx, ttc_l1a_rx, ttc_hard_reset_rx} = ttc_rx[1] | ttc_rx[2] | ttc_rx[3];
+
+        ttc_or_cnt_reset_rx |= pcie_or_cnt_reset;
+        ttc_ev_cnt_reset_rx |= pcie_ev_cnt_reset;
+        ttc_bc0_rx          |= pcie_bc0;
+		
         ttc_rx[3] = ttc_rx[2];
         ttc_rx[2] = ttc_rx[1];
         ttc_rx[1] = ttc_rx[0];

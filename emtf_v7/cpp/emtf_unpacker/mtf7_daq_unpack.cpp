@@ -10,6 +10,11 @@ int main (int argc, char* argv[])
 	long lSize;
 	uint64_t * buffer;
 	size_t result;
+	bool check_range = true;
+
+	if (argc > 2) check_range = false;
+
+	if (check_range) printf ("checking range on halfstrips and wiregroups\n");
 
 	pFile = fopen ( argv[1] , "rb" );
 	if (pFile==NULL) {fputs ("File error\n",stderr); exit (1);}
@@ -146,8 +151,11 @@ int main (int argc, char* argv[])
 						me_station = w(52, 3);
 						printf ("EMUTF stub: q: %d wg: %03d hs: %03d cscid: %d bxn: %03x tbin: %d station: %d\n",
 								me_q, me_wg, me_hs, me_cscid, me_bxn, me_tbin, me_station);
-						if (me_wg > 111) printf ("ERROR: me_wg out of range: %d\n", me_wg);
-						if (me_hs > 160) printf ("ERROR: me_hs out of range: %d\n", me_hs);
+						if (check_range)
+						{
+							if (me_wg > 111) printf ("ERROR: me_wg out of range: %d\n", me_wg);
+							if (me_hs > 160) printf ("ERROR: me_hs out of range: %d\n", me_hs);
+						}
 					}
 
 					if (b(0x8000800080008000ULL) == 0x0000800000000000ULL) // RPC data
