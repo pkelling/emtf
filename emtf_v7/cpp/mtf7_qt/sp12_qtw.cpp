@@ -25,6 +25,7 @@ bool prbs_counter_reset, prbs_force_error;
 uint64_t prbs_type;
 string fname, fname_control, mpc_data_fn;
 bool gth_reset, clink_reset, mpc_enable, spy_addr_reset, ptlut_clk_reset, sync_clk_reset, rx_buffers_reset, daq_reset, ptlut_clk_kill, force_oos;
+bool orbit_ev_bx;
 int gtx_rate;
 int module_index;
 int mpc_test_index, iterations, ptlut_rx_clk_delay_val;
@@ -44,7 +45,8 @@ int prbs_errors_main(string command);
 int prbs_mpc_enable(int prbs_type);
 int resets_main(bool gth_reset, bool clink_reset, bool mpc_enable, bool spy_addr_reset,
                 bool ptlut_clk_reset, bool sync_clk_reset, bool rx_buffers_reset, bool daq_reset,
-                bool ptlut_clk_kill, bool force_oos, int endcap[13], int sector[13]);
+                bool ptlut_clk_kill, bool force_oos, bool orbit_ev_bx, int endcap[13], int sector[13]);
+
 //int gtx_bitrate(string command, uint64_t rate);
 int fill_buffer_mem(int module_index);
 int read_buffer_mem(int module_index);
@@ -214,7 +216,7 @@ protected:
                 // send resets
                 resets_main(gth_reset, clink_reset, mpc_enable, spy_addr_reset,
                             ptlut_clk_reset, sync_clk_reset, rx_buffers_reset, daq_reset,
-                            ptlut_clk_kill, force_oos, endcap_lut, sector_lut);
+                            ptlut_clk_kill, force_oos, orbit_ev_bx, endcap_lut, sector_lut);
                 break;
 	       
             case 'w':
@@ -440,6 +442,7 @@ sp12_qtw::sp12_qtw(QWidget *parent) :
     ui->reset_list->addItem("Spy addr");
     ui->reset_list->addItem("PTclk kill");
     ui->reset_list->addItem("Force OOS");
+    ui->reset_list->addItem("OrbEvBx");
 
     ui->reset_list->setCurrentRow(1);
 
@@ -749,6 +752,7 @@ void sp12_qtw::on_send_reset_button_released()
     daq_reset = false;
     ptlut_clk_kill = false;
     force_oos = false;
+	orbit_ev_bx = false;
 
     foreach(QModelIndex index, indexes)
     {
@@ -763,6 +767,7 @@ void sp12_qtw::on_send_reset_button_released()
         case 6: spy_addr_reset = true; break;
         case 7: ptlut_clk_kill = true; break;
         case 8: force_oos = true; break;
+        case 9: orbit_ev_bx = true; break;
         }
     }
 
