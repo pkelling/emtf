@@ -1145,6 +1145,22 @@ uint64_t read_link_ids(int endcap, int sector)
     mread(fd, &value, 8, pos);
     log_printf ("BC0 chamber 0 errors:  %016llx\n", value);
 
+    saddr = MEM_BASE + (ch << 12) + (0x61 << 3) ;
+    mread(fd, &value, 8, saddr);
+    log_printf ("CRC errors          :  %016llx\n", value);
+
+    saddr = MEM_BASE + (ch << 12) + (0x62 << 3) ;
+    mread(fd, &value, 8, saddr);
+    log_printf ("Test pattern errors :  %016llx\n", value);
+
+    // reset error flags
+    saddr = MEM_BASE + (ch << 12) ;
+    mread  (fd, &value, 8, saddr);
+    value |= (1ULL << 21);
+    mwrite (fd, &value, 8, saddr);
+    value &= ~(1ULL << 21);
+    mwrite (fd, &value, 8, saddr);
+
     saddr = MEM_BASE + (ch << 12) + (21 << 3) ;
     pos = (REG_BASE << 32) + saddr;
     mread(fd, &value, 8, pos);

@@ -1258,17 +1258,56 @@ void sp12_qtw::on_occup_counters_read_pb_released()
     // module addresses
     uint32_t MEM_BASE = 0x80000; // 0xc0000  bytes
 
+    uint32_t stub_rate[6][9];
+    uint32_t track_rate[6];
+
+    memset (stub_rate, 0x1, sizeof(stub_rate));
+    memset (track_rate, 0x2, sizeof(track_rate));
 
     int ch = REG_BANK_CH; // config register bank
+    int rcnt = 0;
     for (int i = 0x33; i <= 0x50; i++)
     {
         // form address {chamber[6], sel[2], addr[7], 3'b0}
         saddr = MEM_BASE + (ch << 12) + (i << 3) ;
         mread(fd, &value, 8, saddr);
-        log_printf ("Occupancy #%02x: %016llx\n", i, value);
+        //log_printf ("Occupancy #%02x: %016llx\n", i, value);
+
+	int st = rcnt/5; // station index
+	int cham = (rcnt%5) * 2; // chamber index in low bits
+	stub_rate[st][cham] = value & 0x3ffffffULL;
+
+	if (cham < 8) stub_rate[st][cham+1] = (value >> 32) & 0x3ffffffULL;
+	else track_rate[st] = (value >> 32) & 0x3ffffffULL;
+	// track rates duplicate, [0]==[3], [1]==[4], [2]==[5]
+
+	rcnt++;
     }
     
-
+    for (int i = 0; i <= 5; i++) // station loop
+    {
+	log_printf ("st: %d rates: %03d %03d %03d %03d %03d %03d %03d %03d %03d\n",
+	//log_printf ("st: %d rates: %03x %03x %03x %03x %03x %03x %03x %03x %03x\n",
+			    i, 
+			    stub_rate[i][0],
+			    stub_rate[i][1],
+			    stub_rate[i][2],
+			    stub_rate[i][3],
+			    stub_rate[i][4],
+			    stub_rate[i][5],
+			    stub_rate[i][6],
+			    stub_rate[i][7],
+			    stub_rate[i][8]
+		       );
+    }
+    log_printf ("tracks: %03d %03d %03d %03d %03d %03d\n",
+	track_rate[0],
+	track_rate[3],
+	track_rate[1],
+	track_rate[4],
+	track_rate[2],
+	track_rate[5]
+	);
 
 
 }
@@ -1280,7 +1319,7 @@ void sp12_qtw::on_daq_config_set_pb_released()
     uint32_t saddr;
     off_t pos;
 
-    log_printf("reading occupancy counters\n");
+    log_printf("setting DAQ config\n");
 
     // module addresses
     uint32_t MEM_BASE = 0x80000; // 0xc0000  bytes
