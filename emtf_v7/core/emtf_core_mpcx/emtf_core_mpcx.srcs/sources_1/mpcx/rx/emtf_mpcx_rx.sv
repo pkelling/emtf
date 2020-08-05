@@ -7,6 +7,7 @@ module emtf_mpcx_rx #(parameter NEIGHBOR = "FALSE")
 	mgt_rx mpcx_rx [nlinks-1:0], // input data + clocks
 	// deformatted and aligned data
     output csc_lct_mpcx lct_aligned   [9:1][1:0], // [CSCID][stub]
+	output [25:0] stub_rate [8:0],
     
     input ttc_bc0_del, // delayed BC0 from TTC to align to
 
@@ -78,6 +79,7 @@ module emtf_mpcx_rx #(parameter NEIGHBOR = "FALSE")
             (
                 .rx_data_76 (rx_data_76),
                 .lct_o      (lct_unaligned),
+                .stub_rate  (stub_rate),
             
                 .crc_err      (crc_err),
                 .crc_err_flag (crc_err_flag),
@@ -111,6 +113,7 @@ module emtf_mpcx_rx #(parameter NEIGHBOR = "FALSE")
             (
                 .rx_data_76 (rx_data_76),
                 .lct_o      (lct_unaligned),
+                .stub_rate  (stub_rate),
             
                 .cid1_bc0     (cscid1_bc0), // separate bc0 markers from CSCID=1 coming in each link
                 .cid1_vf      (cscid1_vf),

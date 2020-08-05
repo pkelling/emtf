@@ -5,6 +5,7 @@ module mpcx_deformatter_neighbor
     input [75:0] rx_data_76 [8:0], // [link]
     
     output csc_lct_mpcx lct_o [8:0][1:0],
+	output reg [25:0] stub_rate [8:0],
 
 	output reg [8:0] crc_err,
 	output reg [8:0] crc_err_flag,
@@ -25,6 +26,8 @@ module mpcx_deformatter_neighbor
 	reg [4:0] dum5_2 [8:0];
 	reg [18:0] cnt_19 [8:0];
 	reg [1:0] lctvf [8:0];
+	reg [25:0] rate_period;
+	reg [25:0] rate_counter [8:0];
 
     // all links have identical format, except cscid=1, which we ignore here
     // cscid=1 data are unpacked into unused dum4, dum5 signals
@@ -55,6 +58,26 @@ module mpcx_deformatter_neighbor
     if (flag_reset) err_tst_pat_flag = 9'h0;
 
     rx_data_76_r = rx_data_76;
+
+    for (i = 0; i < 9; i++) // chamber loop
+    begin
+    	// rate counter update
+		if (lct_o[i][0].vf != 1'h0 && rate_counter[i] != 26'h3ffffff) 
+		  rate_counter[i]++;
+	end
+
+    if (rate_period == 26'd40078700) // 1 sec 
+    begin
+      // rate period expired, store and reset all counters
+      for (i = 0; i < 9; i = i+1) // chamber loop
+      begin
+          stub_rate[i] = rate_counter[i]; 
+          rate_counter[i] = 26'h0;
+      end
+      rate_period = 26'h0;
+    end
+    else 
+      rate_period++;
   end
 
   always @(*)

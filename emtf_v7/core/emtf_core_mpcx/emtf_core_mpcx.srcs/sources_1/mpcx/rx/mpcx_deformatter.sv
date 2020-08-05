@@ -5,6 +5,7 @@ module mpcx_deformatter
     input [75:0] rx_data_76 [7:0], // [link]
     
     output csc_lct_mpcx lct_o [9:1][1:0],
+	output reg [25:0] stub_rate [8:0],
 
 	output reg [7:0] cid1_bc0, // separate bc0 markers from cid=1 coming in each link
 	output reg [3:0] cid1_vf [1:0], // separate valid flags from cid=1 coming in each link [lct0,1][link]
@@ -25,12 +26,14 @@ module mpcx_deformatter
 	(* async_reg = "TRUE" *) reg [75:0] rx_data_76_r [7:0];
 	reg [18:0] cnt_19 [7:0];
 	reg [1:0] lctvf [9:2];
+	reg [25:0] rate_period;
+	reg [25:0] rate_counter [8:0];
 
   always @(posedge clk40)
   begin
 
     err_tst_pat = 8'h0;
-    for (i = 0; i < 8; i=i+1)
+    for (i = 0; i < 8; i=i+1) // link loop
     begin
         if (!lnk_val[i]) // if data is not valid, read link ID and test pattern
         begin
@@ -54,6 +57,27 @@ module mpcx_deformatter
     if (flag_reset) err_tst_pat_flag = 8'h0;
     
     rx_data_76_r = rx_data_76;
+    
+    for (i = 0; i < 9; i++) // chamber loop
+    begin
+    	// rate counter update
+		if (lct_o[i+1][0].vf != 1'h0 && rate_counter[i] != 26'h3ffffff) 
+		  rate_counter[i]++;
+	end
+
+    if (rate_period == 26'd40078700) // 1 sec 
+    begin
+      // rate period expired, store and reset all counters
+      for (i = 0; i < 9; i = i+1) // chamber loop
+      begin
+          stub_rate[i] = rate_counter[i]; 
+          rate_counter[i] = 26'h0;
+      end
+      rate_period = 26'h0;
+    end
+    else 
+      rate_period++;
+
   end
     
   always @(*)
@@ -354,8 +378,8 @@ module mpcx_deformatter
         else crc_err[i] = 1'b0; 
 
 		// disable link output if error was detected
-		lct_o[i][0].vf = lctvf[i][0] && (~crc_err[i]); 
-		lct_o[i][1].vf = lctvf[i][1] && (~crc_err[i]); 
+		lct_o[i+2][0].vf = lctvf[i+2][0] && (~crc_err[i]); 
+		lct_o[i+2][1].vf = lctvf[i+2][1] && (~crc_err[i]); 
     end
   end
 

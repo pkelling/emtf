@@ -7,7 +7,8 @@ module emtf_mpcx_rx_all
 	mgt_rx mpcx_rx_n [8:0], // input data + clocks from neighbor sector [link]
 	// deformatted and aligned data
     output csc_lct_mpcx lct_aligned  [5:0][9:1][1:0], // [station][CSCID][stub]
-    
+    output [25:0] stub_rate [5:0][9:1], //[station][CSCID]
+
     input ttc_bc0_del, // delayed BC0 from TTC to align to
 
     // calculated delays for all chambers in own sector, CSCIDs = 2..9
@@ -76,6 +77,7 @@ module emtf_mpcx_rx_all
             (
                 .mpcx_rx             (mpcx_rx             [gi]),
                 .lct_aligned         (lct_aligned         [gi]),
+                .stub_rate           (stub_rate           [gi]),
                 .ttc_bc0_del         (ttc_bc0_del             ), 
                 .automatic_delay     (automatic_delay     [gi]), 
                 .automatic_delay_id1 (automatic_delay_id1 [gi]), 
@@ -104,6 +106,7 @@ module emtf_mpcx_rx_all
     (
         .mpcx_rx             (mpcx_rx_n          ),
         .lct_aligned         (lct_aligned [5]    ),
+        .stub_rate           (stub_rate   [5]    ),
         .ttc_bc0_del         (ttc_bc0_del        ), 
         .automatic_delay     (automatic_delay_n  ), 
         .manual_delay        (manual_delay_n     ), 

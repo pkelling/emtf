@@ -241,7 +241,7 @@ module emtf_core_top
 	wire [8:0] bx0 [5:0];
 	wire [8:0] syer [5:0];
 	
-	wire [25:0] stub_rate [5:0][8:0];
+	wire [25:0] stub_rate [5:0][8:0]; // [station][chamber]
 
 	wire inj_enable;
 	wire [63:0] ptlut_config;
@@ -591,6 +591,7 @@ module emtf_core_top
         .mpcx_rx             (mpc_rx             ),
         .mpcx_rx_n           (mpcn_rx            ),
         .lct_aligned         (lct_aligned        ),
+        .stub_rate           (stub_rate          ),
         .ttc_bc0_del         (ttc_bc0_del        ),
         .automatic_delay     (automatic_delay    ), 
         .automatic_delay_id1 (automatic_delay_id1),
