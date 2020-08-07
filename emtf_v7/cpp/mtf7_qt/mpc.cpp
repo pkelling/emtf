@@ -1153,6 +1153,10 @@ uint64_t read_link_ids(int endcap, int sector)
     mread(fd, &value, 8, saddr);
     log_printf ("Test pattern errors :  %016llx\n", value);
 
+    saddr = MEM_BASE + (ch << 12) + (0x63 << 3) ;
+    mread(fd, &value, 8, saddr);
+    log_printf ("Clock phase drift   :  %016llx\n", value);
+
     // reset error flags
     saddr = MEM_BASE + (ch << 12) ;
     mread  (fd, &value, 8, saddr);

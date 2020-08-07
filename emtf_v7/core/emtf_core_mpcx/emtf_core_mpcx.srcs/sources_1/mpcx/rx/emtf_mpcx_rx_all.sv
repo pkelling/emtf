@@ -62,13 +62,13 @@ module emtf_mpcx_rx_all
 
     input en_manual, // enable manual delays
 
-	input clk40,
-    input pcie_clk
+	input  clk40,
+    input  pcie_clk,
+	output clk320
 );
 
 
 
-	wire clk320;
     genvar gi;
     generate
         for (gi = 0; gi < 5; gi++) // MPC loop

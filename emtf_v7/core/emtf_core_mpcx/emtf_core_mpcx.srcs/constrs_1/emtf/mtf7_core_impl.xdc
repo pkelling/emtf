@@ -130,6 +130,8 @@ set_false_path -from [get_pins {crb/ddr_clk_del_reg[*]/C}]
 set_false_path -from [get_pins {core/pcs/station234[*].csc[*].pc/params_reg[*][*]/C}]
 set_false_path -from [get_pins {core/pcs/station12[*].csc12[*].pc12/params_reg[*][*]/C}]
 set_false_path -from [get_pins {core/pcs/station11[*].csc11[*].pc11/params_reg[*][*]/C}]
+set_false_path -from [get_clocks pcie_clk] -to [get_clocks -of_objects [get_pins mpcx_rx_i/mpcx_mmcm_i/inst/mmcm_adv_inst/CLKOUT0]]
+set_false_path -from [get_clocks -of_objects [get_pins mpcx_rx_i/mpcx_mmcm_i/inst/mmcm_adv_inst/CLKOUT0]] -to [get_clocks pcie_clk]
 
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 set_property BITSTREAM.CONFIG.OVERTEMPPOWERDOWN ENABLE [current_design]

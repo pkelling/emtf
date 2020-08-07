@@ -4,7 +4,7 @@
 `include "mgt_interfaces.sv"
 `include "interfaces.sv"
 
-`define WITH_CORE
+//`define WITH_CORE
 
 module emtf_core_top
 (
@@ -584,6 +584,7 @@ module emtf_core_top
     assign link_id[4] = {link_id_a[4][7], link_id_a[4][6], link_id_a[4][5], link_id_a[4][4], link_id_a[4][3], link_id_a[4][2], link_id_a[4][1], link_id_a[4][0]};
 
     assign link_id_n = {link_id_na[8], link_id_na[7], link_id_na[6], link_id_na[5], link_id_na[4], link_id_na[3], link_id_na[2], link_id_na[1], link_id_na[0]};
+    wire clk320;
 
     // upgraded MPCX module
     emtf_mpcx_rx_all mpcx_rx_i
@@ -618,8 +619,27 @@ module emtf_core_top
         .flag_reset          (flag_reset         ),
 	    .link_id_n           (link_id_na         ),
         .clk40               (clk40              ),
-        .pcie_clk            (pcie_clk_buf       )
+        .pcie_clk            (pcie_clk_buf       ),
+        .clk320              (clk320             )
     );
+
+    wire [5:0] rx_clk_phase_drift;
+
+    // this module detects clock phase drift between RX clocks and fabric clock
+    clock_sync_detect clk_sync_det
+    (
+        .rx_clk      ({
+            mpcn_rx[0].rxoutclk, 
+            mpc_rx[4][0].rxoutclk, 
+            mpc_rx[3][0].rxoutclk, 
+            mpc_rx[2][0].rxoutclk, 
+            mpc_rx[1][0].rxoutclk, 
+            mpc_rx[0][0].rxoutclk}), // clocks from MPC RX, 80M
+        .clk_320     (clk320), // fab clk * 8
+        .phase_drift (rx_clk_phase_drift), // flags showing clock phase shift relative to fab clk
+        .flag_reset  (flag_reset)// error flag resets
+    );
+
     
     //                                        [link][frame]
     (* mark_debug = "FALSE" *) wire  [63:0] cppf_rxd [6:0][2:0]; // rx data, 3 frames x 64 bit, for 7 links
@@ -1007,6 +1027,7 @@ module emtf_core_top
         .err_tst_pat_flag    (err_tst_pat_flag   ),
 	    .crc_err_flag_n      (crc_err_flag_n     ),
         .err_tst_pat_flag_n  (err_tst_pat_flag_n ),
+        .rx_clk_phase_drift  (rx_clk_phase_drift),
         
         .jtag_enable     (jtag_enable    ),    
         .jtag_done       (jtag_done      ),      

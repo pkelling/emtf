@@ -84,6 +84,7 @@ module register_bank
     input [7:0] err_tst_pat_flag [4:0], // test counter error detected [station][link]
 	input [8:0] crc_err_flag_n, // CRC error detected [link]
     input [8:0] err_tst_pat_flag_n, // test counter error detected [link]
+    input [5:0] rx_clk_phase_drift,
 	
     output reg           jtag_enable     ,
     input                jtag_done       ,
@@ -524,6 +525,7 @@ module register_bank
                 9'h060: begin r_out = r_out | jtag_enable; end
                 9'h061: begin r_out = r_out | crc_err_flag_comb; end
                 9'h062: begin r_out = r_out | err_tst_pat_flag_comb; end
+                9'h063: begin r_out = r_out | rx_clk_phase_drift; end
 			endcase
 			in_delay_tap_rb_r = in_delay_tap_rb;
 			out_delay_tap_rb_r = out_delay_tap_rb;
