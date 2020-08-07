@@ -4,7 +4,7 @@
 `include "mgt_interfaces.sv"
 `include "interfaces.sv"
 
-//`define WITH_CORE
+`define WITH_CORE
 
 module emtf_core_top
 (
