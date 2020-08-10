@@ -29,6 +29,10 @@ module mpcx_deformatter
 	reg [25:0] rate_period;
 	reg [25:0] rate_counter [8:0];
 
+    localparam max_hs = 8'd159;
+    localparam max_wg = 8'd111;
+
+    
   always @(posedge clk40)
   begin
 
@@ -60,10 +64,10 @@ module mpcx_deformatter
     
     for (i = 0; i < 9; i++) // chamber loop
     begin
-    	// rate counter update
-		if (lct_o[i+1][0].vf != 1'h0 && rate_counter[i] != 26'h3ffffff) 
-		  rate_counter[i]++;
-	end
+        // rate counter update
+        if (lct_o[i+1][0].vf != 1'h0 && rate_counter[i] != 26'h3ffffff) 
+          rate_counter[i]++;
+    end
 
     if (rate_period == 26'd40078700) // 1 sec 
     begin
@@ -377,10 +381,31 @@ module mpcx_deformatter
         if (lnk_val[i] && crc_rx[i] != crc[i]) crc_err[i] = 1'b1;
         else crc_err[i] = 1'b0; 
 
+
+        // check data sanity
+        if (lnk_val[i] &&
+                (
+                    lct_o[i+2][0].hs > max_hs ||
+                    lct_o[i+2][0].wg > max_wg ||
+                    lct_o[i+2][1].hs > max_hs ||
+                    lct_o[i+2][1].wg > max_wg
+                ) 
+            )
+        begin
+            crc_err[i] = 1'b1;
+        end
+
 		// disable link output if error was detected
 		lct_o[i+2][0].vf = lctvf[i+2][0] && (~crc_err[i]); 
 		lct_o[i+2][1].vf = lctvf[i+2][1] && (~crc_err[i]); 
     end
+    
+    // checks for cscid=1 data fragments
+    if (lct_o[1][0].hs > max_hs) cid1_vf[0][0] = 1'b0;
+    if (lct_o[1][0].wg > max_wg) cid1_vf[0][1] = 1'b0;
+    if (lct_o[1][1].hs > max_hs) cid1_vf[1][0] = 1'b0;
+    if (lct_o[1][1].wg > max_wg) cid1_vf[1][1] = 1'b0;
+    
   end
 
 endmodule

@@ -29,6 +29,9 @@ module mpcx_deformatter_neighbor
 	reg [25:0] rate_period;
 	reg [25:0] rate_counter [8:0];
 
+    localparam max_hs = 8'd159;
+    localparam max_wg = 8'd111;
+
     // all links have identical format, except cscid=1, which we ignore here
     // cscid=1 data are unpacked into unused dum4, dum5 signals
   always @(posedge clk40)
@@ -135,6 +138,19 @@ module mpcx_deformatter_neighbor
         // check CRC if link data is valid
         if (lnk_val[i] && crc_rx[i] != crc[i]) crc_err[i] = 1'b1;
         else crc_err[i] = 1'b0; 
+
+        // check data sanity
+        if (lnk_val[i] &&
+                (
+                    lct_o[i][0].hs > max_hs ||
+                    lct_o[i][0].wg > max_wg ||
+                    lct_o[i][1].hs > max_hs ||
+                    lct_o[i][1].wg > max_wg
+                ) 
+            )
+        begin
+            crc_err[i] = 1'b1;
+        end
 
         // disable link output if error was detected
 	    lct_o[i][0].vf = lctvf[i][0] && (~crc_err[i]);

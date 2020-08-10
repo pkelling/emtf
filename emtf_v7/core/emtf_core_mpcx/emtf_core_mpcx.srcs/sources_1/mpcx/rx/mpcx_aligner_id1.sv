@@ -22,20 +22,21 @@ module mpcx_aligner_id1
 );
 
     // split input data into link fragments
-    wire [7:0] fragment_i [7:0]; // input chamber data fragments from each link
-    assign fragment_i[0] =  lct_i[0].hs;
-    assign fragment_i[1] = {lct_i[0].wg, lct_i[0].lr};
-    assign fragment_i[2] = {lct_i[0].ql, lct_i[0].cp};
-    assign fragment_i[3] = {1'b0, lct_i[0].cid, cscid1_vf[0][0], lct_i[0].bx0, lct_i[0].ser};
-    assign fragment_i[4] =  lct_i[1].hs;                                                 
-    assign fragment_i[5] = {lct_i[1].wg, lct_i[1].lr};                                   
-    assign fragment_i[6] = {lct_i[1].ql, lct_i[1].cp};                                   
-    assign fragment_i[7] = {1'b0, lct_i[1].cid, cscid1_vf[1][0], lct_i[1].bx0, lct_i[1].ser};
+    wire [8:0] fragment_i [7:0]; // input chamber data fragments from each link
+    assign fragment_i[0] = {cscid1_vf[0][0], lct_i[0].hs};
+    assign fragment_i[1] = {cscid1_vf[0][1], lct_i[0].wg, lct_i[0].lr};
+    assign fragment_i[2] = {cscid1_vf[0][2], lct_i[0].ql, lct_i[0].cp};
+    assign fragment_i[3] = {cscid1_vf[0][3], lct_i[0].cid, lct_i[0].bx0, lct_i[0].ser};
+    assign fragment_i[4] = {cscid1_vf[0][0], lct_i[1].hs};                                                 
+    assign fragment_i[5] = {cscid1_vf[0][1], lct_i[1].wg, lct_i[1].lr};                                   
+    assign fragment_i[6] = {cscid1_vf[0][2], lct_i[1].ql, lct_i[1].cp};                                   
+    assign fragment_i[7] = {cscid1_vf[0][3], lct_i[1].cid, lct_i[1].bx0, lct_i[1].ser};
 
     wire [4:0] applied_delay [7:0] = (en_manual == 'b1) ? manual_delay : automatic_delay;
 
-    reg  [7:0] fragment_o [7:0]; // output chamber data fragments
-    wire [7:0] fragment_d [7:0]; // delayed chamber data fragments
+    reg  [8:0] fragment_o [7:0]; // output chamber data fragments
+    wire [8:0] fragment_d [7:0]; // delayed chamber data fragments
+	reg  [3:0] cscid1_vf_d [1:0]; // delayed valid flags from cid=1 coming in each link [lct0,1][link]
     // if alignment delay is 0, feed inputs directly to outputs
     integer i;
     always @(*)
@@ -45,19 +46,25 @@ module mpcx_aligner_id1
             if (applied_delay[i] == 'b0) fragment_o[i] = fragment_i[i];
             else                         fragment_o[i] = fragment_d[i]; 
         end        
+        // assemble delayed fragments back into structures
+        {cscid1_vf_d[0][0], lct_o[0].hs}                              = fragment_o[0];
+        {cscid1_vf_d[0][1], lct_o[0].wg, lct_o[0].lr}                 = fragment_o[1];
+        {cscid1_vf_d[0][2], lct_o[0].ql, lct_o[0].cp}                 = fragment_o[2];
+        {cscid1_vf_d[0][3], lct_o[0].cid, lct_o[0].bx0, lct_o[0].ser} = fragment_o[3];
+        {cscid1_vf_d[0][0], lct_o[1].hs}                              = fragment_o[4];                                                 
+        {cscid1_vf_d[0][1], lct_o[1].wg, lct_o[1].lr}                 = fragment_o[5];                                   
+        {cscid1_vf_d[0][2], lct_o[1].ql, lct_o[1].cp}                 = fragment_o[6];                                   
+        {cscid1_vf_d[0][3], lct_o[1].cid, lct_o[1].bx0, lct_o[1].ser} = fragment_o[7];
+        
+        // if valid flag is missing in any of the fragments, invalidate entire LCT 
+        lct_o[0].vf = &(cscid1_vf_d[0]);
+        lct_o[1].vf = &(cscid1_vf_d[1]);
+        
+         lct_o[0].bc0 = ttc_bc0_del;
+         lct_o[1].bc0 = ttc_bc0_del;
+
     end
     
-    // assemble fragments back into structures
-    assign  lct_o[0].hs                                            = fragment_o[0];
-    assign {lct_o[0].wg, lct_o[0].lr}                              = fragment_o[1];
-    assign {lct_o[0].ql, lct_o[0].cp}                              = fragment_o[2];
-    assign {lct_o[0].cid, lct_o[0].vf, lct_o[0].bx0, lct_o[0].ser} = fragment_o[3];
-    assign  lct_o[1].hs                                            = fragment_o[4];                                                 
-    assign {lct_o[1].wg, lct_o[1].lr}                              = fragment_o[5];                                   
-    assign {lct_o[1].ql, lct_o[1].cp}                              = fragment_o[6];                                   
-    assign {lct_o[1].cid, lct_o[1].vf, lct_o[1].bx0, lct_o[1].ser} = fragment_o[7];
-    assign  lct_o[0].bc0 = ttc_bc0_del;
-    assign  lct_o[1].bc0 = ttc_bc0_del;
 
     reg [4:0] cnt [7:0] = '{8{'h0}};
     
@@ -99,7 +106,7 @@ module mpcx_aligner_id1
     generate
         for (gi = 0; gi < 8; gi++)
         begin: dyn_shift_loop
-            dyn_shift #(.SELWIDTH(5), .BW (8)) ds 
+            dyn_shift #(.SELWIDTH(5), .BW (9)) ds 
             (
                 .CLK (clk), 
                 .CE  ('b1), 
