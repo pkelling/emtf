@@ -1,7 +1,7 @@
 module dbg
 (
     input pcie_clk,
-
+    input reset,
     input            jtag_enable     ,
     output           jtag_done       ,
     input  [31 : 0 ] jtag_length     ,
@@ -21,7 +21,7 @@ module dbg
     jtag_proc_i
     (
        .CLK        (pcie_clk       ),
-       .RESET      (!m_aresetn     ),
+       .RESET      (reset          ),
        .ENABLE     (jtag_enable    ),
        .DONE       (jtag_done      ),
        .LENGTH     (jtag_length    ),

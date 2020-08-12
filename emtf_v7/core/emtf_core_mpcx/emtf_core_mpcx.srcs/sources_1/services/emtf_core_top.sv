@@ -1045,22 +1045,6 @@ module emtf_core_top
 	wire [3:0] tts_data;
 	wire [48:0] alignment_error;
 
-    // this unit should be removed, except that it provides ttc_bc0_del signal
-    // that's used for alignment in upgraded MPCX receivers
-//	bc0_alignment bc0_aln
-//	(
-//		.ttc_bc0 (ttc_bc0_rx),
-//		.ttc_bc0_delay (ttc_bc0_delay),
-//		.ttc_bc0_del (ttc_bc0_del),
-//		.bc0 (bc0_mrg),
-//		.time_counts (), //(bc0_time_counts),
-//		.alignment_error (alignment_error),
-//		.user_af_delays (user_af_delays),
-//		.af_enable (af_enable),
-//		.clk_160 (clk_160), 
-//		.clk_40	(clk40)
-//	);
-
     reg [3:0] txoutclk_async_div;
     always @(posedge DAQ_0_mmcm_clk)
         txoutclk_async_div = txoutclk_async_div + 1;
@@ -1269,35 +1253,26 @@ module emtf_core_top
          
      );
 
+    dbg dbg_i
+    (
+        .pcie_clk        (pcie_clk_buf   ),
+        .reset           (!m_aresetn     ),
+        .jtag_enable     (jtag_enable    ),    
+        .jtag_done       (jtag_done      ),      
+        .jtag_length     (jtag_length    ),    
+        .jtag_tms_vector (jtag_tms_vector),
+        .jtag_tdi_vector (jtag_tdi_vector),
+        .jtag_tdo_vector (jtag_tdo_vector)
+    );
 
-//    dbg dbg_i
-//    (
-//        .pcie_clk        (pcie_clk_buf   ),
-//        .jtag_enable     (jtag_enable    ),    
-//        .jtag_done       (jtag_done      ),      
-//        .jtag_length     (jtag_length    ),    
-//        .jtag_tms_vector (jtag_tms_vector),
-//        .jtag_tdi_vector (jtag_tdi_vector),
-//        .jtag_tdo_vector (jtag_tdo_vector)
-//    );
+    dbg_probes_switch dbg_ps
+    (
+        // [station][chamber][segment] station 5 = neighbor sector, all stations
+        .lct_i (lct_aligned),
+        .clk40 (clk40)
+    );
 
-//    ila_mpcx mpcx_i 
-//    (
-//        .clk(clk40), // input wire clk
-    
-//        .probe0 (lct_aligned[0][1][0].vf), // input wire [0:0]  probe0
-//        .probe1 (lct_aligned[0][1][0].hs), // input wire [7:0]  probe1
-//        .probe2 (lct_aligned[0][1][0].wg), // input wire [6:0]  probe2
-//        .probe3 (lct_aligned[0][1][0].ql), // input wire [3:0]  probe3
-//        .probe4 (lct_aligned[0][1][0].cp), // input wire [3:0]  probe4
-//        .probe5 (lct_aligned[0][1][0].lr), // input wire [0:0]  probe5
-//        .probe6 (lct_aligned[0][1][0].bc0), // input wire [0:0]  probe6
-//        .probe7 (lct_aligned[0][1][0].bx0), // input wire [0:0]  probe7
-//        .probe8 (lct_aligned[0][1][0].ser), // input wire [0:0]  probe8
-//        .probe9 (lct_aligned[0][1][0].cid) // input wire [3:0]  probe9
-//    );
-    
-    
+
     wire ttc_mpc_inject_rx_w   = ttc_mpc_inject_rx  ; 
     wire ttc_or_cnt_reset_rx_w = ttc_or_cnt_reset_rx; 
     wire ttc_ev_cnt_reset_rx_w = ttc_ev_cnt_reset_rx; 

@@ -17,17 +17,17 @@ module jtag_proc # (
 )
 (
    input  wire           CLK        ,
-   input  wire           RESET      ,
-   input  wire           ENABLE     ,
+   (* mark_debug *) input  wire           RESET      ,
+   (* mark_debug *) input  wire           ENABLE     ,
    output reg            DONE       ,
-   input  wire [31 : 0 ] LENGTH     ,
-   input  wire [31 : 0 ] TMS_VECTOR ,
-   input  wire [31 : 0 ] TDI_VECTOR ,
-   output wire [31 : 0 ] TDO_VECTOR ,
-   output wire           TCK        ,
-   output wire           TMS        ,
-   output wire           TDI        ,
-   input  wire           TDO       
+   (* mark_debug *) input  wire [31 : 0 ] LENGTH     ,
+   (* mark_debug *) input  wire [31 : 0 ] TMS_VECTOR ,
+   (* mark_debug *) input  wire [31 : 0 ] TDI_VECTOR ,
+   (* mark_debug *) output wire [31 : 0 ] TDO_VECTOR ,
+   (* mark_debug *) output wire           TCK        ,
+   (* mark_debug *) output wire           TMS        ,
+   (* mark_debug *) output wire           TDI        ,
+   (* mark_debug *) input  wire           TDO       
 );
 
    localparam  IDLE = 3'b001 ,
@@ -36,7 +36,7 @@ module jtag_proc # (
 
    reg [ 2:0]   state, next_state;
    reg          enable_d;
-   wire         enable_red;
+   (* mark_debug *) wire         enable_red;
    reg          tck_en;
    reg          tck_i;
    reg          done_i;
@@ -49,8 +49,8 @@ module jtag_proc # (
    reg [0:0]    tdo_buffer [31:0];
    reg [4:0]    index;
    
-   wire         tck_pulse;
-   wire [31:0] tdo_capture2;
+   (* mark_debug *) wire        tck_pulse;
+   (* mark_debug *) wire [31:0] tdo_capture2;
    
    always @(posedge CLK) begin
       if (RESET == 1'b1) begin
@@ -173,30 +173,24 @@ generate
     end
 endgenerate
 
- //  assign TMS = tms_output[0] ? 1'bZ : 1'b0;
- assign TMS = tms_output[0];
-//      OBUFT u0_OBUFT (
-//          .O (TMS) ,
-//          .I (1'b0) ,
-//          .T (~tms_output[0])
-//     );
-     
-   //   assign TDI = tdi_output[0] ? 1'bZ : 1'b0;
+assign TMS = tms_output[0];
 assign TDI = tdi_output[0];
-//      OBUFT u1_OBUFT (
-//           .O (TDI) ,
-//           .I (1'b0) ,
-//           .T (~tdi_output[0])
-//      );
-     
-   //   assign TCK = tck_i ? 1'bZ : 1'b0;
 assign TCK = tck_i;
-//      OBUFT u_OBUFT (
-//           .O (TCK) ,
-//           .I (1'b0) ,
-//           .T (~tck_i)
-//      );
-     assign TDO_VECTOR = tdo_capture2;
+assign TDO_VECTOR = tdo_capture2;
    
+   (* mark_debug *) wire [ 2:0]   state_w       = state      ; 
+   (* mark_debug *) wire [ 2:0]   next_state_w  = next_state ;
+   (* mark_debug *) wire          enable_d_w    = enable_d   ;
+   (* mark_debug *) wire          tck_en_w      = tck_en     ;
+   (* mark_debug *) wire          tck_i_w       = tck_i      ;
+   (* mark_debug *) wire          done_i_w      = done_i     ;
+   (* mark_debug *) wire [ 7:0]   tck_count_w   = tck_count  ;
+   (* mark_debug *) wire [31:0]   bit_count_w   = bit_count  ;
+   (* mark_debug *) wire [31:0]   tms_output_w  = tms_output ;
+   (* mark_debug *) wire [31:0]   tdi_output_w  = tdi_output ;
+   (* mark_debug *) wire [31:0]   tdo_capture_w = tdo_capture;
+   (* mark_debug *) wire [4:0]    index_w       = index      ;
+   
+   (* mark_debug *) wire [0:0]    tdo_buffer_w [31:0] = tdo_buffer;
 
 endmodule
