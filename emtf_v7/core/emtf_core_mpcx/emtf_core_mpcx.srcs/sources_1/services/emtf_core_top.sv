@@ -268,6 +268,10 @@ module emtf_core_top
     //csc_lct core_input_lct [5:0][8:0][1:0]();
     csc_lct inject_lct     [5:0][8:0][1:0]();
     csc_lct mpc_lct        [5:0][8:0][1:0]();
+
+	// GEM interfaces [schamber][layer][cluster]
+	ge11_cluster ge11_cl [6:0][1:0][7:0]();
+
     
     wire en_single;
     (* mark_debug *) wire gem_single_hit;
@@ -435,8 +439,9 @@ module emtf_core_top
 
 	wire [4:0] clk_led;
 	//                     [station]
-	wire [8*10-1:0] link_id [4:0];
-	wire [9*10-1:0] link_id_n;
+	wire [8*10-1:0] link_id [4:0]; // csc
+	wire [9*10-1:0] link_id_n; // csc-neighbor
+	wire [7:0] ge11_link_id [6:0]; // ge11 [schamber=link]
 
 
 	wire [7:0] bc0_u [4:0]; // bc0 flags from each chamber before AF
@@ -666,7 +671,9 @@ module emtf_core_top
 
     gem_rx gem_rx_i
     (
-        .ge11_rx    (ge11_rx),
+        .ge11_rx    (ge11_rx), // inputs from serial links
+		.ge11_cl    (ge11_cl), // decoded clusters
+		.link_id    (ge11_link_id), // link IDs
         .single_hit (gem_single_hit),
         .ph_single  (gem_ph_single),
         .th_single  (gem_th_single),

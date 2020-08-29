@@ -116,17 +116,6 @@ interface axi_out #(DW = 64);
     );
 endinterface
 
-// CSC trigger primitive (LCT, stub)
-//typedef struct packed
-//{
-//    logic vf;         // valid flag
-//    logic [7:0] hs;   // halfstrip
-//    logic [6:0] wg;   // wiregroup
-//    logic [3:0] ql;   // quality
-//    logic [3:0] cp;   // CLCT pattern
-//    logic lr;         // left-right flag
-//} csc_lct;
-
 interface csc_lct;
     reg vf;         // valid flag
     reg [7:0] hs;   // halfstrip
@@ -154,6 +143,17 @@ interface csc_lct;
         output cp,
         output lr
     );
+endinterface
+
+interface ge11_cluster;
+	reg [7:0] str; // strip
+	reg [2:0] prt; // partition
+	reg [2:0] csz; // cluster size
+	reg       vf; // valid, flag, generated field from strip != 'hff
+
+	modport in  ( input str, prt, csz, vf);
+	modport out (output str, prt, csz, vf);
+
 endinterface
 
 `endif    

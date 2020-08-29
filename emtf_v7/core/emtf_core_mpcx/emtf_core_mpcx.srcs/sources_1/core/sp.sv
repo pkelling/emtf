@@ -27,6 +27,8 @@ module sp
     input csc_lct_mpcx lct_i [5:0][8:0][seg_ch-1:0],
     input [63:0] cppf_rxd [6:0][2:0], // cppf rx data, 3 frames x 64 bit, for 7 links
     input [6:0] cppf_rx_valid, // cprx data valid flags
+	// gem data, [schamber][layer][cluster]
+	ge11_cluster.in ge11_cl [6:0][1:0][7:0],
 
     input [8:0] 	   pcs_cs [5:0],
     input [4:0] 	   pps_cs [2:0],        

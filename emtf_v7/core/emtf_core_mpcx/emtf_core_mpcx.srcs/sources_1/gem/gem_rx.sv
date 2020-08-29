@@ -1,7 +1,10 @@
+`include "interfaces.sv"
 
 module gem_rx
 (
 	mgt_rx.out ge11_rx [6:0],
+	ge11_cluster.out ge11_cl [6:0][1:0][7:0], // [schamber][layer][cluster]
+	output reg [7:0] link_id [6:0], // [schamber=link]
 	output reg single_hit,
     output reg [bw_fph-1:0] ph_single,
     output reg [bw_th-1:0]  th_single,
@@ -39,6 +42,7 @@ module gem_rx
     
     (* mark_debug *) wire [6:0] bc0; //[schamber]
     (* mark_debug *) wire [6:0] link_id_flag; // [schamber]
+	wire [7:0] link_id_val [6:0]; // [schamber]
     (* mark_debug *) wire [3:0] cluster_cnt [6:0][1:0]; //[schamber][layer]
     (* mark_debug *) wire [13:0] cluster [6:0][1:0][7:0]; // [schamber][layer][cluster]
     (* mark_debug *) wire gem_single_hit = single_hit;
@@ -55,6 +59,18 @@ module gem_rx
         th_single = 0;
         for (i = 0; i < 7; i++) // link (superchamber) loop
         begin
+			// invalidate all clusters initially
+			for (j = 0; j < 2; j++) // layer loop
+			begin
+				for (k = 0; k < 8; k++) // cluster loop
+				begin
+					ge11_cl[i][j][k].str = 8'hff;
+					ge11_cl[i][j][k].prt = 3'h7;
+					ge11_cl[i][j][k].csz = 3'h0;
+					ge11_cl[i][j][k].vf  = 1'b1;
+				end
+			end
+
             if (link_id_flag[i] == 1'b0) // have clusters
             begin
                 for (j = 0; j < 2; j++) // layer loop
@@ -82,6 +98,13 @@ module gem_rx
                             // [12:10] - cluster size
                             // [13] - reserved
                             // [14] - special_bit
+
+							// decode cluster
+							ge11_cl[i][j][k].str = cluster[i][j][k][7:0];
+							ge11_cl[i][j][k].prt = cluster[i][j][k][10:8];
+							ge11_cl[i][j][k].csz = cluster[i][j][k][13:11];
+							// cluster valid if strip code is not 'hff
+							ge11_cl[i][j][k].vf  = cluster[i][j][k][7:0] != 8'hff;
                         
                             ph_single = {i[2:0], cluster[i][j][k][7:0]}; // chamber and strip number as phy
                             th_single = {i[2:0], cluster[i][j][k][10:8]}; // chamber and partition as theta
@@ -90,6 +113,11 @@ module gem_rx
                         
                 end
             end
+			else
+			begin
+				// no clusters in this link, lock link ID 
+				link_id[i] = link_id_val[i];
+			end
         end
 
         if (rx_ready == 1'b0)
@@ -156,6 +184,7 @@ module gem_rx
             end
             assign bc0[gi] = lb_gbt_rx_frame_r[gi][0];
             assign link_id_flag[gi] = lb_gbt_rx_frame_r[gi][1];
+			assign link_id_val [gi] = lb_gbt_rx_frame_r[gi][9:2];
 
         end
     endgenerate;
