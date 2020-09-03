@@ -1161,7 +1161,7 @@ module emtf_core_top
     mtf7_daq daq
     (
         // CSC data
-		 .lct_i    (mpc_lct), //(core_input_lct),
+		 .lct_i    (lct_aligned), //(core_input_lct),
 		 .bc0_err_period (alignment_error), // send alignment error to DAQ as link error
 		 .bc0_err_period_id1 (5'h0),
 		 // RPC data from CPPF
