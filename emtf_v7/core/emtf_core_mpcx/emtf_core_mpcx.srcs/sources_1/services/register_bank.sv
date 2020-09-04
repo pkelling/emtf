@@ -91,8 +91,43 @@ module register_bank
     output reg [31 : 0 ] jtag_length     ,
     output reg [31 : 0 ] jtag_tms_vector ,
     output reg [31 : 0 ] jtag_tdi_vector ,
-    input      [31 : 0 ] jtag_tdo_vector 
+    input      [31 : 0 ] jtag_tdo_vector,
+
+    input      [4:0] automatic_delay_id1 [4:0][7:0], // [station][cscid=1 data fragment]
+    output reg [4:0] manual_delay_id1 [4:0][7:0] // [station][cscid=1 data fragment] 
+
 );
+
+	wire [63:0] automatic_delay_id1_64 [4:0];
+	reg  [63:0] manual_delay_id1_64 [4:0];
+
+	genvar gi;
+	generate
+		for (gi = 0; gi < 5; gi++)
+		begin
+			assign automatic_delay_id1_64[gi] = 
+			{
+				automatic_delay_id1 [gi][7],
+				automatic_delay_id1 [gi][6],
+				automatic_delay_id1 [gi][5],
+				automatic_delay_id1 [gi][4],
+				automatic_delay_id1 [gi][3],
+				automatic_delay_id1 [gi][2],
+				automatic_delay_id1 [gi][1],
+				automatic_delay_id1 [gi][0]
+			};
+			assign {
+				manual_delay_id1 [gi][7],
+				manual_delay_id1 [gi][6],
+				manual_delay_id1 [gi][5],
+				manual_delay_id1 [gi][4],
+				manual_delay_id1 [gi][3],
+				manual_delay_id1 [gi][2],
+				manual_delay_id1 [gi][1],
+				manual_delay_id1 [gi][0]
+			} = manual_delay_id1_64[gi];
+		end
+	endgenerate
 
 	reg [8*9*5-1:0] in_delay_tap_r;
 	reg [8*9*5-1:0] out_delay_tap_r;
@@ -247,6 +282,11 @@ module register_bank
                 9'h05f: begin jtag_in3_r      = r_in; end
                 9'h060: begin jtag_enable     = r_in; end
 				
+                9'h069: begin manual_delay_id1_64[0] = r_in; end
+                9'h06a: begin manual_delay_id1_64[1] = r_in; end
+                9'h06b: begin manual_delay_id1_64[2] = r_in; end
+                9'h06c: begin manual_delay_id1_64[3] = r_in; end
+                9'h06d: begin manual_delay_id1_64[4] = r_in; end
 			endcase
 		end
 		else
@@ -266,7 +306,6 @@ module register_bank
 	`split_memr_1(link_id_n, link_id_n_i, 10, 9);
 	
 	wire [63:0] bc0_time_counts [4:0];
-	genvar gi;
 	generate
         for (gi = 0; gi < 5; gi = gi+1)
         begin: af_loop
@@ -526,6 +565,17 @@ module register_bank
                 9'h061: begin r_out = r_out | crc_err_flag_comb; end
                 9'h062: begin r_out = r_out | err_tst_pat_flag_comb; end
                 9'h063: begin r_out = r_out | rx_clk_phase_drift; end
+
+                9'h064: begin r_out = r_out | automatic_delay_id1_64[0]; end
+                9'h065: begin r_out = r_out | automatic_delay_id1_64[1]; end
+                9'h066: begin r_out = r_out | automatic_delay_id1_64[2]; end
+                9'h067: begin r_out = r_out | automatic_delay_id1_64[3]; end
+                9'h068: begin r_out = r_out | automatic_delay_id1_64[4]; end
+                9'h069: begin r_out = r_out | manual_delay_id1_64[0]; end
+                9'h06a: begin r_out = r_out | manual_delay_id1_64[1]; end
+                9'h06b: begin r_out = r_out | manual_delay_id1_64[2]; end
+                9'h06c: begin r_out = r_out | manual_delay_id1_64[3]; end
+                9'h06d: begin r_out = r_out | manual_delay_id1_64[4]; end
 			endcase
 			in_delay_tap_rb_r = in_delay_tap_rb;
 			out_delay_tap_rb_r = out_delay_tap_rb;

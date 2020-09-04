@@ -528,10 +528,6 @@ module emtf_core_top
             begin
                 assign manual_delay[gi][gj+2] = user_af_delays [gi*8 + gj][4:0]; // gj is chamber here
                 assign bc0_time_counts [gi*8 + gj][4:0] = automatic_delay[gi][gj+2]; // gj is chamber here
-                // no registers for automatic_delay_id1, TBD
-                // no register for these so far, TBD
-                assign manual_delay_id1[gi][gj] = 5'h0; // gj is cscid=1 data fragment here
-                
             end
         end
         
@@ -1034,7 +1030,10 @@ module emtf_core_top
         .jtag_length     (jtag_length    ),    
         .jtag_tms_vector (jtag_tms_vector),
         .jtag_tdi_vector (jtag_tdi_vector),
-        .jtag_tdo_vector (jtag_tdo_vector)
+        .jtag_tdo_vector (jtag_tdo_vector),
+
+		.automatic_delay_id1 (automatic_delay_id1),
+		.manual_delay_id1    (manual_delay_id1)
     );
 
 	wire [8*5+9-1:0] bc0_mrg;

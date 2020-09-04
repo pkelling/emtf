@@ -375,3 +375,4 @@ set_false_path -from [get_pins {crb/control_reg_reg[10]/C}] -to [get_pins ptlut/
 set_false_path -from [get_pins {crb/control_reg_reg[12]/C}] -to [get_pins ptlut/idelaye2_clk/LD]
 
 
+

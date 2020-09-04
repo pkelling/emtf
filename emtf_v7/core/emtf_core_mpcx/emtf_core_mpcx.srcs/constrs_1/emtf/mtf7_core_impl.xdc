@@ -112,17 +112,17 @@ set_false_path -from [get_clocks pcie_clk] -to [get_clocks clk_out1_mmcm_sync]
 set_property LOC MMCME2_ADV_X1Y5 [get_cells ctoc/ctoc_mmcm_in_/inst/mmcm_adv_inst]
 
 # PT LUT
-set_max_delay -from [get_clocks -of_objects [get_pins usrclk_mmcm_/inst/mmcm_adv_inst/CLKOUT4]] -to [get_clocks -of_objects [get_pins usrclk_mmcm_/inst/mmcm_adv_inst/CLKOUT3]] 2.5
+set_max_delay -from [get_clocks -of_objects [get_pins usrclk_mmcm_/inst/mmcm_adv_inst/CLKOUT4]] -to [get_clocks -of_objects [get_pins usrclk_mmcm_/inst/mmcm_adv_inst/CLKOUT3]] 2.500
 
 # MPCX protocol
-# 320 M -> fabric 40 M sync reclocking 
-set_max_delay -from [get_clocks -of_objects [get_pins mpcx_rx_i/mpcx_mmcm_i/inst/mmcm_adv_inst/CLKOUT0]] -to [get_clocks -of_objects [get_pins usrclk_mmcm_/inst/mmcm_adv_inst/CLKOUT1]] -datapath_only 3.0
+# 320 M -> fabric 40 M sync reclocking
+set_max_delay -datapath_only -from [get_clocks -of_objects [get_pins mpcx_rx_i/mpcx_mmcm_i/inst/mmcm_adv_inst/CLKOUT0]] -to [get_clocks -of_objects [get_pins usrclk_mmcm_/inst/mmcm_adv_inst/CLKOUT1]] 3.000
 
-# recovered RX 80M -> 320 M sync reclocking 
+# recovered RX 80M -> 320 M sync reclocking
 #set_max_delay 3 -from [get_pins */rx_loop[*].mpcx_rx_i/ds/drx_reg[*]/C] -to [get_pins */rx_loop[*].mpcx_rx_i/rxr/inreg_320_reg[*]/D] -datapath_only
 #set_max_delay 3 -from [get_pins */rx_loop[*].mpcx_rx_i/rx_header_r_reg[*]/C] -to [get_pins */rx_loop[*].mpcx_rx_i/rxr/rx_header_320_reg/D] -datapath_only
-#set_max_delay -from [get_clocks emtf_sio/quad_loop[*].GTHE2_QUAD_inst/mgt_loop[*].GTHE2_CHANNEL_tux_inst/mpc*_rx[*]\.rxoutclk] -to [get_clocks -of_objects [get_pins mpcx_rx_i/mpcx_mmcm_i/inst/mmcm_adv_inst/CLKOUT0]] -datapath_only 3.0 
-set_max_delay -from [get_clocks rxclk*_*] -to [get_clocks -of_objects [get_pins mpcx_rx_i/mpcx_mmcm_i/inst/mmcm_adv_inst/CLKOUT0]] -datapath_only 3.0 
+#set_max_delay -from [get_clocks emtf_sio/quad_loop[*].GTHE2_QUAD_inst/mgt_loop[*].GTHE2_CHANNEL_tux_inst/mpc*_rx[*]\.rxoutclk] -to [get_clocks -of_objects [get_pins mpcx_rx_i/mpcx_mmcm_i/inst/mmcm_adv_inst/CLKOUT0]] -datapath_only 3.0
+set_max_delay -datapath_only -from [get_clocks rxclk*_*] -to [get_clocks -of_objects [get_pins mpcx_rx_i/mpcx_mmcm_i/inst/mmcm_adv_inst/CLKOUT0]] 3.000
 
 set_false_path -from [get_pins {crb/out_delay_tap_r_reg[*]/C}]
 set_false_path -from [get_pins {crb/in_delay_tap_r_reg[*]/C}]
@@ -142,6 +142,7 @@ set_property CFGBVS GND [current_design]
 
 set_property CONFIG_VOLTAGE 1.8 [current_design]
 #where value2 is the voltage provided to configuration bank 0
+
 
 
 

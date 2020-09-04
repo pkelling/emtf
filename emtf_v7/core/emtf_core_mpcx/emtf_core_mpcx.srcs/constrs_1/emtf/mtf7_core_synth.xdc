@@ -9,3 +9,4 @@ create_clock -period 24.000 -name clk40_in [get_ports clk40_in]
 
 #create_clock -period 4.0 [get_cells mpc_gen[1].mpc/serial.rx[7].gc/gt0_txusrclk2_i]
 
+

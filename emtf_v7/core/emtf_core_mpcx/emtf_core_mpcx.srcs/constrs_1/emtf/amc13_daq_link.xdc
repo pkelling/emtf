@@ -71,3 +71,4 @@ set_false_path -to [get_pins {amc13_link_tx_/DAQ_LINK_7S_I/reset_SyncRegs_reg[*]
 #set_false_path -from [get_clocks clk_out1_mmcm_async] -to [get_clocks pcie_clk]
 #set_false_path -from [get_clocks pcie_clk] -to [get_clocks clk_out1_mmcm_async]
 
+

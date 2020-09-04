@@ -27,10 +27,10 @@ module mpcx_aligner_id1
     assign fragment_i[1] = {cscid1_vf[0][1], lct_i[0].wg, lct_i[0].lr};
     assign fragment_i[2] = {cscid1_vf[0][2], lct_i[0].ql, lct_i[0].cp};
     assign fragment_i[3] = {cscid1_vf[0][3], lct_i[0].cid, lct_i[0].bx0, lct_i[0].ser};
-    assign fragment_i[4] = {cscid1_vf[0][0], lct_i[1].hs};                                                 
-    assign fragment_i[5] = {cscid1_vf[0][1], lct_i[1].wg, lct_i[1].lr};                                   
-    assign fragment_i[6] = {cscid1_vf[0][2], lct_i[1].ql, lct_i[1].cp};                                   
-    assign fragment_i[7] = {cscid1_vf[0][3], lct_i[1].cid, lct_i[1].bx0, lct_i[1].ser};
+    assign fragment_i[4] = {cscid1_vf[1][0], lct_i[1].hs};                                                 
+    assign fragment_i[5] = {cscid1_vf[1][1], lct_i[1].wg, lct_i[1].lr};                                   
+    assign fragment_i[6] = {cscid1_vf[1][2], lct_i[1].ql, lct_i[1].cp};                                   
+    assign fragment_i[7] = {cscid1_vf[1][3], lct_i[1].cid, lct_i[1].bx0, lct_i[1].ser};
 
     wire [4:0] applied_delay [7:0] = (en_manual == 'b1) ? manual_delay : automatic_delay;
 
@@ -51,10 +51,10 @@ module mpcx_aligner_id1
         {cscid1_vf_d[0][1], lct_o[0].wg, lct_o[0].lr}                 = fragment_o[1];
         {cscid1_vf_d[0][2], lct_o[0].ql, lct_o[0].cp}                 = fragment_o[2];
         {cscid1_vf_d[0][3], lct_o[0].cid, lct_o[0].bx0, lct_o[0].ser} = fragment_o[3];
-        {cscid1_vf_d[0][0], lct_o[1].hs}                              = fragment_o[4];                                                 
-        {cscid1_vf_d[0][1], lct_o[1].wg, lct_o[1].lr}                 = fragment_o[5];                                   
-        {cscid1_vf_d[0][2], lct_o[1].ql, lct_o[1].cp}                 = fragment_o[6];                                   
-        {cscid1_vf_d[0][3], lct_o[1].cid, lct_o[1].bx0, lct_o[1].ser} = fragment_o[7];
+        {cscid1_vf_d[1][0], lct_o[1].hs}                              = fragment_o[4];                                                 
+        {cscid1_vf_d[1][1], lct_o[1].wg, lct_o[1].lr}                 = fragment_o[5];                                   
+        {cscid1_vf_d[1][2], lct_o[1].ql, lct_o[1].cp}                 = fragment_o[6];                                   
+        {cscid1_vf_d[1][3], lct_o[1].cid, lct_o[1].bx0, lct_o[1].ser} = fragment_o[7];
         
         // if valid flag is missing in any of the fragments, invalidate entire LCT 
         lct_o[0].vf = &(cscid1_vf_d[0]);
@@ -95,7 +95,7 @@ module mpcx_aligner_id1
             if (!lct_bc0_r[i] && lct_bc0[i]) // BC0 edge
             begin
                 bc0_period_err[i] = 1'b1;
-                if (bc0_bxn[i] == bxn) bc0_period_err[i] = 1'b0;
+                if (bc0_bxn[i] == bxn) bc0_period_err[i] = 1'b0; // bc0 came in time, no errors
                 bc0_bxn[i] = bxn; // remember when BC0 came
             end
         end

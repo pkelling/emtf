@@ -50,7 +50,7 @@ module emtf_mpcx_rx #(parameter NEIGHBOR = "FALSE")
     localparam nlinks =  NEIGHBOR == "TRUE" ? 9 : 8; // 9 links are coming from NEIGHBOR sector
     localparam low_ind = ((NEIGHBOR == "TRUE") ? 1 : 2); // low index for I/O
 
-    wire [75:0] rx_data_76 [nlinks-1:0];
+    (* mark_debug *) wire [75:0] rx_data_76 [nlinks-1:0];
     // always 9 chambers from each RX, neighbor or not
     csc_lct_mpcx lct_unaligned [9:1][1:0]; // [CSCID][stub]
 	wire [7:0] cscid1_bc0; // separate bc0 markers from CSCID=1 coming in each link
