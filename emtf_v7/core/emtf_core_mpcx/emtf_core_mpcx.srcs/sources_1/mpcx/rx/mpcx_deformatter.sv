@@ -29,8 +29,8 @@ module mpcx_deformatter
 	reg [25:0] rate_period;
 	reg [25:0] rate_counter [8:0];
 
-    localparam max_hs = 8'd159;
-    localparam max_wg = 8'd111;
+    localparam max_hs = 8'd223; // ME1/1 (64 strips top + 48 strips bottom) * 2
+    localparam max_wg = 8'd111; // ME2/1 112 wiregroups max
 
     
   always @(posedge clk40)

@@ -1,7 +1,7 @@
 module mtf7_daq
 (
 
-    csc_lct.in lct_i [5:0][8:0][seg_ch-1:0],
+    input csc_lct_mpcx lct_i [5:0][8:0][seg_ch-1:0],
     input [48:0] bc0_err_period,
     input [4:0] bc0_err_period_id1,
     input [63:0] cppf_rxd [6:0][2:0], // cppf rx data, 3 frames x 64 bit, for 7 links

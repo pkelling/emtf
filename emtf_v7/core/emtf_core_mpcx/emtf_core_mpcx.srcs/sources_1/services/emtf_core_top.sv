@@ -147,7 +147,6 @@ module emtf_core_top
     (* mark_debug *) wire 			  we; // write enable for memory or register
 	
 	(* mark_debug *) wire [63:0] r_out [2:0];
-	assign r_out[0][63:13] = 51'h0; // unused bits
 	assign r_out_or = r_out[0] | r_out[1] | r_out[2]; // read data mux for registers
 	wire pt_busy;
 	wire lat_test;
@@ -533,10 +532,6 @@ module emtf_core_top
             begin
                 assign manual_delay[gi][gj+2] = user_af_delays [gi*8 + gj][4:0]; // gj is chamber here
                 assign bc0_time_counts [gi*8 + gj][4:0] = automatic_delay[gi][gj+2]; // gj is chamber here
-                // no registers for automatic_delay_id1, TBD
-                // no register for these so far, TBD
-                assign manual_delay_id1[gi][gj] = 5'h0; // gj is cscid=1 data fragment here
-                
             end
         end
         
@@ -817,40 +812,42 @@ module emtf_core_top
 `ifdef WITH_CORE    
 	sp core 
 	(
-        .lct_i    (lct_aligned),
-        .cppf_rxd (cppf_rxd), // rx data, 3 frames x 64 bit, for 7 links
+        .lct_i         (lct_aligned),
+        .cppf_rxd      (cppf_rxd), // rx data, 3 frames x 64 bit, for 7 links
         .cppf_rx_valid (cppf_rx_valid), // rx data valid flags
+		.ge11_cl       (ge11_cl),
 		
 		.pcs_cs   (cs[5:0]), // chamber selects for only 5 stations + neibghbor 
+		.ge11_cs  (cs[6][2:1]), // parameter selects for all GE11 chambers
 		.sel      (sel), 
 		.addr     (addr), 
-		.r_in     (r_in[12:0]), 
-		.r_out    (r_out[0][12:0]), 
+		.r_in     (r_in), 
+		.r_out    (r_out[0]), 
 		.we       (we),
 
-		.bt_phi (bt_phi),
-		.bt_theta (bt_theta),
+		.bt_phi      (bt_phi),
+		.bt_theta    (bt_theta),
 		.bt_cpattern (bt_cpattern),
 		.bt_delta_ph (bt_delta_ph),
 		.bt_delta_th (bt_delta_th),
-		.bt_sign_ph (bt_sign_ph),
-		.bt_sign_th (bt_sign_th),
-		.bt_rank (bt_rank),
+		.bt_sign_ph  (bt_sign_ph),
+		.bt_sign_th  (bt_sign_th),
+		.bt_rank     (bt_rank),
 		.bt_vi (bt_vi), 
 		.bt_hi (bt_hi), 
 		.bt_ci (bt_ci), 
 		.bt_si (bt_si),
 		
-		.ptlut_addr (ptlut_addr),
-		.ptlut_cs (ptlut_cs),
+		.ptlut_addr     (ptlut_addr),
+		.ptlut_cs       (ptlut_cs),
 		.ptlut_addr_val (ptlut_addr_val),
         .gmt_phi (gmt_phi),
         .gmt_eta (gmt_eta),
         .gmt_qlt (gmt_qlt),
         .gmt_crg (gmt_crg),
         
-		.clk      (clk40),
-		.control_clk(pcie_clk_buf),
+		.clk         (clk40),
+		.control_clk (pcie_clk_buf),
 		
 		.endcap (endcap),
 		.sector (sector),
@@ -964,7 +961,7 @@ module emtf_core_top
 
 	register_bank crb
 	(
-		.cs (cs[6]),
+		.cs (cs[6][0]),
 		.sel (sel),
 		.addr (addr),
 
@@ -1041,7 +1038,10 @@ module emtf_core_top
         .jtag_length     (jtag_length    ),    
         .jtag_tms_vector (jtag_tms_vector),
         .jtag_tdi_vector (jtag_tdi_vector),
-        .jtag_tdo_vector (jtag_tdo_vector)
+        .jtag_tdo_vector (jtag_tdo_vector),
+
+		.automatic_delay_id1 (automatic_delay_id1),
+		.manual_delay_id1    (manual_delay_id1)
     );
 
 	wire [8*5+9-1:0] bc0_mrg;
@@ -1168,7 +1168,7 @@ module emtf_core_top
     mtf7_daq daq
     (
         // CSC data
-		 .lct_i    (mpc_lct), //(core_input_lct),
+		 .lct_i    (lct_aligned), //(core_input_lct),
 		 .bc0_err_period (alignment_error), // send alignment error to DAQ as link error
 		 .bc0_err_period_id1 (5'h0),
 		 // RPC data from CPPF

@@ -31,12 +31,12 @@ module sp
 	ge11_cluster.in ge11_cl [6:0][1:0][7:0],
 
     input [8:0] 	   pcs_cs [5:0],
-    input [4:0] 	   pps_cs [2:0],        
+	input [1:0]        ge11_cs, // chip select for GE11 prim conv
     input [1:0] 	   sel,
     input [bw_addr-1:0] addr,
 
-    input [12:0] 		r_in, // input data for memory or register
-    output [12:0] 		r_out, // output data from memory or register
+    input  [63:0] 		r_in, // input data for memory or register
+    output [63:0] 		r_out, // output data from CSC prim conv
     input 				we, // write enable for memory or register
 
 	// precise phi and theta of best tracks
@@ -187,6 +187,16 @@ module sp
     wire [bw_hs-1:0]  hstr [5:0][8:0][seg_ch-1:0];
     wire [3:0] 	   cpat [5:0][8:0][seg_ch-1:0];
 
+	(* mark_debug *) wire [bw_fph-1:0] ge11_ph [6:0][1:0][7:0]; 
+	(* mark_debug *) wire [bw_th-1:0]  ge11_th [6:0][1:0][7:0];
+	(* mark_debug *) wire [7:0]        ge11_vl [6:0][1:0];
+
+	(* mark_debug *) wire [2:0] ge11_phzvl [6:0][1:0][7:0]; // raw hit valid flags for up to 3 ph zones
+	(* mark_debug *) wire [ph_hit_w-1:0] ge11_ph_hit [6:0][1:0][7:0]; // raw hits
+
+	wire [63:0] r_out_m [1:0];
+	assign r_out = r_out_m[0] | r_out_m[1];
+
     // unpack LCTs here for now, should propagage all the way down to prim converters.
     genvar gi, gj, gk;
     generate
@@ -206,7 +216,7 @@ module sp
         end
     endgenerate
 
-    // convert primitives into angular values
+    // convert CSC primitives into angular values
     prim_conv_sector pcs 
 		(
 		 .vpf    (vpf), 
@@ -226,13 +236,35 @@ module sp
 		 .sel    (sel), 
 		 .addr   (addr), 
 		 .r_in   (r_in), 
-		 .r_out  (r_out), 
+		 .r_out  (r_out_m[0]), 
 		 .we     (we), 
 		 .clk    (clk),
 		 .control_clk (control_clk),
 		 .endcap (endcap),
 		 .lat_test (lat_test)
 		 );
+
+	// convert GE11 primitives into angular values
+	prim_conv_sector_ge11 pcs_ge11
+	(
+	  	.ge11_cl (ge11_cl),
+
+		.ph (ge11_ph), 
+		.th (ge11_th),
+		.vl (ge11_vl),
+
+		.phzvl  (ge11_phzvl), // raw hit valid flags for up to 3 ph zones
+		.ph_hit (ge11_ph_hit), // raw hits
+
+		.reg_select  (ge11_cs), // 1 = ph_init, 2 = th_mem
+		.addr        (addr), // address in memory to access. For registers, set to 0
+		.r_in        (r_in), // input data for memory or register
+		.r_out       (r_out_m[1]), // output data from memory or register
+		.we          (we), // write enable for memory or register
+		.clk         (clk), // main logic clock
+		.control_clk (control_clk), // control interface clock
+		.endcap      (endcap)
+	);
 
     // construct raw hit zones
     zones zns
