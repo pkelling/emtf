@@ -234,7 +234,8 @@ module find_segment
           // rework of th_match to remove unphysical thetas, per Jia Fu request 2016-10-18
         if (zone_seg == seg_ch) // not ME1/1
         begin
-            th_match = th_seg[hid][cid]; // route all th coords from matching chamber to output
+            th_match[0] = th_seg[hid][cid][0]; // route all th coords from matching chamber to output
+            th_match[1] = th_seg[hid][cid][1]; // route all th coords from matching chamber to output
         end
         else
         begin // ME1/1
