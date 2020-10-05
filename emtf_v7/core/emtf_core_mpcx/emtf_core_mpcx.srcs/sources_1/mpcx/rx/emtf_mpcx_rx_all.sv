@@ -57,7 +57,8 @@ module emtf_mpcx_rx_all
 	output [8:0] crc_err_flag_n, // CRC error detected [link]
     output [8:0] err_tst_pat_flag_n, // test counter error detected [link]
 
-    input               flag_reset, // reset persisting flags
+    input        flag_reset, // reset persisting flags
+    input [48:0] fiber_enable, // fiber enable flags
 	output [9:0] link_id_n [8:0], // link ID [link]
 
     input en_manual, // enable manual delays
@@ -94,6 +95,7 @@ module emtf_mpcx_rx_all
                 .err_tst_pat_flag    (err_tst_pat_flag    [gi]),
                 .flag_reset          (flag_reset              ),
 	            .link_id             (link_id             [gi]),
+	            .fiber_enable        (fiber_enable [gi*8 +: 8]),
 
                 .clk40               (clk40                   ),
                 .clk320              (clk320                  ),
@@ -119,6 +121,7 @@ module emtf_mpcx_rx_all
         .err_tst_pat_flag    (err_tst_pat_flag_n ),
         .flag_reset          (flag_reset         ),
 	    .link_id             (link_id_n          ),
+        .fiber_enable        (fiber_enable [48:40]),
 
         .clk40               (clk40              ),
         .clk320              (clk320             ),

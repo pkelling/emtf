@@ -127,6 +127,7 @@ set_max_delay -datapath_only -from [get_clocks rxclk*_*] -to [get_clocks -of_obj
 set_false_path -from [get_pins {crb/out_delay_tap_r_reg[*]/C}]
 set_false_path -from [get_pins {crb/in_delay_tap_r_reg[*]/C}]
 set_false_path -from [get_pins {crb/ddr_clk_del_reg[*]/C}]
+set_false_path -from [get_pins {crb/fiber_enable_reg[*]/C}]
 set_false_path -from [get_pins {core/pcs/station234[*].csc[*].pc/params_reg[*][*]/C}]
 set_false_path -from [get_pins {core/pcs/station12[*].csc12[*].pc12/params_reg[*][*]/C}]
 set_false_path -from [get_pins {core/pcs/station11[*].csc11[*].pc11/params_reg[*][*]/C}]
