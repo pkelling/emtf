@@ -143,6 +143,7 @@ void cosmics_rate_monitor()
 {
     uint64_t sum_val, track [3];
     int si = 0;
+	int sect_rate[13];
     //char spin[4][4] = {"-", "\\", "|", "/"};
     while (1)
     {
@@ -151,11 +152,12 @@ void cosmics_rate_monitor()
         for (int di = 0; di < 13; di++)
         {
 
+
+			sect_rate[di] = 0;
             if (devices_d[di] >= 0)
             {
 
                 int fd = devices_d[di];
-
                 //mread(fd, &value, 8, 0x000B6280);
                 mread(fd, &track[0], 8, 0x000B61B8); // track 0
                 mread(fd, &track[1], 8, 0x000B61E0); // track 1
@@ -165,6 +167,7 @@ void cosmics_rate_monitor()
                     track[j] >>= 32;
                     track[j] &= 0x3ffffffULL;
                     sum_val += track[j];
+					sect_rate[di] += track[j];
                 }
                 //if (value > 100ULL)
 //                    log_printf ("unit: %02d rate: %d\n", di, value);
@@ -172,7 +175,9 @@ void cosmics_rate_monitor()
         }
         usleep(1000000);
 //        log_printf("\r%s     ", spin[si]);
-        log_printf ("total_rate = %d\n", sum_val);
+        log_printf ("rates = %8d", sum_val);
+		for (int di = 0; di < 12; di++)	log_printf ("%8d ", sect_rate[di]);
+		log_printf ("\n");
         fflush(stdout);
         si = (si+1)%4;
         if (terminating)
