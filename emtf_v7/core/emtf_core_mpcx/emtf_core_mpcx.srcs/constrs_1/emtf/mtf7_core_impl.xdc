@@ -124,6 +124,10 @@ set_max_delay -from [get_clocks -of_objects [get_pins mpcx_rx_i/mpcx_mmcm_i/inst
 #set_max_delay -from [get_clocks emtf_sio/quad_loop[*].GTHE2_QUAD_inst/mgt_loop[*].GTHE2_CHANNEL_tux_inst/mpc*_rx[*]\.rxoutclk] -to [get_clocks -of_objects [get_pins mpcx_rx_i/mpcx_mmcm_i/inst/mmcm_adv_inst/CLKOUT0]] -datapath_only 3.0 
 set_max_delay -from [get_clocks rxclk*_*] -to [get_clocks -of_objects [get_pins mpcx_rx_i/mpcx_mmcm_i/inst/mmcm_adv_inst/CLKOUT0]] -datapath_only 3.0 
 
+set_false_path -from [get_pins {crb/out_delay_tap_r_reg[*]/C}]
+set_false_path -from [get_pins {crb/in_delay_tap_r_reg[*]/C}]
+set_false_path -from [get_pins {crb/ddr_clk_del_reg[*]/C}]
+set_false_path -from [get_pins {crb/fiber_enable_reg[*]/C}]
 set_false_path -from [get_pins {core/pcs/station234[*].csc[*].pc/params_reg[*][*]/C}]
 set_false_path -from [get_pins {core/pcs/station12[*].csc12[*].pc12/params_reg[*][*]/C}]
 set_false_path -from [get_pins {core/pcs/station11[*].csc11[*].pc11/params_reg[*][*]/C}]

@@ -24,12 +24,15 @@ module valid_delay
 	input clk;
 
     wire [7:0] lct_delay = delay + core_latency; // lct valid flag extra delayed for core latency
-	wire vald, vald_lct;
+	(* mark_debug *) wire vald, vald_lct;
 	reg val_comb;
+	reg [7:0] val_line = 0;
+	(* mark_debug *) wire val_comb_w = val_comb;
+	(* mark_debug *) wire val_line_w = val_line;
+	
 	dyn_shift_1 dsh_bt  (.CLK (clk), .CE (1'b1), .SEL (delay),     .SI (val),     .DO (vald)); // best track valid delay
 	dyn_shift_1 dsh_lct (.CLK (clk), .CE (1'b1), .SEL (lct_delay), .SI (val_lct), .DO (vald_lct)); // lct valid delay
 	
-	reg [7:0] val_line = 0;
 	always @(posedge clk)
 	begin
 	

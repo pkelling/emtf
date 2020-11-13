@@ -1,4 +1,3 @@
-`include "spbits.sv"
 
 module prim_conv_sector_ge11
 (
@@ -21,6 +20,7 @@ module prim_conv_sector_ge11
 	input  endcap
 );
 
+`include "spbits.sv"
 
 	// all th LUTs combined into one array
 	typedef union

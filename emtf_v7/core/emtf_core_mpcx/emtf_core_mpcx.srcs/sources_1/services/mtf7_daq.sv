@@ -619,7 +619,7 @@ module mtf7_daq
    // valid track exists if:
    // rank of best track is valid (at least one collision track is present) OR
    // single-LCT track is in index [2] 
-	wire val = (bt_rank[0] != 0) | (bt_rank[2] != 0); 
+	(* mark_debug *) wire val = (bt_rank[0] != 0) | (bt_rank[2] != 0); 
    
 	// this delay line provides a valid track bit in time with each L1A
 	// valid bit is an OR of valid tracks over a time window
@@ -1209,9 +1209,24 @@ module mtf7_daq
 //    (* mark_debug = "FALSE" *) wire [8:0] vp_d4_w;
     (* mark_debug = "FALSE" *) wire [3:0] bt_q_d_w [2:0];
     (* mark_debug = "FALSE" *) wire [3:0] bt_q_w [2:0];
-    (* mark_debug = "FALSE" *) wire l1a_proc_w = l1a_proc;
-    (* mark_debug = "FALSE" *) wire valor_w = valor;
-    (* mark_debug = "FALSE" *) wire l1a_fifo_full_w = l1a_fifo_full;
+    
+    (* mark_debug = "TRUE" *) wire l1a_proc_w = l1a_proc;
+    (* mark_debug = "TRUE" *) wire valor_w = valor;
+    (* mark_debug = "TRUE" *) wire l1a_fifo_full_w = l1a_fifo_full;
+    (* mark_debug = "TRUE" *) wire [8:0] lct_vl_w [5:0];
+    (* mark_debug = "TRUE" *) wire lct_valid_w = lct_valid; // combined valid flags from all chambers
+    
+    genvar gj;
+    generate
+        for (gi = 0; gi < 6; gi++)
+        begin
+            for (gj = 0; gj < 9; gj++) 
+            begin
+                assign lct_vl_w [gi][gj] = lct_i[gi][gj][0].vf;
+            end
+        end
+    endgenerate
+    
 	(* mark_debug = "FALSE" *) wire l1a_fifo_valid_w = l1a_fifo_valid;
 	(* mark_debug = "FALSE" *) wire [11:0] bxn_counter_w = bxn_counter;
 	(* mark_debug = "FALSE" *) wire [11:0] bxn_counterf_w = bxn_counterf;

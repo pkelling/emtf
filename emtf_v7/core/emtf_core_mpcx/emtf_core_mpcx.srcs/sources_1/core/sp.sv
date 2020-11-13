@@ -500,5 +500,23 @@ module sp
         .clk (clk)
     );    
 
+	reg ge11_valid_any;
+	(* mark_debug *) wire ge11_valid_any_w = ge11_valid_any;
+	reg csc_valid_any;
+	(* mark_debug *) wire csc_valid_any_w = csc_valid_any;
+	integer i,j;
+	always @(posedge clk)
+	begin
+	   ge11_valid_any = 1'b0;
+	   for (i = 0; i <= 6; i++)
+	       for (j = 0; j <= 1; j++)
+	           ge11_valid_any |= |(ge11_vl[i][j]);
+	           
+	   csc_valid_any = 1'b0;
+	   for (i = 0; i <= 5; i++)
+	       for (j = 0; j <= 8; j++)
+	           csc_valid_any |= |(vpf[i][j]);
+	           
+	end
 
 endmodule

@@ -617,6 +617,7 @@ module emtf_core_top
 	    .crc_err_flag_n      (crc_err_flag_n     ),
         .err_tst_pat_flag_n  (err_tst_pat_flag_n ),
         .flag_reset          (flag_reset         ),
+        .fiber_enable        (fiber_enable[48:0] ),
 	    .link_id_n           (link_id_na         ),
         .clk40               (clk40              ),
         .pcie_clk            (pcie_clk_buf       ),

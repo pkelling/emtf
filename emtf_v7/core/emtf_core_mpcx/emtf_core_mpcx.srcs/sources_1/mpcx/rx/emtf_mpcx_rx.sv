@@ -41,6 +41,7 @@ module emtf_mpcx_rx #(parameter NEIGHBOR = "FALSE")
     output [nlinks-1:0] err_tst_pat_flag, // test counter error detected, persisting
     input               flag_reset, // reset persisting flags
 	output [9:0] link_id [nlinks-1:0], // link ID
+	input  [nlinks-1:0] fiber_enable,
 
 	input clk40,
 	input clk320,
@@ -67,6 +68,7 @@ module emtf_mpcx_rx #(parameter NEIGHBOR = "FALSE")
                 .mgtrx         (mpcx_rx[gi]),
                 .rx_data_76    (rx_data_76[gi]), // deframed and reclocked data word
                 .rx_fa_reset   (1'b0), // reset frame alignment and everything else - not really needed
+                .fiber_enable  (fiber_enable[gi]),
                 .clk40         (clk40), // clk40 and clk320 must have relative phase=0
                 .clk320        (clk320),
                 .pcie_clk      (pcie_clk)
