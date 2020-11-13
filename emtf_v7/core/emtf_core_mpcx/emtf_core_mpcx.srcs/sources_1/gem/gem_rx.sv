@@ -67,7 +67,7 @@ module gem_rx
 					ge11_cl[i][j][k].str = 8'hff;
 					ge11_cl[i][j][k].prt = 3'h7;
 					ge11_cl[i][j][k].csz = 3'h0;
-					ge11_cl[i][j][k].vf  = 1'b1;
+					ge11_cl[i][j][k].vf  = 1'b0;
 				end
 			end
 
