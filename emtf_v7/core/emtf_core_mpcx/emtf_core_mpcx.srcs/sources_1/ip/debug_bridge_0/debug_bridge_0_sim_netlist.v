@@ -1,10 +1,10 @@
-// Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+// Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
-// Tool Version: Vivado v.2019.2.1 (lin64) Build 2729669 Thu Dec  5 04:48:12 MST 2019
-// Date        : Tue Jun 30 10:51:04 2020
-// Host        : endcap-tf1.phys.ufl.edu running 64-bit CentOS Linux release 7.8.2003 (Core)
+// Tool Version: Vivado v.2020.1.1_AR73018 (win64) Build 2960000 Wed Aug  5 22:57:20 MDT 2020
+// Date        : Fri Nov 13 20:14:58 2020
+// Host        : uf-eng-srv-1 running 64-bit major release  (build 9200)
 // Command     : write_verilog -force -mode funcsim
-//               /home/madorsky/cernbox/projects/vivado/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/debug_bridge_0/debug_bridge_0_sim_netlist.v
+//               c:/Users/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/debug_bridge_0/debug_bridge_0_sim_netlist.v
 // Design      : debug_bridge_0
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -12,7 +12,7 @@
 // --------------------------------------------------------------------------------
 `timescale 1 ps / 1 ps
 
-(* CHECK_LICENSE_TYPE = "debug_bridge_0,bd_54be_0,{}" *) (* DowngradeIPIdentifiedWarnings = "yes" *) (* X_CORE_INFO = "bd_54be_0,Vivado 2019.2.1" *) 
+(* CHECK_LICENSE_TYPE = "debug_bridge_0,bd_54be,{}" *) (* DowngradeIPIdentifiedWarnings = "yes" *) (* X_CORE_INFO = "bd_54be,Vivado 2020.1.1_AR73018" *) 
 (* NotValidForBitStream *)
 module debug_bridge_0
    (jtag_tdi,
@@ -66,7 +66,7 @@ module debug_bridge_0
   wire m0_bscan_update;
 
   (* HW_HANDOFF = "debug_bridge_0.hwdef" *) 
-  debug_bridge_0_bd_54be_0 inst
+  debug_bridge_0_bd_54be inst
        (.jtag_tck(jtag_tck),
         .jtag_tdi(jtag_tdi),
         .jtag_tdo(jtag_tdo),
@@ -85,8 +85,8 @@ module debug_bridge_0
         .m0_bscan_update(m0_bscan_update));
 endmodule
 
-(* HW_HANDOFF = "debug_bridge_0.hwdef" *) (* ORIG_REF_NAME = "bd_54be_0" *) 
-module debug_bridge_0_bd_54be_0
+(* HW_HANDOFF = "debug_bridge_0.hwdef" *) (* ORIG_REF_NAME = "bd_54be" *) 
+module debug_bridge_0_bd_54be
    (jtag_tck,
     jtag_tdi,
     jtag_tdo,
@@ -148,8 +148,8 @@ module debug_bridge_0_bd_54be_0
   wire m0_bscan_tms;
   wire m0_bscan_update;
 
-  (* X_CORE_INFO = "bs_switch_v1_0_0_bs_switch,Vivado 2019.2.1" *) 
-  debug_bridge_0_bd_54be_0_bs_switch_0_0 bs_switch_0
+  (* X_CORE_INFO = "bs_switch_v1_0_0_bs_switch,Vivado 2020.1.1_AR73018" *) 
+  debug_bridge_0_bd_54be_bs_switch_0_0 bs_switch_0
        (.bscanid_en_0(m0_bscan_bscanid_en),
         .capture_0(m0_bscan_capture),
         .drck_0(m0_bscan_drck),
@@ -174,8 +174,8 @@ module debug_bridge_0_bd_54be_0
         .tdo_0(m0_bscan_tdo),
         .tms_0(m0_bscan_tms),
         .update_0(m0_bscan_update));
-  (* X_CORE_INFO = "bsip_v1_1_0_bsip,Vivado 2019.2.1" *) 
-  debug_bridge_0_bd_54be_0_bsip_0 bsip
+  (* X_CORE_INFO = "bsip_v1_1_0_bsip,Vivado 2020.1.1_AR73018" *) 
+  debug_bridge_0_bd_54be_bsip_0 bsip
        (.capture(bsip_m_bscan_CAPTURE),
         .drck(bsip_m_bscan_DRCK),
         .reset(bsip_m_bscan_RESET),
@@ -193,8 +193,8 @@ module debug_bridge_0_bd_54be_0
         .update(bsip_m_bscan_UPDATE));
 endmodule
 
-(* ORIG_REF_NAME = "bd_54be_0_bs_switch_0_0" *) (* X_CORE_INFO = "bs_switch_v1_0_0_bs_switch,Vivado 2019.2.1" *) 
-module debug_bridge_0_bd_54be_0_bs_switch_0_0
+(* ORIG_REF_NAME = "bd_54be_bs_switch_0_0" *) (* X_CORE_INFO = "bs_switch_v1_0_0_bs_switch,Vivado 2020.1.1_AR73018" *) 
+module debug_bridge_0_bd_54be_bs_switch_0_0
    (s_bscan_drck,
     s_bscan_reset,
     s_bscan_sel,
@@ -247,8 +247,8 @@ module debug_bridge_0_bd_54be_0_bs_switch_0_0
 
 endmodule
 
-(* ORIG_REF_NAME = "bd_54be_0_bsip_0" *) (* X_CORE_INFO = "bsip_v1_1_0_bsip,Vivado 2019.2.1" *) 
-module debug_bridge_0_bd_54be_0_bsip_0
+(* ORIG_REF_NAME = "bd_54be_bsip_0" *) (* X_CORE_INFO = "bsip_v1_1_0_bsip,Vivado 2020.1.1_AR73018" *) 
+module debug_bridge_0_bd_54be_bsip_0
    (drck,
     reset,
     sel,
@@ -290,12 +290,15 @@ module glbl ();
 
     parameter ROC_WIDTH = 100000;
     parameter TOC_WIDTH = 0;
+    parameter GRES_WIDTH = 10000;
+    parameter GRES_START = 10000;
 
 //--------   STARTUP Globals --------------
     wire GSR;
     wire GTS;
     wire GWE;
     wire PRLD;
+    wire GRESTORE;
     tri1 p_up_tmp;
     tri (weak1, strong0) PLL_LOCKG = p_up_tmp;
 
@@ -308,6 +311,7 @@ module glbl ();
     reg GSR_int;
     reg GTS_int;
     reg PRLD_int;
+    reg GRESTORE_int;
 
 //--------   JTAG Globals --------------
     wire JTAG_TDO_GLBL;
@@ -335,6 +339,7 @@ module glbl ();
     assign (strong1, weak0) GSR = GSR_int;
     assign (strong1, weak0) GTS = GTS_int;
     assign (weak1, weak0) PRLD = PRLD_int;
+    assign (strong1, weak0) GRESTORE = GRESTORE_int;
 
     initial begin
 	GSR_int = 1'b1;
@@ -348,6 +353,14 @@ module glbl ();
 	GTS_int = 1'b1;
 	#(TOC_WIDTH)
 	GTS_int = 1'b0;
+    end
+
+    initial begin 
+	GRESTORE_int = 1'b0;
+	#(GRES_START);
+	GRESTORE_int = 1'b1;
+	#(GRES_WIDTH);
+	GRESTORE_int = 1'b0;
     end
 
 endmodule

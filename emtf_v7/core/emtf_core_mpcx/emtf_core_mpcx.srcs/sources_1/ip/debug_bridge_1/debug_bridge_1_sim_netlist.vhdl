@@ -1,10 +1,10 @@
--- Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+-- Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
--- Tool Version: Vivado v.2019.2.1 (lin64) Build 2729669 Thu Dec  5 04:48:12 MST 2019
--- Date        : Tue Jun 30 10:52:15 2020
--- Host        : endcap-tf1.phys.ufl.edu running 64-bit CentOS Linux release 7.8.2003 (Core)
+-- Tool Version: Vivado v.2020.1.1_AR73018 (win64) Build 2960000 Wed Aug  5 22:57:20 MDT 2020
+-- Date        : Fri Nov 13 20:15:03 2020
+-- Host        : uf-eng-srv-1 running 64-bit major release  (build 9200)
 -- Command     : write_vhdl -force -mode funcsim
---               /home/madorsky/cernbox/projects/vivado/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/debug_bridge_1/debug_bridge_1_sim_netlist.vhdl
+--               c:/Users/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/debug_bridge_1/debug_bridge_1_sim_netlist.vhdl
 -- Design      : debug_bridge_1
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -14,7 +14,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 library UNISIM;
 use UNISIM.VCOMPONENTS.ALL;
-entity debug_bridge_1_bd_947f_0 is
+entity debug_bridge_1_bd_947f is
   port (
     S_BSCAN_bscanid_en : in STD_LOGIC;
     S_BSCAN_capture : in STD_LOGIC;
@@ -31,13 +31,13 @@ entity debug_bridge_1_bd_947f_0 is
     clk : in STD_LOGIC
   );
   attribute HW_HANDOFF : string;
-  attribute HW_HANDOFF of debug_bridge_1_bd_947f_0 : entity is "debug_bridge_1.hwdef";
+  attribute HW_HANDOFF of debug_bridge_1_bd_947f : entity is "debug_bridge_1.hwdef";
   attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of debug_bridge_1_bd_947f_0 : entity is "bd_947f_0";
-end debug_bridge_1_bd_947f_0;
+  attribute ORIG_REF_NAME of debug_bridge_1_bd_947f : entity is "bd_947f";
+end debug_bridge_1_bd_947f;
 
-architecture STRUCTURE of debug_bridge_1_bd_947f_0 is
-  component debug_bridge_1_bd_947f_0_lut_buffer_0 is
+architecture STRUCTURE of debug_bridge_1_bd_947f is
+  component debug_bridge_1_bd_947f_lut_buffer_0 is
   port (
     tdi_i : in STD_LOGIC;
     tms_i : in STD_LOGIC;
@@ -64,8 +64,8 @@ architecture STRUCTURE of debug_bridge_1_bd_947f_0 is
     bscanid_en_o : out STD_LOGIC;
     tdo_i : in STD_LOGIC
   );
-  end component debug_bridge_1_bd_947f_0_lut_buffer_0;
-  component debug_bridge_1_bd_947f_0_xsdbm_0 is
+  end component debug_bridge_1_bd_947f_lut_buffer_0;
+  component debug_bridge_1_bd_947f_xsdbm_0 is
   port (
     update : in STD_LOGIC;
     capture : in STD_LOGIC;
@@ -81,7 +81,7 @@ architecture STRUCTURE of debug_bridge_1_bd_947f_0 is
     bscanid_en : in STD_LOGIC;
     clk : in STD_LOGIC
   );
-  end component debug_bridge_1_bd_947f_0_xsdbm_0;
+  end component debug_bridge_1_bd_947f_xsdbm_0;
   signal lut_buffer_m_bscan_BSCANID_EN : STD_LOGIC;
   signal lut_buffer_m_bscan_CAPTURE : STD_LOGIC;
   signal lut_buffer_m_bscan_DRCK : STD_LOGIC;
@@ -95,8 +95,8 @@ architecture STRUCTURE of debug_bridge_1_bd_947f_0 is
   signal lut_buffer_m_bscan_TMS : STD_LOGIC;
   signal lut_buffer_m_bscan_UPDATE : STD_LOGIC;
   attribute X_CORE_INFO : string;
-  attribute X_CORE_INFO of lut_buffer : label is "lut_buffer_v2_0_0_lut_buffer,Vivado 2019.2.1";
-  attribute X_CORE_INFO of xsdbm : label is "xsdbm_v3_0_0_xsdbm,Vivado 2019.2.1";
+  attribute X_CORE_INFO of lut_buffer : label is "lut_buffer_v2_0_0_lut_buffer,Vivado 2020.1.1_AR73018";
+  attribute X_CORE_INFO of xsdbm : label is "xsdbm_v3_0_0_xsdbm,Vivado 2020.1.1_AR73018";
   attribute X_INTERFACE_INFO : string;
   attribute X_INTERFACE_INFO of S_BSCAN_bscanid_en : signal is "xilinx.com:interface:bscan:1.0 S_BSCAN BSCANID_EN";
   attribute X_INTERFACE_INFO of S_BSCAN_capture : signal is "xilinx.com:interface:bscan:1.0 S_BSCAN CAPTURE";
@@ -112,9 +112,9 @@ architecture STRUCTURE of debug_bridge_1_bd_947f_0 is
   attribute X_INTERFACE_INFO of S_BSCAN_update : signal is "xilinx.com:interface:bscan:1.0 S_BSCAN UPDATE";
   attribute X_INTERFACE_INFO of clk : signal is "xilinx.com:signal:clock:1.0 CLK.CLK CLK";
   attribute X_INTERFACE_PARAMETER : string;
-  attribute X_INTERFACE_PARAMETER of clk : signal is "XIL_INTERFACENAME CLK.CLK, CLK_DOMAIN bd_947f_0_clk, FREQ_HZ 100000000, INSERT_VIP 0, PHASE 0.000";
+  attribute X_INTERFACE_PARAMETER of clk : signal is "XIL_INTERFACENAME CLK.CLK, CLK_DOMAIN bd_947f_clk, FREQ_HZ 100000000, FREQ_TOLERANCE_HZ 0, INSERT_VIP 0, PHASE 0.000";
 begin
-lut_buffer: component debug_bridge_1_bd_947f_0_lut_buffer_0
+lut_buffer: component debug_bridge_1_bd_947f_lut_buffer_0
      port map (
       bscanid_en_i => S_BSCAN_bscanid_en,
       bscanid_en_o => lut_buffer_m_bscan_BSCANID_EN,
@@ -141,7 +141,7 @@ lut_buffer: component debug_bridge_1_bd_947f_0_lut_buffer_0
       update_i => S_BSCAN_update,
       update_o => lut_buffer_m_bscan_UPDATE
     );
-xsdbm: component debug_bridge_1_bd_947f_0_xsdbm_0
+xsdbm: component debug_bridge_1_bd_947f_xsdbm_0
      port map (
       bscanid_en => lut_buffer_m_bscan_BSCANID_EN,
       capture => lut_buffer_m_bscan_CAPTURE,
@@ -181,11 +181,11 @@ entity debug_bridge_1 is
   attribute NotValidForBitStream : boolean;
   attribute NotValidForBitStream of debug_bridge_1 : entity is true;
   attribute CHECK_LICENSE_TYPE : string;
-  attribute CHECK_LICENSE_TYPE of debug_bridge_1 : entity is "debug_bridge_1,bd_947f_0,{}";
+  attribute CHECK_LICENSE_TYPE of debug_bridge_1 : entity is "debug_bridge_1,bd_947f,{}";
   attribute DowngradeIPIdentifiedWarnings : string;
   attribute DowngradeIPIdentifiedWarnings of debug_bridge_1 : entity is "yes";
   attribute X_CORE_INFO : string;
-  attribute X_CORE_INFO of debug_bridge_1 : entity is "bd_947f_0,Vivado 2019.2.1";
+  attribute X_CORE_INFO of debug_bridge_1 : entity is "bd_947f,Vivado 2020.1.1_AR73018";
 end debug_bridge_1;
 
 architecture STRUCTURE of debug_bridge_1 is
@@ -206,9 +206,9 @@ architecture STRUCTURE of debug_bridge_1 is
   attribute X_INTERFACE_INFO of S_BSCAN_update : signal is "xilinx.com:interface:bscan:1.0 S_BSCAN UPDATE";
   attribute X_INTERFACE_INFO of clk : signal is "xilinx.com:signal:clock:1.0 CLK.clk CLK";
   attribute X_INTERFACE_PARAMETER : string;
-  attribute X_INTERFACE_PARAMETER of clk : signal is "XIL_INTERFACENAME CLK.clk, FREQ_HZ 100000000, PHASE 0.000, CLK_DOMAIN bd_947f_0_clk, INSERT_VIP 0";
+  attribute X_INTERFACE_PARAMETER of clk : signal is "XIL_INTERFACENAME CLK.clk, FREQ_HZ 100000000, FREQ_TOLERANCE_HZ 0, PHASE 0.000, CLK_DOMAIN bd_947f_clk, INSERT_VIP 0";
 begin
-inst: entity work.debug_bridge_1_bd_947f_0
+inst: entity work.debug_bridge_1_bd_947f
      port map (
       S_BSCAN_bscanid_en => S_BSCAN_bscanid_en,
       S_BSCAN_capture => S_BSCAN_capture,

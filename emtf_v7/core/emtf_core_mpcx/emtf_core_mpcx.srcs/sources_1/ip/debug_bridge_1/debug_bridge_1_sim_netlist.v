@@ -1,10 +1,10 @@
-// Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+// Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
-// Tool Version: Vivado v.2019.2.1 (lin64) Build 2729669 Thu Dec  5 04:48:12 MST 2019
-// Date        : Tue Jun 30 10:52:15 2020
-// Host        : endcap-tf1.phys.ufl.edu running 64-bit CentOS Linux release 7.8.2003 (Core)
+// Tool Version: Vivado v.2020.1.1_AR73018 (win64) Build 2960000 Wed Aug  5 22:57:20 MDT 2020
+// Date        : Fri Nov 13 20:15:03 2020
+// Host        : uf-eng-srv-1 running 64-bit major release  (build 9200)
 // Command     : write_verilog -force -mode funcsim
-//               /home/madorsky/cernbox/projects/vivado/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/debug_bridge_1/debug_bridge_1_sim_netlist.v
+//               c:/Users/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/debug_bridge_1/debug_bridge_1_sim_netlist.v
 // Design      : debug_bridge_1
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -12,7 +12,7 @@
 // --------------------------------------------------------------------------------
 `timescale 1 ps / 1 ps
 
-(* CHECK_LICENSE_TYPE = "debug_bridge_1,bd_947f_0,{}" *) (* DowngradeIPIdentifiedWarnings = "yes" *) (* X_CORE_INFO = "bd_947f_0,Vivado 2019.2.1" *) 
+(* CHECK_LICENSE_TYPE = "debug_bridge_1,bd_947f,{}" *) (* DowngradeIPIdentifiedWarnings = "yes" *) (* X_CORE_INFO = "bd_947f,Vivado 2020.1.1_AR73018" *) 
 (* NotValidForBitStream *)
 module debug_bridge_1
    (clk,
@@ -28,7 +28,7 @@ module debug_bridge_1
     S_BSCAN_tdo,
     S_BSCAN_tms,
     S_BSCAN_update);
-  (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 CLK.clk CLK" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME CLK.clk, FREQ_HZ 100000000, PHASE 0.000, CLK_DOMAIN bd_947f_0_clk, INSERT_VIP 0" *) input clk;
+  (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 CLK.clk CLK" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME CLK.clk, FREQ_HZ 100000000, FREQ_TOLERANCE_HZ 0, PHASE 0.000, CLK_DOMAIN bd_947f_clk, INSERT_VIP 0" *) input clk;
   (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 S_BSCAN BSCANID_EN" *) input S_BSCAN_bscanid_en;
   (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 S_BSCAN CAPTURE" *) input S_BSCAN_capture;
   (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 S_BSCAN DRCK" *) input S_BSCAN_drck;
@@ -57,7 +57,7 @@ module debug_bridge_1
   wire clk;
 
   (* HW_HANDOFF = "debug_bridge_1.hwdef" *) 
-  debug_bridge_1_bd_947f_0 inst
+  debug_bridge_1_bd_947f inst
        (.S_BSCAN_bscanid_en(S_BSCAN_bscanid_en),
         .S_BSCAN_capture(S_BSCAN_capture),
         .S_BSCAN_drck(S_BSCAN_drck),
@@ -73,8 +73,8 @@ module debug_bridge_1
         .clk(clk));
 endmodule
 
-(* HW_HANDOFF = "debug_bridge_1.hwdef" *) (* ORIG_REF_NAME = "bd_947f_0" *) 
-module debug_bridge_1_bd_947f_0
+(* HW_HANDOFF = "debug_bridge_1.hwdef" *) (* ORIG_REF_NAME = "bd_947f" *) 
+module debug_bridge_1_bd_947f
    (S_BSCAN_bscanid_en,
     S_BSCAN_capture,
     S_BSCAN_drck,
@@ -100,7 +100,7 @@ module debug_bridge_1_bd_947f_0
   (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 S_BSCAN TDO" *) output S_BSCAN_tdo;
   (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 S_BSCAN TMS" *) input S_BSCAN_tms;
   (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 S_BSCAN UPDATE" *) input S_BSCAN_update;
-  (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 CLK.CLK CLK" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME CLK.CLK, CLK_DOMAIN bd_947f_0_clk, FREQ_HZ 100000000, INSERT_VIP 0, PHASE 0.000" *) input clk;
+  (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 CLK.CLK CLK" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME CLK.CLK, CLK_DOMAIN bd_947f_clk, FREQ_HZ 100000000, FREQ_TOLERANCE_HZ 0, INSERT_VIP 0, PHASE 0.000" *) input clk;
 
   wire S_BSCAN_bscanid_en;
   wire S_BSCAN_capture;
@@ -128,8 +128,8 @@ module debug_bridge_1_bd_947f_0
   wire lut_buffer_m_bscan_TMS;
   wire lut_buffer_m_bscan_UPDATE;
 
-  (* X_CORE_INFO = "lut_buffer_v2_0_0_lut_buffer,Vivado 2019.2.1" *) 
-  debug_bridge_1_bd_947f_0_lut_buffer_0 lut_buffer
+  (* X_CORE_INFO = "lut_buffer_v2_0_0_lut_buffer,Vivado 2020.1.1_AR73018" *) 
+  debug_bridge_1_bd_947f_lut_buffer_0 lut_buffer
        (.bscanid_en_i(S_BSCAN_bscanid_en),
         .bscanid_en_o(lut_buffer_m_bscan_BSCANID_EN),
         .capture_i(S_BSCAN_capture),
@@ -154,8 +154,8 @@ module debug_bridge_1_bd_947f_0
         .tms_o(lut_buffer_m_bscan_TMS),
         .update_i(S_BSCAN_update),
         .update_o(lut_buffer_m_bscan_UPDATE));
-  (* X_CORE_INFO = "xsdbm_v3_0_0_xsdbm,Vivado 2019.2.1" *) 
-  debug_bridge_1_bd_947f_0_xsdbm_0 xsdbm
+  (* X_CORE_INFO = "xsdbm_v3_0_0_xsdbm,Vivado 2020.1.1_AR73018" *) 
+  debug_bridge_1_bd_947f_xsdbm_0 xsdbm
        (.bscanid_en(lut_buffer_m_bscan_BSCANID_EN),
         .capture(lut_buffer_m_bscan_CAPTURE),
         .clk(clk),
@@ -171,8 +171,8 @@ module debug_bridge_1_bd_947f_0
         .update(lut_buffer_m_bscan_UPDATE));
 endmodule
 
-(* ORIG_REF_NAME = "bd_947f_0_lut_buffer_0" *) (* X_CORE_INFO = "lut_buffer_v2_0_0_lut_buffer,Vivado 2019.2.1" *) 
-module debug_bridge_1_bd_947f_0_lut_buffer_0
+(* ORIG_REF_NAME = "bd_947f_lut_buffer_0" *) (* X_CORE_INFO = "lut_buffer_v2_0_0_lut_buffer,Vivado 2020.1.1_AR73018" *) 
+module debug_bridge_1_bd_947f_lut_buffer_0
    (tdi_i,
     tms_i,
     tck_i,
@@ -225,8 +225,8 @@ module debug_bridge_1_bd_947f_0_lut_buffer_0
 
 endmodule
 
-(* ORIG_REF_NAME = "bd_947f_0_xsdbm_0" *) (* X_CORE_INFO = "xsdbm_v3_0_0_xsdbm,Vivado 2019.2.1" *) 
-module debug_bridge_1_bd_947f_0_xsdbm_0
+(* ORIG_REF_NAME = "bd_947f_xsdbm_0" *) (* X_CORE_INFO = "xsdbm_v3_0_0_xsdbm,Vivado 2020.1.1_AR73018" *) 
+module debug_bridge_1_bd_947f_xsdbm_0
    (update,
     capture,
     reset,
@@ -264,12 +264,15 @@ module glbl ();
 
     parameter ROC_WIDTH = 100000;
     parameter TOC_WIDTH = 0;
+    parameter GRES_WIDTH = 10000;
+    parameter GRES_START = 10000;
 
 //--------   STARTUP Globals --------------
     wire GSR;
     wire GTS;
     wire GWE;
     wire PRLD;
+    wire GRESTORE;
     tri1 p_up_tmp;
     tri (weak1, strong0) PLL_LOCKG = p_up_tmp;
 
@@ -282,6 +285,7 @@ module glbl ();
     reg GSR_int;
     reg GTS_int;
     reg PRLD_int;
+    reg GRESTORE_int;
 
 //--------   JTAG Globals --------------
     wire JTAG_TDO_GLBL;
@@ -309,6 +313,7 @@ module glbl ();
     assign (strong1, weak0) GSR = GSR_int;
     assign (strong1, weak0) GTS = GTS_int;
     assign (weak1, weak0) PRLD = PRLD_int;
+    assign (strong1, weak0) GRESTORE = GRESTORE_int;
 
     initial begin
 	GSR_int = 1'b1;
@@ -322,6 +327,14 @@ module glbl ();
 	GTS_int = 1'b1;
 	#(TOC_WIDTH)
 	GTS_int = 1'b0;
+    end
+
+    initial begin 
+	GRESTORE_int = 1'b0;
+	#(GRES_START);
+	GRESTORE_int = 1'b1;
+	#(GRES_WIDTH);
+	GRESTORE_int = 1'b0;
     end
 
 endmodule

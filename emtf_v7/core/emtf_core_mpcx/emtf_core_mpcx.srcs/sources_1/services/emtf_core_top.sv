@@ -441,7 +441,7 @@ module emtf_core_top
 	wire [8*10-1:0] link_id [4:0]; // csc
 	wire [9*10-1:0] link_id_n; // csc-neighbor
 	wire [7:0] ge11_link_id [6:0]; // ge11 [schamber=link]
-
+	wire [6:0] ge11_rx_header_locked;
 
 	wire [7:0] bc0_u [4:0]; // bc0 flags from each chamber before AF
 	wire [8:0] bc0_u_n; // bc0 flags from neighbor sector
@@ -670,6 +670,7 @@ module emtf_core_top
         .ge11_rx    (ge11_rx), // inputs from serial links
 		.ge11_cl    (ge11_cl), // decoded clusters
 		.link_id    (ge11_link_id), // link IDs
+		.lb_gbt_rx_header_locked (ge11_rx_header_locked),
         .single_hit (gem_single_hit),
         .ph_single  (gem_ph_single),
         .th_single  (gem_th_single),
@@ -975,7 +976,9 @@ module emtf_core_top
 		.link_id_i (link_id_i),
 		.link_id_n_i (link_id_n),
 		.cppf_link_id (cppf_link_id),
+		.ge11_link_id (ge11_link_id),
 		.cppf_crc_match (cppf_crc_match),
+		.ge11_rx_header_locked (ge11_rx_header_locked),
 		.fiber_enable (fiber_enable),
 		.bc0_time_counts_i (bc0_time_counts),
 		.user_af_delays_o (user_af_delays), 

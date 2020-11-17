@@ -5,6 +5,7 @@ module gem_rx
 	mgt_rx.out ge11_rx [6:0],
 	ge11_cluster.out ge11_cl [6:0][1:0][7:0], // [schamber][layer][cluster]
 	output reg [7:0] link_id [6:0], // [schamber=link]
+	output [6:0] lb_gbt_rx_header_locked,
 	output reg single_hit,
     output reg [bw_fph-1:0] ph_single,
     output reg [bw_th-1:0]  th_single,

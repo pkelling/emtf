@@ -47,7 +47,7 @@
 -- DO NOT MODIFY THIS FILE.
 
 -- IP VLNV: xilinx.com:ip:debug_bridge:3.0
--- IP Revision: 5
+-- IP Revision: 6
 
 -- The following code must appear in the VHDL architecture header.
 

@@ -1,10 +1,10 @@
--- Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+-- Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
--- Tool Version: Vivado v.2019.2.1 (lin64) Build 2729669 Thu Dec  5 04:48:12 MST 2019
--- Date        : Tue Jun 23 17:45:13 2020
--- Host        : endcap-tf1.phys.ufl.edu running 64-bit CentOS Linux release 7.8.2003 (Core)
+-- Tool Version: Vivado v.2020.1.1_AR73018 (win64) Build 2960000 Wed Aug  5 22:57:20 MDT 2020
+-- Date        : Fri Nov 13 20:12:11 2020
+-- Host        : uf-eng-srv-1 running 64-bit major release  (build 9200)
 -- Command     : write_vhdl -force -mode funcsim
---               /home/madorsky/cernbox/projects/vivado/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/vio_0/vio_0_sim_netlist.vhdl
+--               c:/Users/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/vio_0/vio_0_sim_netlist.vhdl
 -- Design      : vio_0
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -2016,26 +2016,26 @@ architecture STRUCTURE of vio_0_xsdbs_v1_0_2_xsdbs is
   attribute UUID : string;
   attribute UUID of uuid_stamp : signal is "1";
   attribute SOFT_HLUTNM : string;
-  attribute SOFT_HLUTNM of \reg_do[15]_i_2\ : label is "soft_lutpair9";
+  attribute SOFT_HLUTNM of \reg_do[15]_i_2\ : label is "soft_lutpair1";
   attribute SOFT_HLUTNM of \reg_do[15]_i_4\ : label is "soft_lutpair0";
   attribute SOFT_HLUTNM of \reg_do[9]_i_2\ : label is "soft_lutpair0";
-  attribute SOFT_HLUTNM of \reg_do[9]_i_3\ : label is "soft_lutpair9";
-  attribute SOFT_HLUTNM of \sl_oport_o[0]_INST_0\ : label is "soft_lutpair1";
-  attribute SOFT_HLUTNM of \sl_oport_o[10]_INST_0\ : label is "soft_lutpair6";
-  attribute SOFT_HLUTNM of \sl_oport_o[11]_INST_0\ : label is "soft_lutpair6";
-  attribute SOFT_HLUTNM of \sl_oport_o[12]_INST_0\ : label is "soft_lutpair7";
-  attribute SOFT_HLUTNM of \sl_oport_o[13]_INST_0\ : label is "soft_lutpair7";
-  attribute SOFT_HLUTNM of \sl_oport_o[14]_INST_0\ : label is "soft_lutpair8";
-  attribute SOFT_HLUTNM of \sl_oport_o[15]_INST_0\ : label is "soft_lutpair8";
+  attribute SOFT_HLUTNM of \reg_do[9]_i_3\ : label is "soft_lutpair1";
+  attribute SOFT_HLUTNM of \sl_oport_o[0]_INST_0\ : label is "soft_lutpair2";
+  attribute SOFT_HLUTNM of \sl_oport_o[10]_INST_0\ : label is "soft_lutpair7";
+  attribute SOFT_HLUTNM of \sl_oport_o[11]_INST_0\ : label is "soft_lutpair7";
+  attribute SOFT_HLUTNM of \sl_oport_o[12]_INST_0\ : label is "soft_lutpair8";
+  attribute SOFT_HLUTNM of \sl_oport_o[13]_INST_0\ : label is "soft_lutpair8";
+  attribute SOFT_HLUTNM of \sl_oport_o[14]_INST_0\ : label is "soft_lutpair9";
+  attribute SOFT_HLUTNM of \sl_oport_o[15]_INST_0\ : label is "soft_lutpair9";
   attribute SOFT_HLUTNM of \sl_oport_o[1]_INST_0\ : label is "soft_lutpair2";
-  attribute SOFT_HLUTNM of \sl_oport_o[2]_INST_0\ : label is "soft_lutpair1";
+  attribute SOFT_HLUTNM of \sl_oport_o[2]_INST_0\ : label is "soft_lutpair3";
   attribute SOFT_HLUTNM of \sl_oport_o[3]_INST_0\ : label is "soft_lutpair3";
-  attribute SOFT_HLUTNM of \sl_oport_o[4]_INST_0\ : label is "soft_lutpair2";
-  attribute SOFT_HLUTNM of \sl_oport_o[5]_INST_0\ : label is "soft_lutpair3";
-  attribute SOFT_HLUTNM of \sl_oport_o[6]_INST_0\ : label is "soft_lutpair4";
-  attribute SOFT_HLUTNM of \sl_oport_o[7]_INST_0\ : label is "soft_lutpair4";
-  attribute SOFT_HLUTNM of \sl_oport_o[8]_INST_0\ : label is "soft_lutpair5";
-  attribute SOFT_HLUTNM of \sl_oport_o[9]_INST_0\ : label is "soft_lutpair5";
+  attribute SOFT_HLUTNM of \sl_oport_o[4]_INST_0\ : label is "soft_lutpair4";
+  attribute SOFT_HLUTNM of \sl_oport_o[5]_INST_0\ : label is "soft_lutpair4";
+  attribute SOFT_HLUTNM of \sl_oport_o[6]_INST_0\ : label is "soft_lutpair5";
+  attribute SOFT_HLUTNM of \sl_oport_o[7]_INST_0\ : label is "soft_lutpair5";
+  attribute SOFT_HLUTNM of \sl_oport_o[8]_INST_0\ : label is "soft_lutpair6";
+  attribute SOFT_HLUTNM of \sl_oport_o[9]_INST_0\ : label is "soft_lutpair6";
   attribute DONT_TOUCH_boolean of \uuid_stamp_reg[0]\ : label is std.standard.true;
   attribute KEEP : string;
   attribute KEEP of \uuid_stamp_reg[0]\ : label is "yes";
@@ -10655,6 +10655,8 @@ architecture STRUCTURE of vio_0 is
   attribute DONT_TOUCH of inst : label is std.standard.true;
   attribute DowngradeIPIdentifiedWarnings : string;
   attribute DowngradeIPIdentifiedWarnings of inst : label is "yes";
+  attribute KEEP_HIERARCHY : string;
+  attribute KEEP_HIERARCHY of inst : label is "soft";
   attribute LC_HIGH_BIT_POS_PROBE_OUT0 : string;
   attribute LC_HIGH_BIT_POS_PROBE_OUT0 of inst : label is "16'b0000000000000000";
   attribute LC_HIGH_BIT_POS_PROBE_OUT1 : string;

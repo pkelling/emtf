@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Mon Jun 29 21:05:21 2020" VIVADOVERSION="2019.2.1">
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Fri Nov 13 20:09:50 2020" VIVADOVERSION="2020.1.1_AR73018">
 
-  <SYSTEMINFO ARCH="virtex7" DEVICE="7vx690t" NAME="bd_54be_0" PACKAGE="ffg1927" SPEEDGRADE="-2"/>
+  <SYSTEMINFO ARCH="virtex7" DEVICE="7vx690t" NAME="bd_54be" PACKAGE="ffg1927" SPEEDGRADE="-2"/>
 
   <EXTERNALPORTS>
     <PORT DIR="I" NAME="jtag_tdi" SIGIS="undef" SIGNAME="External_Ports_jtag_tdi">
@@ -39,7 +39,7 @@
         <CONNECTION INSTANCE="bs_switch_0" PORT="drck_0"/>
       </CONNECTIONS>
     </PORT>
-    <PORT DIR="O" NAME="m0_bscan_reset" SIGIS="rst" SIGNAME="bs_switch_0_reset_0">
+    <PORT DIR="O" NAME="m0_bscan_reset" POLARITY="ACTIVE_LOW" SIGIS="rst" SIGNAME="bs_switch_0_reset_0">
       <CONNECTIONS>
         <CONNECTION INSTANCE="bs_switch_0" PORT="reset_0"/>
       </CONNECTIONS>
@@ -114,7 +114,7 @@
         <PARAMETER NAME="C_NUM_BS_MASTER" VALUE="1"/>
         <PARAMETER NAME="C_XDEVICEFAMILY" VALUE="virtex7"/>
         <PARAMETER NAME="C_USER_SCAN_CHAIN" VALUE="1"/>
-        <PARAMETER NAME="Component_Name" VALUE="bd_54be_0_bs_switch_0_0"/>
+        <PARAMETER NAME="Component_Name" VALUE="bd_54be_bs_switch_0_0"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
       </PARAMETERS>
       <PORTS>
@@ -176,62 +176,62 @@
         </PORT>
         <PORT DIR="O" NAME="drck_0" SIGIS="clk" SIGNAME="bs_switch_0_drck_0">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="bd_54be_0_imp" PORT="m0_bscan_drck"/>
+            <CONNECTION INSTANCE="bd_54be_imp" PORT="m0_bscan_drck"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="reset_0" SIGIS="rst" SIGNAME="bs_switch_0_reset_0">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="bd_54be_0_imp" PORT="m0_bscan_reset"/>
+            <CONNECTION INSTANCE="bd_54be_imp" PORT="m0_bscan_reset"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="sel_0" SIGIS="undef" SIGNAME="bs_switch_0_sel_0">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="bd_54be_0_imp" PORT="m0_bscan_sel"/>
+            <CONNECTION INSTANCE="bd_54be_imp" PORT="m0_bscan_sel"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="capture_0" SIGIS="undef" SIGNAME="bs_switch_0_capture_0">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="bd_54be_0_imp" PORT="m0_bscan_capture"/>
+            <CONNECTION INSTANCE="bd_54be_imp" PORT="m0_bscan_capture"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="shift_0" SIGIS="undef" SIGNAME="bs_switch_0_shift_0">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="bd_54be_0_imp" PORT="m0_bscan_shift"/>
+            <CONNECTION INSTANCE="bd_54be_imp" PORT="m0_bscan_shift"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="update_0" SIGIS="clk" SIGNAME="bs_switch_0_update_0">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="bd_54be_0_imp" PORT="m0_bscan_update"/>
+            <CONNECTION INSTANCE="bd_54be_imp" PORT="m0_bscan_update"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="tdi_0" SIGIS="undef" SIGNAME="bs_switch_0_tdi_0">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="bd_54be_0_imp" PORT="m0_bscan_tdi"/>
+            <CONNECTION INSTANCE="bd_54be_imp" PORT="m0_bscan_tdi"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="runtest_0" SIGIS="undef" SIGNAME="bs_switch_0_runtest_0">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="bd_54be_0_imp" PORT="m0_bscan_runtest"/>
+            <CONNECTION INSTANCE="bd_54be_imp" PORT="m0_bscan_runtest"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="tck_0" SIGIS="clk" SIGNAME="bs_switch_0_tck_0">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="bd_54be_0_imp" PORT="m0_bscan_tck"/>
+            <CONNECTION INSTANCE="bd_54be_imp" PORT="m0_bscan_tck"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="tms_0" SIGIS="undef" SIGNAME="bs_switch_0_tms_0">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="bd_54be_0_imp" PORT="m0_bscan_tms"/>
+            <CONNECTION INSTANCE="bd_54be_imp" PORT="m0_bscan_tms"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="bscanid_en_0" SIGIS="undef" SIGNAME="bs_switch_0_bscanid_en_0">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="bd_54be_0_imp" PORT="m0_bscan_bscanid_en"/>
+            <CONNECTION INSTANCE="bd_54be_imp" PORT="m0_bscan_bscanid_en"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" NAME="tdo_0" SIGIS="undef" SIGNAME="bs_switch_0_tdo_0">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="bd_54be_0_imp" PORT="m0_bscan_tdo"/>
+            <CONNECTION INSTANCE="bd_54be_imp" PORT="m0_bscan_tdo"/>
           </CONNECTIONS>
         </PORT>
       </PORTS>
@@ -282,7 +282,7 @@
         <PARAMETER NAME="C_IR_ID_INSTR" VALUE="0"/>
         <PARAMETER NAME="C_IR_USER1_INSTR" VALUE="0"/>
         <PARAMETER NAME="C_USER_SCAN_CHAIN" VALUE="1"/>
-        <PARAMETER NAME="Component_Name" VALUE="bd_54be_0_bsip_0"/>
+        <PARAMETER NAME="Component_Name" VALUE="bd_54be_bsip_0"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
       </PARAMETERS>
       <PORTS>

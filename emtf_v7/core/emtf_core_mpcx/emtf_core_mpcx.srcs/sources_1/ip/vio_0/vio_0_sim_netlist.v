@@ -1,10 +1,10 @@
-// Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+// Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
-// Tool Version: Vivado v.2019.2.1 (lin64) Build 2729669 Thu Dec  5 04:48:12 MST 2019
-// Date        : Tue Jun 23 17:45:13 2020
-// Host        : endcap-tf1.phys.ufl.edu running 64-bit CentOS Linux release 7.8.2003 (Core)
+// Tool Version: Vivado v.2020.1.1_AR73018 (win64) Build 2960000 Wed Aug  5 22:57:20 MDT 2020
+// Date        : Fri Nov 13 20:12:11 2020
+// Host        : uf-eng-srv-1 running 64-bit major release  (build 9200)
 // Command     : write_verilog -force -mode funcsim
-//               /home/madorsky/cernbox/projects/vivado/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/vio_0/vio_0_sim_netlist.v
+//               c:/Users/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/vio_0/vio_0_sim_netlist.v
 // Design      : vio_0
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -1080,6 +1080,7 @@ module vio_0
   (* C_XSDB_SLAVE_TYPE = "33" *) 
   (* DONT_TOUCH *) 
   (* DowngradeIPIdentifiedWarnings = "yes" *) 
+  (* KEEP_HIERARCHY = "soft" *) 
   (* LC_HIGH_BIT_POS_PROBE_OUT0 = "16'b0000000000000000" *) 
   (* LC_HIGH_BIT_POS_PROBE_OUT1 = "16'b0000000000000001" *) 
   (* LC_HIGH_BIT_POS_PROBE_OUT10 = "16'b0000000000001010" *) 
@@ -6090,7 +6091,7 @@ module vio_0_xsdbs_v1_0_2_xsdbs
         .I4(\reg_do[15]_i_6_n_0 ),
         .I5(reg_test[15]),
         .O(reg_do[15]));
-  (* SOFT_HLUTNM = "soft_lutpair9" *) 
+  (* SOFT_HLUTNM = "soft_lutpair1" *) 
   LUT3 #(
     .INIT(8'h45)) 
     \reg_do[15]_i_2 
@@ -6480,7 +6481,7 @@ module vio_0_xsdbs_v1_0_2_xsdbs
         .I3(sl_iport_i[7]),
         .I4(sl_iport_i[9]),
         .O(\reg_do[9]_i_2_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair9" *) 
+  (* SOFT_HLUTNM = "soft_lutpair1" *) 
   LUT3 #(
     .INIT(8'h8A)) 
     \reg_do[9]_i_3 
@@ -6821,14 +6822,14 @@ module vio_0_xsdbs_v1_0_2_xsdbs
         .I4(sl_iport_i[20]),
         .I5(sl_iport_i[19]),
         .O(s_den_o_INST_0_i_1_n_0));
-  (* SOFT_HLUTNM = "soft_lutpair1" *) 
+  (* SOFT_HLUTNM = "soft_lutpair2" *) 
   LUT2 #(
     .INIT(4'hE)) 
     \sl_oport_o[0]_INST_0 
        (.I0(reg_drdy),
         .I1(s_drdy_i),
         .O(sl_oport_o[0]));
-  (* SOFT_HLUTNM = "soft_lutpair6" *) 
+  (* SOFT_HLUTNM = "soft_lutpair7" *) 
   LUT3 #(
     .INIT(8'hB8)) 
     \sl_oport_o[10]_INST_0 
@@ -6836,7 +6837,7 @@ module vio_0_xsdbs_v1_0_2_xsdbs
         .I1(reg_drdy),
         .I2(s_do_i[9]),
         .O(sl_oport_o[10]));
-  (* SOFT_HLUTNM = "soft_lutpair6" *) 
+  (* SOFT_HLUTNM = "soft_lutpair7" *) 
   LUT3 #(
     .INIT(8'hB8)) 
     \sl_oport_o[11]_INST_0 
@@ -6844,7 +6845,7 @@ module vio_0_xsdbs_v1_0_2_xsdbs
         .I1(reg_drdy),
         .I2(s_do_i[10]),
         .O(sl_oport_o[11]));
-  (* SOFT_HLUTNM = "soft_lutpair7" *) 
+  (* SOFT_HLUTNM = "soft_lutpair8" *) 
   LUT3 #(
     .INIT(8'hB8)) 
     \sl_oport_o[12]_INST_0 
@@ -6852,7 +6853,7 @@ module vio_0_xsdbs_v1_0_2_xsdbs
         .I1(reg_drdy),
         .I2(s_do_i[11]),
         .O(sl_oport_o[12]));
-  (* SOFT_HLUTNM = "soft_lutpair7" *) 
+  (* SOFT_HLUTNM = "soft_lutpair8" *) 
   LUT3 #(
     .INIT(8'hB8)) 
     \sl_oport_o[13]_INST_0 
@@ -6860,7 +6861,7 @@ module vio_0_xsdbs_v1_0_2_xsdbs
         .I1(reg_drdy),
         .I2(s_do_i[12]),
         .O(sl_oport_o[13]));
-  (* SOFT_HLUTNM = "soft_lutpair8" *) 
+  (* SOFT_HLUTNM = "soft_lutpair9" *) 
   LUT3 #(
     .INIT(8'hB8)) 
     \sl_oport_o[14]_INST_0 
@@ -6868,7 +6869,7 @@ module vio_0_xsdbs_v1_0_2_xsdbs
         .I1(reg_drdy),
         .I2(s_do_i[13]),
         .O(sl_oport_o[14]));
-  (* SOFT_HLUTNM = "soft_lutpair8" *) 
+  (* SOFT_HLUTNM = "soft_lutpair9" *) 
   LUT3 #(
     .INIT(8'hB8)) 
     \sl_oport_o[15]_INST_0 
@@ -6891,7 +6892,7 @@ module vio_0_xsdbs_v1_0_2_xsdbs
         .I1(reg_drdy),
         .I2(s_do_i[0]),
         .O(sl_oport_o[1]));
-  (* SOFT_HLUTNM = "soft_lutpair1" *) 
+  (* SOFT_HLUTNM = "soft_lutpair3" *) 
   LUT3 #(
     .INIT(8'hB8)) 
     \sl_oport_o[2]_INST_0 
@@ -6907,7 +6908,7 @@ module vio_0_xsdbs_v1_0_2_xsdbs
         .I1(reg_drdy),
         .I2(s_do_i[2]),
         .O(sl_oport_o[3]));
-  (* SOFT_HLUTNM = "soft_lutpair2" *) 
+  (* SOFT_HLUTNM = "soft_lutpair4" *) 
   LUT3 #(
     .INIT(8'hB8)) 
     \sl_oport_o[4]_INST_0 
@@ -6915,7 +6916,7 @@ module vio_0_xsdbs_v1_0_2_xsdbs
         .I1(reg_drdy),
         .I2(s_do_i[3]),
         .O(sl_oport_o[4]));
-  (* SOFT_HLUTNM = "soft_lutpair3" *) 
+  (* SOFT_HLUTNM = "soft_lutpair4" *) 
   LUT3 #(
     .INIT(8'hB8)) 
     \sl_oport_o[5]_INST_0 
@@ -6923,7 +6924,7 @@ module vio_0_xsdbs_v1_0_2_xsdbs
         .I1(reg_drdy),
         .I2(s_do_i[4]),
         .O(sl_oport_o[5]));
-  (* SOFT_HLUTNM = "soft_lutpair4" *) 
+  (* SOFT_HLUTNM = "soft_lutpair5" *) 
   LUT3 #(
     .INIT(8'hB8)) 
     \sl_oport_o[6]_INST_0 
@@ -6931,7 +6932,7 @@ module vio_0_xsdbs_v1_0_2_xsdbs
         .I1(reg_drdy),
         .I2(s_do_i[5]),
         .O(sl_oport_o[6]));
-  (* SOFT_HLUTNM = "soft_lutpair4" *) 
+  (* SOFT_HLUTNM = "soft_lutpair5" *) 
   LUT3 #(
     .INIT(8'hB8)) 
     \sl_oport_o[7]_INST_0 
@@ -6939,7 +6940,7 @@ module vio_0_xsdbs_v1_0_2_xsdbs
         .I1(reg_drdy),
         .I2(s_do_i[6]),
         .O(sl_oport_o[7]));
-  (* SOFT_HLUTNM = "soft_lutpair5" *) 
+  (* SOFT_HLUTNM = "soft_lutpair6" *) 
   LUT3 #(
     .INIT(8'hB8)) 
     \sl_oport_o[8]_INST_0 
@@ -6947,7 +6948,7 @@ module vio_0_xsdbs_v1_0_2_xsdbs
         .I1(reg_drdy),
         .I2(s_do_i[7]),
         .O(sl_oport_o[8]));
-  (* SOFT_HLUTNM = "soft_lutpair5" *) 
+  (* SOFT_HLUTNM = "soft_lutpair6" *) 
   LUT3 #(
     .INIT(8'hB8)) 
     \sl_oport_o[9]_INST_0 
@@ -8116,12 +8117,15 @@ module glbl ();
 
     parameter ROC_WIDTH = 100000;
     parameter TOC_WIDTH = 0;
+    parameter GRES_WIDTH = 10000;
+    parameter GRES_START = 10000;
 
 //--------   STARTUP Globals --------------
     wire GSR;
     wire GTS;
     wire GWE;
     wire PRLD;
+    wire GRESTORE;
     tri1 p_up_tmp;
     tri (weak1, strong0) PLL_LOCKG = p_up_tmp;
 
@@ -8134,6 +8138,7 @@ module glbl ();
     reg GSR_int;
     reg GTS_int;
     reg PRLD_int;
+    reg GRESTORE_int;
 
 //--------   JTAG Globals --------------
     wire JTAG_TDO_GLBL;
@@ -8161,6 +8166,7 @@ module glbl ();
     assign (strong1, weak0) GSR = GSR_int;
     assign (strong1, weak0) GTS = GTS_int;
     assign (weak1, weak0) PRLD = PRLD_int;
+    assign (strong1, weak0) GRESTORE = GRESTORE_int;
 
     initial begin
 	GSR_int = 1'b1;
@@ -8174,6 +8180,14 @@ module glbl ();
 	GTS_int = 1'b1;
 	#(TOC_WIDTH)
 	GTS_int = 1'b0;
+    end
+
+    initial begin 
+	GRESTORE_int = 1'b0;
+	#(GRES_START);
+	GRESTORE_int = 1'b1;
+	#(GRES_WIDTH);
+	GRESTORE_int = 1'b0;
     end
 
 endmodule

@@ -1,10 +1,10 @@
--- Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+-- Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
--- Tool Version: Vivado v.2019.2.1 (lin64) Build 2729669 Thu Dec  5 04:48:12 MST 2019
--- Date        : Wed Aug 12 11:50:43 2020
--- Host        : endcap-tf1.phys.ufl.edu running 64-bit CentOS Linux release 7.8.2003 (Core)
+-- Tool Version: Vivado v.2020.1.1_AR73018 (win64) Build 2960000 Wed Aug  5 22:57:20 MDT 2020
+-- Date        : Fri Nov 13 20:12:12 2020
+-- Host        : uf-eng-srv-1 running 64-bit major release  (build 9200)
 -- Command     : write_vhdl -force -mode funcsim
---               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/mpcx_dbg_vio/mpcx_dbg_vio_sim_netlist.vhdl
+--               c:/Users/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/mpcx_dbg_vio/mpcx_dbg_vio_sim_netlist.vhdl
 -- Design      : mpcx_dbg_vio
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -65,26 +65,26 @@ architecture STRUCTURE of mpcx_dbg_vio_vio_v3_0_19_decoder is
   signal xsdb_drdy_i_1_n_0 : STD_LOGIC;
   signal xsdb_rd : STD_LOGIC;
   attribute SOFT_HLUTNM : string;
-  attribute SOFT_HLUTNM of \Bus_data_out[0]_i_1\ : label is "soft_lutpair17";
-  attribute SOFT_HLUTNM of \Bus_data_out[10]_i_1\ : label is "soft_lutpair15";
+  attribute SOFT_HLUTNM of \Bus_data_out[0]_i_1\ : label is "soft_lutpair19";
+  attribute SOFT_HLUTNM of \Bus_data_out[10]_i_1\ : label is "soft_lutpair14";
   attribute SOFT_HLUTNM of \Bus_data_out[11]_i_1\ : label is "soft_lutpair14";
-  attribute SOFT_HLUTNM of \Bus_data_out[12]_i_1\ : label is "soft_lutpair13";
-  attribute SOFT_HLUTNM of \Bus_data_out[13]_i_1\ : label is "soft_lutpair16";
-  attribute SOFT_HLUTNM of \Bus_data_out[14]_i_1\ : label is "soft_lutpair11";
-  attribute SOFT_HLUTNM of \Bus_data_out[15]_i_1\ : label is "soft_lutpair12";
-  attribute SOFT_HLUTNM of \Bus_data_out[1]_i_1\ : label is "soft_lutpair17";
+  attribute SOFT_HLUTNM of \Bus_data_out[12]_i_1\ : label is "soft_lutpair15";
+  attribute SOFT_HLUTNM of \Bus_data_out[13]_i_1\ : label is "soft_lutpair15";
+  attribute SOFT_HLUTNM of \Bus_data_out[14]_i_1\ : label is "soft_lutpair16";
+  attribute SOFT_HLUTNM of \Bus_data_out[15]_i_1\ : label is "soft_lutpair16";
+  attribute SOFT_HLUTNM of \Bus_data_out[1]_i_1\ : label is "soft_lutpair19";
   attribute SOFT_HLUTNM of \Bus_data_out[4]_i_1\ : label is "soft_lutpair11";
-  attribute SOFT_HLUTNM of \Bus_data_out[5]_i_1\ : label is "soft_lutpair12";
-  attribute SOFT_HLUTNM of \Bus_data_out[6]_i_1\ : label is "soft_lutpair13";
-  attribute SOFT_HLUTNM of \Bus_data_out[7]_i_1\ : label is "soft_lutpair14";
-  attribute SOFT_HLUTNM of \Bus_data_out[8]_i_1\ : label is "soft_lutpair15";
-  attribute SOFT_HLUTNM of \Bus_data_out[9]_i_1\ : label is "soft_lutpair16";
+  attribute SOFT_HLUTNM of \Bus_data_out[5]_i_1\ : label is "soft_lutpair11";
+  attribute SOFT_HLUTNM of \Bus_data_out[6]_i_1\ : label is "soft_lutpair12";
+  attribute SOFT_HLUTNM of \Bus_data_out[7]_i_1\ : label is "soft_lutpair12";
+  attribute SOFT_HLUTNM of \Bus_data_out[8]_i_1\ : label is "soft_lutpair13";
+  attribute SOFT_HLUTNM of \Bus_data_out[9]_i_1\ : label is "soft_lutpair13";
   attribute SOFT_HLUTNM of clear_int_i_1 : label is "soft_lutpair18";
   attribute SOFT_HLUTNM of committ_int_i_1 : label is "soft_lutpair18";
-  attribute SOFT_HLUTNM of rd_en_p1_i_1 : label is "soft_lutpair19";
+  attribute SOFT_HLUTNM of rd_en_p1_i_1 : label is "soft_lutpair17";
   attribute SOFT_HLUTNM of \wr_en[2]_i_2\ : label is "soft_lutpair10";
   attribute SOFT_HLUTNM of \wr_en[4]_i_2\ : label is "soft_lutpair10";
-  attribute SOFT_HLUTNM of xsdb_drdy_i_1 : label is "soft_lutpair19";
+  attribute SOFT_HLUTNM of xsdb_drdy_i_1 : label is "soft_lutpair17";
 begin
   SR(0) <= \^sr\(0);
   in0 <= \^in0\;
@@ -1539,26 +1539,26 @@ architecture STRUCTURE of mpcx_dbg_vio_xsdbs_v1_0_2_xsdbs is
   attribute UUID : string;
   attribute UUID of uuid_stamp : signal is "1";
   attribute SOFT_HLUTNM : string;
-  attribute SOFT_HLUTNM of \reg_do[15]_i_2\ : label is "soft_lutpair9";
+  attribute SOFT_HLUTNM of \reg_do[15]_i_2\ : label is "soft_lutpair1";
   attribute SOFT_HLUTNM of \reg_do[15]_i_4\ : label is "soft_lutpair0";
   attribute SOFT_HLUTNM of \reg_do[9]_i_2\ : label is "soft_lutpair0";
-  attribute SOFT_HLUTNM of \reg_do[9]_i_3\ : label is "soft_lutpair9";
-  attribute SOFT_HLUTNM of \sl_oport_o[0]_INST_0\ : label is "soft_lutpair1";
-  attribute SOFT_HLUTNM of \sl_oport_o[10]_INST_0\ : label is "soft_lutpair6";
-  attribute SOFT_HLUTNM of \sl_oport_o[11]_INST_0\ : label is "soft_lutpair6";
-  attribute SOFT_HLUTNM of \sl_oport_o[12]_INST_0\ : label is "soft_lutpair7";
-  attribute SOFT_HLUTNM of \sl_oport_o[13]_INST_0\ : label is "soft_lutpair7";
-  attribute SOFT_HLUTNM of \sl_oport_o[14]_INST_0\ : label is "soft_lutpair8";
-  attribute SOFT_HLUTNM of \sl_oport_o[15]_INST_0\ : label is "soft_lutpair8";
+  attribute SOFT_HLUTNM of \reg_do[9]_i_3\ : label is "soft_lutpair1";
+  attribute SOFT_HLUTNM of \sl_oport_o[0]_INST_0\ : label is "soft_lutpair2";
+  attribute SOFT_HLUTNM of \sl_oport_o[10]_INST_0\ : label is "soft_lutpair7";
+  attribute SOFT_HLUTNM of \sl_oport_o[11]_INST_0\ : label is "soft_lutpair7";
+  attribute SOFT_HLUTNM of \sl_oport_o[12]_INST_0\ : label is "soft_lutpair8";
+  attribute SOFT_HLUTNM of \sl_oport_o[13]_INST_0\ : label is "soft_lutpair8";
+  attribute SOFT_HLUTNM of \sl_oport_o[14]_INST_0\ : label is "soft_lutpair9";
+  attribute SOFT_HLUTNM of \sl_oport_o[15]_INST_0\ : label is "soft_lutpair9";
   attribute SOFT_HLUTNM of \sl_oport_o[1]_INST_0\ : label is "soft_lutpair2";
-  attribute SOFT_HLUTNM of \sl_oport_o[2]_INST_0\ : label is "soft_lutpair1";
+  attribute SOFT_HLUTNM of \sl_oport_o[2]_INST_0\ : label is "soft_lutpair3";
   attribute SOFT_HLUTNM of \sl_oport_o[3]_INST_0\ : label is "soft_lutpair3";
-  attribute SOFT_HLUTNM of \sl_oport_o[4]_INST_0\ : label is "soft_lutpair2";
-  attribute SOFT_HLUTNM of \sl_oport_o[5]_INST_0\ : label is "soft_lutpair3";
-  attribute SOFT_HLUTNM of \sl_oport_o[6]_INST_0\ : label is "soft_lutpair4";
-  attribute SOFT_HLUTNM of \sl_oport_o[7]_INST_0\ : label is "soft_lutpair4";
-  attribute SOFT_HLUTNM of \sl_oport_o[8]_INST_0\ : label is "soft_lutpair5";
-  attribute SOFT_HLUTNM of \sl_oport_o[9]_INST_0\ : label is "soft_lutpair5";
+  attribute SOFT_HLUTNM of \sl_oport_o[4]_INST_0\ : label is "soft_lutpair4";
+  attribute SOFT_HLUTNM of \sl_oport_o[5]_INST_0\ : label is "soft_lutpair4";
+  attribute SOFT_HLUTNM of \sl_oport_o[6]_INST_0\ : label is "soft_lutpair5";
+  attribute SOFT_HLUTNM of \sl_oport_o[7]_INST_0\ : label is "soft_lutpair5";
+  attribute SOFT_HLUTNM of \sl_oport_o[8]_INST_0\ : label is "soft_lutpair6";
+  attribute SOFT_HLUTNM of \sl_oport_o[9]_INST_0\ : label is "soft_lutpair6";
   attribute DONT_TOUCH_boolean of \uuid_stamp_reg[0]\ : label is std.standard.true;
   attribute KEEP : string;
   attribute KEEP of \uuid_stamp_reg[0]\ : label is "yes";
@@ -4489,11 +4489,11 @@ architecture STRUCTURE of mpcx_dbg_vio_vio_v3_0_19_probe_out_all is
   attribute KEEP of Committ_2_reg : label is "yes";
   attribute SOFT_HLUTNM : string;
   attribute SOFT_HLUTNM of \G_PROBE_OUT[0].wr_probe_out[0]_i_2\ : label is "soft_lutpair24";
-  attribute SOFT_HLUTNM of \G_PROBE_OUT[1].wr_probe_out[1]_i_1\ : label is "soft_lutpair25";
+  attribute SOFT_HLUTNM of \G_PROBE_OUT[1].wr_probe_out[1]_i_1\ : label is "soft_lutpair24";
   attribute SOFT_HLUTNM of \G_PROBE_OUT[2].wr_probe_out[2]_i_2\ : label is "soft_lutpair23";
   attribute SOFT_HLUTNM of \G_PROBE_OUT[3].wr_probe_out[3]_i_2\ : label is "soft_lutpair23";
   attribute SOFT_HLUTNM of \G_PROBE_OUT[4].wr_probe_out[4]_i_1\ : label is "soft_lutpair25";
-  attribute SOFT_HLUTNM of \G_PROBE_OUT[5].wr_probe_out[5]_i_1\ : label is "soft_lutpair24";
+  attribute SOFT_HLUTNM of \G_PROBE_OUT[5].wr_probe_out[5]_i_1\ : label is "soft_lutpair25";
 begin
   \G_PROBE_OUT[0].wr_probe_out[0]_i_4_0\ <= \^g_probe_out[0].wr_probe_out[0]_i_4_0\;
   \G_PROBE_OUT[0].wr_probe_out[0]_i_5_0\ <= \^g_probe_out[0].wr_probe_out[0]_i_5_0\;
@@ -10459,6 +10459,8 @@ architecture STRUCTURE of mpcx_dbg_vio is
   attribute DONT_TOUCH of inst : label is std.standard.true;
   attribute DowngradeIPIdentifiedWarnings : string;
   attribute DowngradeIPIdentifiedWarnings of inst : label is "yes";
+  attribute KEEP_HIERARCHY : string;
+  attribute KEEP_HIERARCHY of inst : label is "soft";
   attribute LC_HIGH_BIT_POS_PROBE_OUT0 : string;
   attribute LC_HIGH_BIT_POS_PROBE_OUT0 of inst : label is "16'b0000000000000010";
   attribute LC_HIGH_BIT_POS_PROBE_OUT1 : string;
