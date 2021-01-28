@@ -150,6 +150,7 @@ module emtf_core_top
 	assign r_out_or = r_out[0] | r_out[1] | r_out[2]; // read data mux for registers
 	wire pt_busy;
 	wire lat_test;
+    wire [63:0] ge11_link_status;
 	
 	wire [63:0] control_reg; // control register
 	wire soft_reset           = control_reg[0]; // GTH reset in MPCs 
@@ -178,6 +179,7 @@ module emtf_core_top
     wire pcie_or_cnt_reset    = control_reg[22]; // TTC commands via PCIE, for debugging
     wire pcie_ev_cnt_reset    = control_reg[23];
     wire pcie_bc0             = control_reg[24];
+    wire ge11_link_reset      = control_reg[25];
     
     
 	wire [8:0] daq_delay; // daq delay line depth
@@ -441,7 +443,6 @@ module emtf_core_top
 	wire [8*10-1:0] link_id [4:0]; // csc
 	wire [9*10-1:0] link_id_n; // csc-neighbor
 	wire [7:0] ge11_link_id [6:0]; // ge11 [schamber=link]
-	wire [6:0] ge11_rx_header_locked;
 
 	wire [7:0] bc0_u [4:0]; // bc0 flags from each chamber before AF
 	wire [8:0] bc0_u_n; // bc0 flags from neighbor sector
@@ -665,15 +666,17 @@ module emtf_core_top
         .fiber_enable (fiber_enable[49 +: 7])
     );
 
+
     gem_rx gem_rx_i
     (
         .ge11_rx    (ge11_rx), // inputs from serial links
 		.ge11_cl    (ge11_cl), // decoded clusters
 		.link_id    (ge11_link_id), // link IDs
-		.lb_gbt_rx_header_locked (ge11_rx_header_locked),
         .single_hit (gem_single_hit),
         .ph_single  (gem_ph_single),
         .th_single  (gem_th_single),
+        .logic_reset      (ge11_link_reset),
+        .ge11_link_status (ge11_link_status),
         .clk40      (clk40)
     );  
 	
@@ -978,7 +981,7 @@ module emtf_core_top
 		.cppf_link_id (cppf_link_id),
 		.ge11_link_id (ge11_link_id),
 		.cppf_crc_match (cppf_crc_match),
-		.ge11_rx_header_locked (ge11_rx_header_locked),
+        .ge11_link_status (ge11_link_status),
 		.fiber_enable (fiber_enable),
 		.bc0_time_counts_i (bc0_time_counts),
 		.user_af_delays_o (user_af_delays), 

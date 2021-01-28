@@ -19,7 +19,7 @@ module register_bank
 	input [9*10-1:0] link_id_n_i,
 	input [7:0] cppf_link_id [6:0],
 	input [7:0] ge11_link_id [6:0], // ge11 [schamber=link]
-    input [6:0] ge11_rx_header_locked,
+    input [63:0] ge11_link_status,
 	input [6:0] cppf_crc_match,
 	output reg [63:0] fiber_enable, 
 	input [7:0] bc0_time_counts_i [48:0],
@@ -374,7 +374,6 @@ module register_bank
     };
     wire [63:0] ge11_link_id_comb = 
     {
-        ge11_rx_header_locked,
         ge11_link_id[6],
         ge11_link_id[5],
         ge11_link_id[4],
@@ -590,6 +589,7 @@ module register_bank
                 9'h06c: begin r_out = r_out | manual_delay_id1_64[3]; end
                 9'h06d: begin r_out = r_out | manual_delay_id1_64[4]; end
 				9'h06e: begin r_out = r_out | ge11_link_id_comb; end 
+				9'h06f: begin r_out = r_out | ge11_link_status; end 
 			endcase
 			in_delay_tap_rb_r = in_delay_tap_rb;
 			out_delay_tap_rb_r = out_delay_tap_rb;

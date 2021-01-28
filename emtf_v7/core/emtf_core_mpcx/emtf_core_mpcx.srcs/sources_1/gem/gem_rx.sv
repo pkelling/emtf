@@ -5,42 +5,46 @@ module gem_rx
 	mgt_rx.out ge11_rx [6:0],
 	ge11_cluster.out ge11_cl [6:0][1:0][7:0], // [schamber][layer][cluster]
 	output reg [7:0] link_id [6:0], // [schamber=link]
-	output [6:0] lb_gbt_rx_header_locked,
 	output reg single_hit,
     output reg [bw_fph-1:0] ph_single,
     output reg [bw_th-1:0]  th_single,
+    input logic_reset,
+    output [63:0] ge11_link_status,
 	input clk40
 );
 
 `include "spbits.sv"
 
-	wire logic_reset; // vio
-    wire tx_ready, rx_ready; // vio for now
+    wire tx_ready = 1'b1; 
+    wire rx_ready = 1'b1; 
 
-    (* mark_debug *) wire [6:0] lb_gbt_tx_ready            ;
-                     wire [6:0] lb_gbt_tx_had_not_ready    ;
-    (* mark_debug *) wire [6:0] lb_gbt_rx_ready            ;
-                     wire [6:0] lb_gbt_rx_had_not_ready    ;
-    (* mark_debug *) wire [6:0] lb_gbt_rx_header_locked    ;
-                     wire [6:0] lb_gbt_rx_header_had_unlock;
-                     wire [6:0] lb_gbt_rx_gearbox_ready    ;
-    (* mark_debug *) wire [6:0] lb_gbt_correction_flag     ;
-    (* mark_debug *) wire [15:0] lb_gbt_correction_cnt [6:0]      ;
+    wire [6:0] lb_gbt_tx_ready             ;
+    wire [6:0] lb_gbt_tx_had_not_ready     ;
+    wire [6:0] lb_gbt_rx_ready             ;
+    wire [6:0] lb_gbt_rx_had_not_ready     ;
+    wire [6:0] lb_gbt_rx_header_had_unlock ;
+    wire [6:0] lb_gbt_rx_gearbox_ready     ;
+    wire [6:0] lb_gbt_correction_flag      ;
+    (* mark_debug *) wire [6:0] lb_gbt_rx_header_locked     ;
+    wire [15:0] lb_gbt_correction_cnt [6:0];
+    
+    assign ge11_link_status = 
+    {
+        lb_gbt_tx_ready             ,
+        lb_gbt_tx_had_not_ready     ,
+        lb_gbt_rx_ready             ,
+        lb_gbt_rx_had_not_ready     ,
+        lb_gbt_rx_header_had_unlock ,
+        lb_gbt_rx_gearbox_ready     ,
+        lb_gbt_correction_flag      ,
+        lb_gbt_rx_header_locked
+    };
 
 
     (* mark_debug *) wire [233:0] lb_gbt_rx_frame[6:0] ;
     reg  [233:0] lb_gbt_rx_frame_r[6:0] ;
     reg  [233:0] r [11:0][6:0] ;
 
-    vio_0 vio_i 
-    (
-        .clk        (clk40),                // input wire clk
-        .probe_in0  (lb_gbt_rx_ready),    // input wire [0 : 0] probe_in0
-        .probe_out0 (logic_reset),  // output wire [0 : 0] probe_out0
-        .probe_out1 (tx_ready),  // output wire [0 : 0] probe_out1
-        .probe_out2 (rx_ready)  // output wire [0 : 0] probe_out2
-    );
-    
     (* mark_debug *) wire [6:0] bc0; //[schamber]
     (* mark_debug *) wire [6:0] link_id_flag; // [schamber]
 	wire [7:0] link_id_val [6:0]; // [schamber]
@@ -85,7 +89,7 @@ module gem_rx
                     for (k = 0; k < 8; k++) // cluster loop
                     begin
                     
-                        if (cluster[i][j][k] != 14'h3fff) // valid cluster
+                        if (cluster[i][j][k][7:0] != 8'hff) // valid cluster
                         begin
                             // GE11 cluster format:
                             // [7:0] - strip 0..191, 0xff is invalid
@@ -105,7 +109,7 @@ module gem_rx
 							ge11_cl[i][j][k].prt = cluster[i][j][k][10:8];
 							ge11_cl[i][j][k].csz = cluster[i][j][k][13:11];
 							// cluster valid if strip code is not 'hff
-							ge11_cl[i][j][k].vf  = cluster[i][j][k][7:0] != 8'hff;
+							ge11_cl[i][j][k].vf  = 1'b1;
                         
                             ph_single = {i[2:0], cluster[i][j][k][7:0]}; // chamber and strip number as phy
                             th_single = {i[2:0], cluster[i][j][k][10:8]}; // chamber and partition as theta
@@ -120,7 +124,7 @@ module gem_rx
 				link_id[i] = link_id_val[i];
 			end
         end
-
+/*
         if (rx_ready == 1'b0)
         begin
             for (i = 0; i < 11; i++)
@@ -138,6 +142,8 @@ module gem_rx
             
             r[11] = lb_gbt_rx_frame;
         end
+*/        
+        lb_gbt_rx_frame_r = lb_gbt_rx_frame;
     end
 
     genvar gi, gj, gk;
