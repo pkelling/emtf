@@ -3,6 +3,7 @@ module mpcx_rx
     mgt_rx.out mgtrx,
     output [75:0] rx_data_76, // deframed data word
     input rx_fa_reset, // reset frame alignment and everything else
+    input fiber_enable,
     input clk40, // clk40 and clk320 must have relative phase=0
     input clk320, // clk320 generated from or together with clk40 
     input pcie_clk
@@ -123,7 +124,8 @@ module mpcx_rx
          rx_r = rx_data_38_ds;
     end
 
-    
+    wire [75:0] rx_data_76_preen;
+    assign rx_data_76 = (fiber_enable == 1'b1) ? rx_data_76_preen : 76'b0;
     // clock domain crossing
     rx_reclock rxr
     (
@@ -131,7 +133,7 @@ module mpcx_rx
         .rx_header      (rx_header_r),
         .rx_clk         (mgtrx.rxoutclk), // mgt rx clock
         
-        .rx_data_76_o (rx_data_76), // at fabric clk domain
+        .rx_data_76_o (rx_data_76_preen), // at fabric clk domain
         .clk40      (clk40), // fabric clk
         .clk320     (clk320)  // fabric clk x 8
     );
