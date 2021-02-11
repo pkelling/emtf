@@ -10,6 +10,7 @@ module gem_rx
     output reg [bw_th-1:0]  th_single,
     input logic_reset,
     output [63:0] ge11_link_status,
+    output [15:0] correction_cnt [6:0],
 	input clk40
 );
 
@@ -24,9 +25,10 @@ module gem_rx
     wire [6:0] lb_gbt_rx_had_not_ready     ;
     wire [6:0] lb_gbt_rx_header_had_unlock ;
     wire [6:0] lb_gbt_rx_gearbox_ready     ;
-    wire [6:0] lb_gbt_correction_flag      ;
+    (* mark_debug *) wire [6:0] lb_gbt_correction_flag      ;
     (* mark_debug *) wire [6:0] lb_gbt_rx_header_locked     ;
-    wire [15:0] lb_gbt_correction_cnt [6:0];
+    (* mark_debug *) wire [15:0] lb_gbt_correction_cnt [6:0];
+    assign correction_cnt = lb_gbt_correction_cnt;
     
     assign ge11_link_status = 
     {

@@ -648,7 +648,7 @@ module emtf_core_top
     (* mark_debug = "FALSE" *) wire  [6:0] cppf_rx_valid; // rx data valid flags
     (* mark_debug = "FALSE" *) wire [7:0] cppf_link_id [6:0];
     wire [6:0] cppf_crc_match;
-    
+    wire [15:0] ge11_correction_cnt [6:0];
 
     cppf_links cppfl
     (
@@ -677,6 +677,7 @@ module emtf_core_top
         .th_single  (gem_th_single),
         .logic_reset      (ge11_link_reset),
         .ge11_link_status (ge11_link_status),
+        .correction_cnt   (ge11_correction_cnt),
         .clk40      (clk40)
     );  
 	
@@ -1048,7 +1049,9 @@ module emtf_core_top
         .jtag_tdo_vector (jtag_tdo_vector),
 
 		.automatic_delay_id1 (automatic_delay_id1),
-		.manual_delay_id1    (manual_delay_id1)
+		.manual_delay_id1    (manual_delay_id1),
+		.ge11_correction_cnt (ge11_correction_cnt)
+
     );
 
 	wire [8*5+9-1:0] bc0_mrg;

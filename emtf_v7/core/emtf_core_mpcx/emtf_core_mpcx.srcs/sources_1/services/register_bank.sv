@@ -96,7 +96,8 @@ module register_bank
     input      [31 : 0 ] jtag_tdo_vector, 
 
     input      [4:0] automatic_delay_id1 [4:0][7:0], // [station][cscid=1 data fragment]
-    output reg [4:0] manual_delay_id1 [4:0][7:0] // [station][cscid=1 data fragment] 
+    output reg [4:0] manual_delay_id1 [4:0][7:0], // [station][cscid=1 data fragment] 
+    input      [15:0] ge11_correction_cnt [6:0]
 
 );
 
@@ -448,6 +449,10 @@ module register_bank
         err_tst_pat_flag[0]
     };
 
+    wire [63:0] ge11_corr_cnt [1:0];
+    assign ge11_corr_cnt[0] = {ge11_correction_cnt[3], ge11_correction_cnt[2], ge11_correction_cnt[1], ge11_correction_cnt[0]};
+    assign ge11_corr_cnt[1] = {16'hbabe,               ge11_correction_cnt[6], ge11_correction_cnt[5], ge11_correction_cnt[4]};
+
 	// OR mux for output data
 	always @(posedge control_clk)
 //    always @(*)
@@ -590,6 +595,8 @@ module register_bank
                 9'h06d: begin r_out = r_out | manual_delay_id1_64[4]; end
 				9'h06e: begin r_out = r_out | ge11_link_id_comb; end 
 				9'h06f: begin r_out = r_out | ge11_link_status; end 
+				9'h070: begin r_out = r_out | ge11_corr_cnt[0]; end 
+				9'h071: begin r_out = r_out | ge11_corr_cnt[1]; end 
 			endcase
 			in_delay_tap_rb_r = in_delay_tap_rb;
 			out_delay_tap_rb_r = out_delay_tap_rb;
@@ -597,8 +604,18 @@ module register_bank
 		
     end
         
-        // firmware timestamp 
-    // need to set -g USR_ACCESS option to TIMESTAMP in BitGen settings
+    // firmware timestamp 
+    // ISE: set -g USR_ACCESS option to TIMESTAMP in BitGen settings
+    // Vivado: set_property BITSTREAM.CONFIG.USR_ACCESS TIMESTAMP [current_design]
+    // ddddd_MMMM_yyyyyy_hhhhh_mmmmmm_ssssss
+    // (bit 31) .. (bit 0)
+    // Where:
+    //  ddddd = 5 bits to represent 31 days in a month
+    //   MMMM = 4 bits to represent 12 months in a year
+    // yyyyyy = 6 bits to represent 0 to 63 (to note year 2000 to 2063)
+    //  hhhhh = 5 bits to represent 24 hours in a day
+    // mmmmmm = 6 bits to represent 60 minutes in an hour
+    // ssssss = 6 bits to represent 60 seconds in a minute
 	USR_ACCESSE2 usr_access
 	(
 		.DATA ( fw_date ),

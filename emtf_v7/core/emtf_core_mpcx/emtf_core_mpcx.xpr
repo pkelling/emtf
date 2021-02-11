@@ -1424,13 +1424,6 @@
           <Attr Name="UsedIn" Val="implementation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/constrs_1/emtf/mtf7_core_debug.xdc">
-        <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../../../../cernbox/projects/vivado/emtf_v7/core/emtf_core_mbld/emtf_core_mbld.srcs/constrs_1/emtf/mtf7_core_debug.xdc"/>
-          <Attr Name="ImportTime" Val="1592234089"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-        </FileInfo>
-      </File>
       <File Path="$PSRCDIR/constrs_1/emtf/mtf7_core_impl.xdc">
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../../cernbox/projects/vivado/emtf_v7/core/emtf_core_mbld/emtf_core_mbld.srcs/constrs_1/emtf/mtf7_core_impl.xdc"/>
@@ -1449,6 +1442,13 @@
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../../cernbox/projects/vivado/emtf_v7/core/emtf_core_mbld/emtf_core_mbld.srcs/constrs_1/emtf/mtf7_core_synth.xdc"/>
           <Attr Name="ImportTime" Val="1586832872"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/constrs_1/emtf/mtf7_core_debug.xdc">
+        <FileInfo>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../../../cernbox/projects/vivado/emtf_v7/core/emtf_core_mbld/emtf_core_mbld.srcs/constrs_1/emtf/mtf7_core_debug.xdc"/>
+          <Attr Name="ImportTime" Val="1592234089"/>
           <Attr Name="UsedIn" Val="implementation"/>
         </FileInfo>
       </File>
@@ -1621,11 +1621,11 @@
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
-        <CompFileExtendedInfo CompFileName="debug_bridge_0.xci" FileRelPathName="ip/ip_1/bd_54be_bs_switch_0_0.xci">
-          <Proxy FileSetName="bd_54be_bs_switch_0_0"/>
-        </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="debug_bridge_0.xci" FileRelPathName="ip/ip_0/bd_54be_bsip_0.xci">
           <Proxy FileSetName="bd_54be_bsip_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="debug_bridge_0.xci" FileRelPathName="ip/ip_1/bd_54be_bs_switch_0_0.xci">
+          <Proxy FileSetName="bd_54be_bs_switch_0_0"/>
         </CompFileExtendedInfo>
       </File>
       <Config>
