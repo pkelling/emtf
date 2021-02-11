@@ -25,7 +25,7 @@ bool prbs_counter_reset, prbs_force_error;
 uint64_t prbs_type;
 string fname, fname_control, mpc_data_fn;
 bool gth_reset, clink_reset, mpc_enable, spy_addr_reset, ptlut_clk_reset, sync_clk_reset, rx_buffers_reset, daq_reset, ptlut_clk_kill, force_oos;
-bool orbit_ev_bx;
+bool orbit_ev_bx, gem_logic;
 int gtx_rate;
 int module_index;
 int mpc_test_index, iterations, ptlut_rx_clk_delay_val;
@@ -45,7 +45,8 @@ int prbs_errors_main(string command);
 int prbs_mpc_enable(int prbs_type);
 int resets_main(bool gth_reset, bool clink_reset, bool mpc_enable, bool spy_addr_reset,
                 bool ptlut_clk_reset, bool sync_clk_reset, bool rx_buffers_reset, bool daq_reset,
-                bool ptlut_clk_kill, bool force_oos, bool orbit_ev_bx, int endcap[13], int sector[13]);
+                bool ptlut_clk_kill, bool force_oos, bool orbit_ev_bx, bool gem_logic,
+				int endcap[13], int sector[13]);
 
 //int gtx_bitrate(string command, uint64_t rate);
 int fill_buffer_mem(int module_index);
@@ -216,7 +217,8 @@ protected:
                 // send resets
                 resets_main(gth_reset, clink_reset, mpc_enable, spy_addr_reset,
                             ptlut_clk_reset, sync_clk_reset, rx_buffers_reset, daq_reset,
-                            ptlut_clk_kill, force_oos, orbit_ev_bx, endcap_lut, sector_lut);
+                            ptlut_clk_kill, force_oos, orbit_ev_bx, gem_logic,
+							endcap_lut, sector_lut);
                 break;
 	       
             case 'w':
@@ -443,6 +445,7 @@ sp12_qtw::sp12_qtw(QWidget *parent) :
     ui->reset_list->addItem("PTclk kill");
     ui->reset_list->addItem("Force OOS");
     ui->reset_list->addItem("OrbEvBx");
+    ui->reset_list->addItem("GEM logic");
 
     ui->reset_list->setCurrentRow(1);
 
@@ -753,21 +756,23 @@ void sp12_qtw::on_send_reset_button_released()
     ptlut_clk_kill = false;
     force_oos = false;
 	orbit_ev_bx = false;
+	gem_logic = false;
 
     foreach(QModelIndex index, indexes)
     {
         switch(index.row())
         {
-        case 0: gth_reset = true; break;
-        case 1: clink_reset = true; break;
-        case 2: ptlut_clk_reset = true; break;
-        case 3: sync_clk_reset = true; break;
-        case 4: rx_buffers_reset = true; break;
-        case 5: daq_reset = true; break;
-        case 6: spy_addr_reset = true; break;
-        case 7: ptlut_clk_kill = true; break;
-        case 8: force_oos = true; break;
-        case 9: orbit_ev_bx = true; break;
+        case 0:  gth_reset = true; break;
+        case 1:  clink_reset = true; break;
+        case 2:  ptlut_clk_reset = true; break;
+        case 3:  sync_clk_reset = true; break;
+        case 4:  rx_buffers_reset = true; break;
+        case 5:  daq_reset = true; break;
+        case 6:  spy_addr_reset = true; break;
+        case 7:  ptlut_clk_kill = true; break;
+        case 8:  force_oos = true; break;
+        case 9:  orbit_ev_bx = true; break;
+        case 10: gem_logic = true; break;
         }
     }
 
@@ -1623,8 +1628,13 @@ void sp12_qtw::on_read_delays_pb_released()
 	  gmt_delay = (value & 0x7ff80000000000ULL) >> 43; // clean up gmt delay
 	  auto_af = (value >> 19) & 1ULL;
 
-	  log_printf("reading delays: BC0: %d, DAQ: %d GMT: %d auto_af: %d\n", 
-		     (int)bc0_delay, (int) daq_delay, (int) gmt_delay, (int) auto_af);
+            value = 0;
+            uint32_t saddr_d = REG_MEM_BASE + (ch << 12) + (0x32 << 3); // core_config register
+            mread(device_d, &value, 8, saddr_d);
+            int single_delay = (value >> 24)&7ULL;
+			int single_en = (value >> 12) & 1ULL;
+	  log_printf("reading delays: BC0: %d, DAQ: %d GMT: %d auto_af: %d single_del: %d single_en: %d\n", 
+		     (int)bc0_delay, (int) daq_delay, (int) gmt_delay, (int) auto_af, single_delay, single_en);
 
 	}
     }

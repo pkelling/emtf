@@ -14,7 +14,8 @@ int reset_core_link(int fd, int endcap, int sector);
 
 int resets_main(bool gth_reset, bool clink_reset, bool mpc_enable, bool spy_addr_reset,
                 bool ptlut_clk_reset, bool sync_clk_reset, bool rx_buffers_reset, bool daq_reset,
-                bool ptlut_clk_kill, bool force_oos, bool orbit_ev_bx, int endcap[13], int sector[13])
+                bool ptlut_clk_kill, bool force_oos, bool orbit_ev_bx, bool gem_logic,
+				int endcap[13], int sector[13])
 {
 
     for (int di = 0; di < 13; di++)
@@ -218,6 +219,38 @@ int resets_main(bool gth_reset, bool clink_reset, bool mpc_enable, bool spy_addr
                 log_printf ("reset register: %02llx\n", value);
 
                 value &= ~(7ULL << 22); 
+                mwrite(fd, &value, 8, saddr);
+                mread(fd, &value, 8, saddr);
+
+                log_printf ("reset register: %02llx\n", value);
+            }
+
+            if (gem_logic)
+            {
+                uint64_t value;
+
+                log_printf("resetting GEM link logic, errors\n");
+
+                // module addresses
+                uint32_t MEM_BASE = 0x80000; // 0xc0000  bytes
+
+                int ch = REG_BANK_CH; // config register bank
+
+                // form address {chamber[6], sel[2], addr[7], 3'b0}
+                uint32_t saddr = MEM_BASE + (ch << 12); // reset register has address 0
+
+                // read register. Size is in bytes
+                mread(fd, &value, 8, saddr);
+
+                log_printf ("reset register: %02llx\n", value);
+
+                value |= (1ULL << 25);
+                mwrite(fd, &value, 8, saddr);
+                mread(fd, &value, 8, saddr);
+
+                log_printf ("reset register: %02llx\n", value);
+
+                value &= ~(1ULL << 25); 
                 mwrite(fd, &value, 8, saddr);
                 mread(fd, &value, 8, saddr);
 
