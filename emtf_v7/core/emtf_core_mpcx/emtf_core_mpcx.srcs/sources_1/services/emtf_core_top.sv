@@ -81,10 +81,11 @@ module emtf_core_top
     mgt_rx cppf_rx [6:0]();
     mgt_rx mpc_rx  [4:0][7:0]();
     mgt_rx mpcn_rx [8:0]();
-    mgt_tx gmt_tx [0:0]();
+    mgt_tx gmt_tx [1:0]();
     mgt_tx daq_tx [0:0]();
     wire DAQ_0_mmcm_clk;
     wire CPPF_7_mmcm_clk;
+    wire CPPF_3_mmcm_clk;
 
 	(* mark_debug *) drp #(.AW(12)) drpt (); // AW parameter must match AW_QUAD parameter in fpga.sv
 	(* mark_debug *) wire drprdy;
@@ -109,6 +110,7 @@ module emtf_core_top
         .mpcn_rx  (mpcn_rx ),
         .gmt_tx   (gmt_tx  ),
         .daq_tx   (daq_tx  ),
+        .CPPF_3_mmcm_clk (CPPF_3_mmcm_clk),
         .DAQ_0_mmcm_clk  (DAQ_0_mmcm_clk ),
         .CPPF_7_mmcm_clk (CPPF_7_mmcm_clk),
         .clk125_nob (clk125_nob)
@@ -933,18 +935,22 @@ module emtf_core_top
         .hard_reset_to (hard_reset_to)
     );
 
-    gmt_tx_reclock gmt_tx_rc
-    (
-        .mgttx         (gmt_tx),
-        .CPPF_7_mmcm_clk (CPPF_7_mmcm_clk),
-        
-        .txdata        (txdata),
-        .clk_40        (clk40),
-        .ttc_bc0       (ttc_bc0_rx),
-        .bxn_tx_offset (bxn_tx_offset),
-        .link_id       (20'h12345) // need to decide what to do with link id !!!
-    );
-
+    generate
+    for (gi = 0; gi < 2; gi++)
+    begin: gmt_reclock_loop
+        gmt_tx_reclock gmt_tx_rc
+        (
+            .mgttx         (gmt_tx[gi]),
+            .CPPF_7_mmcm_clk (gi == 0 ? CPPF_7_mmcm_clk : CPPF_3_mmcm_clk),
+            
+            .txdata        (txdata),
+            .clk_40        (clk40),
+            .ttc_bc0       (ttc_bc0_rx),
+            .bxn_tx_offset (bxn_tx_offset),
+            .link_id       (20'h12345) // need to decide what to do with link id !!!
+        );
+    end
+    endgenerate
 
 	`merge_mem_1(link_id_i, link_id, 10*8, 5);
 	wire [8:0] ttc_bc0_delay;

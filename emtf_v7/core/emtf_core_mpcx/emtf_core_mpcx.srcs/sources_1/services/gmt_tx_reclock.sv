@@ -5,7 +5,7 @@
 //***********************************Entity Declaration************************
 module gmt_tx_reclock
 (
-    mgt_tx.out mgttx[0:0],
+    mgt_tx.out mgttx,
     input CPPF_7_mmcm_clk, // mgttx.txoutclk BUFGed
     
     input [63:0] txdata [2:0],
@@ -64,8 +64,8 @@ module gmt_tx_reclock
     (
         .d (txdata_async),
         .k (txcharisk_async),
-        .dout (mgttx[0].txdata),
-        .kout (mgttx[0].txcharisk),
+        .dout (mgttx.txdata),
+        .kout (mgttx.txcharisk),
         .tx_crc_r (),
         .clk (CPPF_7_mmcm_clk)
     );
