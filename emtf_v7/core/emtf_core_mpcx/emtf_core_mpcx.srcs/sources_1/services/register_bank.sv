@@ -62,7 +62,7 @@ module register_bank
     output reg endcap,
     output reg [2:0] sector,
     
-    output reg [55:0] daq_config,
+    output reg [63:0] daq_config,
     input [7:0] amc13_to_counter,
     output reg [11:0] bxn_tx_offset,
     
@@ -158,7 +158,7 @@ module register_bank
 		prbs_sel = 3'b0;
 		endcap = 1'b0;
 		sector = 3'b0;
-		daq_config = {3'h5, 1'b0, 1'b0, 1'b0, 16'h0, 12'h0, 3'h0, 8'h0, 3'h0, 8'h0};
+		daq_config = {8'd0, 3'h5, 1'b0, 1'b0, 1'b0, 16'h0, 12'h0, 3'h0, 8'h0, 3'h0, 8'h0};
 
 		core_config = {3'h7, 1'b1, 7'h4, 1'b1, 8'h0, 7'h4};
 		// minimum user af delays
@@ -271,7 +271,7 @@ module register_bank
 				9'h025: begin out_delay_tap_r[5*60 +: 60] = r_in[59:0]; end
 				9'h026: begin ddr_clk_del = r_in[4:0]; end
 				9'h027: begin ptlut_config = r_in; end
-				9'h02f: begin daq_config = r_in[55:0]; end
+				9'h02f: begin daq_config = r_in; end
 				9'h032: begin core_config = r_in; end
 	            9'h052: begin mpc_link_use_bc0_ch1 = r_in; end
                 9'h053: begin mpc_link_use_bc0_misplaced = r_in; end
@@ -526,7 +526,7 @@ module register_bank
 				9'h027: begin r_out = r_out | ptlut_config; end
 				9'h028: begin r_out = r_out | prbs_err_persist_m; end
 
-				9'h02f: begin r_out = r_out | {amc13_to_counter, daq_config}; end
+				9'h02f: begin r_out = r_out | daq_config; end
 				9'h030: begin r_out = r_out | amc13_status_cnt; end
 				9'h031: begin r_out = r_out | daq_state_cnt; end
 				9'h032: begin r_out = r_out | core_config; end

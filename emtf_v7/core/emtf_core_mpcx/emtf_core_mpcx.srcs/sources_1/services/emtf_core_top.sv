@@ -668,11 +668,17 @@ module emtf_core_top
         .fiber_enable (fiber_enable[49 +: 7])
     );
 
+   wire [233:0]      ge11_rxd [6:0]; ///< GEM rx data, 1 frame x 234 bits, for 7 links
+   wire [6:0]        ge11_rx_valid;  ///< GEM data valid flags
+   wire [6:0]        ge11_crc_match; ///< CRC match flags from GEM links
 
     gem_rx gem_rx_i
     (
         .ge11_rx    (ge11_rx), // inputs from serial links
 		.ge11_cl    (ge11_cl), // decoded clusters
+        .ge11_rxd       (ge11_rxd      ),
+        .ge11_rx_valid  (ge11_rx_valid ), 
+        .ge11_crc_match (ge11_crc_match),
 		.link_id    (ge11_link_id), // link IDs
         .single_hit (gem_single_hit),
         .ph_single  (gem_ph_single),
@@ -680,6 +686,7 @@ module emtf_core_top
         .logic_reset      (ge11_link_reset),
         .ge11_link_status (ge11_link_status),
         .correction_cnt   (ge11_correction_cnt),
+        .fiber_enable     (fiber_enable [(49+7) +: 7]),
         .clk40      (clk40)
     );  
 	
@@ -961,7 +968,7 @@ module emtf_core_top
     wire [8*9*5-1:0] in_delay_tap, out_delay_tap;
     wire [8*9*5-1:0] in_delay_tap_rb, out_delay_tap_rb;
     wire [4:0] ddr_clk_del;
-    wire [55:0] daq_config;
+    wire [63:0] daq_config;
     wire [31:0] fw_date;
 
     wire           jtag_enable     ;
@@ -1193,6 +1200,10 @@ module emtf_core_top
          .fiber_enable (fiber_enable),
          .cppf_crc_match (cppf_crc_match),
     
+         .gem_rxd       (ge11_rxd      ),
+         .gem_rx_valid  (ge11_rx_valid ), 
+         .gem_crc_match (ge11_crc_match),
+
          // track
          .bt_pt (bt_pt_tx),
          .bt_phi (bt_phi_d),

@@ -4,6 +4,9 @@ module gem_rx
 (
 	mgt_rx.out ge11_rx [6:0],
 	ge11_cluster.out ge11_cl [6:0][1:0][7:0], // [schamber][layer][cluster]
+    output [233:0]      ge11_rxd [6:0], ///< GEM rx data, 1 frame x 234 bits, for 7 links
+    output [6:0]        ge11_rx_valid,  ///< GEM data valid flags
+    output [6:0]        ge11_crc_match, ///< CRC match flags from GEM links
 	output reg [7:0] link_id [6:0], // [schamber=link]
 	output reg single_hit,
     output reg [bw_fph-1:0] ph_single,
@@ -11,6 +14,7 @@ module gem_rx
     input logic_reset,
     output [63:0] ge11_link_status,
     output [15:0] correction_cnt [6:0],
+    input  [6:0] fiber_enable,
 	input clk40
 );
 
@@ -45,6 +49,9 @@ module gem_rx
 
     (* mark_debug *) wire [233:0] lb_gbt_rx_frame[6:0] ;
     reg  [233:0] lb_gbt_rx_frame_r[6:0] ;
+    assign ge11_rxd = lb_gbt_rx_frame_r;
+    assign ge11_rx_valid = lb_gbt_rx_header_locked;
+    assign ge11_crc_match = 7'b1111111;
     reg  [233:0] r [11:0][6:0] ;
 
     (* mark_debug *) wire [6:0] bc0; //[schamber]
@@ -78,7 +85,7 @@ module gem_rx
 				end
 			end
 
-            if (link_id_flag[i] == 1'b0) // have clusters
+            if (link_id_flag[i] == 1'b0 && fiber_enable[i] == 1'b1) // have clusters and fiber enabled
             begin
                 for (j = 0; j < 2; j++) // layer loop
                 begin
