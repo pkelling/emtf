@@ -508,7 +508,7 @@ module emtf_core_top
 	wire [7:0] bc0_time_counts [48:0];
 
 
-    (* mark_debug *) csc_lct_mpcx lct_aligned  [5:0][9:1][1:0]; // [station][CSCID][stub]
+    (* mark_debug *) csc_all_lcts lct_aligned  [5:0][9:1]; // [station][CSCID]
     reg ttc_bc0_del;
     (* mark_debug *) wire ttc_bc0_del_w = ttc_bc0_del;
 
@@ -588,6 +588,7 @@ module emtf_core_top
 
     assign link_id_n = {link_id_na[8], link_id_na[7], link_id_na[6], link_id_na[5], link_id_na[4], link_id_na[3], link_id_na[2], link_id_na[1], link_id_na[0]};
     wire clk320;
+	wire af_enable;
 
     // upgraded MPCX module
     emtf_mpcx_rx_all mpcx_rx_i
@@ -961,7 +962,6 @@ module emtf_core_top
 
 	`merge_mem_1(link_id_i, link_id, 10*8, 5);
 	wire [8:0] ttc_bc0_delay;
-	wire af_enable;
 	assign af_delays = bc0_time_counts;
     wire [31:0] pt_clk_word;
     wire [7:0] delayctrl_locked;

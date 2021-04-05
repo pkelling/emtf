@@ -6,7 +6,7 @@ module emtf_mpcx_rx_all
 	mgt_rx mpcx_rx   [4:0][7:0], // input data + clocks from own sector [station][link]
 	mgt_rx mpcx_rx_n [8:0], // input data + clocks from neighbor sector [link]
 	// deformatted and aligned data
-    output csc_lct_mpcx lct_aligned  [5:0][9:1][1:0], // [station][CSCID][stub]
+    output csc_all_lcts lct_aligned  [5:0][9:1], // [station][CSCID]
     output [25:0] stub_rate [5:0][9:1], //[station][CSCID]
 
     input ttc_bc0_del, // delayed BC0 from TTC to align to

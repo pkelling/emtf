@@ -1,7 +1,7 @@
 module mtf7_daq
 (
 
-    input csc_all_lcts lct_i [5:0][8:0],
+    input csc_lct_mpcx lct_i [5:0][8:0][seg_ch-1:0],
     input [48:0] bc0_err_period,
     input [4:0] bc0_err_period_id1,
     input [63:0] cppf_rxd [6:0][2:0], // cppf rx data, 3 frames x 64 bit, for 7 links
@@ -13,7 +13,7 @@ module mtf7_daq
    // 8 clusters for 2 super-chamber layers
    // 234 bits transmitted per BX
    // GE1/1 SuperChamber (2xOH) is input to EMTF
-   input [233:0]      gem_rxd [6:0], ///< GEM rx data, 1 frame x 234 bits, for 7 links
+   input [234:0]      gem_rxd [6:0], ///< GEM rx data, 1 frame x 234 bits, for 7 links
    input [6:0]        gem_rx_valid,  ///< GEM data valid flags
    input [6:0]        gem_crc_match, ///< CRC match flags from GEM links
 
@@ -37,7 +37,7 @@ module mtf7_daq
 
    input              clk,  ///< Clock
 
-   input [63:0]       daq_config, ///< configuration for the DAQ module
+   input [58:0]       daq_config, ///< configuration for the DAQ module
 
    input              l1a_in,           ///< L1A signal
    input              ttc_resync,       ///< Resync signal
@@ -74,15 +74,6 @@ module mtf7_daq
 `include "../core/vppc_macros.sv"
 `include "../core/spbits.sv"
 
-  `localpar N_CSC_LAY = 1;
-  `localpar N_RPC_LAY = 1;
-  `localpar N_GE11_LAY     = 2;   ///< Number of layers in the GE1/1 superchamber
-  `localpar N_GE21_LAY     = 2;   ///< Number of layers in the GE2/1 superchamber
-  `localpar N_ME0_LAY      = 6;   ///< Number of layers in the ME0 stack
-  `localpar GEM_CLS_PER_BX = 8;   ///< 8 clusters per BX in GEM transmitted frame
-  `localpar GEM_FR_W       = 234; ///< Number of bits in the GEM data frame
-  `localpar GEM_HD_SZ      = 10;  ///< Number of bits in the GEM header word
-  `localpar GEM_CLU_BW     = 14;  ///< Number of bits in the GEM cluster word
 
 
    // chamber enable flags. Linkless chambers are enabled only when all links carrying them are enabled.
@@ -126,9 +117,9 @@ module mtf7_daq
    wire        report_wo_track; // if =1 DAQ will report events that don't contain valid tracks but contain LCTs
    wire [2:0]  rpc_late_by_bxs; // by how many BXs RPC data is late relative to CSC
    // FIXME Correct for GEM
-   wire [7:0]  gem_early_by; // by how many BXs GEM data is early relative to CSC
+   wire [2:0]  gem_late_by_bxs; // by how many BXs GEM data is late relative to CSC
 
-   assign {gem_early_by,
+   assign {gem_late_by_bxs,
            rpc_late_by_bxs,
            report_wo_track,
            amc13_easy_en,
@@ -155,6 +146,9 @@ module mtf7_daq
    wire [7:0]                   core_latency = 8'd12; // 8'd13; reduced because zones and extenders now combinatorial. Check core latency in coord_delay
    wire [7:0]                   ptlut_latency = 8'd4; // including address formation
    wire [7:0]                   rpc_late_by = {5'h0, rpc_late_by_bxs}; // cppf data are late by this many clocks
+   // FIXME Correct for GEM
+   wire [7:0]                   gem_late_by = {5'h0, gem_late_by_bxs}; // GEM data are late by this many clocks
+
 
    // first index in the declarations below is daq_bank word
    reg [3:0]                    q_d    [7:0][5:0][8:0][seg_ch-1:0];
@@ -192,7 +186,7 @@ module mtf7_daq
    assign id_addrw     = id_addrr + l1a_delay + core_latency + ptlut_latency;
    assign rpc_id_addrw = id_addrr + l1a_delay + core_latency + ptlut_latency - rpc_late_by; // rpc delay reduced to compensate data coming late
    // FIXME Correct for GEM
-   assign gem_id_addrw = id_addrr + l1a_delay + core_latency + ptlut_latency + gem_early_by; // gem delay increased to compensate data coming early
+   assign gem_id_addrw = id_addrr + l1a_delay + core_latency + ptlut_latency - gem_late_by; // gem delay reduced to compensate data coming late
    assign od_addrw = od_addrr + l1a_delay;// + ptlut_latency;
    assign od_addrr = id_addrr;
 
@@ -300,35 +294,17 @@ module mtf7_daq
          begin
             for (k = 0; k < seg_ch; k = k+1) // segment loop
             begin
-               if (k == 0)
-               begin
-                   lct_valid = lct_valid | lct_i[station_][j].lct0.vf;
-                   // pack delay line inputs
-                   inp_del_in[pos+: lng] =
-                   {
-                       lct_i[station_][j].lct0.ql,
-                       lct_i[station_][j].lct0.wg,
-                       lct_i[station_][j].lct0.hs,
-                       lct_i[station_][j].lct0.bend, // using bend instead of cp for now
-                       lct_i[station_][j].lct0.lr,
-                       lct_i[station_][j].lct0.vf
-                   };
-               end
-               else
-               begin
-                   lct_valid = lct_valid | lct_i[station_][j].lct1.vf;
-                   // pack delay line inputs
-                   inp_del_in[pos+: lng] =
-                   {
-                       lct_i[station_][j].lct1.ql,
-                       lct_i[station_][j].lct1.wg,
-                       lct_i[station_][j].lct1.hs,
-                       lct_i[station_][j].lct1.bend, // using bend instead of cp for now
-                       lct_i[station_][j].lct1.lr,
-                       lct_i[station_][j].lct1.vf
-                   };
-               end
-               
+               lct_valid = lct_valid | lct_i[station_][j][k].vf;
+               // pack delay line inputs
+               inp_del_in[pos+: lng] =
+                                      {
+                                       lct_i[station_][j][k].ql,
+                                       lct_i[station_][j][k].wg,
+                                       lct_i[station_][j][k].hs,
+                                       lct_i[station_][j][k].cp,
+                                       lct_i[station_][j][k].lr,
+                                       lct_i[station_][j][k].vf
+                                       };
                for (i = 0; i < 8; i = i+1) // daq_bank word loop
                begin
                   // unpack ring buffer outputs (from daq bank)

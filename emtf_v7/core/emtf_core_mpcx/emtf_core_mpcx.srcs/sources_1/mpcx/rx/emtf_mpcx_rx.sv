@@ -4,56 +4,81 @@
 
 module emtf_mpcx_rx #(parameter NEIGHBOR = "FALSE")
 (
-	mgt_rx mpcx_rx [nlinks-1:0], // input data + clocks
-	// deformatted and aligned data
-    output csc_lct_mpcx lct_aligned   [9:1][1:0], // [CSCID][stub]
-	output [25:0] stub_rate [8:0],
-    
-    input ttc_bc0_del, // delayed BC0 from TTC to align to
-
-    // calculated delays for all chambers
-    // index [1] is only present for neighbor sector
-    output [4:0] automatic_delay [9 : low_ind], 
-
-    // calculated delays for CSCID=1 only, for each data fragment
-    // unused for neighbor sector
-    output [4:0] automatic_delay_id1 [7:0], 
-
-    // manually applied delays, for all chambers that are on a single link
-    input [4:0] manual_delay [9 : low_ind], 
-    
-    // manually applied delays, for CSCID=1, for each data fragment
-    // unused for neighbor sector
-    input [4:0] manual_delay_id1 [7:0], 
-	
-    output [9 : low_ind] alg_out_range, // alignment counter out of range
-    output [9 : low_ind] bc0_period_err, // BC0 period is not exactly one orbit
-    
-    // these are for CSCID=1 only, unused for neighbor sector
-    output [7:0] alg_out_range_id1, // alignment counters out of range
-    output [7:0] bc0_period_err_id1, // BC0 periods is not exactly one orbit
-    
-    input en_manual, // enable manual delays
-
-	output [nlinks-1:0] crc_err, // CRC error detected
-    output [nlinks-1:0] err_tst_pat, // test counter error detected
-	output [nlinks-1:0] crc_err_flag, // CRC error detected, persisting
-    output [nlinks-1:0] err_tst_pat_flag, // test counter error detected, persisting
-    input               flag_reset, // reset persisting flags
-	output [9:0] link_id [nlinks-1:0], // link ID
-	input  [nlinks-1:0] fiber_enable,
-
-	input clk40,
-	input clk320,
-    input pcie_clk
+	mpcx_rx,
+    lct_aligned,
+	stub_rate,
+    ttc_bc0_del,
+    automatic_delay, 
+    automatic_delay_id1, 
+    manual_delay, 
+    manual_delay_id1, 
+    alg_out_range,
+    bc0_period_err,
+    alg_out_range_id1,
+    bc0_period_err_id1, 
+    en_manual,
+	crc_err,
+    err_tst_pat,
+	crc_err_flag,
+    err_tst_pat_flag,
+    flag_reset,
+	link_id,
+    fiber_enable,
+	clk40,
+	clk320,
+    pcie_clk
 );
 
     localparam nlinks =  NEIGHBOR == "TRUE" ? 9 : 8; // 9 links are coming from NEIGHBOR sector
     localparam low_ind = ((NEIGHBOR == "TRUE") ? 1 : 2); // low index for I/O
 
+	mgt_rx mpcx_rx [nlinks-1:0]; // input data + clocks
+	// deformatted and aligned data
+    output csc_all_lcts lct_aligned   [9:1]; // [CSCID]
+	output [25:0] stub_rate [8:0];
+    
+    input ttc_bc0_del; // delayed BC0 from TTC to align to
+
+    // calculated delays for all chambers
+    // index [1] is only present for neighbor sector
+    output [4:0] automatic_delay [9 : low_ind]; 
+
+    // calculated delays for CSCID=1 only; for each data fragment
+    // unused for neighbor sector
+    output [4:0] automatic_delay_id1 [7:0]; 
+
+    // manually applied delays; for all chambers that are on a single link
+    input [4:0] manual_delay [9 : low_ind]; 
+    
+    // manually applied delays; for CSCID=1; for each data fragment
+    // unused for neighbor sector
+    input [4:0] manual_delay_id1 [7:0]; 
+	
+    output [9 : low_ind] alg_out_range; // alignment counter out of range
+    output [9 : low_ind] bc0_period_err; // BC0 period is not exactly one orbit
+    
+    // these are for CSCID=1 only; unused for neighbor sector
+    output [7:0] alg_out_range_id1; // alignment counters out of range
+    output [7:0] bc0_period_err_id1; // BC0 periods is not exactly one orbit
+    
+    input en_manual; // enable manual delays
+
+	output [nlinks-1:0] crc_err; // CRC error detected
+    output [nlinks-1:0] err_tst_pat; // test counter error detected
+	output [nlinks-1:0] crc_err_flag; // CRC error detected; persisting
+    output [nlinks-1:0] err_tst_pat_flag; // test counter error detected; persisting
+    input               flag_reset; // reset persisting flags
+	output [9:0] link_id [nlinks-1:0]; // link ID
+	input  [nlinks-1:0] fiber_enable;
+
+	input clk40;
+	input clk320;
+    input pcie_clk;
+
+
     (* mark_debug *) wire [75:0] rx_data_76 [nlinks-1:0];
     // always 9 chambers from each RX, neighbor or not
-    csc_lct_mpcx lct_unaligned [9:1][1:0]; // [CSCID][stub]
+    csc_all_lcts lct_unaligned [9:1]; // [CSCID]
 	wire [7:0] cscid1_bc0; // separate bc0 markers from CSCID=1 coming in each link
 	wire [3:0] cscid1_vf [1:0]; // separate valid flags from cid=1 coming in each link [lct0,1][link]
     reg [11:0] bxn;

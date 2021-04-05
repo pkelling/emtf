@@ -4,7 +4,7 @@ module mpcx_deformatter
 (
     input [75:0] rx_data_76 [7:0], // [link]
     
-    output csc_lct_mpcx lct_o [9:1][1:0],
+    output csc_all_lcts lct_o [9:1], 
 	output reg [25:0] stub_rate [8:0],
 
 	output reg [7:0] cid1_bc0, // separate bc0 markers from cid=1 coming in each link
@@ -65,7 +65,7 @@ module mpcx_deformatter
     for (i = 0; i < 9; i++) // chamber loop
     begin
         // rate counter update
-        if (lct_o[i+1][0].vf != 1'h0 && rate_counter[i] != 26'h3ffffff) 
+        if (lct_o[i+1].lct0.vf != 1'h0 && rate_counter[i] != 26'h3ffffff) 
           rate_counter[i]++;
     end
 
@@ -90,284 +90,311 @@ module mpcx_deformatter
         
         crc   [0][1],
         cid1_bc0 [0],
-		lct_o[1][0].hs    [7:4],
+		lct_o[1].lct0.hs    [7:4],
 	
-		lct_o[2][1].cid ,
-		lct_o[2][1].ser  ,
-		lct_o[2][1].bx0   ,
-		lct_o[2][1].bc0   ,
+		lct_o[2].lct1.bend ,
+		lct_o[2].lct1.es  ,
+		lct_o[2].lct1.hmt [0]   ,
+		lct_o[2].lct1.bc0   ,
 		lctvf[2][1]   ,
-		lct_o[2][1].lr    ,
-		lct_o[2][1].cp  ,
-		lct_o[2][1].ql  ,
-		lct_o[2][1].wg    ,
-		lct_o[2][1].hs    ,
+		lct_o[2].lct1.lr    ,
+		lct_o[2].lct1.hmt [3:1] ,
+		lct_o[2].lct1.cp_4 ,
+		lct_o[2].lct1.qs  ,
+		lct_o[2].lct1.ql  ,
+		lct_o[2].lct1.wg    ,
+		lct_o[2].lct1.hs    ,
 	
 		crc   [0][0],
 		cid1_vf [0][0],
-		lct_o[1][0].hs    [3:0],
+		lct_o[1].lct0.hs    [3:0],
 	
-		lct_o[2][0].cid ,
-		lct_o[2][0].ser  ,
-		lct_o[2][0].bx0   ,
-		lct_o[2][0].bc0   ,
+		lct_o[2].lct0.bend ,
+		lct_o[2].lct0.es  ,
+		lct_o[2].lct0.bx0   ,
+		lct_o[2].lct0.bc0   ,
 		lctvf[2][0]   ,
-		lct_o[2][0].lr    ,
-		lct_o[2][0].cp  ,
-		lct_o[2][0].ql  ,
-		lct_o[2][0].wg    ,
-		lct_o[2][0].hs    
+		lct_o[2].lct0.lr    ,
+		lct_o[2].lct0.cp [3:0]  ,
+		lct_o[2].lct0.qs  ,
+		lct_o[2].lct0.ql  ,
+		lct_o[2].lct0.wg    ,
+		lct_o[2].lct0.hs    
 	} = rx_data_76_r [0];
 
 	{
 	
 		crc   [1][1],
 		cid1_bc0 [1],
-		lct_o[1][0].lr    ,
-		lct_o[1][0].wg    [6:4],
+		lct_o[1].lct0.lr    ,
+		lct_o[1].lct0.wg    [6:4],
 
-		lct_o[3][1].cid ,
-		lct_o[3][1].ser  ,
-		lct_o[3][1].bx0   ,
-		lct_o[3][1].bc0   ,
+		lct_o[3].lct1.bend ,
+		lct_o[3].lct1.es  ,
+		lct_o[3].lct1.hmt [0]   ,
+		lct_o[3].lct1.bc0   ,
 		lctvf[3][1]   ,
-		lct_o[3][1].lr    ,
-		lct_o[3][1].cp  ,
-		lct_o[3][1].ql  ,
-		lct_o[3][1].wg    ,
-		lct_o[3][1].hs    ,
+		lct_o[3].lct1.lr    ,
+		lct_o[3].lct1.hmt [3:1] ,
+		lct_o[3].lct1.cp_4 ,
+		lct_o[3].lct1.qs  ,
+		lct_o[3].lct1.ql  ,
+		lct_o[3].lct1.wg    ,
+		lct_o[3].lct1.hs    ,
 	
 		crc   [1][0],
 		cid1_vf [0][1],
-		lct_o[1][0].wg    [3:0],
+		lct_o[1].lct0.wg    [3:0],
 
-		lct_o[3][0].cid ,
-		lct_o[3][0].ser  ,
-		lct_o[3][0].bx0   ,
-		lct_o[3][0].bc0   ,
+		lct_o[3].lct0.bend ,
+		lct_o[3].lct0.es  ,
+		lct_o[3].lct0.bx0   ,
+		lct_o[3].lct0.bc0   ,
 		lctvf[3][0]   ,
-		lct_o[3][0].lr    ,
-		lct_o[3][0].cp  ,
-		lct_o[3][0].ql  ,
-		lct_o[3][0].wg    ,
-		lct_o[3][0].hs    
+		lct_o[3].lct0.lr    ,
+		lct_o[3].lct0.cp [3:0]  ,
+		lct_o[3].lct0.qs  ,
+		lct_o[3].lct0.ql  ,
+		lct_o[3].lct0.wg    ,
+		lct_o[3].lct0.hs    
 	} = rx_data_76_r [1];
 
 	{
 	
 		crc   [2][1],
 		cid1_bc0 [2],
-		lct_o[1][0].cp  ,
+		lct_o[1].lct0.cp [3:0]  ,
 
-		lct_o[4][1].cid ,
-		lct_o[4][1].ser  ,
-		lct_o[4][1].bx0   ,
-		lct_o[4][1].bc0   ,
+		lct_o[4].lct1.bend ,
+		lct_o[4].lct1.es  ,
+		lct_o[4].lct1.hmt [0]   ,
+		lct_o[4].lct1.bc0   ,
 		lctvf[4][1]   ,
-		lct_o[4][1].lr    ,
-		lct_o[4][1].cp  ,
-		lct_o[4][1].ql  ,
-		lct_o[4][1].wg    ,
-		lct_o[4][1].hs    ,
+		lct_o[4].lct1.lr    ,
+		lct_o[4].lct1.hmt [3:1] ,
+		lct_o[4].lct1.cp_4 ,
+		lct_o[4].lct1.qs  ,
+		lct_o[4].lct1.ql  ,
+		lct_o[4].lct1.wg    ,
+		lct_o[4].lct1.hs    ,
 	
 		crc   [2][0],
 		cid1_vf [0][2],
-		lct_o[1][0].ql  ,
+		lct_o[1].lct0.qs  ,
+		lct_o[1].lct0.ql  ,
 
-		lct_o[4][0].cid ,
-		lct_o[4][0].ser  ,
-		lct_o[4][0].bx0   ,
-		lct_o[4][0].bc0   ,
+		lct_o[4].lct0.bend ,
+		lct_o[4].lct0.es  ,
+		lct_o[4].lct0.bx0   ,
+		lct_o[4].lct0.bc0   ,
 		lctvf[4][0]   ,
-		lct_o[4][0].lr    ,
-		lct_o[4][0].cp  ,
-		lct_o[4][0].ql  ,
-		lct_o[4][0].wg    ,
-		lct_o[4][0].hs    
+		lct_o[4].lct0.lr    ,
+		lct_o[4].lct0.cp [3:0]  ,
+		lct_o[4].lct0.qs  ,
+		lct_o[4].lct0.ql  ,
+		lct_o[4].lct0.wg    ,
+		lct_o[4].lct0.hs    
 	} = rx_data_76_r [2];
 
 	{
 	
 		crc   [3][1],
 		cid1_bc0 [3],
-		lct_o[1][0].ser  ,
-		lct_o[1][0].bx0   ,
+		lct_o[1].lct0.es  ,
+		lct_o[1].lct0.bx0   ,
 		rsv   [0],
 		rsv   [1],
 
-		lct_o[5][1].cid ,
-		lct_o[5][1].ser  ,
-		lct_o[5][1].bx0   ,
-		lct_o[5][1].bc0   ,
+		lct_o[5].lct1.bend ,
+		lct_o[5].lct1.es  ,
+		lct_o[5].lct1.hmt [0]   ,
+		lct_o[5].lct1.bc0   ,
 		lctvf[5][1]   ,
-		lct_o[5][1].lr    ,
-		lct_o[5][1].cp  ,
-		lct_o[5][1].ql  ,
-		lct_o[5][1].wg    ,
-		lct_o[5][1].hs    ,
+		lct_o[5].lct1.lr    ,
+		lct_o[5].lct1.hmt [3:1] ,
+		lct_o[5].lct1.cp_4 ,
+		lct_o[5].lct1.qs  ,
+		lct_o[5].lct1.ql  ,
+		lct_o[5].lct1.wg    ,
+		lct_o[5].lct1.hs    ,
 	
 		crc   [3][0],
 		cid1_vf [0][3],
-		lct_o[1][0].cid ,
+		lct_o[1].lct0.bend ,
 
-		lct_o[5][0].cid ,
-		lct_o[5][0].ser  ,
-		lct_o[5][0].bx0   ,
-		lct_o[5][0].bc0   ,
+		lct_o[5].lct0.bend ,
+		lct_o[5].lct0.es  ,
+		lct_o[5].lct0.bx0   ,
+		lct_o[5].lct0.bc0   ,
 		lctvf[5][0]   ,
-		lct_o[5][0].lr    ,
-		lct_o[5][0].cp  ,
-		lct_o[5][0].ql  ,
-		lct_o[5][0].wg    ,
-		lct_o[5][0].hs    
+		lct_o[5].lct0.lr    ,
+		lct_o[5].lct0.cp [3:0]  ,
+		lct_o[5].lct0.qs  ,
+		lct_o[5].lct0.ql  ,
+		lct_o[5].lct0.wg    ,
+		lct_o[5].lct0.hs    
 	} = rx_data_76_r [3];
 
 	{
 	
 		crc   [4][1],
 		cid1_bc0 [4],
-		lct_o[1][1].hs    [7:4],
+		lct_o[1].lct1.hs    [7:4],
 
-		lct_o[6][1].cid ,
-		lct_o[6][1].ser  ,
-		lct_o[6][1].bx0   ,
-		lct_o[6][1].bc0   ,
+		lct_o[6].lct1.bend ,
+		lct_o[6].lct1.es  ,
+		lct_o[6].lct1.hmt [0]   ,
+		lct_o[6].lct1.bc0   ,
 		lctvf[6][1]   ,
-		lct_o[6][1].lr    ,
-		lct_o[6][1].cp  ,
-		lct_o[6][1].ql  ,
-		lct_o[6][1].wg    ,
-		lct_o[6][1].hs    ,
+		lct_o[6].lct1.lr    ,
+		lct_o[6].lct1.hmt [3:1] ,
+		lct_o[6].lct1.cp_4 ,
+		lct_o[6].lct1.qs  ,
+		lct_o[6].lct1.ql  ,
+		lct_o[6].lct1.wg    ,
+		lct_o[6].lct1.hs    ,
 	
 		crc   [4][0],
 		cid1_vf [1][0],
-		lct_o[1][1].hs    [3:0],
+		lct_o[1].lct1.hs    [3:0],
 	
-		lct_o[6][0].cid ,
-		lct_o[6][0].ser  ,
-		lct_o[6][0].bx0   ,
-		lct_o[6][0].bc0   ,
+		lct_o[6].lct0.bend ,
+		lct_o[6].lct0.es  ,
+		lct_o[6].lct0.bx0   ,
+		lct_o[6].lct0.bc0   ,
 		lctvf[6][0]   ,
-		lct_o[6][0].lr    ,
-		lct_o[6][0].cp  ,
-		lct_o[6][0].ql  ,
-		lct_o[6][0].wg    ,
-		lct_o[6][0].hs    
+		lct_o[6].lct0.lr    ,
+		lct_o[6].lct0.cp [3:0]  ,
+		lct_o[6].lct0.qs  ,
+		lct_o[6].lct0.ql  ,
+		lct_o[6].lct0.wg    ,
+		lct_o[6].lct0.hs    
 	} = rx_data_76_r [4];
 
 	{
 		crc   [5][1],
 		cid1_bc0 [5],
-		lct_o[1][1].lr    ,
-		lct_o[1][1].wg    [6:4],
+		lct_o[1].lct1.lr    ,
+		lct_o[1].lct1.wg    [6:4],
 
-		lct_o[7][1].cid ,
-		lct_o[7][1].ser  ,
-		lct_o[7][1].bx0   ,
-		lct_o[7][1].bc0   ,
+		lct_o[7].lct1.bend ,
+		lct_o[7].lct1.es  ,
+		lct_o[7].lct1.hmt [0]   ,
+		lct_o[7].lct1.bc0   ,
 		lctvf[7][1]   ,
-		lct_o[7][1].lr    ,
-		lct_o[7][1].cp  ,
-		lct_o[7][1].ql  ,
-		lct_o[7][1].wg    ,
-		lct_o[7][1].hs    ,
+		lct_o[7].lct1.lr    ,
+		lct_o[7].lct1.hmt [3:1] ,
+		lct_o[7].lct1.cp_4 ,
+		lct_o[7].lct1.qs  ,
+		lct_o[7].lct1.ql  ,
+		lct_o[7].lct1.wg    ,
+		lct_o[7].lct1.hs    ,
 	
 		crc   [5][0],
 		cid1_vf [1][1],
-		lct_o[1][1].wg    [3:0],
+		lct_o[1].lct1.wg    [3:0],
 
-		lct_o[7][0].cid ,
-		lct_o[7][0].ser  ,
-		lct_o[7][0].bx0   ,
-		lct_o[7][0].bc0   ,
+		lct_o[7].lct0.bend ,
+		lct_o[7].lct0.es  ,
+		lct_o[7].lct0.bx0   ,
+		lct_o[7].lct0.bc0   ,
 		lctvf[7][0]   ,
-		lct_o[7][0].lr    ,
-		lct_o[7][0].cp  ,
-		lct_o[7][0].ql  ,
-		lct_o[7][0].wg    ,
-		lct_o[7][0].hs    
+		lct_o[7].lct0.lr    ,
+		lct_o[7].lct0.cp [3:0]  ,
+		lct_o[7].lct0.qs  ,
+		lct_o[7].lct0.ql  ,
+		lct_o[7].lct0.wg    ,
+		lct_o[7].lct0.hs    
 	} = rx_data_76_r [5];
 
 	{
 	
 		crc   [6][1],
 		cid1_bc0 [6],
-		lct_o[1][1].cp  ,
+		lct_o[1].lct1.hmt [3:1]  ,
+		lct_o[1].lct1.cp_4  ,
 
-		lct_o[8][1].cid ,
-		lct_o[8][1].ser  ,
-		lct_o[8][1].bx0   ,
-		lct_o[8][1].bc0   ,
+		lct_o[8].lct1.bend ,
+		lct_o[8].lct1.es  ,
+		lct_o[8].lct1.hmt [0]   ,
+		lct_o[8].lct1.bc0   ,
 		lctvf[8][1]   ,
-		lct_o[8][1].lr    ,
-		lct_o[8][1].cp  ,
-		lct_o[8][1].ql  ,
-		lct_o[8][1].wg    ,
-		lct_o[8][1].hs    ,
+		lct_o[8].lct1.lr    ,
+		lct_o[8].lct1.hmt [3:1] ,
+		lct_o[8].lct1.cp_4 ,
+		lct_o[8].lct1.qs  ,
+		lct_o[8].lct1.ql  ,
+		lct_o[8].lct1.wg    ,
+		lct_o[8].lct1.hs    ,
 	
 		crc   [6][0],
 		cid1_vf [1][2],
-		lct_o[1][1].ql  ,
+		lct_o[1].lct1.qs  ,
+		lct_o[1].lct1.ql  ,
 
-		lct_o[8][0].cid ,
-		lct_o[8][0].ser  ,
-		lct_o[8][0].bx0   ,
-		lct_o[8][0].bc0   ,
+		lct_o[8].lct0.bend ,
+		lct_o[8].lct0.es  ,
+		lct_o[8].lct0.bx0   ,
+		lct_o[8].lct0.bc0   ,
 		lctvf[8][0]   ,
-		lct_o[8][0].lr    ,
-		lct_o[8][0].cp  ,
-		lct_o[8][0].ql  ,
-		lct_o[8][0].wg    ,
-		lct_o[8][0].hs    
+		lct_o[8].lct0.lr    ,
+		lct_o[8].lct0.cp [3:0]  ,
+		lct_o[8].lct0.qs  ,
+		lct_o[8].lct0.ql  ,
+		lct_o[8].lct0.wg    ,
+		lct_o[8].lct0.hs    
 	} = rx_data_76_r [6];
 
 	{
 	
 		crc   [7][1],
 		cid1_bc0 [7],
-		lct_o[1][1].ser  ,
-		lct_o[1][1].bx0   ,
+		lct_o[1].lct1.es  ,
+		lct_o[1].lct1.hmt [0]   ,
 		rsv   [2],
 		rsv   [3],
 
-		lct_o[9][1].cid ,
-		lct_o[9][1].ser  ,
-		lct_o[9][1].bx0   ,
-		lct_o[9][1].bc0   ,
+		lct_o[9].lct1.bend ,
+		lct_o[9].lct1.es  ,
+		lct_o[9].lct1.hmt [0]   ,
+		lct_o[9].lct1.bc0   ,
 		lctvf[9][1]   ,
-		lct_o[9][1].lr    ,
-		lct_o[9][1].cp  ,
-		lct_o[9][1].ql  ,
-		lct_o[9][1].wg    ,
-		lct_o[9][1].hs    ,
+		lct_o[9].lct1.lr    ,
+		lct_o[9].lct1.hmt [3:1] ,
+		lct_o[9].lct1.cp_4 ,
+		lct_o[9].lct1.qs  ,
+		lct_o[9].lct1.ql  ,
+		lct_o[9].lct1.wg    ,
+		lct_o[9].lct1.hs    ,
 	
 		crc   [7][0],
 		cid1_vf [1][3],
-		lct_o[1][1].cid ,
+		lct_o[1].lct1.bend ,
 
-		lct_o[9][0].cid ,
-		lct_o[9][0].ser  ,
-		lct_o[9][0].bx0   ,
-		lct_o[9][0].bc0   ,
+		lct_o[9].lct0.bend ,
+		lct_o[9].lct0.es  ,
+		lct_o[9].lct0.bx0   ,
+		lct_o[9].lct0.bc0   ,
 		lctvf[9][0]   ,
-		lct_o[9][0].lr    ,
-		lct_o[9][0].cp  ,
-		lct_o[9][0].ql  ,
-		lct_o[9][0].wg    ,
-		lct_o[9][0].hs    
+		lct_o[9].lct0.lr    ,
+		lct_o[9].lct0.cp [3:0]  ,
+		lct_o[9].lct0.qs  ,
+		lct_o[9].lct0.ql  ,
+		lct_o[9].lct0.wg    ,
+		lct_o[9].lct0.hs    
 	} = rx_data_76_r [7];
 
     // link data valid if: one of the LCTs from native chamber valid, 
     // or fragment of CSCID=1 chamber is valid,
     // or BC0 signal is present from native chamber or CSCID=1 
-	lnk_val[0] = (lctvf[2][1] || lctvf[2][0] || cid1_vf[0][0] || lct_o[2][0].bc0 || cid1_bc0 [0]);
-	lnk_val[1] = (lctvf[3][1] || lctvf[3][0] || cid1_vf[0][1] || lct_o[3][0].bc0 || cid1_bc0 [1]);
-	lnk_val[2] = (lctvf[4][1] || lctvf[4][0] || cid1_vf[0][2] || lct_o[4][0].bc0 || cid1_bc0 [2]);
-	lnk_val[3] = (lctvf[5][1] || lctvf[5][0] || cid1_vf[0][3] || lct_o[5][0].bc0 || cid1_bc0 [3]);
-	lnk_val[4] = (lctvf[6][1] || lctvf[6][0] || cid1_vf[1][0] || lct_o[6][0].bc0 || cid1_bc0 [4]);
-	lnk_val[5] = (lctvf[7][1] || lctvf[7][0] || cid1_vf[1][1] || lct_o[7][0].bc0 || cid1_bc0 [5]);
-	lnk_val[6] = (lctvf[8][1] || lctvf[8][0] || cid1_vf[1][2] || lct_o[8][0].bc0 || cid1_bc0 [6]);
-	lnk_val[7] = (lctvf[9][1] || lctvf[9][0] || cid1_vf[1][3] || lct_o[9][0].bc0 || cid1_bc0 [7]);
+	lnk_val[0] = (lctvf[2][1] || lctvf[2][0] || cid1_vf[0][0] || lct_o[2].lct0.bc0 || cid1_bc0 [0]);
+	lnk_val[1] = (lctvf[3][1] || lctvf[3][0] || cid1_vf[0][1] || lct_o[3].lct0.bc0 || cid1_bc0 [1]);
+	lnk_val[2] = (lctvf[4][1] || lctvf[4][0] || cid1_vf[0][2] || lct_o[4].lct0.bc0 || cid1_bc0 [2]);
+	lnk_val[3] = (lctvf[5][1] || lctvf[5][0] || cid1_vf[0][3] || lct_o[5].lct0.bc0 || cid1_bc0 [3]);
+	lnk_val[4] = (lctvf[6][1] || lctvf[6][0] || cid1_vf[1][0] || lct_o[6].lct0.bc0 || cid1_bc0 [4]);
+	lnk_val[5] = (lctvf[7][1] || lctvf[7][0] || cid1_vf[1][1] || lct_o[7].lct0.bc0 || cid1_bc0 [5]);
+	lnk_val[6] = (lctvf[8][1] || lctvf[8][0] || cid1_vf[1][2] || lct_o[8].lct0.bc0 || cid1_bc0 [6]);
+	lnk_val[7] = (lctvf[9][1] || lctvf[9][0] || cid1_vf[1][3] || lct_o[9].lct0.bc0 || cid1_bc0 [7]);
 
     for (i = 0; i < 8; i=i+1)
     begin
@@ -385,10 +412,10 @@ module mpcx_deformatter
         // check data sanity
         if (lnk_val[i] &&
                 (
-                    lct_o[i+2][0].hs > max_hs ||
-                    lct_o[i+2][0].wg > max_wg ||
-                    lct_o[i+2][1].hs > max_hs ||
-                    lct_o[i+2][1].wg > max_wg
+                    lct_o[i+2].lct0.hs > max_hs ||
+                    lct_o[i+2].lct0.wg > max_wg ||
+                    lct_o[i+2].lct1.hs > max_hs ||
+                    lct_o[i+2].lct1.wg > max_wg
                 ) 
             )
         begin
@@ -396,15 +423,15 @@ module mpcx_deformatter
         end
 
 		// disable link output if error was detected
-		lct_o[i+2][0].vf = lctvf[i+2][0] && (~crc_err[i]); 
-		lct_o[i+2][1].vf = lctvf[i+2][1] && (~crc_err[i]); 
+		lct_o[i+2].lct0.vf = lctvf[i+2][0] && (~crc_err[i]); 
+		lct_o[i+2].lct1.vf = lctvf[i+2][1] && (~crc_err[i]); 
     end
     
     // checks for cscid=1 data fragments
-    if (lct_o[1][0].hs > max_hs) cid1_vf[0][0] = 1'b0;
-    if (lct_o[1][0].wg > max_wg) cid1_vf[0][1] = 1'b0;
-    if (lct_o[1][1].hs > max_hs) cid1_vf[1][0] = 1'b0;
-    if (lct_o[1][1].wg > max_wg) cid1_vf[1][1] = 1'b0;
+    if (lct_o[1].lct0.hs > max_hs) cid1_vf[0][0] = 1'b0;
+    if (lct_o[1].lct0.wg > max_wg) cid1_vf[0][1] = 1'b0;
+    if (lct_o[1].lct1.hs > max_hs) cid1_vf[1][0] = 1'b0;
+    if (lct_o[1].lct1.wg > max_wg) cid1_vf[1][1] = 1'b0;
     
   end
 

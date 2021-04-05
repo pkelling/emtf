@@ -23,8 +23,8 @@
 
 module sp
 (
-    // [station][chamber][segment] station 5 = neighbor sector, all stations
-    input csc_lct_mpcx lct_i [5:0][8:0][seg_ch-1:0],
+    // [station][chamber] station 5 = neighbor sector, all stations
+    input csc_all_lcts lct_i [5:0][8:0],
     input [63:0] cppf_rxd [6:0][2:0], // cppf rx data, 3 frames x 64 bit, for 7 links
     input [6:0] cppf_rx_valid, // cprx data valid flags
 	// gem data, [schamber][layer][cluster]
@@ -204,14 +204,17 @@ module sp
         begin: station_loop
             for (gj = 0; gj < 9; gj = gj+1)
             begin: chamber_loop
-                for (gk = 0; gk < 2; gk = gk+1)
-                begin: lct_loop
-                    assign vpf [gi][gj][gk] = lct_i[gi][gj][gk].vf;
-                    assign q   [gi][gj][gk] = lct_i[gi][gj][gk].ql;
-                    assign wg  [gi][gj][gk] = lct_i[gi][gj][gk].wg;
-                    assign hstr[gi][gj][gk] = lct_i[gi][gj][gk].hs;
-                    assign cpat[gi][gj][gk] = lct_i[gi][gj][gk].cp;
-                end
+                assign vpf [gi][gj][0] = lct_i[gi][gj].lct0.vf;
+                assign q   [gi][gj][0] = lct_i[gi][gj].lct0.ql;
+                assign wg  [gi][gj][0] = lct_i[gi][gj].lct0.wg;
+                assign hstr[gi][gj][0] = lct_i[gi][gj].lct0.hs;
+                assign cpat[gi][gj][0] = lct_i[gi][gj].lct0.bend; // is this correct?
+
+                assign vpf [gi][gj][1] = lct_i[gi][gj].lct1.vf;
+                assign q   [gi][gj][1] = lct_i[gi][gj].lct1.ql;
+                assign wg  [gi][gj][1] = lct_i[gi][gj].lct1.wg;
+                assign hstr[gi][gj][1] = lct_i[gi][gj].lct1.hs;
+                assign cpat[gi][gj][1] = lct_i[gi][gj].lct1.bend; // is this correct?
             end
         end
     endgenerate

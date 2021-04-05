@@ -2,12 +2,12 @@
 
 module dbg_probes_switch
 (
-    // [station][chamber][segment] station 5 = neighbor sector, all stations
-    input csc_lct_mpcx lct_i [5:0][8:0][seg_ch-1:0],
+    // [station][chamber] station 5 = neighbor sector, all stations
+    input csc_all_lcts lct_i [5:0][8:0],
     input clk40
 );
 
-    (* mark_debug *) csc_lct_mpcx lct_sel [2:0][seg_ch-1:0]; // selected LCTs    
+    (* mark_debug *) csc_all_lcts lct_sel [2:0]; // selected LCTs    
 
     wire [2:0] sel_station [2:0];
     wire [3:0] sel_chamber [2:0];

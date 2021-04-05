@@ -4,7 +4,7 @@ module mpcx_deformatter_neighbor
 (
     input [75:0] rx_data_76 [8:0], // [link]
     
-    output csc_lct_mpcx lct_o [8:0][1:0],
+    output csc_all_lcts lct_o [8:0], 
 	output reg [25:0] stub_rate [8:0],
 
 	output reg [8:0] crc_err,
@@ -65,7 +65,7 @@ module mpcx_deformatter_neighbor
     for (i = 0; i < 9; i++) // chamber loop
     begin
     	// rate counter update
-		if (lct_o[i][0].vf != 1'h0 && rate_counter[i] != 26'h3ffffff) 
+		if (lct_o[i].lct0.vf != 1'h0 && rate_counter[i] != 26'h3ffffff) 
 		  rate_counter[i]++;
 	end
 
@@ -91,41 +91,45 @@ module mpcx_deformatter_neighbor
 		crc   [i][1],
 		dum5_1  [i],
 	
-		lct_o [i][1].cid ,
-		lct_o [i][1].ser  ,
-		lct_o [i][1].bx0   ,
-		lct_o [i][1].bc0   ,
+		lct_o[i].lct1.bend ,
+		lct_o[i].lct1.es  ,
+		lct_o[i].lct1.hmt [0]   ,
+		lct_o[i].lct1.bc0   ,
 		lctvf [i][1]   ,
-		lct_o [i][1].lr    ,
-		lct_o [i][1].cp  ,
-		lct_o [i][1].ql  ,
-		lct_o [i][1].wg    ,
-		lct_o [i][1].hs    ,
+		lct_o[i].lct1.lr    ,
+		lct_o[i].lct1.hmt [3:1]  ,
+		lct_o[i].lct1.cp_4  ,
+		lct_o[i].lct1.qs  ,
+		lct_o[i].lct1.ql  ,
+		lct_o[i].lct1.wg    ,
+		lct_o[i].lct1.hs    ,
 	
 		crc   [i][0],
 		dum5_2  [i],
-	
-		lct_o [i][0].cid ,
-		lct_o [i][0].ser  ,
-		lct_o [i][0].bx0   ,
-		lct_o [i][0].bc0   ,
+
+
+		lct_o[i].lct0.bend ,
+		lct_o[i].lct0.es  ,
+		lct_o[i].lct0.bx0   ,
+		lct_o[i].lct0.bc0   ,
 		lctvf [i][0]   ,
-		lct_o [i][0].lr    ,
-		lct_o [i][0].cp  ,
-		lct_o [i][0].ql  ,
-		lct_o [i][0].wg    ,
-		lct_o [i][0].hs    
+		lct_o[i].lct0.lr    ,
+		lct_o[i].lct0.cp [3:0]  ,
+		lct_o[i].lct0.qs  ,
+		lct_o[i].lct0.ql  ,
+		lct_o[i].lct0.wg    ,
+		lct_o[i].lct0.hs    
 	} = rx_data_76_r [i];
 
-	lnk_val[0] = (lctvf[0][1]  || lctvf[0][0]  || lct_o[0][0].bc0);
-	lnk_val[1] = (lctvf[1][1]  || lctvf[1][0]  || lct_o[1][0].bc0);
-	lnk_val[2] = (lctvf[2][1]  || lctvf[2][0]  || lct_o[2][0].bc0);
-	lnk_val[3] = (lctvf[3][1]  || lctvf[3][0]  || lct_o[3][0].bc0);
-	lnk_val[4] = (lctvf[4][1]  || lctvf[4][0]  || lct_o[4][0].bc0);
-	lnk_val[5] = (lctvf[5][1]  || lctvf[5][0]  || lct_o[5][0].bc0);
-	lnk_val[6] = (lctvf[6][1]  || lctvf[6][0]  || lct_o[6][0].bc0);
-	lnk_val[7] = (lctvf[7][1]  || lctvf[7][0]  || lct_o[7][0].bc0);
-	lnk_val[8] = (lctvf[8][1]  || lctvf[8][0]  || lct_o[8][0].bc0);
+	lnk_val[0] = (lctvf[0][1]  || lctvf[0][0]  || lct_o[0].lct0.bc0);
+	lnk_val[1] = (lctvf[1][1]  || lctvf[1][0]  || lct_o[1].lct0.bc0);
+	lnk_val[2] = (lctvf[2][1]  || lctvf[2][0]  || lct_o[2].lct0.bc0);
+	lnk_val[3] = (lctvf[3][1]  || lctvf[3][0]  || lct_o[3].lct0.bc0);
+	lnk_val[4] = (lctvf[4][1]  || lctvf[4][0]  || lct_o[4].lct0.bc0);
+	lnk_val[5] = (lctvf[5][1]  || lctvf[5][0]  || lct_o[5].lct0.bc0);
+	lnk_val[6] = (lctvf[6][1]  || lctvf[6][0]  || lct_o[6].lct0.bc0);
+	lnk_val[7] = (lctvf[7][1]  || lctvf[7][0]  || lct_o[7].lct0.bc0);
+	lnk_val[8] = (lctvf[8][1]  || lctvf[8][0]  || lct_o[8].lct0.bc0);
 
     for (i = 0; i < 9; i=i+1)
     begin
@@ -142,10 +146,10 @@ module mpcx_deformatter_neighbor
         // check data sanity
         if (lnk_val[i] &&
                 (
-                    lct_o[i][0].hs > max_hs ||
-                    lct_o[i][0].wg > max_wg ||
-                    lct_o[i][1].hs > max_hs ||
-                    lct_o[i][1].wg > max_wg
+                    lct_o[i].lct0.hs > max_hs ||
+                    lct_o[i].lct0.wg > max_wg ||
+                    lct_o[i].lct1.hs > max_hs ||
+                    lct_o[i].lct1.wg > max_wg
                 ) 
             )
         begin
@@ -153,8 +157,8 @@ module mpcx_deformatter_neighbor
         end
 
         // disable link output if error was detected
-	    lct_o[i][0].vf = lctvf[i][0] && (~crc_err[i]);
-	    lct_o[i][1].vf = lctvf[i][1] && (~crc_err[i]);
+	    lct_o[i].lct0.vf = lctvf[i][0] && (~crc_err[i]);
+	    lct_o[i].lct1.vf = lctvf[i][1] && (~crc_err[i]);
 
 	end
   end
