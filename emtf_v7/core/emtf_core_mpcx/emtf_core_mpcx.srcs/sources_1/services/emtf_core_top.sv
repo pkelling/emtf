@@ -823,6 +823,7 @@ module emtf_core_top
     wire [8:0] gmt_eta [2:0]; // eta for gmt
     wire [3:0] gmt_qlt [2:0]; // quality for gmt
     wire [2:0] gmt_crg; // charge for gmt
+    wire [1:0] hmt_out; // {out_of_time, in_time}
     
 `ifdef WITH_CORE    
 	sp core 
@@ -860,6 +861,7 @@ module emtf_core_top
         .gmt_eta (gmt_eta),
         .gmt_qlt (gmt_qlt),
         .gmt_crg (gmt_crg),
+        .hmt_out (hmt_out),
         
 		.clk         (clk40),
 		.control_clk (pcie_clk_buf),
@@ -929,6 +931,7 @@ module emtf_core_top
         
         .bt_pt (bt_pt),
         .bt_pt_tx (bt_pt_tx),
+        .hmt      (hmt_out),
        
         .txdata (txdata),
        

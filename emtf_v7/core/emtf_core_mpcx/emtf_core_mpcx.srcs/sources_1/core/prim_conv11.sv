@@ -159,38 +159,9 @@ module prim_conv11
 			factor[i] = (station <= 1 && (cscid <= 2 || cscid == 12) && hstrip[i] > 127) ? 1707 : // ME1/1a
 				 1301; // ME1/1b
 
-			//{0.0, 0.0, -0.60,  0.60, -0.64,  0.64, -0.23,  0.23, -0.21,  0.21, 0.0}
-			// 0    0    -5      +5    -5      +5    -2      +2    -2      +2    0
-			case (clctpat[i])
-				0  : begin clct_pat_corr = 3'h0; clct_pat_sign = 0; end
-				1  : begin clct_pat_corr = 3'h0; clct_pat_sign = 0; end
-				2  : begin clct_pat_corr = 3'h5; clct_pat_sign = 1; end
-				3  : begin clct_pat_corr = 3'h5; clct_pat_sign = 0; end
-				4  : begin clct_pat_corr = 3'h5; clct_pat_sign = 1; end
-				5  : begin clct_pat_corr = 3'h5; clct_pat_sign = 0; end
-				6  : begin clct_pat_corr = 3'h2; clct_pat_sign = 1; end
-				7  : begin clct_pat_corr = 3'h2; clct_pat_sign = 0; end
-				8  : begin clct_pat_corr = 3'h2; clct_pat_sign = 1; end
-				9  : begin clct_pat_corr = 3'h2; clct_pat_sign = 0; end
-				10 : begin clct_pat_corr = 3'h0; clct_pat_sign = 0; end
-				default: begin clct_pat_corr = 3'h0; clct_pat_sign = 0; end
-			endcase
-
-			// reverse clct pattern correction if chamber is reversed
-//			if (ph_reverse) clct_pat_sign = ~clct_pat_sign;
-
-			
 		    // convert into 1/8 strips and remove ME1/1a offset (512=128*4)
 		    me11a_w[i] = (station <= 1 && (cscid <= 2 || cscid == 12) && hstrip[i] > 127);
-		    eight_str[i]  = {2'b0, hstrip [i], 2'h0} - (me11a_w[i] ? 512 : 0);
-
-			// clct pattern correction
-			if (clct_pat_sign == 0) eight_str[i] = eight_str[i] + clct_pat_corr[2:1];
-			else
-			begin
-			   if (eight_str[i] != 13'd0) // fix on Jia Fu request 2016-11-10
-				 eight_str[i] = eight_str[i] - clct_pat_corr[2:1];
-			end
+		    eight_str[i]  = {2'b0, hstrip [i], clctpat[i][1:0]} - (me11a_w[i] ? 512 : 0); // clctpat[1:0] carries qs, es bits
 		end
 	   
 		for (i = 0; i < seg_ch; i = i+1)

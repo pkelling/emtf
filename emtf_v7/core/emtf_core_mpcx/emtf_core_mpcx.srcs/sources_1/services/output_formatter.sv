@@ -23,6 +23,7 @@ module output_formatter
     
     input [8:0] bt_pt [2:0], // pt values for best tracks
     output reg [8:0] bt_pt_tx [2:0], // pt values for best tracks as transmitted to uGMT
+    input  [1:0] hmt,
     
     output reg [63:0] txdata [2:0],
     
@@ -130,11 +131,11 @@ module output_formatter
             txdata[i][32] = gmt_crg_i[i]; // finally proper charge
             txdata[i][33] = gmt_cvl_i[i]; 
             txdata[i][30:23] = gmt_phi[i]; // phi
-            txdata[i][62:34] = {bxn[10:0], i[1:0], trk_id[3], trk_id[2], trk_id[1], trk_id[0]}; // track addresses
+            // leave HMT bits unoccupied here, assign them outside of the loop (below)
+            txdata[i][62:34] = {bxn[10:0], 2'b0, trk_id[3], trk_id[2], trk_id[1], trk_id[0]}; // track addresses
             txdata[i][21:13] = gmt_eta[i]; // eta
-            
-            
         end
+
         // remove outputs if there was HR recently
         if (hr_cnt > 24'h0)
         begin
@@ -150,6 +151,9 @@ module output_formatter
         txdata[2][31] = bxn[2];
         txdata[2][63] = 1'b0; // reserved
 
+        // assign HMT bits according to LCTTrigger_EMTF_uGMT_v4.pptx
+        txdata[0][50] = hmt[0]; // in time
+        txdata[1][50] = hmt[1]; // out of time
     end
 
     always @(posedge clk)

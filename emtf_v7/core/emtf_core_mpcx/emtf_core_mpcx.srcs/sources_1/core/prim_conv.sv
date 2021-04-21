@@ -139,27 +139,6 @@ module prim_conv
 		begin
 
 			me11a_w[i] = 0;
-			// clct pattern convertion array from CMSSW
-			//{0.0, 0.0, -0.60,  0.60, -0.64,  0.64, -0.23,  0.23, -0.21,  0.21, 0.0}
-			// 0    0    -5      +5    -5      +5    -2      +2    -2      +2    0
-			case (clctpat[i])
-				0  : begin clct_pat_corr = 3'h0; clct_pat_sign = 0; end
-				1  : begin clct_pat_corr = 3'h0; clct_pat_sign = 0; end
-				2  : begin clct_pat_corr = 3'h5; clct_pat_sign = 1; end
-				3  : begin clct_pat_corr = 3'h5; clct_pat_sign = 0; end
-				4  : begin clct_pat_corr = 3'h5; clct_pat_sign = 1; end
-				5  : begin clct_pat_corr = 3'h5; clct_pat_sign = 0; end
-				6  : begin clct_pat_corr = 3'h2; clct_pat_sign = 1; end
-				7  : begin clct_pat_corr = 3'h2; clct_pat_sign = 0; end
-				8  : begin clct_pat_corr = 3'h2; clct_pat_sign = 1; end
-				9  : begin clct_pat_corr = 3'h2; clct_pat_sign = 0; end
-				10 : begin clct_pat_corr = 3'h0; clct_pat_sign = 0; end
-				default: begin clct_pat_corr = 3'h0; clct_pat_sign = 0; end
-			endcase
-
-			// reverse clct pattern correction if chamber is reversed
-//			if (ph_reverse) clct_pat_sign = ~clct_pat_sign;
-			
 			// 10 deg chambers		
 			if 
 			(
@@ -167,20 +146,12 @@ module prim_conv
 			    (station >= 2 && ((cscid >= 3 && cscid <= 8) || cscid  == 10)) // ME2,3,4 outer ring
 			)
 			begin
-				eight_str[i]  = {2'b0, hstrip [i], 2'h0}; // full precision, uses only 2 bits of clct pattern correction
-				if (clct_pat_sign == 0) eight_str[i] = eight_str[i] + clct_pat_corr[2:1];
-				else
-				  // fix on Jia Fu request 2016-11-10
-				  if (eight_str[i] != 13'd0) eight_str[i] = eight_str[i] - clct_pat_corr[2:1];
+				eight_str[i]  = {2'b0, hstrip [i], clctpat[i][1:0]}; // full precision, adding qs and es bits (carried in clctpat[1:0] input)
 			end
 			else
 			begin
 				// 20 deg chambers
-				eight_str[i]  = {1'b0, hstrip [i], 3'h0}; // multiply by 2, uses all 3 bits of pattern correction
-				if (clct_pat_sign == 0) eight_str[i] = eight_str[i] + clct_pat_corr;
-				else
-				  // fix on Jia Fu request 2016-11-10
-				  if (eight_str[i] != 13'd0) eight_str[i] = eight_str[i] - clct_pat_corr;
+				eight_str[i]  = {1'b0, hstrip [i], clctpat[i][1:0], 1'h0}; // multiply by 2
 			end
 			
 			

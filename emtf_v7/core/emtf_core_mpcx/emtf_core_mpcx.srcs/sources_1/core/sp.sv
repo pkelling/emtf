@@ -67,6 +67,7 @@ module sp
     output [8:0] gmt_eta [2:0], // eta for gmt
     output [3:0] gmt_qlt [2:0], // quality for gmt
 	output [2:0] gmt_crg,
+    output [1:0] hmt_out, // {out_of_time, in_time}
         
     // clock
     input 				clk,
@@ -120,9 +121,8 @@ module sp
 	wire [bw_th-1:0] th_window_z0 = core_config[22:16];
     wire two_st_tight_timing      = core_config[23];
     wire [2:0] single_delay       = core_config[26:24];
-    
+    wire [3:0] hmt_delay          = core_config[30:27];
 
-	
     // fold numbers for multiplexed pattern detectors
     wire [2:0] 			ph_foldn = 0;
     wire [2:0] 			th_foldn = 0;
@@ -185,7 +185,7 @@ module sp
     wire [3:0]        q    [5:0][8:0][seg_ch-1:0];
     wire [bw_wg-1:0]  wg   [5:0][8:0][seg_ch-1:0];
     wire [bw_hs-1:0]  hstr [5:0][8:0][seg_ch-1:0];
-    wire [3:0] 	   cpat [5:0][8:0][seg_ch-1:0];
+    wire [3:0]        cpat [5:0][8:0][seg_ch-1:0]; // {qs, es} bits
 
 	(* mark_debug *) wire [bw_fph-1:0] ge11_ph [6:0][1:0][7:0]; 
 	(* mark_debug *) wire [bw_th-1:0]  ge11_th [6:0][1:0][7:0];
@@ -207,10 +207,11 @@ module sp
                 for (gk = 0; gk < 2; gk = gk+1)
                 begin: lct_loop
                     assign vpf [gi][gj][gk] = lct_i[gi][gj][gk].vf;
-                    assign q   [gi][gj][gk] = lct_i[gi][gj][gk].ql;
+                    assign q   [gi][gj][gk] = lct_i[gi][gj][gk].ql[2:0]; // remove ql[3] which is repurposed
                     assign wg  [gi][gj][gk] = lct_i[gi][gj][gk].wg;
                     assign hstr[gi][gj][gk] = lct_i[gi][gj][gk].hs;
-                    assign cpat[gi][gj][gk] = lct_i[gi][gj][gk].cp;
+                    // ql[3] repurposed as qs, ser repurposed as es
+                    assign cpat[gi][gj][gk] = {2'b0, lct_i[gi][gj][gk].ql[3], lct_i[gi][gj][gk].ser} ; 
                 end
             end
         end
@@ -461,6 +462,16 @@ module sp
     
         .clk (clk)
     );
+
+    // high-multiplicity trigger, a.k.a. shower
+    shower shwr
+    (
+        .lct_i     (lct_i    ),
+        .hmt_out   (hmt_out  ), // {out_of_time, in_time}
+        .hmt_delay (hmt_delay),
+        .clk       (clk      )
+    );
+    
 
     assign vl_single = vl_stub[0] | vl_stub[1];
     assign ph_single = ph_stub[0] | ph_stub[1];
