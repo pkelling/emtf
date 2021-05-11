@@ -10,7 +10,7 @@ module rx_reclock
 );
 
     reg clk80_ff;
-    reg [5:0] clk80_r;
+    reg [6:0] clk80_r;
     (* async_reg = "TRUE" *) reg [75:0] inreg_320;
     (* async_reg = "TRUE" *) reg rx_header_320;
     (* async_reg = "TRUE" *) reg [75:0] rx_data_76;
@@ -30,7 +30,7 @@ module rx_reclock
     (
         .Q   (rx_data_76[75:0]),
         .C   (clk320),
-        .CE  (rx_header_320 && (clk80_r[5:4] == 2'b01 || clk80_r[5:4] == 2'b10)), 
+        .CE  (rx_header_320 && (clk80_r[6:5] == 2'b01 || clk80_r[6:5] == 2'b10)), 
         .CLR (1'b0),
         .D   (inreg_320[75:0])
     );
@@ -39,7 +39,7 @@ module rx_reclock
     begin
         // detect edge of 80 M clock
         
-        if (clk80_r[5:4] == 2'b01 || clk80_r[5:4] == 2'b10)
+        if (clk80_r[6:5] == 2'b01 || clk80_r[6:5] == 2'b10)
         begin 
          
             // the statement below somehow creates nets from rx_data_76.Q to rx_data_76.D, which should not be needed
@@ -55,7 +55,7 @@ module rx_reclock
             else rx_header_320 = ~rx_header_320; // if normal header, just flip the header flag
         end 
         
-        clk80_r = {clk80_r[4:0], clk80_ff}; // clk80 history
+        clk80_r = {clk80_r[5:0], clk80_ff}; // clk80 history
     end
 
 endmodule

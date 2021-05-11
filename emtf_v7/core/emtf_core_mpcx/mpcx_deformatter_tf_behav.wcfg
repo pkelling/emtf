@@ -3,87 +3,61 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="clock_phase_detect_tf_behav.wdb" id="1">
+      <db_ref path="rx_reclock_tf_behav.wdb" id="1">
          <top_modules>
-            <top_module name="clock_phase_detect_tf" />
             <top_module name="glbl" />
+            <top_module name="rx_reclock_tf" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="4468500fs"></ZoomStartTime>
-      <ZoomEndTime time="5011591fs"></ZoomEndTime>
-      <Cursor1Time time="4912800fs"></Cursor1Time>
+      <ZoomStartTime time="23691fs"></ZoomStartTime>
+      <ZoomEndTime time="230462fs"></ZoomEndTime>
+      <Cursor1Time time="189000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="330"></NameColumnWidth>
-      <ValueColumnWidth column_width="178"></ValueColumnWidth>
+      <ValueColumnWidth column_width="150"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="8" />
-   <wvobject type="array" fp_name="/clock_phase_detect_tf/uut/rx_clk">
-      <obj_property name="ElementShortName">rx_clk[5:0]</obj_property>
-      <obj_property name="ObjectShortName">rx_clk[5:0]</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/clock_phase_detect_tf/uut/clk_320">
-      <obj_property name="ElementShortName">clk_320</obj_property>
-      <obj_property name="ObjectShortName">clk_320</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/clock_phase_detect_tf/uut/phase_drift">
-      <obj_property name="ElementShortName">phase_drift[5:0]</obj_property>
-      <obj_property name="ObjectShortName">phase_drift[5:0]</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/clock_phase_detect_tf/uut/flag_reset">
-      <obj_property name="ElementShortName">flag_reset</obj_property>
-      <obj_property name="ObjectShortName">flag_reset</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/clock_phase_detect_tf/uut/rx_clk_ff">
-      <obj_property name="ElementShortName">rx_clk_ff[5:0][5:0]</obj_property>
-      <obj_property name="ObjectShortName">rx_clk_ff[5:0][5:0]</obj_property>
-      <obj_property name="isExpanded"></obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/clock_phase_detect_tf/uut/rx_clk_cnt">
-      <obj_property name="ElementShortName">rx_clk_cnt[5:0][7:0]</obj_property>
-      <obj_property name="ObjectShortName">rx_clk_cnt[5:0][7:0]</obj_property>
-      <obj_property name="isExpanded"></obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/clock_phase_detect_tf/uut/fab_clk_cnt">
-      <obj_property name="ElementShortName">fab_clk_cnt[9:0]</obj_property>
-      <obj_property name="ObjectShortName">fab_clk_cnt[9:0]</obj_property>
-   </wvobject>
+   <WVObjectSize size="10" />
    <wvobject type="vbus" fp_name="vbus118">
       <obj_property name="label">fab_clk_80_cnt</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <wvobject type="logic" fp_name="/clock_phase_detect_tf/uut/fab_clk_cnt[9]">
-         <obj_property name="ElementShortName">[9]</obj_property>
-         <obj_property name="ObjectShortName">[9]</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/clock_phase_detect_tf/uut/fab_clk_cnt[8]">
-         <obj_property name="ElementShortName">[8]</obj_property>
-         <obj_property name="ObjectShortName">[8]</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/clock_phase_detect_tf/uut/fab_clk_cnt[7]">
-         <obj_property name="ElementShortName">[7]</obj_property>
-         <obj_property name="ObjectShortName">[7]</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/clock_phase_detect_tf/uut/fab_clk_cnt[6]">
-         <obj_property name="ElementShortName">[6]</obj_property>
-         <obj_property name="ObjectShortName">[6]</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/clock_phase_detect_tf/uut/fab_clk_cnt[5]">
-         <obj_property name="ElementShortName">[5]</obj_property>
-         <obj_property name="ObjectShortName">[5]</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/clock_phase_detect_tf/uut/fab_clk_cnt[4]">
-         <obj_property name="ElementShortName">[4]</obj_property>
-         <obj_property name="ObjectShortName">[4]</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/clock_phase_detect_tf/uut/fab_clk_cnt[3]">
-         <obj_property name="ElementShortName">[3]</obj_property>
-         <obj_property name="ObjectShortName">[3]</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/clock_phase_detect_tf/uut/fab_clk_cnt[2]">
-         <obj_property name="ElementShortName">[2]</obj_property>
-         <obj_property name="ObjectShortName">[2]</obj_property>
-      </wvobject>
+   </wvobject>
+   <wvobject type="logic" fp_name="/rx_reclock_tf/clk40">
+      <obj_property name="ElementShortName">clk40</obj_property>
+      <obj_property name="ObjectShortName">clk40</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/rx_reclock_tf/clk320">
+      <obj_property name="ElementShortName">clk320</obj_property>
+      <obj_property name="ObjectShortName">clk320</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rx_reclock_tf/uut/clk80_r">
+      <obj_property name="ElementShortName">clk80_r[5:0]</obj_property>
+      <obj_property name="ObjectShortName">clk80_r[5:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rx_reclock_tf/rx_data_38">
+      <obj_property name="ElementShortName">rx_data_38[37:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_data_38[37:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rx_reclock_tf/rx_data_76_o">
+      <obj_property name="ElementShortName">rx_data_76_o[75:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_data_76_o[75:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/rx_reclock_tf/uut/rx_header_320">
+      <obj_property name="ElementShortName">rx_header_320</obj_property>
+      <obj_property name="ObjectShortName">rx_header_320</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rx_reclock_tf/inreg_320_1">
+      <obj_property name="ElementShortName">inreg_320_1[35:0]</obj_property>
+      <obj_property name="ObjectShortName">inreg_320_1[35:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rx_reclock_tf/inreg_320_0">
+      <obj_property name="ElementShortName">inreg_320_0[35:0]</obj_property>
+      <obj_property name="ObjectShortName">inreg_320_0[35:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/rx_reclock_tf/rx_clk">
+      <obj_property name="ElementShortName">rx_clk</obj_property>
+      <obj_property name="ObjectShortName">rx_clk</obj_property>
    </wvobject>
 </wave_config>
