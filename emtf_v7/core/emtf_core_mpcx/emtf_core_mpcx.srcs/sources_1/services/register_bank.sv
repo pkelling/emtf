@@ -97,8 +97,8 @@ module register_bank
 
     input      [4:0] automatic_delay_id1 [4:0][7:0], // [station][cscid=1 data fragment]
     output reg [4:0] manual_delay_id1 [4:0][7:0], // [station][cscid=1 data fragment] 
-    input      [15:0] ge11_correction_cnt [6:0]
-
+    input      [15:0] ge11_correction_cnt [6:0],
+    output  [4:0] gem_data_del [6:0] // GE1/1 input data delay, per link [schamber=link]
 );
 
 	wire [63:0] automatic_delay_id1_64 [4:0];
@@ -139,6 +139,19 @@ module register_bank
     reg [63:0] user_af_delays [4:0];
     reg [71:0] user_af_delays_n;
     reg [31:0] jtag_in3_r;
+    reg [5*7-1:0] gem_data_del_comb;
+    assign 
+    {
+        gem_data_del[6], 
+        gem_data_del[5], 
+        gem_data_del[4], 
+        gem_data_del[3], 
+        gem_data_del[2], 
+        gem_data_del[1], 
+        gem_data_del[0] 
+    } = gem_data_del_comb;
+    
+    
 	integer i, j, k;
 
 	initial
@@ -173,6 +186,7 @@ module register_bank
 		mpc_link_hr_to = 24'd4000000; // ~100 ms
 		
 		control_reg[19] = 1'b1; // mpc_links_hr_en
+		gem_data_del_comb = {7{5'h1}};
 	end
 
 	wire [8:0] reg_addr = {sel, addr}; // combined address
@@ -290,6 +304,7 @@ module register_bank
                 9'h06b: begin manual_delay_id1_64[2] = r_in; end
                 9'h06c: begin manual_delay_id1_64[3] = r_in; end
                 9'h06d: begin manual_delay_id1_64[4] = r_in; end
+				9'h072: begin gem_data_del_comb = r_in; end
 			endcase
 		end
 		else
@@ -597,6 +612,7 @@ module register_bank
 				9'h06f: begin r_out = r_out | ge11_link_status; end 
 				9'h070: begin r_out = r_out | ge11_corr_cnt[0]; end 
 				9'h071: begin r_out = r_out | ge11_corr_cnt[1]; end 
+				9'h072: begin r_out = r_out | gem_data_del_comb; end
 			endcase
 			in_delay_tap_rb_r = in_delay_tap_rb;
 			out_delay_tap_rb_r = out_delay_tap_rb;

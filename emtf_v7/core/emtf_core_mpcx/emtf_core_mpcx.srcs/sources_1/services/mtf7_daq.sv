@@ -1441,33 +1441,33 @@ module mtf7_daq
         end
    end
 
-   (* mark_debug = "FALSE" *) wire [63:0] daq_data_w = daq_data;
-   (* mark_debug = "FALSE" *) wire daq_valid_w = daq_valid;
-   (* mark_debug = "FALSE" *) wire daq_first_w = daq_first;
-   (* mark_debug = "FALSE" *) wire daq_last_w = daq_last;
-   (* mark_debug = "FALSE" *) wire amc13_ready_w = amc13_ready;
-   //    (* mark_debug = "FALSE" *) wire [8:0] vp_d0_w;
-   //    (* mark_debug = "FALSE" *) wire [8:0] vp_d1_w;
-   //    (* mark_debug = "FALSE" *) wire [8:0] vp_d2_w;
-   //    (* mark_debug = "FALSE" *) wire [8:0] vp_d3_w;
-   //    (* mark_debug = "FALSE" *) wire [8:0] vp_d4_w;
-   (* mark_debug = "FALSE" *) wire [3:0] bt_q_d_w [2:0];
-   (* mark_debug = "FALSE" *) wire [3:0] bt_q_w [2:0];
-   (* mark_debug = "FALSE" *) wire l1a_proc_w = l1a_proc;
-   (* mark_debug = "FALSE" *) wire valor_w = valor;
-   (* mark_debug = "FALSE" *) wire l1a_fifo_full_w = l1a_fifo_full;
-   (* mark_debug = "FALSE" *) wire l1a_fifo_valid_w = l1a_fifo_valid;
-   (* mark_debug = "FALSE" *) wire [11:0] bxn_counter_w = bxn_counter;
-   (* mark_debug = "FALSE" *) wire [11:0] bxn_counterf_w = bxn_counterf;
-   (* mark_debug = "FALSE" *) wire [11:0] ring_data_count_w = ring_data_count;
-   (* mark_debug = "FALSE" *) wire [15:0] l1a_fifo_data_count_w = l1a_fifo_data_count;
-   (* mark_debug = "FALSE" *) wire [3:0] tts_data_w = tts_data;
-   (* mark_debug = "FALSE" *) wire [11:0] ring_addrw_w = ring_addrw;
-   (* mark_debug = "FALSE" *) wire [11:0] ring_addrr_w = ring_addrr;
-   (* mark_debug = "FALSE" *) wire resync_req_w = resync_req;
-   (* mark_debug = "FALSE" *) wire ttc_resync_w = ttc_resync;
-   (* mark_debug = "FALSE" *) wire resync_proc_w = resync_proc;
-   (* mark_debug = "FALSE" *) wire [3:0] st_w = st;
+   (* mark_debug = "TRUE" *) wire [63:0] daq_data_w = daq_data;
+   (* mark_debug = "TRUE" *) wire daq_valid_w = daq_valid;
+   (* mark_debug = "TRUE" *) wire daq_first_w = daq_first;
+   (* mark_debug = "TRUE" *) wire daq_last_w = daq_last;
+   (* mark_debug = "TRUE" *) wire amc13_ready_w = amc13_ready;
+   //    (* mark_debug = "TRUE" *) wire [8:0] vp_d0_w;
+   //    (* mark_debug = "TRUE" *) wire [8:0] vp_d1_w;
+   //    (* mark_debug = "TRUE" *) wire [8:0] vp_d2_w;
+   //    (* mark_debug = "TRUE" *) wire [8:0] vp_d3_w;
+   //    (* mark_debug = "TRUE" *) wire [8:0] vp_d4_w;
+   (* mark_debug = "TRUE" *) wire [3:0] bt_q_d_w [2:0];
+   (* mark_debug = "TRUE" *) wire [3:0] bt_q_w [2:0];
+   (* mark_debug = "TRUE" *) wire l1a_proc_w = l1a_proc;
+   (* mark_debug = "TRUE" *) wire valor_w = valor;
+   (* mark_debug = "TRUE" *) wire l1a_fifo_full_w = l1a_fifo_full;
+   (* mark_debug = "TRUE" *) wire l1a_fifo_valid_w = l1a_fifo_valid;
+   (* mark_debug = "TRUE" *) wire [11:0] bxn_counter_w = bxn_counter;
+   (* mark_debug = "TRUE" *) wire [11:0] bxn_counterf_w = bxn_counterf;
+   (* mark_debug = "TRUE" *) wire [11:0] ring_data_count_w = ring_data_count;
+   (* mark_debug = "TRUE" *) wire [15:0] l1a_fifo_data_count_w = l1a_fifo_data_count;
+   (* mark_debug = "TRUE" *) wire [3:0] tts_data_w = tts_data;
+   (* mark_debug = "TRUE" *) wire [11:0] ring_addrw_w = ring_addrw;
+   (* mark_debug = "TRUE" *) wire [11:0] ring_addrr_w = ring_addrr;
+   (* mark_debug = "TRUE" *) wire resync_req_w = resync_req;
+   (* mark_debug = "TRUE" *) wire ttc_resync_w = ttc_resync;
+   (* mark_debug = "TRUE" *) wire resync_proc_w = resync_proc;
+   (* mark_debug = "TRUE" *) wire [3:0] st_w = st;
 
 
    genvar vi;

@@ -671,6 +671,7 @@ module emtf_core_top
    wire [233:0]      ge11_rxd [6:0]; ///< GEM rx data, 1 frame x 234 bits, for 7 links
    wire [6:0]        ge11_rx_valid;  ///< GEM data valid flags
    wire [6:0]        ge11_crc_match; ///< CRC match flags from GEM links
+   wire [4:0] gem_data_del [6:0];
 
     gem_rx gem_rx_i
     (
@@ -687,6 +688,7 @@ module emtf_core_top
         .ge11_link_status (ge11_link_status),
         .correction_cnt   (ge11_correction_cnt),
         .fiber_enable     (fiber_enable [(49+7) +: 7]),
+        .gem_data_del     (gem_data_del),
         .clk40      (clk40)
     );  
 	
@@ -1066,8 +1068,8 @@ module emtf_core_top
 
 		.automatic_delay_id1 (automatic_delay_id1),
 		.manual_delay_id1    (manual_delay_id1),
-		.ge11_correction_cnt (ge11_correction_cnt)
-
+		.ge11_correction_cnt (ge11_correction_cnt),
+		.gem_data_del     (gem_data_del)
     );
 
 	wire [8*5+9-1:0] bc0_mrg;

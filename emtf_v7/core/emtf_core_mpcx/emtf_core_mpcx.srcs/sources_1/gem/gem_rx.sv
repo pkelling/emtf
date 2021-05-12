@@ -15,6 +15,7 @@ module gem_rx
     output [63:0] ge11_link_status,
     output [15:0] correction_cnt [6:0],
     input  [6:0] fiber_enable,
+    input  [4:0] gem_data_del [6:0], // manual gem data delay for alignment [schamber=link]
 	input clk40
 );
 
@@ -48,7 +49,7 @@ module gem_rx
 
 
     (* mark_debug *) wire [233:0] lb_gbt_rx_frame[6:0] ;
-    reg  [233:0] lb_gbt_rx_frame_r[6:0] ;
+    wire  [233:0] lb_gbt_rx_frame_r[6:0] ;
     assign ge11_rxd = lb_gbt_rx_frame_r;
     assign ge11_rx_valid = lb_gbt_rx_header_locked;
     assign ge11_crc_match = 7'b1111111;
@@ -133,27 +134,9 @@ module gem_rx
 				link_id[i] = link_id_val[i];
 			end
         end
-/*
-        if (rx_ready == 1'b0)
-        begin
-            for (i = 0; i < 11; i++)
-                for (j = 0; j < 7; j++)
-                    r[i][j] = 234'h0;
-        end
-        else
-        begin    
-            lb_gbt_rx_frame_r = r[0];
-        
-            for (i = 0; i < 11; i++)
-            begin
-                r[i] = r[i+1];
-            end
-            
-            r[11] = lb_gbt_rx_frame;
-        end
-*/        
-        lb_gbt_rx_frame_r = lb_gbt_rx_frame;
+//        lb_gbt_rx_frame_r = lb_gbt_rx_frame;
     end
+
 
     genvar gi, gj, gk;
     generate
@@ -187,6 +170,16 @@ module gem_rx
                 .rx_correction_flag_o   (lb_gbt_correction_flag [gi])
             );
 
+            // programmable alignment delay, manual so far
+            dyn_shift #(.SELWIDTH(5), .BW(234)) gem_sh 
+            (
+                .CLK(clk40), 
+                .CE(1'b1), 
+                .SEL(gem_data_del[gi]), 
+                .SI(lb_gbt_rx_frame [gi]), 
+                .DO(lb_gbt_rx_frame_r [gi])
+            );
+            
             // data decoder according to "GEM Trigger Data Format Proposal"
             for (gj = 0; gj < 2; gj++) // layer loop
             begin: layer_loop
