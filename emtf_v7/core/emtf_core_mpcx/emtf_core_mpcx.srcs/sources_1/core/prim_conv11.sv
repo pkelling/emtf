@@ -21,7 +21,7 @@
 
 module prim_conv11
 (
-	vpf, quality, wiregroup, hstrip, clctpat,
+	vpf, quality, wiregroup, hstrip, clctpat, qses,
 	ph, th, vl, phzvl, me11a, clctpat_r,
     ph_hit, 
 	sel, addr, r_in, r_out, we,
@@ -39,6 +39,7 @@ module prim_conv11
 	input [bw_wg-1:0] wiregroup [seg_ch-1:0]; // wiregroup numbers
 	input [bw_hs-1:0] hstrip    [seg_ch-1:0]; // halfstrip numbers
 	input [3:0] 	  clctpat   [seg_ch-1:0]; // clct pattern numbers
+	input [1:0] 	  qses      [seg_ch-1:0]; // qs, es bits
 
 	// outputs
 	// low-precision ph, only for detection
@@ -161,7 +162,7 @@ module prim_conv11
 
 		    // convert into 1/8 strips and remove ME1/1a offset (512=128*4)
 		    me11a_w[i] = (station <= 1 && (cscid <= 2 || cscid == 12) && hstrip[i] > 127);
-		    eight_str[i]  = {2'b0, hstrip [i], clctpat[i][1:0]} - (me11a_w[i] ? 512 : 0); // clctpat[1:0] carries qs, es bits
+		    eight_str[i]  = {2'b0, hstrip [i], qses[i]} - (me11a_w[i] ? 512 : 0); // qses[1:0] carries qs, es bits
 		end
 	   
 		for (i = 0; i < seg_ch; i = i+1)

@@ -188,7 +188,8 @@ module sp
     wire [3:0]        q    [5:0][8:0][seg_ch-1:0];
     wire [bw_wg-1:0]  wg   [5:0][8:0][seg_ch-1:0];
     wire [bw_hs-1:0]  hstr [5:0][8:0][seg_ch-1:0];
-    wire [3:0]        cpat [5:0][8:0][seg_ch-1:0]; // {qs, es} bits
+    wire [1:0]        qses [5:0][8:0][seg_ch-1:0]; // {qs, es} bits
+    wire [3:0]        cpat [5:0][8:0][seg_ch-1:0]; // bend angles
 
 	(* mark_debug *) wire [bw_fph-1:0] ge11_ph [6:0][1:0][7:0]; 
 	(* mark_debug *) wire [bw_th-1:0]  ge11_th [6:0][1:0][7:0];
@@ -214,7 +215,8 @@ module sp
                     assign wg  [gi][gj][gk] = lct_i[gi][gj][gk].wg;
                     assign hstr[gi][gj][gk] = lct_i[gi][gj][gk].hs;
                     // ql[3] repurposed as qs, ser repurposed as es
-                    assign cpat[gi][gj][gk] = {2'b0, lct_i[gi][gj][gk].ql[3], lct_i[gi][gj][gk].ser} ; 
+                    assign qses[gi][gj][gk] = {lct_i[gi][gj][gk].ql[3], lct_i[gi][gj][gk].ser} ; 
+                    assign cpat[gi][gj][gk] = lct_i[gi][gj][gk].cid; // CSCID repurposed as bend angle, using CLCT pattern field for that
                 end
             end
         end
@@ -228,6 +230,7 @@ module sp
 		 .wg     (wg), 
 		 .hstr   (hstr),
 		 .cpat   (cpat),
+		 .qses   (qses),
 		 .ph     (ph), 
 		 .th11   (th11), 
 		 .th     (th), 

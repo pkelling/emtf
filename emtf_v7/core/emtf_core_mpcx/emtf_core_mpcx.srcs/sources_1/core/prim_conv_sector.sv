@@ -22,7 +22,7 @@
 module prim_conv_sector
 (
     vpf, q, wg, hstr, cpat,
-    ph, th11, th, vl, phzvl, me11a, cpatr,
+    ph, th11, th, vl, phzvl, me11a, cpatr, qses,
     ph_hit, 
     cs, sel, addr, r_in, r_out, we,
 
@@ -41,6 +41,7 @@ module prim_conv_sector
 	input [bw_wg-1:0]  wg   [5:0][8:0][seg_ch-1:0];
 	input [bw_hs-1:0]  hstr [5:0][8:0][seg_ch-1:0];
 	input [3:0] 	   cpat [5:0][8:0][seg_ch-1:0];
+	input [1:0] 	   qses [5:0][8:0][seg_ch-1:0];
 
 	output [bw_fph-1:0]  ph   [5:0][8:0][seg_ch-1:0];
 	// special th outputs for ME11 because of duplication
@@ -110,6 +111,7 @@ module prim_conv_sector
 				    .wiregroup   (wg [i][j]), 
 				    .hstrip      (hstr[i][j]),
 				    .clctpat     (cpat[i][j]),
+				    .qses        (qses[i][j]),
 				    .ph          (ph [i][j]), 
 				    .th          (th11 [i][j]), // use special th11 array for ME11 
 				    .vl          (vl [i][j]),
@@ -140,6 +142,7 @@ module prim_conv_sector
 					 .wiregroup	  (wg [i][j]), 
 					 .hstrip	  (hstr[i][j]), 
  				     .clctpat     (cpat[i][j]),
+ 				     .qses        (qses[i][j]),
 					 .ph		  (ph [i][j]), 
 					 .th		  (th [i][j]), 
 					 .vl		  (vl [i][j]),
@@ -170,6 +173,7 @@ module prim_conv_sector
 					 .wiregroup	  (wg [i][j]), 
 					 .hstrip	  (hstr[i][j]), 
  				     .clctpat     (cpat[i][j]),
+				     .qses        (qses[i][j]),
 					 .ph		  (ph [i][j]), 
 					 .th		  (th [i][j]), 
 					 .vl		  (vl [i][j]),
@@ -198,6 +202,7 @@ module prim_conv_sector
             .wiregroup   (wg [5][0]), 
             .hstrip      (hstr[5][0]),
             .clctpat     (cpat[5][0]),
+		    .qses        (qses[5][0]),
             .ph          (ph [5][0]), 
             .th          (th11[2][0]), // use special th11 array for ME11 
             .vl          (vl [5][0]),
@@ -225,6 +230,7 @@ module prim_conv_sector
                  .wiregroup	  (wg [5][j]), 
                  .hstrip	  (hstr[5][j]), 
                  .clctpat     (cpat[5][j]),
+				 .qses        (qses[5][j]),
                  .ph		  (ph [5][j]), 
                  .th		  (th [5][j]), 
                  .vl		  (vl [5][j]),

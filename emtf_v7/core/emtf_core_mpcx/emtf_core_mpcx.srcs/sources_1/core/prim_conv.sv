@@ -21,7 +21,7 @@
 
 module prim_conv
 (
-	vpf, quality, wiregroup, hstrip, clctpat,
+	vpf, quality, wiregroup, hstrip, clctpat, qses,
 	ph, th, vl, phzvl, me11a, clctpat_r,
     ph_hit,
 	sel, addr, r_in, r_out, we,
@@ -40,6 +40,7 @@ module prim_conv
 	input [bw_wg-1:0] wiregroup [seg_ch-1:0]; // wiregroup numbers
 	input [bw_hs-1:0] hstrip    [seg_ch-1:0]; // halfstrip numbers
 	input [3:0] 	  clctpat   [seg_ch-1:0]; // clct pattern numbers
+	input [1:0] 	  qses      [seg_ch-1:0]; // qs, es bits
 
 	// outputs
 	// phi
@@ -146,12 +147,12 @@ module prim_conv
 			    (station >= 2 && ((cscid >= 3 && cscid <= 8) || cscid  == 10)) // ME2,3,4 outer ring
 			)
 			begin
-				eight_str[i]  = {2'b0, hstrip [i], clctpat[i][1:0]}; // full precision, adding qs and es bits (carried in clctpat[1:0] input)
+				eight_str[i]  = {2'b0, hstrip [i], qses[i]}; // full precision, adding qs and es bits (carried in qses input)
 			end
 			else
 			begin
 				// 20 deg chambers
-				eight_str[i]  = {1'b0, hstrip [i], clctpat[i][1:0], 1'h0}; // multiply by 2
+				eight_str[i]  = {1'b0, hstrip [i], qses[i], 1'h0}; // multiply by 2
 			end
 			
 			
