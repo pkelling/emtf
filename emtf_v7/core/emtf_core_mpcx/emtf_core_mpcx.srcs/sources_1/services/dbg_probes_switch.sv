@@ -6,6 +6,7 @@ module dbg_probes_switch
     input csc_lct_mpcx lct_i [5:0][8:0][seg_ch-1:0],
     input clk40
 );
+`include "spbits.sv"
 
     (* mark_debug *) csc_lct_mpcx lct_sel [2:0][seg_ch-1:0]; // selected LCTs    
 

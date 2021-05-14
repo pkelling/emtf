@@ -826,6 +826,8 @@ module emtf_core_top
     wire [3:0] gmt_qlt [2:0]; // quality for gmt
     wire [2:0] gmt_crg; // charge for gmt
     wire [1:0] hmt_out; // {out_of_time, in_time}
+	wire [17:0] nn_pt [2:0]; // NN PT value
+    wire [2:0] nn_pt_v; // NN valid flag for PT
     
 `ifdef WITH_CORE    
 	sp core 
@@ -864,6 +866,9 @@ module emtf_core_top
         .gmt_qlt (gmt_qlt),
         .gmt_crg (gmt_crg),
         .hmt_out (hmt_out),
+
+        .nn_pt (nn_pt),
+        .nn_pt_v (nn_pt_v),
         
 		.clk         (clk40),
 		.control_clk (pcie_clk_buf),
@@ -1218,6 +1223,9 @@ module emtf_core_top
          .bt_ci (bt_ci_d), 
          .bt_si (bt_si_d),
          .ptlut_addr (ptlut_addr_d),
+         .nn_pt (nn_pt),
+         .nn_pt_v (nn_pt_v),
+
          .gmt_phi (gmt_phi_d),
          .gmt_eta (gmt_eta_d),
          .gmt_qlt (gmt_qlt_d),
