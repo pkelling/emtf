@@ -518,6 +518,7 @@ module sp
     );    
 
     // neural network for PT assignment
+
     nn_tux nn
     (
         .bt_phi (bt_phi),

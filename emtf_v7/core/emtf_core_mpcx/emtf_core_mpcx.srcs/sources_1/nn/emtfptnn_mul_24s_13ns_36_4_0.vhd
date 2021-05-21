@@ -6,7 +6,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-entity myproject_mul_24s_13ns_36_4_0_MulnS_11 is
+entity emtfptnn_mul_24s_13ns_36_4_0_MulnS_4 is
 port (
     clk: in std_logic;
     ce: in std_logic;
@@ -15,7 +15,7 @@ port (
     p: out std_logic_vector(36 - 1 downto 0));
 end entity;
 
-architecture behav of myproject_mul_24s_13ns_36_4_0_MulnS_11 is
+architecture behav of emtfptnn_mul_24s_13ns_36_4_0_MulnS_4 is
     signal tmp_product : std_logic_vector(36 - 1 downto 0);
     signal a_i : std_logic_vector(24 - 1 downto 0);
     signal b_i : std_logic_vector(13 - 1 downto 0);
@@ -48,7 +48,7 @@ end architecture;
 Library IEEE;
 use IEEE.std_logic_1164.all;
 
-entity myproject_mul_24s_13ns_36_4_0 is
+entity emtfptnn_mul_24s_13ns_36_4_0 is
     generic (
         ID : INTEGER;
         NUM_STAGE : INTEGER;
@@ -64,8 +64,8 @@ entity myproject_mul_24s_13ns_36_4_0 is
         dout : OUT STD_LOGIC_VECTOR(dout_WIDTH - 1 DOWNTO 0));
 end entity;
 
-architecture arch of myproject_mul_24s_13ns_36_4_0 is
-    component myproject_mul_24s_13ns_36_4_0_MulnS_11 is
+architecture arch of emtfptnn_mul_24s_13ns_36_4_0 is
+    component emtfptnn_mul_24s_13ns_36_4_0_MulnS_4 is
         port (
             clk : IN STD_LOGIC;
             ce : IN STD_LOGIC;
@@ -77,7 +77,7 @@ architecture arch of myproject_mul_24s_13ns_36_4_0 is
 
 
 begin
-    myproject_mul_24s_13ns_36_4_0_MulnS_11_U :  component myproject_mul_24s_13ns_36_4_0_MulnS_11
+    emtfptnn_mul_24s_13ns_36_4_0_MulnS_4_U :  component emtfptnn_mul_24s_13ns_36_4_0_MulnS_4
     port map (
         clk => clk,
         ce => ce,
