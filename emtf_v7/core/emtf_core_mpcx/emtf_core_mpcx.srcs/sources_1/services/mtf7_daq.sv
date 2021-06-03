@@ -1,3 +1,7 @@
+`ifdef SIMULATION_DAQ
+`include "mpcx_interface.sv"
+`endif
+
 module mtf7_daq
 (
 
@@ -273,15 +277,15 @@ module mtf7_daq
     link ID
     */
    // [daq_bank][link][layer][cluster in layer]
-   reg [8:0]                    gem_str_d        [7:0][6:0][1:0][7:0]; // GEM strip/pad
+   reg [7:0]                    gem_str_d        [7:0][6:0][1:0][7:0]; // GE1/1 strip/pad is 8 bits
    reg [2:0]                    gem_par_d        [7:0][6:0][1:0][7:0]; // GEM eta partition
    reg [2:0]                    gem_clu_sz_d     [7:0][6:0][1:0][7:0]; // GEM cluster size
    reg [9:0]                    gem_head_d       [7:0];                // GEM frame header
    reg [6:0]                    gem_rx_valid_d   [7:0];                // GEM data valid flags
    reg [6:0]                    gem_crc_match_d  [7:0];                // GEM crc match
-   reg [6:0]                    gem_bx_cur_d     [7:0];                // GEM cluster data from current BX (0) or previous (1)
-   reg                          gem_fmt_version_d[7:0];                // format version of the GEM frame
-   reg [3:0]                    gem_n_clu_d      [7:0][1:0];           // GEM number valid clusters, 4 bits per layer
+//   reg [6:0]                    gem_bx_cur_d     [7:0];                // GEM cluster data from current BX (0) or previous (1)
+//   reg                          gem_fmt_version_d[7:0];                // format version of the GEM frame
+   reg [3:0]                    gem_n_clu_d      [7:0][6:0][1:0];           // GEM number valid clusters, 4 bits per layer
    reg [3:0]                    gem_clu_id_d     [7:0];                // GEM cluster ID
    reg                          gem_val;                               // GEM cluster is valid
    reg [2:0]                    gem_tbin_ofs;                          // GEM cluster BX offset (0 for current BX, 1 for previous)
@@ -291,6 +295,8 @@ module mtf7_daq
    reg [2:0]                    gmt_cvl_i;
    reg [8:0]                    gmt_eta_abs [2:0];
    reg [8:0]                    bt_pt_tx [2:0];
+   reg [6:0]                    gem_bc0  [7:0]   ;               
+   reg [6:0]                    gem_link_id_flag [7:0];   
 
 
    // pack data into delay lines' inputs, unpack the outputs of ring buffer
@@ -400,8 +406,6 @@ module mtf7_daq
 
       /********* GEM BLOCK *********/
       gem_pos = 0;
-      gem_ring_pos = INP_DEL_BW + OUT_DEL_BW + RPC_INP_DEL_BW; // GEM data in daq_bank start after CSC inputs and track outputs, and RPC inputs
-      gemw = 0;
       // pack/unpack GEM data
       // two layers per link
       // each cluster 14 bits (GE1/1), or 13 bits (GE2/1)
@@ -423,65 +427,66 @@ module mtf7_daq
       begin
          // pack GEM data (234 bits) into the input delay line
          gem_inp_del_in[gem_pos +: 234] = gem_rxd[station_];
-         for (j = 0; j < N_GE11_LAY; j = j+1) // superchamber/stack layer?
-         begin
-            for (k = 0; k < GEM_CLS_PER_BX; k = k+1) // cluster in layer loop
-            begin
-               for (i = 0; i < 8; i = i+1) // daq_bank word loop
-               begin
-                  // unpack GEM data header (10 bits) from the DAQ bank
-                  // only for first layer and cluster
-                  if (j == 0 && k == 0)
-                  begin
-                     gem_head_d[i] = daq_bank[i][gem_ring_pos +: GEM_HD_SZ];  // first gem_hd_sz bits are the header
-                     {
-                      gem_n_clu_d[i][1], // any valid clusters(8-15) after this are from BX-1
-                      gem_n_clu_d[i][0], // any valid clusters(0-7)  after this are from BX-1
-                      gem_fmt_version_d[i],
-                      gem_bx_cur_d[i]
-                      } = gem_head_d[i];
-                  end
-
-                  // GE1/1
-                  {
-                   gem_clu_sz_d[i][station_][j][k],     // as above
-                   gem_par_d[i][station_][j][k],        // as above
-                   gem_str_d[i][station_][j][k]         // as above
-                   } = daq_bank[i][gem_ring_pos +: GEM_CLU_BW]; // read by GEM_CLU_BW bits/cluster
-                  gem_clu_id_d[i] = k + 2*j;                 // cluster ID 0-7 for layer1, 8-15 for layer2?
-                  tbin            = i;                       // timebin
-                  gem_tbin_ofs    = 0;                       // timebin offset
-                  gem_val         = gem_str_d[i][station_][j][k] != 8'hff; // GE1/1
-                  // gem_val          = gem_str_d[i][station_][j][k] != 9'h1ff; // GE2/1
-                  if (j == 0 && gem_val == 1 && k > gem_n_clu_d[i][j])
-                  begin // valid cluster from previous BX for layer 1
-                     gem_tbin_ofs = 1;                       // timebin offset
-                  end
-                  if (j == 1 && gem_val == 1 && k > gem_n_clu_d[i][j])
-                  begin // valid cluster from previous BX for layer 2
-                     gem_tbin_ofs = 1;                       // timebin offset
-                  end
-                  gem_data[i][gemw] = {
-                                       1'b0, 11'b0, gem_val, tbin - gem_tbin_ofs,                                                        // GE11d
-                                       1'b1, 1'b0, 2'b0, 12'h0,                                                                          // GE11c
-                                       1'b1, station_, gem_clu_id_d[i], 8'h0,                                                            // GE11b
-                                       1'b1, gem_clu_sz_d[i][station_][j][k], gem_par_d[i][station_][j][k], gem_str_d[i][station_][j][k] // GE11a
-                                       };
-               end
-               // only for the first layer+cluster in the loop
-               if (k == 0  && j == 0)
-               begin
-                  gem_pos      += GEM_HD_SZ; // move the read pointer past the header words
-                  gem_ring_pos += GEM_HD_SZ; // move the read pointer past the header words
-               end
-               gem_pos      += GEM_CLU_BW;
-               gem_ring_pos += GEM_CLU_BW;
-               gemw         += 1;
-            end
-         end
+         gem_pos += 234;
+      end
+      gem_inp_del_in[gem_pos +: 14] = {gem_crc_match, gem_rx_valid};
+         
+      for (i = 0; i < 8; i = i+1) // daq_bank word loop
+      begin
+          gem_ring_pos = INP_DEL_BW + OUT_DEL_BW + RPC_INP_DEL_BW; // GEM data in daq_bank start after CSC inputs and track outputs, and RPC inputs
+          gemw = 0;
+          for (station_ = 0; station_ < 3'd7; station_ = station_+1) // GEM sub-sector loop
+          begin
+             gem_head_d[i] = daq_bank[i][gem_ring_pos +: GEM_HD_SZ];  // first gem_hd_sz bits are the header
+             {
+                  gem_n_clu_d[i][station_][1], // any valid clusters(8-15) after this are from BX-1
+                  gem_n_clu_d[i][station_][0], // any valid clusters(0-7)  after this are from BX-1
+                  gem_link_id_flag[i][station_],
+                  gem_bc0[i][station_]
+             } = gem_head_d[i];
+             
+             gem_ring_pos += GEM_HD_SZ; // move the read pointer past the header words
+             
+             for (j = 0; j < N_GE11_LAY; j = j+1) // superchamber/stack layer?
+             begin
+                for (k = 0; k < GEM_CLS_PER_BX; k = k+1) // cluster in layer loop
+                begin
+                      // unpack GEM data header (10 bits) from the DAQ bank
+                      // only for first layer and cluster
+    
+                      // GE1/1
+                      {
+                           gem_clu_sz_d[i][station_][j][k],     // as above
+                           gem_par_d[i][station_][j][k],        // as above
+                           gem_str_d[i][station_][j][k]         // as above
+                      } = daq_bank[i][gem_ring_pos +: GEM_CLU_BW]; // read by GEM_CLU_BW bits/cluster
+                      
+                      gem_ring_pos += GEM_CLU_BW;
+                      
+                      gem_clu_id_d[i] = k + 2*j;                 // cluster ID 0-7 for layer1, 8-15 for layer2?
+                      tbin            = i;                       // timebin
+                      gem_tbin_ofs    = 0;                       // timebin offset
+                      gem_val         = gem_str_d[i][station_][j][k] != 8'hff; // GE1/1
+                      // gem_val          = gem_str_d[i][station_][j][k] != 9'h1ff; // GE2/1
+                      if (gem_link_id_flag[i] == 1'b1) gem_val = 1'b0; // if link ID is transmitted, not a valid primitive
+                      if (gem_val == 1 && k > gem_n_clu_d[i][station_][j])
+                      begin // valid cluster from previous BX for layer 1
+                         //gem_tbin_ofs = 1;                       // timebin offset
+                         tbin -= 2'h1;
+                      end
+                      gem_data[i][gemw] = 
+                      {
+                           1'b0, 11'b0, gem_val, tbin, // - gem_tbin_ofs,                                                        // GE11d
+                           1'b1, gem_bc0[i][station_], 2'b0, 12'h0,                                                                          // GE11c
+                           1'b1, station_, gem_clu_id_d[i], 8'h0,                                                            // GE11b
+                           1'b1, gem_clu_sz_d[i][station_][j][k], gem_par_d[i][station_][j][k], 1'b0, gem_str_d[i][station_][j][k] // GE11a
+                      };
+                      gemw++;
+                 end
+             end
+          end
       end
 
-      gem_inp_del_in[gem_pos +: 14] = {gem_crc_match, gem_rx_valid};
 
       for (i = 0; i < 8; i = i+1) // daq_bank word loop
       begin
