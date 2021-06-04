@@ -469,11 +469,13 @@ module mtf7_daq
                       gem_val         = gem_str_d[i][station_][j][k] != 8'hff; // GE1/1
                       // gem_val          = gem_str_d[i][station_][j][k] != 9'h1ff; // GE2/1
                       if (gem_link_id_flag[i] == 1'b1) gem_val = 1'b0; // if link ID is transmitted, not a valid primitive
-                      if (gem_val == 1 && k > gem_n_clu_d[i][station_][j])
-                      begin // valid cluster from previous BX for layer 1
-                         //gem_tbin_ofs = 1;                       // timebin offset
-                         tbin -= 2'h1;
-                      end
+
+//                      if (gem_val == 1 && k > gem_n_clu_d[i][station_][j])
+//                      begin // valid cluster from previous BX for layer 1
+//                         //gem_tbin_ofs = 1;                       // timebin offset
+//                         tbin -= 2'h1;
+//                      end
+
                       gem_data[i][gemw] = 
                       {
                            1'b0, 11'b0, gem_val, tbin, // - gem_tbin_ofs,                                                        // GE11d

@@ -206,7 +206,7 @@ module mtf7_daq_tf;
 
    reg [2:0]  daq_gem_clu_sz;
    reg [2:0]  daq_gem_clu_par;
-   reg [7:0]  daq_gem_clu_pad;
+   reg [8:0]  daq_gem_clu_pad;
    reg [2:0]  daq_gem_link;
    reg [3:0]  daq_gem_cluster_num;
    reg        daq_gem_bc0;
@@ -238,7 +238,7 @@ module mtf7_daq_tf;
                     12'ha,       // bxn_offset,
                     3'h2,        // valor_window
                     8'h3,        // valor_delay
-                    3'h3,        // l1a_window, how many BXs to report on each L1A
+                    3'h7,        // l1a_window, how many BXs to report on each L1A
                     8'h1         // l1a_delay
                     };
 
@@ -394,8 +394,8 @@ module mtf7_daq_tf;
            // station loop
            for (l = 0; l < 7; ++l) 
            begin
-              gem_v_hits[0] = 7;//l;
-              gem_v_hits[1] = 8;//l+1;
+              gem_v_hits[0] = l;
+              gem_v_hits[1] = l;
               gem_head = {gem_v_hits[1], gem_v_hits[0], 1'b0, 1'b1};
               // layer loop
               for (j = 0; j < N_GE11_LAY; ++j) 
@@ -403,9 +403,9 @@ module mtf7_daq_tf;
                  // cluster loop
                  for (k = 0; k < GEM_CLS_PER_BX; ++k) 
                  begin
-                    gem_clu_sz  = 2;//j+1;
-                    gem_clu_par = 3;//7-j;
-                    gem_clu_pad = 8'haa;//(l*j)+(j*k);
+                    gem_clu_sz  = l;//j+1;
+                    gem_clu_par = k;//7-j;
+                    gem_clu_pad = n[7:0]; //8'haa+j;//(l*j)+(j*k);
 
                     gem_clu_d[j][k] = {gem_clu_sz,
                                        gem_clu_par,
@@ -436,6 +436,11 @@ module mtf7_daq_tf;
            end
 
 
+            if ((daq_data & 64'h8000_8000_8000_8000) == 64'h8000_8000_8000_8000) // header/trailer
+            begin
+                $write ("header/trailer: %h\n", daq_data);
+            end
+            
             if ((daq_data & 64'h8000_8000_8000_8000) == 64'h0000_8000_8000_8000) // GEM data block
             begin
 //                $write ("GEM data: %h\n", daq_data);
@@ -463,52 +468,51 @@ module mtf7_daq_tf;
 
                 } = daq_data;
                
-//                $write ("vp: %b tbin: %h bc0: %b bxn: %h link: %h cln: %h cls: %h, prt: %h str: %02h\n",
-//                   daq_gem_vp,
-//                   daq_gem_tbin,
+                $write ("vp: %b tbin: %h bc0: %b bxn: %h link: %h cln: %h cls: %h, prt: %h str: %02h\n",
+                   daq_gem_vp,
+                   daq_gem_tbin,
                    
-//                   daq_gem_bc0,
-//                   daq_gem_bxn,
+                   daq_gem_bc0,
+                   daq_gem_bxn,
                    
-//                   daq_gem_link,
-//                   daq_gem_cluster_num,
+                   daq_gem_link,
+                   daq_gem_cluster_num,
                    
-//                   daq_gem_clu_sz ,
-//                   daq_gem_clu_par,
-//                   daq_gem_clu_pad
-//                );
+                   daq_gem_clu_sz ,
+                   daq_gem_clu_par,
+                   daq_gem_clu_pad
+                );
 
-                $write ("gem_rxd[0] = %59h\n", gem_rxd[0]);
-                $write ("daq_bnk[0] = %59h\n", uut.daq_bank[0][4490+234*0 +: 234]);
-                $write ("daq_bnk[1] = %59h\n", uut.daq_bank[0][4490+234*1 +: 234]);
-                $write ("daq_bnk[2] = %59h\n", uut.daq_bank[0][4490+234*2 +: 234]);
-                $write ("daq_bnk[3] = %59h\n", uut.daq_bank[0][4490+234*3 +: 234]);
-                $write ("daq_bnk[4] = %59h\n", uut.daq_bank[0][4490+234*4 +: 234]);
-                $write ("daq_bnk[5] = %59h\n", uut.daq_bank[0][4490+234*5 +: 234]);
-                $write ("daq_bnk[6] = %59h\n", uut.daq_bank[0][4490+234*6 +: 234]);
-                $write ("daq_bnk[7] = %59h\n", uut.daq_bank[0][4490+234*7 +: 234]);
+//                $write ("gem_rxd[0]    = %59h\n", gem_rxd[0]);
+//                $write ("daq_bnk[4][0] = %59h\n", uut.daq_bank[4][4490+234*0 +: 234]);
+//                $write ("daq_bnk[4][1] = %59h\n", uut.daq_bank[4][4490+234*1 +: 234]);
+//                $write ("daq_bnk[4][2] = %59h\n", uut.daq_bank[4][4490+234*2 +: 234]);
+//                $write ("daq_bnk[4][3] = %59h\n", uut.daq_bank[4][4490+234*3 +: 234]);
+//                $write ("daq_bnk[4][4] = %59h\n", uut.daq_bank[4][4490+234*4 +: 234]);
+//                $write ("daq_bnk[4][5] = %59h\n", uut.daq_bank[4][4490+234*5 +: 234]);
+//                $write ("daq_bnk[4][6] = %59h\n", uut.daq_bank[4][4490+234*6 +: 234]);
 
-                for (bnk = 0; bnk < 8; bnk++)
-                begin
-                  for (station_ = 0; station_ < 3'd7; station_ = station_+1) // GEM sub-sector loop
-                  begin
-                    $write ("link: %d ", station_);
-                    for (j = 0; j < N_GE11_LAY; j = j+1) // superchamber/stack layer?
-                    begin
-                        for (k = 0; k < GEM_CLS_PER_BX; k = k+1) // cluster in layer loop
-                        begin
+//                for (bnk = 0; bnk < 8; bnk++)
+//                begin
+//                  for (station_ = 0; station_ < 3'd7; station_ = station_+1) // GEM sub-sector loop
+//                  begin
+//                    $write ("link: %d n0: %h n1: %h ", station_, uut.gem_n_clu_d[bnk][station_][0], uut.gem_n_clu_d[bnk][station_][1]);
+//                    for (j = 0; j < N_GE11_LAY; j = j+1) // superchamber/stack layer?
+//                    begin
+//                        for (k = 0; k < GEM_CLS_PER_BX; k = k+1) // cluster in layer loop
+//                        begin
 
-                            $write ("zps: %h %h %h ",
-                                uut.gem_clu_sz_d[bnk][station_][j][k],
-                                uut.gem_par_d   [bnk][station_][j][k],
-                                uut.gem_str_d   [bnk][station_][j][k]
-                            ); 
+//                            $write ("zps: %h %h %h ",
+//                                uut.gem_clu_sz_d[bnk][station_][j][k],
+//                                uut.gem_par_d   [bnk][station_][j][k],
+//                                uut.gem_str_d   [bnk][station_][j][k]
+//                            ); 
 
-                        end
-                    end
-                    $write ("\n");
-                  end
-                end
+//                        end
+//                    end
+//                    $write ("\n");
+//                  end
+//                end
 
             end
         end
