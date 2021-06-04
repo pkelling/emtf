@@ -214,6 +214,63 @@ module mtf7_daq_tf;
    reg        daq_gem_vp;
    reg [2:0]  daq_gem_tbin;
    
+   // since most of the DAQ logic runs at 80 MHz, have to print based on doubled clock inside the module
+   always @(negedge uut.clk_80)
+   begin
+            if ((daq_data & 64'hf000_f000_f000_f000) == 64'hf000_f000_f000_f000) // trailer
+            begin
+                $write ("trailer: %h\n", daq_data);
+//                for (k = 0; k < 112; k++)
+//                begin
+//                    $write ("gem_data[0][%03d] = %016h\n", k, uut.gem_data[0][k]);
+//                end
+            end
+            
+            if ((daq_data & 64'h8000_8000_8000_8000) == 64'h0000_8000_8000_8000) // GEM data block
+            begin
+//                $write ("GEM data: %h mewc: %04d n: %04d\n", daq_data, uut.mewc, n);
+
+                // decode
+                {
+                   zero12,
+                   daq_gem_vp,
+                   daq_gem_tbin,
+                   
+                   d15c,
+                   daq_gem_bc0,
+                   zero2,
+                   daq_gem_bxn,
+                   
+                   d15b,
+                   daq_gem_link,
+                   daq_gem_cluster_num,
+                   zero8,
+                   
+                   d15a,
+                   daq_gem_clu_sz ,
+                   daq_gem_clu_par,
+                   daq_gem_clu_pad
+
+                } = daq_data;
+               
+                $write ("vp: %b tbin: %h bc0: %b bxn: %h link: %h cln: %h cls: %h, prt: %h str: %02h\n",
+                   daq_gem_vp,
+                   daq_gem_tbin,
+                   
+                   daq_gem_bc0,
+                   daq_gem_bxn,
+                   
+                   daq_gem_link,
+                   daq_gem_cluster_num,
+                   
+                   daq_gem_clu_sz ,
+                   daq_gem_clu_par,
+                   daq_gem_clu_pad
+                );
+            end
+    end
+
+    integer nc;
 
    initial
    begin
@@ -392,6 +449,7 @@ module mtf7_daq_tf;
 
            // GEM BLOCK
            // station loop
+           nc = 0;
            for (l = 0; l < 7; ++l) 
            begin
               gem_v_hits[0] = l;
@@ -403,14 +461,15 @@ module mtf7_daq_tf;
                  // cluster loop
                  for (k = 0; k < GEM_CLS_PER_BX; ++k) 
                  begin
-                    gem_clu_sz  = l;//j+1;
-                    gem_clu_par = k;//7-j;
-                    gem_clu_pad = n[7:0]; //8'haa+j;//(l*j)+(j*k);
+                    gem_clu_sz  = l;
+                    gem_clu_par = k;
+                    gem_clu_pad = nc % 12 == 0 ? n[7:0] : 255;
 
                     gem_clu_d[j][k] = {gem_clu_sz,
                                        gem_clu_par,
                                        gem_clu_pad
                                       };
+                    nc++;
                  end
               end
               gem_rxd[l] = 
@@ -436,52 +495,6 @@ module mtf7_daq_tf;
            end
 
 
-            if ((daq_data & 64'h8000_8000_8000_8000) == 64'h8000_8000_8000_8000) // header/trailer
-            begin
-                $write ("header/trailer: %h\n", daq_data);
-            end
-            
-            if ((daq_data & 64'h8000_8000_8000_8000) == 64'h0000_8000_8000_8000) // GEM data block
-            begin
-//                $write ("GEM data: %h\n", daq_data);
-
-                // decode
-                {
-                   zero12,
-                   daq_gem_vp,
-                   daq_gem_tbin,
-                   
-                   d15c,
-                   daq_gem_bc0,
-                   zero2,
-                   daq_gem_bxn,
-                   
-                   d15b,
-                   daq_gem_link,
-                   daq_gem_cluster_num,
-                   zero8,
-                   
-                   d15a,
-                   daq_gem_clu_sz ,
-                   daq_gem_clu_par,
-                   daq_gem_clu_pad
-
-                } = daq_data;
-               
-                $write ("vp: %b tbin: %h bc0: %b bxn: %h link: %h cln: %h cls: %h, prt: %h str: %02h\n",
-                   daq_gem_vp,
-                   daq_gem_tbin,
-                   
-                   daq_gem_bc0,
-                   daq_gem_bxn,
-                   
-                   daq_gem_link,
-                   daq_gem_cluster_num,
-                   
-                   daq_gem_clu_sz ,
-                   daq_gem_clu_par,
-                   daq_gem_clu_pad
-                );
 
 //                $write ("gem_rxd[0]    = %59h\n", gem_rxd[0]);
 //                $write ("daq_bnk[4][0] = %59h\n", uut.daq_bank[4][4490+234*0 +: 234]);
@@ -514,7 +527,6 @@ module mtf7_daq_tf;
 //                  end
 //                end
 
-            end
         end
    end
 

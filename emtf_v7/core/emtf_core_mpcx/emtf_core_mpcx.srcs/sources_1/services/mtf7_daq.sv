@@ -232,10 +232,10 @@ module mtf7_daq
    `localpar out_lng = OUT_DEL_BW/3;
 
    // FIXME Convert magic numbers to constants!!
-   `localpar me_data_wc  = 9*6*2;  // count of all possible segments from ME
+   `localpar me_data_wc  = 9*6*2;  // count of all possible segments from ME chambers*stations*segments
    `localpar rpc_data_wc = 7*3*4;  // count of all possible RPC words
    // FIXME Correct for GEM
-   `localpar gem_data_wc = 7*2*8;  // count of all possible GEM words
+   `localpar gem_data_wc = 7*2*8;  // count of all possible GEM words links*layers*clusters
 
    reg [RING_BW-1:0]            daq_bank [7:0];
    reg [2:0]                    daq_bank_cnt;
@@ -456,20 +456,22 @@ module mtf7_daq
     
                       // GE1/1
                       {
-                           gem_clu_sz_d[i][station_][j][k],     // as above
-                           gem_par_d[i][station_][j][k],        // as above
-                           gem_str_d[i][station_][j][k]         // as above
+                           gem_clu_sz_d [i][station_][j][k],     // as above
+                           gem_par_d    [i][station_][j][k],        // as above
+                           gem_str_d    [i][station_][j][k]         // as above
                       } = daq_bank[i][gem_ring_pos +: GEM_CLU_BW]; // read by GEM_CLU_BW bits/cluster
                       
                       gem_ring_pos += GEM_CLU_BW;
                       
-                      gem_clu_id_d[i] = k + 2*j;                 // cluster ID 0-7 for layer1, 8-15 for layer2?
+                      gem_clu_id_d[i] = {j[0], k[2:0]};                 // cluster ID 0-7 for layer1, 8-15 for layer2?
                       tbin            = i;                       // timebin
                       gem_tbin_ofs    = 0;                       // timebin offset
                       gem_val         = gem_str_d[i][station_][j][k] != 8'hff; // GE1/1
                       // gem_val          = gem_str_d[i][station_][j][k] != 9'h1ff; // GE2/1
                       if (gem_link_id_flag[i] == 1'b1) gem_val = 1'b0; // if link ID is transmitted, not a valid primitive
 
+// FIXME: logic for out-of-time clusters is disabled so far
+// 
 //                      if (gem_val == 1 && k > gem_n_clu_d[i][station_][j])
 //                      begin // valid cluster from previous BX for layer 1
 //                         //gem_tbin_ofs = 1;                       // timebin offset
