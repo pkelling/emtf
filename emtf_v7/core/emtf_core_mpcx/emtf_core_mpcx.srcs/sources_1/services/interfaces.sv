@@ -149,11 +149,20 @@ interface ge11_cluster;
 	reg [7:0] str; // strip
 	reg [2:0] prt; // partition
 	reg [2:0] csz; // cluster size
-	reg       vf; // valid, flag, generated field from strip != 'hff
+	reg       vf;  // valid flag, generated field from strip != 'hff
 
 	modport in  ( input str, prt, csz, vf);
 	modport out (output str, prt, csz, vf);
 
 endinterface
+
+typedef struct packed
+{
+	logic [7:0] str; // strip
+	logic [2:0] prt; // partition
+	logic [2:0] csz; // cluster size
+	logic       vf ;  // valid flag, generated field from strip != 'hff
+} ge11_cluster_struct;
+
 
 `endif    

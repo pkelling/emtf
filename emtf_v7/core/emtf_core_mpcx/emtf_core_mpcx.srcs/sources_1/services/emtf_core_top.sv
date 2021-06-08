@@ -1316,6 +1316,7 @@ module emtf_core_top
     (
         // [station][chamber][segment] station 5 = neighbor sector, all stations
         .lct_i (lct_aligned),
+		.ge11_cl    (ge11_cl), // decoded clusters
         .clk40 (clk40)
     );
 

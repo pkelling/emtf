@@ -1,4 +1,4 @@
--- (c) Copyright 1995-2020 Xilinx, Inc. All rights reserved.
+-- (c) Copyright 1995-2021 Xilinx, Inc. All rights reserved.
 -- 
 -- This file contains confidential and proprietary information
 -- of Xilinx, Inc. and is protected under U.S. and
@@ -56,11 +56,20 @@ COMPONENT mpcx_dbg_vio
   PORT (
     clk : IN STD_LOGIC;
     probe_out0 : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
-    probe_out1 : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+    probe_out1 : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
     probe_out2 : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
     probe_out3 : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
-    probe_out4 : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
-    probe_out5 : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
+    probe_out4 : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+    probe_out5 : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+    probe_out6 : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+    probe_out7 : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+    probe_out8 : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+    probe_out9 : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+    probe_out10 : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+    probe_out11 : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+    probe_out12 : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+    probe_out13 : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+    probe_out14 : OUT STD_LOGIC_VECTOR(2 DOWNTO 0)
   );
 END COMPONENT;
 -- COMP_TAG_END ------ End COMPONENT Declaration ------------
@@ -77,7 +86,16 @@ your_instance_name : mpcx_dbg_vio
     probe_out2 => probe_out2,
     probe_out3 => probe_out3,
     probe_out4 => probe_out4,
-    probe_out5 => probe_out5
+    probe_out5 => probe_out5,
+    probe_out6 => probe_out6,
+    probe_out7 => probe_out7,
+    probe_out8 => probe_out8,
+    probe_out9 => probe_out9,
+    probe_out10 => probe_out10,
+    probe_out11 => probe_out11,
+    probe_out12 => probe_out12,
+    probe_out13 => probe_out13,
+    probe_out14 => probe_out14
   );
 -- INST_TAG_END ------ End INSTANTIATION Template ---------
 
