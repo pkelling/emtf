@@ -1452,12 +1452,12 @@ void sp12_qtw::on_en_input_fibers_released()
         if (devices_d[id] >= 0)
         {
             value = 0ULL;
-            for (int i = 0; i < 63; i++)
+            for (int i = 62; i >= 0; i--)
             {
                 int fe_column = fib_en_map[i];
                 bool fe_bit = ui->bc0_source_tbl->item(5, fe_column)->checkState();
-                value |= fe_bit;
                 value <<= 1;
+                value |= fe_bit;
             }
 
             int fd = devices_d[id];
