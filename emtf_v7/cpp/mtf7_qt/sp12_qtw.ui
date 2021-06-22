@@ -449,7 +449,7 @@
            <x>10</x>
            <y>50</y>
            <width>131</width>
-           <height>21</height>
+           <height>16</height>
           </rect>
          </property>
          <property name="text">
@@ -475,7 +475,7 @@
            <x>90</x>
            <y>70</y>
            <width>51</width>
-           <height>26</height>
+           <height>21</height>
           </rect>
          </property>
          <property name="maximum">
@@ -491,7 +491,7 @@
            <x>90</x>
            <y>90</y>
            <width>51</width>
-           <height>26</height>
+           <height>21</height>
           </rect>
          </property>
          <property name="maximum">
@@ -533,7 +533,7 @@
            <x>10</x>
            <y>110</y>
            <width>131</width>
-           <height>20</height>
+           <height>16</height>
           </rect>
          </property>
          <property name="text">
@@ -571,8 +571,8 @@
           <rect>
            <x>170</x>
            <y>130</y>
-           <width>53</width>
-           <height>27</height>
+           <width>51</width>
+           <height>21</height>
           </rect>
          </property>
          <property name="value">
@@ -609,9 +609,9 @@
          <property name="geometry">
           <rect>
            <x>170</x>
-           <y>160</y>
+           <y>150</y>
            <width>51</width>
-           <height>23</height>
+           <height>21</height>
           </rect>
          </property>
          <property name="value">
@@ -621,27 +621,53 @@
         <widget class="QLabel" name="label_15">
          <property name="geometry">
           <rect>
-           <x>60</x>
-           <y>160</y>
-           <width>101</width>
+           <x>90</x>
+           <y>150</y>
+           <width>81</width>
            <height>20</height>
           </rect>
          </property>
          <property name="text">
-          <string>Single trigger delay</string>
+          <string>Single trg delay</string>
          </property>
         </widget>
         <widget class="QCheckBox" name="single_en_cb">
          <property name="geometry">
           <rect>
-           <x>70</x>
-           <y>180</y>
+           <x>10</x>
+           <y>150</y>
            <width>85</width>
            <height>20</height>
           </rect>
          </property>
          <property name="text">
-          <string>Enable single</string>
+          <string>Single en</string>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="gem_delay_sb">
+         <property name="geometry">
+          <rect>
+           <x>170</x>
+           <y>170</y>
+           <width>51</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="value">
+          <number>6</number>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_16">
+         <property name="geometry">
+          <rect>
+           <x>90</x>
+           <y>170</y>
+           <width>81</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>GEM delay</string>
          </property>
         </widget>
        </widget>
@@ -1600,7 +1626,7 @@
           </rect>
          </property>
          <property name="text">
-          <string>En</string>
+          <string>Set</string>
          </property>
         </widget>
         <widget class="QPushButton" name="dis_input_fibers">
@@ -1613,16 +1639,16 @@
           </rect>
          </property>
          <property name="text">
-          <string>Dis</string>
+          <string>Get</string>
          </property>
         </widget>
         <widget class="QPushButton" name="in_fiber_status_pb">
          <property name="geometry">
           <rect>
-           <x>110</x>
-           <y>20</y>
-           <width>71</width>
-           <height>16</height>
+           <x>100</x>
+           <y>70</y>
+           <width>81</width>
+           <height>21</height>
           </rect>
          </property>
          <property name="text">

@@ -25,7 +25,7 @@ bool prbs_counter_reset, prbs_force_error;
 uint64_t prbs_type;
 string fname, fname_control, mpc_data_fn;
 bool gth_reset, clink_reset, mpc_enable, spy_addr_reset, ptlut_clk_reset, sync_clk_reset, rx_buffers_reset, daq_reset, ptlut_clk_kill, force_oos;
-bool orbit_ev_bx;
+bool orbit_ev_bx, gem_logic;
 int gtx_rate;
 int module_index;
 int mpc_test_index, iterations, ptlut_rx_clk_delay_val;
@@ -45,7 +45,8 @@ int prbs_errors_main(string command);
 int prbs_mpc_enable(int prbs_type);
 int resets_main(bool gth_reset, bool clink_reset, bool mpc_enable, bool spy_addr_reset,
                 bool ptlut_clk_reset, bool sync_clk_reset, bool rx_buffers_reset, bool daq_reset,
-                bool ptlut_clk_kill, bool force_oos, bool orbit_ev_bx, int endcap[13], int sector[13]);
+                bool ptlut_clk_kill, bool force_oos, bool orbit_ev_bx, bool gem_logic,
+				int endcap[13], int sector[13]);
 
 //int gtx_bitrate(string command, uint64_t rate);
 int fill_buffer_mem(int module_index);
@@ -216,7 +217,8 @@ protected:
                 // send resets
                 resets_main(gth_reset, clink_reset, mpc_enable, spy_addr_reset,
                             ptlut_clk_reset, sync_clk_reset, rx_buffers_reset, daq_reset,
-                            ptlut_clk_kill, force_oos, orbit_ev_bx, endcap_lut, sector_lut);
+                            ptlut_clk_kill, force_oos, orbit_ev_bx, gem_logic,
+							endcap_lut, sector_lut);
                 break;
 	       
             case 'w':
@@ -443,6 +445,7 @@ sp12_qtw::sp12_qtw(QWidget *parent) :
     ui->reset_list->addItem("PTclk kill");
     ui->reset_list->addItem("Force OOS");
     ui->reset_list->addItem("OrbEvBx");
+    ui->reset_list->addItem("GEM logic");
 
     ui->reset_list->setCurrentRow(1);
 
@@ -481,16 +484,16 @@ sp12_qtw::sp12_qtw(QWidget *parent) :
     ui->l1a_rate_list->addItem("50k");
     ui->l1a_rate_list->addItem("100k");
 
-    ui->bc0_source_tbl->setColumnCount(55);
-    ui->bc0_source_tbl->setRowCount(5);
-    ui->bc0_source_tbl->horizontalHeader()->setDefaultSectionSize(20);
+    ui->bc0_source_tbl->setColumnCount(69);
+    ui->bc0_source_tbl->setRowCount(6);
+    ui->bc0_source_tbl->horizontalHeader()->setDefaultSectionSize(22);
     ui->bc0_source_tbl->verticalHeader()->setDefaultSectionSize(20);
       // set the resize mode to fixed, so the user cannot change the height/width
     //ui->bc0_source_tbl->horizontalHeader()->setResizeMode(QHeaderView::Fixed);
     ui->bc0_source_tbl->verticalHeader()->setResizeMode(QHeaderView::Fixed);
 
-    QTableWidgetItem *checkBoxItem[2][54];
-    QTableWidgetItem *st_item[54], *ch_item[54];
+    QTableWidgetItem *checkBoxItem[4][68];
+    QTableWidgetItem *st_item[68], *ch_item[68];
     char stn[6][10] = {"1A", "1B", "2", "3", "4", "N"}; // station names
     char ln[100];
 
@@ -500,28 +503,48 @@ sp12_qtw::sp12_qtw(QWidget *parent) :
     ui->bc0_source_tbl->setItem(2, 0, new QTableWidgetItem("Cham 1"));
     ui->bc0_source_tbl->setItem(3, 0, new QTableWidgetItem("Mispl"));
     ui->bc0_source_tbl->setItem(4, 0, new QTableWidgetItem("RX rst"));
+    ui->bc0_source_tbl->setItem(5, 0, new QTableWidgetItem("Fib en"));
 
     // column headers
     for (int j = 0; j < 54; j++)
-      {
-	sprintf (ln, "%s", stn[5-j/9]);
-	st_item[j] = new QTableWidgetItem(ln); // create station text item
-	ui->bc0_source_tbl->setItem(0, j+1, st_item[j]); // put into table cell
-	sprintf (ln, "%d", 9-(j%9));
-	ch_item[j] = new QTableWidgetItem(ln); // create chamber text item
-	ui->bc0_source_tbl->setItem(1, j+1, ch_item[j]); // put into table cell
-      }
-    // adding checkboxes
-    for (int i = 0; i < 3; i++) // row loop
     {
-        for (int j = 0; j < 54; j++)
+        sprintf (ln, "%s", stn[5-j/9]);
+        st_item[j] = new QTableWidgetItem(ln); // create station text item
+        ui->bc0_source_tbl->setItem(0, j+1, st_item[j]); // put into table cell
+        sprintf (ln, "%d", 9-(j%9));
+        ch_item[j] = new QTableWidgetItem(ln); // create chamber text item
+        ui->bc0_source_tbl->setItem(1, j+1, ch_item[j]); // put into table cell
+    }
+    for (int j = 54; j < 61; j++)
+    {
+        st_item[j] = new QTableWidgetItem("RP"); // create station text item
+        ui->bc0_source_tbl->setItem(0, j+1, st_item[j]); // put into table cell
+        sprintf (ln, "%d", 60-j);
+        ch_item[j] = new QTableWidgetItem(ln); // create chamber text item
+        ui->bc0_source_tbl->setItem(1, j+1, ch_item[j]); // put into table cell
+    }
+    for (int j = 61; j < 68; j++)
+    {
+        st_item[j] = new QTableWidgetItem("G1"); // create station text item
+        ui->bc0_source_tbl->setItem(0, j+1, st_item[j]); // put into table cell
+        sprintf (ln, "%d", 67-j);
+        ch_item[j] = new QTableWidgetItem(ln); // create chamber text item
+        ui->bc0_source_tbl->setItem(1, j+1, ch_item[j]); // put into table cell
+    }
+    // adding checkboxes
+    for (int i = 0; i < 4; i++) // row loop
+    {
+        for (int j = 0; j < 68; j++) // was 54
         {
-	  if (i != 2 || j % 9 != 8 || j == 8) // don't make reset checkboxes for non-link chambers 
-	    {
-	      checkBoxItem[i][j] = new QTableWidgetItem(); // create check box item
-	      checkBoxItem[i][j]->setCheckState(Qt::Unchecked); // make it unchecked
-	      ui->bc0_source_tbl->setItem(i+2, j+1, checkBoxItem[i][j]); // put into table cell
-	    }
+            if ((i == 2 || i == 3) && j % 9 == 8 && j != 8 && j < 54)
+            {}
+            else
+//            if (i != 2 || j % 9 != 8 || j == 8) // don't make reset checkboxes for non-link chambers
+            {
+                checkBoxItem[i][j] = new QTableWidgetItem(); // create check box item
+                checkBoxItem[i][j]->setCheckState(Qt::Unchecked); // make it unchecked
+                ui->bc0_source_tbl->setItem(i+2, j+1, checkBoxItem[i][j]); // put into table cell
+            }
         }
     }
     // start thread
@@ -753,21 +776,23 @@ void sp12_qtw::on_send_reset_button_released()
     ptlut_clk_kill = false;
     force_oos = false;
 	orbit_ev_bx = false;
+	gem_logic = false;
 
     foreach(QModelIndex index, indexes)
     {
         switch(index.row())
         {
-        case 0: gth_reset = true; break;
-        case 1: clink_reset = true; break;
-        case 2: ptlut_clk_reset = true; break;
-        case 3: sync_clk_reset = true; break;
-        case 4: rx_buffers_reset = true; break;
-        case 5: daq_reset = true; break;
-        case 6: spy_addr_reset = true; break;
-        case 7: ptlut_clk_kill = true; break;
-        case 8: force_oos = true; break;
-        case 9: orbit_ev_bx = true; break;
+        case 0:  gth_reset = true; break;
+        case 1:  clink_reset = true; break;
+        case 2:  ptlut_clk_reset = true; break;
+        case 3:  sync_clk_reset = true; break;
+        case 4:  rx_buffers_reset = true; break;
+        case 5:  daq_reset = true; break;
+        case 6:  spy_addr_reset = true; break;
+        case 7:  ptlut_clk_kill = true; break;
+        case 8:  force_oos = true; break;
+        case 9:  orbit_ev_bx = true; break;
+        case 10: gem_logic = true; break;
         }
     }
 
@@ -1045,6 +1070,7 @@ void sp12_qtw::on_set_delays_pb_released()
     uint64_t gmt_delay = ui->gmt_link_comma_delay_spin->text().toInt(0, 10);
     int single_delay = ui->single_delay_sb->text().toInt(0,10);
     bool single_en = ui->single_en_cb->isChecked();
+    int gem_delay = ui->gem_delay_sb->text().toInt(0,10);
 
 
     log_printf("setting delays: BC0: %d, DAQ: %d GMT: %d\n", (int)bc0_delay, daq_delay, (int) gmt_delay);
@@ -1105,6 +1131,14 @@ void sp12_qtw::on_set_delays_pb_released()
             mwrite(fd, &value, 8, saddr);
             log_printf("core_config readback: %016llx\n", value);
 
+            saddr = REG_MEM_BASE + (ch << 12) + (0x72 << 3); // gem_data_del register
+            mread(fd, &value, 8, saddr);
+            log_printf("gem_data_del readback: %016llx\n", value);
+            uint64_t gdd = gem_delay;
+            value = (gdd << 30) |(gdd << 25) | (gdd << 20) | (gdd << 15) | (gdd << 10) | (gdd << 5) | gdd;
+            mwrite(fd, &value, 8, saddr);
+            mread(fd, &value, 8, saddr);
+            log_printf("gem_data_del readback: %016llx\n", value);
         }
     }
 }
@@ -1379,12 +1413,28 @@ void sp12_qtw::on_daq_config_set_pb_released()
 
 }
 
+// map of fiber enable table to fiber_enable register bits
+// index in array = fiber_enable register bit number
+// value in array = fiber enable table column number
+int fib_en_map[68] =
+{
+    53, 52, 51, 50, 49, 48, 47, 46,
+    44, 43, 42, 41, 40, 39, 38, 37,
+    35, 34, 33, 32, 31, 30, 29, 28,
+    26, 25, 24, 23, 22, 21, 20, 19,
+    17, 16, 15, 14, 13, 12, 11, 10,
+    9, 8, 7, 6, 5, 4, 3, 2, 1,
+    61, 60, 59, 58, 57, 56, 55,
+    68, 67, 66, 65, 64, 63, 62
+
+};
+
 void sp12_qtw::on_en_input_fibers_released()
 {
     uint64_t value;
     uint32_t saddr;
 
-    log_printf("enable input fibers\n");
+    log_printf("set fiber enable bits\n");
 
     // module addresses
     uint32_t MEM_BASE = 0x80000; // 0xc0000  bytes
@@ -1394,27 +1444,36 @@ void sp12_qtw::on_en_input_fibers_released()
 
     // form start address {chamber[6], sel[2], addr[7], 3'b0}
     saddr = MEM_BASE + (ch << 12) + (0xb << 3) ;
-    value = 0xffffffffffffffffULL;
-    //value = 0x1ULL;
+//    value = 0xffffffffffffffffULL;
+//    value = 0x2ULL; // for tests in 904
 
     for (int id = 0; id < 13; id++)
     {
         if (devices_d[id] >= 0)
         {
+            value = 0ULL;
+            for (int i = 62; i >= 0; i--)
+            {
+                int fe_column = fib_en_map[i];
+                bool fe_bit = ui->bc0_source_tbl->item(5, fe_column)->checkState();
+                value <<= 1;
+                value |= fe_bit;
+            }
+
             int fd = devices_d[id];
-            log_printf ("device index: %d\n", id);
+            log_printf ("device: %d setting fiber_en: %016llx\n", id, value);
             mwrite(fd, &value, 8, saddr);
         }
     }
 
 }
-
+// actually reads fiber_enable register
 void sp12_qtw::on_dis_input_fibers_released()
 {
     uint64_t value;
     uint32_t saddr;
 
-    log_printf("disable input fibers ME1\n");
+    log_printf("read fiber enable register\n");
 
     // module addresses
     uint32_t MEM_BASE = 0x80000; // 0xc0000  bytes
@@ -1431,8 +1490,17 @@ void sp12_qtw::on_dis_input_fibers_released()
         if (devices_d[id] >= 0)
         {
             int fd = devices_d[id];
-            log_printf ("device index: %d\n", id);
-            mwrite(fd, &value, 8, saddr);
+            mread (fd, &value, 8, saddr);
+            log_printf ("device: %d fiber_en: %016llx\n", id, value);
+            // display in table
+            for (int i = 0; i < 63; i++) // 49 CSC+7 RPC+7 GE11 = 63 links
+            {
+                int fe_bit = value & 1;
+                value >>= 1;
+                int fe_column = fib_en_map[i];
+                ui->bc0_source_tbl->item(5, fe_column)->setCheckState((Qt::CheckState)(fe_bit));
+//                printf ("i: %d col: %2d bit: %d\n", i, fe_column, fe_bit);
+            }
         }
     }
 
@@ -1605,7 +1673,7 @@ void sp12_qtw::on_af_enable_auto_cb_released()
 void sp12_qtw::on_read_delays_pb_released()
 {
     uint32_t REG_MEM_BASE = 0x80000; // bytes
-    uint64_t value, daq_delay, bc0_delay, gmt_delay, auto_af;
+    uint64_t value, daq_delay, bc0_delay, gmt_delay, auto_af, gem_delay;
 
     int ch = REG_BANK_CH; // config register bank
     uint32_t saddr = REG_MEM_BASE + (ch << 12) + (0x11 << 3); 
@@ -1613,20 +1681,30 @@ void sp12_qtw::on_read_delays_pb_released()
     {
         if (devices_d[id] >= 0)
         {
-	  device_d = devices_d[id];
-	  log_printf ("device index: %d\n", id);
+            device_d = devices_d[id];
+            log_printf ("device index: %d\n", id);
 
-	  mread(device_d, &value, 8, saddr);
+            mread(device_d, &value, 8, saddr);
 
-	  daq_delay = (value & 0x0ff80ULL) >> 7; // clean up delay
-	  bc0_delay = (value & 0x7fc00000000ULL) >> 34; // clean up bc0 delay
-	  gmt_delay = (value & 0x7ff80000000000ULL) >> 43; // clean up gmt delay
-	  auto_af = (value >> 19) & 1ULL;
+            daq_delay = (value & 0x0ff80ULL) >> 7; // clean up delay
+            bc0_delay = (value & 0x7fc00000000ULL) >> 34; // clean up bc0 delay
+            gmt_delay = (value & 0x7ff80000000000ULL) >> 43; // clean up gmt delay
+            auto_af = (value >> 19) & 1ULL;
 
-	  log_printf("reading delays: BC0: %d, DAQ: %d GMT: %d auto_af: %d\n", 
-		     (int)bc0_delay, (int) daq_delay, (int) gmt_delay, (int) auto_af);
+            value = 0;
+            uint32_t saddr_d = REG_MEM_BASE + (ch << 12) + (0x32 << 3); // core_config register
+            mread(device_d, &value, 8, saddr_d);
+            int single_delay = (value >> 24)&7ULL;
+            int single_en = (value >> 12) & 1ULL;
 
-	}
+            saddr = REG_MEM_BASE + (ch << 12) + (0x72 << 3); // gem_data_del register
+            mread(device_d, &value, 8, saddr);
+            gem_delay = value & 0x1f; // just take one of the delays for now
+
+            log_printf("reading delays: BC0: %d, DAQ: %d GMT: %d auto_af: %d single_del: %d single_en: %d GEM: %d\n",
+                       (int)bc0_delay, (int) daq_delay, (int) gmt_delay, (int) auto_af, single_delay, single_en, (int)gem_delay);
+
+        }
     }
 
 }
@@ -1670,27 +1748,29 @@ void sp12_qtw::on_cppf_bc0_delay_set_pb_released()
 
 void sp12_qtw::on_bc0_source_tbl_cellClicked(int row, int column)
 {
-  uint64_t ch1 = 0, mispl = 0, rx_rst = 0;
     printf ("cell clicked: %d %d\n", row, column);
+/*
+// unused functionality since the MPC links upgrade. Commented out
+    uint64_t ch1 = 0, mispl = 0, rx_rst = 0;
 
     for (int i = 0; i < 54; i++)
-      {
-	bool ch1_bit = ui->bc0_source_tbl->item(2, i+1)->checkState();
-	ch1 <<= 1;
-	ch1 |= ch1_bit ? 1 : 0;
+    {
+        bool ch1_bit = ui->bc0_source_tbl->item(2, i+1)->checkState();
+        ch1 <<= 1;
+        ch1 |= ch1_bit ? 1 : 0;
 
-	bool mispl_bit = ui->bc0_source_tbl->item(3, i+1)->checkState();
-	mispl <<= 1;
-	mispl |= mispl_bit ? 1 : 0;
+        bool mispl_bit = ui->bc0_source_tbl->item(3, i+1)->checkState();
+        mispl <<= 1;
+        mispl |= mispl_bit ? 1 : 0;
 
-	if (i % 9 != 8 || i == 8) // no reset checkboxes for non-link chambers
-	  { 
-	    bool rst_bit = ui->bc0_source_tbl->item(4, i+1)->checkState();
-	    rx_rst <<= 1;
-	    rx_rst |= rst_bit ? 1 : 0;
-	    ui->bc0_source_tbl->item(4, i+1)->setCheckState((Qt::CheckState)(false));
-	  }
-      }
+        if (i % 9 != 8 || i == 8) // no reset checkboxes for non-link chambers
+        {
+            bool rst_bit = ui->bc0_source_tbl->item(4, i+1)->checkState();
+            rx_rst <<= 1;
+            rx_rst |= rst_bit ? 1 : 0;
+            ui->bc0_source_tbl->item(4, i+1)->setCheckState((Qt::CheckState)(false));
+        }
+    }
 
     log_printf ("ch1   : %016llx\n", ch1);
     log_printf ("mispl : %016llx\n", mispl);
@@ -1714,8 +1794,8 @@ void sp12_qtw::on_bc0_source_tbl_cellClicked(int row, int column)
             mread(device_d, &ch1_value, 8, ch1_addr);
             mread(device_d, &mispl_value, 8, mispl_addr);
 
-	    log_printf ("old ch1  : %016llx\n", ch1_value);
-	    log_printf ("old mispl: %016llx\n", mispl_value);
+            log_printf ("old ch1  : %016llx\n", ch1_value);
+            log_printf ("old mispl: %016llx\n", mispl_value);
 
             mwrite(device_d, &ch1, 8, ch1_addr);
             mwrite(device_d, &mispl, 8, mispl_addr);
@@ -1723,17 +1803,18 @@ void sp12_qtw::on_bc0_source_tbl_cellClicked(int row, int column)
             mread(device_d, &ch1_value, 8, ch1_addr);
             mread(device_d, &mispl_value, 8, mispl_addr);
 
-	    log_printf ("new ch1  : %016llx\n", ch1_value);
-	    log_printf ("new mispl: %016llx\n", mispl_value);
+            log_printf ("new ch1  : %016llx\n", ch1_value);
+            log_printf ("new mispl: %016llx\n", mispl_value);
 
-	    // write RX reset register
-	    mwrite (device_d, &rx_rst, 8, rx_rst_addr);
-	    rx_rst = 0; // remove reset bits
-	    mwrite (device_d, &rx_rst, 8, rx_rst_addr);
+            // write RX reset register
+            mwrite (device_d, &rx_rst, 8, rx_rst_addr);
+            rx_rst = 0; // remove reset bits
+            mwrite (device_d, &rx_rst, 8, rx_rst_addr);
 
-	    break; // program only one device
+            break; // program only one device
         }
     }
+    */
 }
 
 

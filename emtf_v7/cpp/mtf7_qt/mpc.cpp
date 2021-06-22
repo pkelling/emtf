@@ -873,376 +873,402 @@ eject:
 
 int prbs_mpc_enable(int prbs_type)
 {
-    int32_t BHandle;
+	int32_t BHandle;
 
-    if( CAENVME_Init(/*VMEBoard*/cvV2718, /*Link*/0, /*Device*/0, &BHandle) != cvSuccess )
-    {
-        log_printf("\n\n Error opening VME controller driver\n");
-        return 1;
-    }
+	if( CAENVME_Init(/*VMEBoard*/cvV2718, /*Link*/0, /*Device*/0, &BHandle) != cvSuccess )
+	{
+		log_printf("\n\n Error opening VME controller driver\n");
+		return 1;
+	}
 
 
-    // enable PRBS on MPC
+	// enable PRBS on MPC
 
-    for (unsigned i = 0; i < sizeof(mpc_base)/sizeof(int); i++)
-    {
-        // MPC GTP initialization
-        uint32_t value = 0x3f;
-        check_ret(CAENVME_WriteCycle(BHandle,mpc_base[i] + 0xba, &value, cvA24_U_DATA, cvD16));
-        // write PRBS pattern into CSR4 register on MPC
+	for (unsigned i = 0; i < sizeof(mpc_base)/sizeof(int); i++)
+	{
+		// MPC GTP initialization
+		uint32_t value = 0x3f;
+		check_ret(CAENVME_WriteCycle(BHandle,mpc_base[i] + 0xba, &value, cvA24_U_DATA, cvD16));
+		// write PRBS pattern into CSR4 register on MPC
 
-        value = prbs_type << 4; // prbs_type should be from 0 to 7
+		value = prbs_type << 4; // prbs_type should be from 0 to 7
 
-        log_printf("type: %d value: %x\n", prbs_type, value);
-        check_ret(CAENVME_WriteCycle(BHandle,mpc_base[i] + 0xb8, &value, cvA24_U_DATA, cvD16));
+		log_printf("type: %d value: %x\n", prbs_type, value);
+		check_ret(CAENVME_WriteCycle(BHandle,mpc_base[i] + 0xb8, &value, cvA24_U_DATA, cvD16));
 
-        //program CSR0 of MPC to enable RPBS on TLK transmitters
-        value = 0xe201;
-        check_ret (CAENVME_WriteCycle(BHandle,mpc_base[i],&value, cvA24_U_DATA, cvD16));
+		//program CSR0 of MPC to enable RPBS on TLK transmitters
+		value = 0xe201;
+		check_ret (CAENVME_WriteCycle(BHandle,mpc_base[i],&value, cvA24_U_DATA, cvD16));
 
-    }
+	}
 
-    CAENVME_End(BHandle);
+	CAENVME_End(BHandle);
 
-    log_printf("Enabled PRBS TX on MPC (via VME controller)\n");
-    return 0;
+	log_printf("Enabled PRBS TX on MPC (via VME controller)\n");
+	return 0;
 }
 
 
 uint64_t read_link_ids(int endcap, int sector)
 {
-    int fd = device_d;
-    uint64_t value;
-    uint64_t link_id[10], cppf_lid;
-    uint64_t saddr;
-    off_t pos;
+	int fd = device_d;
+	uint64_t value;
+	uint64_t link_id[10], cppf_lid;
+	uint64_t saddr;
+	off_t pos;
 
-    log_printf("reading link IDs\n");
+	log_printf("reading link IDs\n");
 
-    // module addresses
-    uint32_t MEM_BASE = 0x80000; // 0xc0000  bytes
-    uint64_t REG_BASE = 0x40ULL; // 0x60ULL  bytes
-
-
-    int ch = REG_BANK_CH; // config register bank
-
-    // form start address {chamber[6], sel[2], addr[7], 3'b0}
-    saddr = MEM_BASE + (ch << 12) + (1 << 3) ;
-
-    // read all ID registers. Size is in bytes
-    pos = (REG_BASE << 32) + saddr;
-    mread(fd, link_id, 80, pos);
-
-    saddr = MEM_BASE + (ch << 12) + (0x51 << 3) ;
-
-    mread(fd, &cppf_lid, 8, saddr); // cppf link ids
+	// module addresses
+	uint32_t MEM_BASE = 0x80000; // 0xc0000  bytes
+	uint64_t REG_BASE = 0x40ULL; // 0x60ULL  bytes
 
 
-    unsigned st = 0, fb = 0; // station and fiber
-    unsigned lid[5][8], lidn[9];
+	int ch = REG_BANK_CH; // config register bank
 
-    // registers from 0 to 5 are filled identically, 6 10-bit IDs per register
-    for (unsigned i = 0; i < 6; i++) // register loop
-    {
-      for (unsigned j = 0; j < 6; j++) // id loop
+	// form start address {chamber[6], sel[2], addr[7], 3'b0}
+	saddr = MEM_BASE + (ch << 12) + (1 << 3) ;
+
+	// read all ID registers. Size is in bytes
+	pos = (REG_BASE << 32) + saddr;
+	mread(fd, link_id, 80, pos);
+
+	saddr = MEM_BASE + (ch << 12) + (0x51 << 3) ;
+
+	mread(fd, &cppf_lid, 8, saddr); // cppf link ids
+
+
+	unsigned st = 0, fb = 0; // station and fiber
+	unsigned lid[5][8], lidn[9];
+
+	// registers from 0 to 5 are filled identically, 6 10-bit IDs per register
+	for (unsigned i = 0; i < 6; i++) // register loop
 	{
-	  lid[st][fb] = (link_id[i] >> (j*10)) & 0x3ff;
-	  fb++; // next fiber
-	  if (fb == 8) 
-	    {
-	      st++; // next station
-	      fb = 0;
-	    }
+		for (unsigned j = 0; j < 6; j++) // id loop
+		{
+			lid[st][fb] = (link_id[i] >> (j*10)) & 0x3ff;
+			fb++; // next fiber
+			if (fb == 8) 
+			{
+				st++; // next station
+				fb = 0;
+			}
+		}
 	}
-    }
 
-    // register 6 contains only 4 IDs
-    for (unsigned j = 0; j < 4; j++) // id loop
-      {
-	lid[st][fb] = (link_id[6] >> (j*10)) & 0x3ff;
-	fb++; // next fiber
-	if (fb == 8) 
-	  {
-	    st++; // next station
-	    fb = 0;
-	  }
-      }
-
-    // register 7 contains first 6 of neighbor sector IDs
-    fb = 0;
-    for (unsigned j = 0; j < 6; j++) // id loop
-      {
-	lidn[fb] = (link_id[7] >> (j*10)) & 0x3ff;
-	fb++; // next fiber
-      }
-    // register 8 contains the remaining 3 neighbor sector IDs
-    for (unsigned j = 0; j < 3; j++) // id loop
-      {
-	lidn[fb] = (link_id[8] >> (j*10)) & 0x3ff;
-	fb++; // next fiber
-      }
-
-    // expected link IDs [endcap][sector][station]
-    // all numbers have 0 added for fiber ID addition later
-    int exp_lid [2][12][5] =
-      { 
+	// register 6 contains only 4 IDs
+	for (unsigned j = 0; j < 4; j++) // id loop
 	{
-	  {0x020, 0x030, 0x0d0, 0x130, 0x190},
-	  {0x040, 0x050, 0x0e0, 0x140, 0x1a0},
-	  {0x060, 0x070, 0x0f0, 0x150, 0x1b0},
-	  {0x080, 0x090, 0x100, 0x160, 0x1c0},
-	  {0x0a0, 0x0b0, 0x110, 0x170, 0x1d0},
-	  {0x0c0, 0x010, 0x120, 0x180, 0x1e0},
-	},             	      	     	    
-	{              	      	     	    
-	  {0x200, 0x210, 0x2b0, 0x310, 0x370},
-	  {0x220, 0x230, 0x2c0, 0x320, 0x380},
-	  {0x240, 0x250, 0x2d0, 0x330, 0x390},
-	  {0x260, 0x270, 0x2e0, 0x340, 0x3a0},
-	  {0x280, 0x290, 0x2f0, 0x350, 0x3b0},
-	  {0x2a0, 0x1f0, 0x300, 0x360, 0x3c0}
+		lid[st][fb] = (link_id[6] >> (j*10)) & 0x3ff;
+		fb++; // next fiber
+		if (fb == 8) 
+		{
+			st++; // next station
+			fb = 0;
+		}
 	}
-      };
 
-    uint64_t fib_en_mask = 0x1ffffffffffffULL; // fiber enable mask, all
-
-    int fi = 0; // fiber en mask index
-    for (unsigned i = 0; i < 5; i++) // station
-    {
-      //log_printf ("st: %d link IDs: ", i);
-      for (unsigned j = 0; j < 8; j++) // fiber loop
+	// register 7 contains first 6 of neighbor sector IDs
+	fb = 0;
+	for (unsigned j = 0; j < 6; j++) // id loop
 	{
-	  int mpc_id = lid[i][j] & 0x3f0;
-	  unsigned fib_id = lid[i][j] & 0xf;
-	  if ((mpc_id != exp_lid[endcap-1][sector-1][i]) || (fib_id != (j + 1)))
-	    {
-	      log_printf ("Link  ID error: endcap: %d sector: %d station: %d chamber: %d LID: %03x, expected: %03x \n", 
-			  endcap, sector, i, j+2, lid[i][j], exp_lid[endcap-1][sector-1][i] + j+1);
-	      uint64_t dis_fib = 1;
-	      dis_fib = dis_fib << fi;
-	      fib_en_mask &= ~dis_fib; // remove this fiber from mask
-	    }
-	  fi++;
-	  //log_printf ("%03x ", lid[i][j]);
+		lidn[fb] = (link_id[7] >> (j*10)) & 0x3ff;
+		fb++; // next fiber
 	}
-      //log_printf("\n");
-    }
+	// register 8 contains the remaining 3 neighbor sector IDs
+	for (unsigned j = 0; j < 3; j++) // id loop
+	{
+		lidn[fb] = (link_id[8] >> (j*10)) & 0x3ff;
+		fb++; // next fiber
+	}
 
-    log_printf ("fiber mask: %016llx\n", fib_en_mask);
-    
-    log_printf ("st: N link IDs: ");
-    for (unsigned j = 0; j < 9; j++) // id loop
-      {
-	log_printf ("%03x ", lidn[j]);
-      }
-    log_printf("\n");
-    
-    log_printf ("CPPF IDs: ");
-    for (unsigned j = 0; j < 7; j++) // cppf ID loop
-      {
-	int cppfid = (cppf_lid >> (8*j)) & 0xff; // isolate one ID
-	int cppf_z = (cppfid >> 6) & 3; // endcap
-	int cppf_s = (cppfid >> 3) & 7; // subsector
-	int cppf_l = cppfid & 7; // link
-	log_printf ("%d%d%d  ", cppf_z, cppf_s, cppf_l);
-      }
-    log_printf ("\n");
+	// expected link IDs [endcap][sector][station]
+	// all numbers have 0 added for fiber ID addition later
+	int exp_lid [2][12][5] =
+	{ 
+		{
+			{0x020, 0x030, 0x0d0, 0x130, 0x190},
+			{0x040, 0x050, 0x0e0, 0x140, 0x1a0},
+			{0x060, 0x070, 0x0f0, 0x150, 0x1b0},
+			{0x080, 0x090, 0x100, 0x160, 0x1c0},
+			{0x0a0, 0x0b0, 0x110, 0x170, 0x1d0},
+			{0x0c0, 0x010, 0x120, 0x180, 0x1e0},
+		},             	      	     	    
+		{              	      	     	    
+			{0x200, 0x210, 0x2b0, 0x310, 0x370},
+			{0x220, 0x230, 0x2c0, 0x320, 0x380},
+			{0x240, 0x250, 0x2d0, 0x330, 0x390},
+			{0x260, 0x270, 0x2e0, 0x340, 0x3a0},
+			{0x280, 0x290, 0x2f0, 0x350, 0x3b0},
+			{0x2a0, 0x1f0, 0x300, 0x360, 0x3c0}
+		}
+	};
+	
+	// reading ge11 link ids
+	uint32_t ge11_id_addr = MEM_BASE + (ch << 12) + (0x6e << 3) ;
+
+	uint64_t ge11_lid;
+	mread(fd, &ge11_lid, 8, ge11_id_addr); // ge11 link ids
+	log_printf ("GE11 link IDs: ");
+	for (unsigned i = 0; i < 7; i++) // link loop, 7 links
+	{
+		uint8_t ge11_idi = (uint8_t)ge11_lid;
+		ge11_lid >>= 8;
+		log_printf ("%02x ", ge11_idi);
+	}
+	log_printf ("\n");
+
+	// reading ge11 link status
+	uint32_t ge11_id_stat = MEM_BASE + (ch << 12) + (0x6f << 3) ;
+	uint64_t ge11_stat;
+	mread(fd, &ge11_stat, 8, ge11_id_stat);
+
+	uint8_t ge11_locked = (uint8_t)ge11_stat;
+	log_printf ("GE11 locked: %02x\n", ge11_locked);
+
+	uint64_t fib_en_mask = 0x1ffffffffffffULL; // fiber enable mask, all
+
+	int fi = 0; // fiber en mask index
+	for (unsigned i = 0; i < 5; i++) // station
+	{
+		//log_printf ("st: %d link IDs: ", i);
+		for (unsigned j = 0; j < 8; j++) // fiber loop
+		{
+			int mpc_id = lid[i][j] & 0x3f0;
+			unsigned fib_id = lid[i][j] & 0xf;
+			if ((mpc_id != exp_lid[endcap-1][sector-1][i]) || (fib_id != (j + 1)))
+			{
+				log_printf ("Link  ID error: endcap: %d sector: %d station: %d chamber: %d LID: %03x, expected: %03x \n", 
+						endcap, sector, i, j+2, lid[i][j], exp_lid[endcap-1][sector-1][i] + j+1);
+				uint64_t dis_fib = 1;
+				dis_fib = dis_fib << fi;
+				fib_en_mask &= ~dis_fib; // remove this fiber from mask
+			}
+			fi++;
+			//log_printf ("%03x ", lid[i][j]);
+		}
+		//log_printf("\n");
+	}
+
+	log_printf ("fiber mask: %016llx\n", fib_en_mask);
+
+	log_printf ("st: N link IDs: ");
+	for (unsigned j = 0; j < 9; j++) // id loop
+	{
+		log_printf ("%03x ", lidn[j]);
+	}
+	log_printf("\n");
+
+	log_printf ("CPPF IDs: ");
+	for (unsigned j = 0; j < 7; j++) // cppf ID loop
+	{
+		int cppfid = (cppf_lid >> (8*j)) & 0xff; // isolate one ID
+		int cppf_z = (cppfid >> 6) & 3; // endcap
+		int cppf_s = (cppfid >> 3) & 7; // subsector
+		int cppf_l = cppfid & 7; // link
+		log_printf ("%d%d%d  ", cppf_z, cppf_s, cppf_l);
+	}
+	log_printf ("\n");
 	int cppf_crc_match = (cppf_lid >> (8*7)) & 0x7f; // CPPF crc match flags
 
 	log_printf("CPPF CRC match: %02x\n", cppf_crc_match);
 
 
-    log_printf("read fiber enable flags\n");
+	log_printf("read fiber enable flags\n");
 
-    // form address {chamber[6], sel[2], addr[7], 3'b0}
-    saddr = MEM_BASE + (ch << 12) + (11 << 3) ;
+	// form address {chamber[6], sel[2], addr[7], 3'b0}
+	saddr = MEM_BASE + (ch << 12) + (11 << 3) ;
 
-    // read register. Size is in bytes
-    pos = (REG_BASE << 32) + saddr;
-    mread(fd, &value, 8, pos);
+	// read register. Size is in bytes
+	pos = (REG_BASE << 32) + saddr;
+	mread(fd, &value, 8, pos);
 
-    log_printf ("fiber enable: %016llx\n", value);
+	log_printf ("fiber enable: %016llx\n", value);
 
-    log_printf ("read bc0 alignment counters\n");
+	log_printf ("read bc0 alignment counters\n");
 
-    bad_alignment = 0;
-    unsigned i, j;
-    uint32_t cnt;
+	bad_alignment = 0;
+	unsigned i, j;
+	uint32_t cnt;
 
 
-    for ( i = 0; i < 5; i++) // MPC loop
-    {
-        // form address {chamber[6], sel[2], addr[7], 3'b0}
-        saddr = MEM_BASE + (ch << 12) + ((i+12) << 3) ;
+	for ( i = 0; i < 5; i++) // MPC loop
+	{
+		// form address {chamber[6], sel[2], addr[7], 3'b0}
+		saddr = MEM_BASE + (ch << 12) + ((i+12) << 3) ;
 
-        // read register. Size is in bytes
-	//        off_t pos = (REG_BASE << 32) + saddr;
-        mread(fd, &value, 8, saddr);
+		// read register. Size is in bytes
+		//        off_t pos = (REG_BASE << 32) + saddr;
+		mread(fd, &value, 8, saddr);
 
-	//        log_printf ("bc0 counters #%02d: %016llx\n", i, value);
+		//        log_printf ("bc0 counters #%02d: %016llx\n", i, value);
 
-        // see if any of the counters is out of bounds
-	log_printf ("bc0 counters %d: ", i);
-        for ( j = 0; j < 8; j++) // fiber loop
-        {
-            cnt = (value >> (j*8)) & 0xff;
-            if (cnt > 0x20) // bad alignment counter, fiber probably missing BC0
-            {
-                bad_alignment |= (1ULL << (i*8+j)); // update bad alignment flag for that fiber
-            }
-	    log_printf ("%02x ", cnt);
-        }
-	log_printf ("\n");
-    }
+		// see if any of the counters is out of bounds
+		log_printf ("bc0 counters %d: ", i);
+		for ( j = 0; j < 8; j++) // fiber loop
+		{
+			cnt = (value >> (j*8)) & 0xff;
+			if (cnt > 0x20) // bad alignment counter, fiber probably missing BC0
+			{
+				bad_alignment |= (1ULL << (i*8+j)); // update bad alignment flag for that fiber
+			}
+			log_printf ("%02x ", cnt);
+		}
+		log_printf ("\n");
+	}
 
-    // read neighbor sector counters
-    log_printf ("bc0 counters N: ");
-    saddr = MEM_BASE + (ch << 12) + (10 << 3) ;
-    mread(fd, &value, 8, saddr);
-    i = 5; // call neighbor sector station 5
-    for ( j = 0; j < 8; j++) // fiber loop
-      {
-	cnt = (value >> (j*8)) & 0xff;
+	// read neighbor sector counters
+	log_printf ("bc0 counters N: ");
+	saddr = MEM_BASE + (ch << 12) + (10 << 3) ;
+	mread(fd, &value, 8, saddr);
+	i = 5; // call neighbor sector station 5
+	for ( j = 0; j < 8; j++) // fiber loop
+	{
+		cnt = (value >> (j*8)) & 0xff;
+		if (cnt > 0x20) // bad alignment counter, fiber probably missing BC0
+		{
+			bad_alignment |= (1ULL << (i*8+j)); // update bad alignment flag for that fiber
+		}
+		log_printf ("%02x ", cnt);
+	}
+
+
+	saddr = MEM_BASE + (ch << 12) + (9 << 3) ;
+	mread(fd, &value, 8, saddr);
+	j = 8; // read last fiber from register 9
+	cnt = (value >> 30) & 0xff;
 	if (cnt > 0x20) // bad alignment counter, fiber probably missing BC0
-	  {
-	    bad_alignment |= (1ULL << (i*8+j)); // update bad alignment flag for that fiber
-	  }
-	log_printf ("%02x ", cnt);
-      }
+	{
+		bad_alignment |= (1ULL << (i*8+j)); // update bad alignment flag for that fiber
+	}
+	log_printf ("%02x\n", cnt);
 
 
-    saddr = MEM_BASE + (ch << 12) + (9 << 3) ;
-    mread(fd, &value, 8, saddr);
-    j = 8; // read last fiber from register 9
-    cnt = (value >> 30) & 0xff;
-    if (cnt > 0x20) // bad alignment counter, fiber probably missing BC0
-      {
-	bad_alignment |= (1ULL << (i*8+j)); // update bad alignment flag for that fiber
-      }
-    log_printf ("%02x\n", cnt);
-    
-    
 
-    log_printf ("bad_alignment : %016llx\n", bad_alignment);
+	log_printf ("bad_alignment : %016llx\n", bad_alignment);
 
-    saddr = MEM_BASE + (ch << 12) + (17 << 3) ;
-    pos = (REG_BASE << 32) + saddr;
-    mread(fd, &value, 8, pos);
-    log_printf ("DAQdelay register:     %016llx\n", value);
+	saddr = MEM_BASE + (ch << 12) + (17 << 3) ;
+	pos = (REG_BASE << 32) + saddr;
+	mread(fd, &value, 8, pos);
+	log_printf ("DAQdelay register:     %016llx\n", value);
 
-    saddr = MEM_BASE + (ch << 12) + (18 << 3) ;
-    pos = (REG_BASE << 32) + saddr;
-    mread(fd, &value, 8, pos);
-    log_printf ("BC0 period errors:     %016llx\n", value);
+	saddr = MEM_BASE + (ch << 12) + (18 << 3) ;
+	pos = (REG_BASE << 32) + saddr;
+	mread(fd, &value, 8, pos);
+	log_printf ("BC0 period errors:     %016llx\n", value);
 
-    saddr = MEM_BASE + (ch << 12) + (19 << 3) ;
-    pos = (REG_BASE << 32) + saddr;
-    mread(fd, &value, 8, pos);
-    log_printf ("BC0 stuck errors:      %016llx\n", value);
+	saddr = MEM_BASE + (ch << 12) + (19 << 3) ;
+	pos = (REG_BASE << 32) + saddr;
+	mread(fd, &value, 8, pos);
+	log_printf ("BC0 stuck errors:      %016llx\n", value);
 
-    saddr = MEM_BASE + (ch << 12) + (20 << 3) ;
-    pos = (REG_BASE << 32) + saddr;
-    mread(fd, &value, 8, pos);
-    log_printf ("BC0 chamber 0 errors:  %016llx\n", value);
+	saddr = MEM_BASE + (ch << 12) + (20 << 3) ;
+	pos = (REG_BASE << 32) + saddr;
+	mread(fd, &value, 8, pos);
+	log_printf ("BC0 chamber 0 errors:  %016llx\n", value);
 
-    saddr = MEM_BASE + (ch << 12) + (0x61 << 3) ;
-    mread(fd, &value, 8, saddr);
-    log_printf ("CRC errors          :  %016llx\n", value);
+	saddr = MEM_BASE + (ch << 12) + (0x61 << 3) ;
+	mread(fd, &value, 8, saddr);
+	log_printf ("CRC errors          :  %016llx\n", value);
 
-    saddr = MEM_BASE + (ch << 12) + (0x62 << 3) ;
-    mread(fd, &value, 8, saddr);
-    log_printf ("Test pattern errors :  %016llx\n", value);
+	saddr = MEM_BASE + (ch << 12) + (0x62 << 3) ;
+	mread(fd, &value, 8, saddr);
+	log_printf ("Test pattern errors :  %016llx\n", value);
 
-    saddr = MEM_BASE + (ch << 12) + (0x63 << 3) ;
-    mread(fd, &value, 8, saddr);
-    log_printf ("Clock phase drift   :  %016llx\n", value);
+	saddr = MEM_BASE + (ch << 12) + (0x70 << 3) ;
+	mread(fd, &value, 8, saddr);
+	log_printf ("GE1/1 errors [3:0]  :  %016llx\n", value);
 
-    // reset error flags
-    saddr = MEM_BASE + (ch << 12) ;
-    mread  (fd, &value, 8, saddr);
-    value |= (1ULL << 21);
-    mwrite (fd, &value, 8, saddr);
-    value &= ~(1ULL << 21);
-    mwrite (fd, &value, 8, saddr);
+	saddr = MEM_BASE + (ch << 12) + (0x71 << 3) ;
+	mread(fd, &value, 8, saddr);
+	log_printf ("GE1/1 errors [6:4]  :  %016llx\n", value);
 
-    saddr = MEM_BASE + (ch << 12) + (21 << 3) ;
-    pos = (REG_BASE << 32) + saddr;
-    mread(fd, &value, 8, pos);
-    log_printf ("Byte alignment status: %016llx\n", value);
+	// reset error flags
+	saddr = MEM_BASE + (ch << 12) ;
+	mread  (fd, &value, 8, saddr);
+	value |= (1ULL << 21);
+	mwrite (fd, &value, 8, saddr);
+	value &= ~(1ULL << 21);
+	mwrite (fd, &value, 8, saddr);
 
-    saddr = MEM_BASE + (ch << 12) + (0x16 << 3) ;
-    pos = (REG_BASE << 32) + saddr;
-    mread(fd, &value, 8, pos);
-    log_printf ("Spy memory address:    %016llx\n", value);
+	saddr = MEM_BASE + (ch << 12) + (21 << 3) ;
+	pos = (REG_BASE << 32) + saddr;
+	mread(fd, &value, 8, pos);
+	log_printf ("Byte alignment status: %016llx\n", value);
 
-    saddr = MEM_BASE + (ch << 12) + (0x32 << 3) ;
-    mread(fd, &value, 8, saddr);
-    log_printf ("Core config:           %016llx\n", value);
+	saddr = MEM_BASE + (ch << 12) + (0x16 << 3) ;
+	pos = (REG_BASE << 32) + saddr;
+	mread(fd, &value, 8, pos);
+	log_printf ("Spy memory address:    %016llx\n", value);
 
-    saddr = MEM_BASE + (ch << 12) + (0x56 << 3) ;
-    mread(fd, &value, 8, saddr);
-    log_printf ("HR timeouts:           %016llx\n", value);
+	saddr = MEM_BASE + (ch << 12) + (0x32 << 3) ;
+	mread(fd, &value, 8, saddr);
+	log_printf ("Core config:           %016llx\n", value);
 
-    saddr = MEM_BASE + (ch << 12) + (0 << 3) ;
-    mread(fd, &value, 8, saddr);
-    log_printf ("Control register:      %016llx\n", value);
+	saddr = MEM_BASE + (ch << 12) + (0x56 << 3) ;
+	mread(fd, &value, 8, saddr);
+	log_printf ("HR timeouts:           %016llx\n", value);
 
-    saddr = MEM_BASE + (ch << 12) + (0x17 << 3) ;
-    pos = (REG_BASE << 32) + saddr;
-    mread(fd, &value, 8, pos);
+	saddr = MEM_BASE + (ch << 12) + (0 << 3) ;
+	mread(fd, &value, 8, saddr);
+	log_printf ("Control register:      %016llx\n", value);
 
-    uint32_t abs_time = value & 0xffffffffULL;
-    uint32_t pll_cnt = (value >> 32) & 0xffffffffULL;
+	saddr = MEM_BASE + (ch << 12) + (0x17 << 3) ;
+	pos = (REG_BASE << 32) + saddr;
+	mread(fd, &value, 8, pos);
 
-    uint32_t diff = abs_time - pll_cnt;
-    log_printf ("Core    FPGA clk cnt diff: %x abs: %x pll: %x\n", diff, abs_time, pll_cnt);
+	uint32_t abs_time = value & 0xffffffffULL;
+	uint32_t pll_cnt = (value >> 32) & 0xffffffffULL;
 
-    static struct timeval t0, t1;
+	uint32_t diff = abs_time - pll_cnt;
+	log_printf ("Core    FPGA clk cnt diff: %x abs: %x pll: %x\n", diff, abs_time, pll_cnt);
 
-    t0.tv_sec = t1.tv_sec;
-    t0.tv_usec = t1.tv_usec;
+	static struct timeval t0, t1;
 
-    static uint32_t control_lhc_cnt, control_pll_cnt;
-    static uint32_t control_lhc_cnt_0, control_pll_cnt_0, control_lock_status;
-    control_lhc_cnt_0 = control_lhc_cnt;
-    control_pll_cnt_0 = control_pll_cnt;
-    gettimeofday(&t1, NULL);
-    mread (fd, &control_lock_status, 4, 0xc); // read PLL status from control FPGA
-    log_printf ("lock status: %08llx, clk_in: %x hold: %x lock: %d\n",
-                control_lock_status, (control_lock_status >> 18)&1, (control_lock_status >> 17)&1, (control_lock_status >> 16) &1);
-    uint32_t hard_reset_cnt = (control_lock_status >> 19) & 0x1fff;
-    log_printf ("Hard Reset count: %d\n", hard_reset_cnt);
+	t0.tv_sec = t1.tv_sec;
+	t0.tv_usec = t1.tv_usec;
+
+	static uint32_t control_lhc_cnt, control_pll_cnt;
+	static uint32_t control_lhc_cnt_0, control_pll_cnt_0, control_lock_status;
+	control_lhc_cnt_0 = control_lhc_cnt;
+	control_pll_cnt_0 = control_pll_cnt;
+	gettimeofday(&t1, NULL);
+	mread (fd, &control_lock_status, 4, 0xc); // read PLL status from control FPGA
+	log_printf ("lock status: %08llx, clk_in: %x hold: %x lock: %d\n",
+			control_lock_status, (control_lock_status >> 18)&1, (control_lock_status >> 17)&1, (control_lock_status >> 16) &1);
+	uint32_t hard_reset_cnt = (control_lock_status >> 19) & 0x1fff;
+	log_printf ("Hard Reset count: %d\n", hard_reset_cnt);
 
 
-    mread (fd, &control_lhc_cnt, 4, 0x14); // read LHC clock counter from Control FPGA
-    mread (fd, &control_pll_cnt, 4, 0x18); // read PLL clock counter from Control FPGA
-    // calculate difference, it should stay constant
-    // last couple of bits may be oscillating though because if different clock domains
-    diff = control_lhc_cnt - control_pll_cnt;
+	mread (fd, &control_lhc_cnt, 4, 0x14); // read LHC clock counter from Control FPGA
+	mread (fd, &control_pll_cnt, 4, 0x18); // read PLL clock counter from Control FPGA
+	// calculate difference, it should stay constant
+	// last couple of bits may be oscillating though because if different clock domains
+	diff = control_lhc_cnt - control_pll_cnt;
 
-    // calculate clock frequencies
-    int64_t control_lhc_diff = ((int64_t)control_lhc_cnt) - ((int64_t)control_lhc_cnt_0);
-    int64_t control_pll_diff = ((int64_t)control_pll_cnt) - ((int64_t)control_pll_cnt_0);
-    float wloop_time = ((t1.tv_sec+t1.tv_usec/1000000.) - (t0.tv_sec+t0.tv_usec/1000000.));
-    float f_lhc = (float)control_lhc_diff / wloop_time / 1000000.;
-    float f_pll = (float)control_pll_diff / wloop_time / 1000000.;
+	// calculate clock frequencies
+	int64_t control_lhc_diff = ((int64_t)control_lhc_cnt) - ((int64_t)control_lhc_cnt_0);
+	int64_t control_pll_diff = ((int64_t)control_pll_cnt) - ((int64_t)control_pll_cnt_0);
+	float wloop_time = ((t1.tv_sec+t1.tv_usec/1000000.) - (t0.tv_sec+t0.tv_usec/1000000.));
+	float f_lhc = (float)control_lhc_diff / wloop_time / 1000000.;
+	float f_pll = (float)control_pll_diff / wloop_time / 1000000.;
 
-    log_printf ("Control FPGA clk cnt diff: %x lhc: %x pll: %x\n",
-                diff, control_lhc_cnt, control_pll_cnt);
-    log_printf ("time: %f, LHC d: %llu, PLL d: %llu F LHC: %f, F PLL: %f\n",
-                wloop_time, control_lhc_diff, control_pll_diff, f_lhc, f_pll);
+	log_printf ("Control FPGA clk cnt diff: %x lhc: %x pll: %x\n",
+			diff, control_lhc_cnt, control_pll_cnt);
+	log_printf ("time: %f, LHC d: %llu, PLL d: %llu F LHC: %f, F PLL: %f\n",
+			wloop_time, control_lhc_diff, control_pll_diff, f_lhc, f_pll);
 
-    uint32_t bc0_cnt, resync_cnt;
-    mread(fd, &bc0_cnt, 4, 0x10);
-    resync_cnt = (bc0_cnt >> 12) & 0xfffff;
-    bc0_cnt &= 0xfff;
-    log_printf ("bc0 period: %d\n", bc0_cnt);
-    log_printf ("resync cnt: %d\n", resync_cnt);
+	uint32_t bc0_cnt, resync_cnt;
+	mread(fd, &bc0_cnt, 4, 0x10);
+	resync_cnt = (bc0_cnt >> 12) & 0xfffff;
+	bc0_cnt &= 0xfff;
+	log_printf ("bc0 period: %d\n", bc0_cnt);
+	log_printf ("resync cnt: %d\n", resync_cnt);
 
 
-    mread(fd, &value, 8, 0xB62A8); // main MMCM unlock counter
-    log_printf ("MMCM unlocks: %08llx\n", value);
+	mread(fd, &value, 8, 0xB62A8); // main MMCM unlock counter
+	log_printf ("MMCM unlocks: %08llx\n", value);
 
-    return fib_en_mask;
+	return fib_en_mask;
 }
 
