@@ -64,7 +64,7 @@ int SP04_prbs_check();
 int reset_core_link();
 int write_core_link();
 int core_link_phase_inc(int target);
-void write_verify_pc_luts(bool verify, int endcap[13], int sector[13]);
+void write_verify_pc_luts(bool verify, int endcap[13], int sector[13], bool ge11_prim);
 int core_logic_test();
 //int read_mpc_spy_mem();
 uint64_t read_link_ids(int endcap, int sector);
@@ -85,6 +85,7 @@ void cosmics_rate_monitor();
 
 bool ptlut_training = false;
 bool prim_conv_lut_verify = false;
+bool ge11_prim = false;
 
 extern char best_rd_delay[4][18];
 
@@ -269,7 +270,7 @@ protected:
                 break;
 
             case 'o':
-                write_verify_pc_luts(prim_conv_lut_verify, endcap_lut, sector_lut);
+                write_verify_pc_luts(prim_conv_lut_verify, endcap_lut, sector_lut, ge11_prim);
                 break;
 
             case 'k':
@@ -1003,6 +1004,7 @@ void sp12_qtw::on_control_phase_inc_pb_released()
 void sp12_qtw::on_prim_conv_lut_write_pb_released()
 {
     prim_conv_lut_verify = false;
+    ge11_prim = false;
     key = 'o';
 }
 
@@ -1282,6 +1284,7 @@ void sp12_qtw::on_device_list_clicked(const QModelIndex &index)
 void sp12_qtw::on_prim_conv_lut_verify_pb_released()
 {
     prim_conv_lut_verify = true;
+    ge11_prim = false;
     key = 'o';
 
 }
@@ -2123,5 +2126,21 @@ void sp12_qtw::on_mpc_lnk_rst_tst_pb_released()
 
 void sp12_qtw::on_single_delay_sb_editingFinished()
 {
+
+}
+
+void sp12_qtw::on_prim_ge11_lut_write_pb_released()
+{
+    prim_conv_lut_verify = false;
+    ge11_prim = true;
+    key = 'o';
+
+}
+
+void sp12_qtw::on_prim_ge11_lut_verify_pb_released()
+{
+    prim_conv_lut_verify = true;
+    ge11_prim = true;
+    key = 'o';
 
 }

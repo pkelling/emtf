@@ -167,6 +167,10 @@ private slots:
 
     void on_single_delay_sb_editingFinished();
 
+    void on_prim_ge11_lut_write_pb_released();
+
+    void on_prim_ge11_lut_verify_pb_released();
+
 private:
     Ui::sp12_qtw *ui;
 };

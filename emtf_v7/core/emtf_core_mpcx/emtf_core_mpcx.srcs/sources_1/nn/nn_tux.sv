@@ -331,10 +331,10 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
         .input1_21_V (input1_V[21]),
         .input1_22_V (input1_V[22]),
         
-        .layer16_out_0_V        (layer15_out_0_V),
-        .layer16_out_0_V_ap_vld (layer15_out_0_V_ap_vld),
-        .layer16_out_1_V (),
-        .layer16_out_1_V_ap_vld ()
+        .layer11_out_0_V        (layer15_out_0_V),
+        .layer11_out_0_V_ap_vld (layer15_out_0_V_ap_vld),
+        .layer11_out_1_V (),
+        .layer11_out_1_V_ap_vld ()
     );
 
     nn_mmcm nnmcmc

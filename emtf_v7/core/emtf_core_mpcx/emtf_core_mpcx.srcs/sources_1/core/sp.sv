@@ -518,7 +518,7 @@ module sp
     );    
 
     // neural network for PT assignment
-/*
+
     nn_tux nn
     (
         .bt_phi (bt_phi),
@@ -541,7 +541,7 @@ module sp
         .endcap (endcap),
         .clk (clk)
     );    
-*/
+
 
 	reg ge11_valid_any;
 	(* mark_debug *) wire ge11_valid_any_w = ge11_valid_any;

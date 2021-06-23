@@ -6,7 +6,7 @@ library ieee;
 use ieee.std_logic_1164.all; 
 use ieee.std_logic_unsigned.all;
 
-entity tanh_tanh_table1_rom is 
+entity tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config6_s_tanh_tabkb_rom is 
     generic(
              DWIDTH     : integer := 11; 
              AWIDTH     : integer := 10; 
@@ -78,7 +78,7 @@ entity tanh_tanh_table1_rom is
 end entity; 
 
 
-architecture rtl of tanh_tanh_table1_rom is 
+architecture rtl of tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config6_s_tanh_tabkb_rom is 
 
 signal addr0_tmp : std_logic_vector(AWIDTH-1 downto 0); 
 signal addr1_tmp : std_logic_vector(AWIDTH-1 downto 0); 
@@ -2339,7 +2339,7 @@ end rtl;
 Library IEEE;
 use IEEE.std_logic_1164.all;
 
-entity tanh_tanh_table1 is
+entity tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config6_s_tanh_tabkb is
     generic (
         DataWidth : INTEGER := 11;
         AddressRange : INTEGER := 1024;
@@ -2409,8 +2409,8 @@ entity tanh_tanh_table1 is
         q19 : OUT STD_LOGIC_VECTOR(DataWidth - 1 DOWNTO 0));
 end entity;
 
-architecture arch of tanh_tanh_table1 is
-    component tanh_tanh_table1_rom is
+architecture arch of tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config6_s_tanh_tabkb is
+    component tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config6_s_tanh_tabkb_rom is
         port (
             clk : IN STD_LOGIC;
             addr0 : IN STD_LOGIC_VECTOR;
@@ -2478,7 +2478,7 @@ architecture arch of tanh_tanh_table1 is
 
 
 begin
-    tanh_tanh_table1_rom_U :  component tanh_tanh_table1_rom
+    tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config6_s_tanh_tabkb_rom_U :  component tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config6_s_tanh_tabkb_rom
     port map (
         clk => clk,
         addr0 => address0,
