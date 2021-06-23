@@ -22,7 +22,7 @@ static const uint qt_meta_data_sp12_qtw[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      72,   14, // methods
+      74,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -102,6 +102,8 @@ static const uint qt_meta_data_sp12_qtw[] = {
     2219,    9,    9,    9, 0x08,
     2256,    9,    9,    9, 0x08,
     2289,    9,    9,    9, 0x08,
+    2326,    9,    9,    9, 0x08,
+    2363,    9,    9,    9, 0x08,
 
        0        // eod
 };
@@ -179,6 +181,8 @@ static const char qt_meta_stringdata_sp12_qtw[] = {
     "on_mpc_links_enable_hr_pb_released()\0"
     "on_mpc_lnk_rst_tst_pb_released()\0"
     "on_single_delay_sb_editingFinished()\0"
+    "on_prim_ge11_lut_write_pb_released()\0"
+    "on_prim_ge11_lut_verify_pb_released()\0"
 };
 
 void sp12_qtw::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -259,6 +263,8 @@ void sp12_qtw::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
         case 69: _t->on_mpc_links_enable_hr_pb_released(); break;
         case 70: _t->on_mpc_lnk_rst_tst_pb_released(); break;
         case 71: _t->on_single_delay_sb_editingFinished(); break;
+        case 72: _t->on_prim_ge11_lut_write_pb_released(); break;
+        case 73: _t->on_prim_ge11_lut_verify_pb_released(); break;
         default: ;
         }
     }
@@ -296,9 +302,9 @@ int sp12_qtw::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 72)
+        if (_id < 74)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 72;
+        _id -= 74;
     }
     return _id;
 }

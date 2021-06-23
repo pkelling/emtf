@@ -13,7 +13,7 @@ module prim_conv_sector_ge11
 	input  [1:0] reg_select, // 1 = ph_init, 2 = th_mem
 	input  [bw_addr-1:0] addr, // address in memory to access. For registers, set to 0
 	input  [63:0] r_in, // input data for memory or register
-	output [63:0] r_out, // output data from memory or register
+	output reg [63:0] r_out, // output data from memory or register
 	input  we, // write enable for memory or register
 	input  clk, // write clock
 	input  control_clk, // control interface clock
@@ -25,9 +25,9 @@ module prim_conv_sector_ge11
 	// all th LUTs combined into one array
 	typedef union
 	{
-		// [schamber][layer][cluster][lut_location]
-		bit [7:0] split [6:0][1:0][7:0][7:0];
-		bit [8*8-1:0] comb [7*2*8-1:0]; // 7168 bits = 112 64-bit words
+		// [schamber][layer][lut_location]
+		bit [7:0] split [6:0][1:0][7:0];
+		bit [8*8-1:0] comb [7*2-1:0]; // 14 64-bit words
 	} th_mem_u;
 
 	th_mem_u th_mem;
@@ -35,20 +35,16 @@ module prim_conv_sector_ge11
 	// all ph_init parameters in one array
 	typedef union
 	{
-		// [schamber][layer][cluster]
-		bit [63:0] split [6:0][1:0][7:0]; // programmable parameter, chamber strip 0 phi coord
-		bit [63:0] comb  [7*2*8-1:0]; // 
+		// [schamber][layer]
+		bit [63:0] split [6:0][1:0]; // programmable parameter, chamber strip 0 phi coord
+		bit [63:0] comb  [7*2-1:0]; // 
 	} ph_init_u;
 
 	ph_init_u ph_init;
 
-	// parameter readback 
-	assign r_out = reg_select == 2'h2 ? th_mem.comb[addr] : 
-				   reg_select == 2'h1 ? ph_init.comb[addr] : 64'b0;
-
-	// parameter write
 	always @(posedge control_clk)
 	begin
+	    // parameter write
 		if (we)
 		begin
 			case (reg_select)
@@ -56,6 +52,9 @@ module prim_conv_sector_ge11
 			 	2'h1: begin	ph_init.comb[addr] = r_in; end
 			endcase
 		end
+	    // parameter readback 
+        r_out = reg_select == 2'h2 ? th_mem.comb[addr] : 
+			    reg_select == 2'h1 ? ph_init.comb[addr] : 64'b0;
 	end
 
 	genvar gi, gj, gk;
@@ -79,8 +78,8 @@ module prim_conv_sector_ge11
 						.th      (th      [gi][gj][gk]),
 						.vl      (vl      [gi][gj][gk]),
 						.phzvl   (phzvl   [gi][gj][gk]),
-						.th_mem  (th_mem.split  [gi][gj][gk]),
-						.ph_init (ph_init.split [gi][gj][gk]),
+						.th_mem  (th_mem.split  [gi][gj]), // these LUTs are per chamber, don't depend on cluster #
+						.ph_init (ph_init.split [gi][gj]), // these LUTs are per chamber, don't depend on cluster #
 						.clk     (clk),
 						.endcap  (endcap)
 					);
