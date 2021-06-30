@@ -48,8 +48,9 @@ module prim_conv_ge11
    	reg [bw_fph-1:0]   fph_to_reduce;
 
 	// is this chamber mounted in reverse direction?
-	// need rework here for gem
-    wire ph_reverse = 1'b0;
+	// mapping comes from GE11_reverse_map.xlsx file
+	wire ph_reverse = ((endcap == 1'b0 && (station == 0 || station == 2 || station == 4)) ||
+	                   (endcap == 1'b1 && (station == 1 || station == 3 || station >= 5))) ? 1'b1 : 1'b0; 
 
 	
 	always @(posedge clk)

@@ -19,7 +19,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 `include "vppc_macros.sv"
 `include "interfaces.sv"
-//`include "spbits.sv"
+`include "spbits.sv"
 
 module sp_tf;
 
@@ -208,16 +208,14 @@ module sp_tf;
    
 
     // IMPORTANT: modify 5 parameters below to match endcap/sector and file path
-   reg 			endcap = 1'b1; // 0=ME+ 1=ME-
-    reg [2:0] sector = 3'd5; // sector #-1
+   reg       endcap = 1'b1; // 0=ME+ 1=ME-
+   reg [2:0] sector = 3'd5; // sector #-1
    reg [20*8-1:0] fes_str, fest_str;
-//    `define fes  "_endcap_2_sec_6_" // endcap and sector numbers for LUT file names
-//    `define fest "_endcap_2_sect_6" // endcap and sector numbers for LUT file names
 `define fes fes_str
 `define fest fest_str
    
 //`define dpath "/exports/uftrig01b/madorsky/projects/modelsim/emtf_data/"
-`define dpath "/home/madorsky/github/emtf_ge11/emtf_v7/core/emtf_data/" 
+`define dpath "/home/madorsky/github/emtf/emtf_v7/core/emtf_data/" 
 //"/home/madorsky/cernbox/projects/modelsim/emtf_data/"
 
    wire [63:0] 	  core_config;
@@ -278,6 +276,10 @@ module sp_tf;
 		 );
 
 
+    // temporary LUTs for th_mem, data need to be reformatted for actual storage in firmware LUTs
+    reg [7:0] ge11_th_tmp [111:0]; // 112 words by 8 bit = 14 words by 64 bits
+    reg [63:0] ge11_th_u64;
+    integer wi, wj;
    
    `int 	   ph_high_prec, ph_low_prec, ph_zone_phi;
     `int k;
@@ -298,8 +300,8 @@ module sp_tf;
 		   $fwrite (sim_out, "endcap: %d sector: %d strings: %s %s\n", endcap, sector, `fes, `fest);
 		   
             // write parameters to primitive converters
-            // ME1
 	`include "fill_params.sv"
+	`include "fill_params_ge11.sv"
 
 		   // read PT LUT
 		   ptfile = $fopen ({`dpath, "/ptlut.dat"}, "rb");
