@@ -28,6 +28,7 @@ module sp_tf;
     `param endcap_p = 1;
     `param sector_p = 1;
     `param rpc_delay = 6; // delay of rpc data relative to csc
+    `param ge11_delay = 3; // delay of ge11 data relative to csc
    
     csc_lct_mpcx lct_ii[5:0][8:0][seg_ch-1:0];
     // GEM interfaces [schamber][layer][cluster]
@@ -55,11 +56,31 @@ module sp_tf;
 					 assign lct_ii[gi][gj][gk].wg = wgi[gi][gj][gk];
 					 assign lct_ii[gi][gj][gk].hs = hstri[gi][gj][gk];
 					 assign lct_ii[gi][gj][gk].cp = cpati[gi][gj][gk];
+					 // zero out new parameters for now, TBD: need to take these from input file
+					 assign lct_ii[gi][gj][gk].lr  = 0;   // left-right flag
+					 assign lct_ii[gi][gj][gk].ser = 0;  // sync error
+					 assign lct_ii[gi][gj][gk].cid = 0;  // CSC ID
 					 
 				  end
 			 end
 		end
+
+	  for (gi = 0; gi < 7; gi++)
+		begin
+		   for (gj = 0; gj < 2; gj++)
+			 begin
+				for (gk = 0; gk < 8; gk++)
+				  begin
+					 assign ge11_cl[gi][gj][gk].str = ge11_str_i [gi][gj][gk];
+					 assign ge11_cl[gi][gj][gk].prt = ge11_prt_i [gi][gj][gk];
+					 assign ge11_cl[gi][gj][gk].csz = ge11_csz_i [gi][gj][gk];
+					 assign ge11_cl[gi][gj][gk].vf  = ge11_vf_i [gi][gj][gk];
+				  end
+			 end
+		end
+
    endgenerate
+
    
     // precise parameters
     /*
@@ -83,6 +104,7 @@ module sp_tf;
 	
 // ph quality codes output [zone][key_strip]
     wire [5:0] 		ph_ranko [3:0][ph_raw_w-1:0];
+    // [station][chamber][segment]
     wire [bw_fph-1:0] 	ph   [4:0][8:0][seg_ch-1:0];
     wire [bw_th-1:0] 	th11 [1:0][2:0][th_ch11-1:0];
     wire [bw_th-1:0] 	th   [4:0][8:0][seg_ch-1:0];
@@ -120,14 +142,26 @@ module sp_tf;
     reg [6:0] 		  wiregroup [max_ev-1:0][5:0][8:0][seg_ch-1:0];
     reg [bw_hs-1:0]   hstrip    [max_ev-1:0][5:0][8:0][seg_ch-1:0];
     reg [3:0] 		  clctpat   [max_ev-1:0][5:0][8:0][seg_ch-1:0];
-
+    
+    // [subsector][chamber][hit]
     reg [10:0] rpc_ph [max_ev+rpc_delay-1:0][6:0][5:0][seg_ch-1:0];
     reg [4:0]  rpc_th [max_ev+rpc_delay-1:0][6:0][5:0][seg_ch-1:0];
+
+    // [scham=link][layer][cluster]
+    reg [7:0] ge11_str [max_ev+ge11_delay-1:0][6:0][1:0][7:0];
+    reg [2:0] ge11_prt [max_ev+ge11_delay-1:0][6:0][1:0][7:0];
+    reg [2:0] ge11_csz [max_ev+ge11_delay-1:0][6:0][1:0][7:0];
+
+    reg [7:0] ge11_str_i [6:0][1:0][7:0];
+    reg [2:0] ge11_prt_i [6:0][1:0][7:0];
+    reg [2:0] ge11_csz_i [6:0][1:0][7:0];
+    reg [7:0] ge11_vf_i  [6:0][1:0];
    
     integer 	      iadr = 0, s = 0, i = 0, pi, j = 0, sn, c;
     reg [15:0] 		  v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11;
-    reg [2:0] 		  pr_cnt [6:0][8:0];
-    reg [2:0] 		  pr_cnt_rpc [6:0][8:0];
+    reg [2:0] 		  pr_cnt      [6:0][8:0];
+    reg [2:0] 		  pr_cnt_rpc  [6:0][8:0];
+    reg [2:0] 		  pr_cnt_ge11 [6:0][8:0]; // second index wider than needed, but OK
     integer 		  _event;
 	reg [9:0] 		  _bx_jitter; 		  
     reg [1:0] 		  _endcap;
@@ -330,6 +364,14 @@ module sp_tf;
 							rpc_th [iev+rpc_delay][ist][icid][ipr] = 5'h1f;
 						end
 			   
+				for (ist = 0; ist < 7; ist=ist+1) // ge11 schamber
+					for (icid = 0; icid < 2; icid=icid+1) // ge11 layer
+						for (ipr = 0; ipr < 8; ipr=ipr+1) // ge11 cluster
+						begin
+							ge11_str [iev+ge11_delay][ist][icid][ipr] = 8'hff;
+							ge11_prt [iev+ge11_delay][ist][icid][ipr] = 3'h7;
+							ge11_csz [iev+ge11_delay][ist][icid][ipr] = 3'h7;
+						end
 			end
 			// read events
 //			in = $fopen({`dpath, "/NikhilInputs.txt"}, "r");
@@ -348,26 +390,28 @@ module sp_tf;
 			begin
 				// read line
 				code = $fgets(line, in);
-//                $fwrite (sim_out, "%h\n", line);
+				//                $fwrite (sim_out, "%h\n", line);
 				// read values
 				v0 = 0; v1 = 0; v2 = 0; v3 = 0; v4 = 0; v5 = 0; v6 = 0; v7 = 0; v8 = 0; v9 = 0; v10 = 0; v11 = 0;
 				sn = $sscanf(line, "%d %d %d %d %d %d %d %d %d %d %d %d", 
 							 v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11);
-//				$fwrite(sim_out, "code %d read %d items %d %d %d %d %d %d %d %d %d %d %d %d\n", code, sn,
-//				    v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11);
+				//				$fwrite(sim_out, "code %d read %d items %d %d %d %d %d %d %d %d %d %d %d %d\n", code, sn,
+				//				    v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11);
 				case (sn)
 					1: 
 						begin	// end of event
 							// clean primitive counters
-							for (i = 0; i < 7; i=i+1) for (j = 0; j < 9; j=j+1)
-							  begin
-								pr_cnt[i][j] = 0;
-								pr_cnt_rpc[i][j] = 0;
-							  end
+							for (i = 0; i < 7; i=i+1) 
+							     for (j = 0; j < 9; j=j+1)
+							     begin
+								    pr_cnt[i][j] = 0;
+								    pr_cnt_rpc[i][j] = 0;
+								    pr_cnt_ge11[i][j] = 0;
+							     end
 							j = 0;
 							_event = _event + 1;
-						   first_stub = 1;
-						   station_cnt = 0;
+							first_stub = 1;
+							station_cnt = 0;
 							//$fwrite(sim_out, "End of event %d\n", _event);
 						end
 					12: 
@@ -387,70 +431,90 @@ module sp_tf;
 							_bend = v10;
 							_halfstrip = v11;
 
-						   // code that adds jitter, for BXA checks
-						   if (first_stub == 1) old_station = _station;
-						   first_stub = 0;
-						   
-						   if (old_station != _station)
-							 station_cnt = station_cnt+1;
+							// code that adds jitter, for BXA checks
+							if (first_stub == 1) old_station = _station;
+							first_stub = 0;
+							
+							if (old_station != _station)
+								station_cnt = station_cnt+1;
 
-						   _bx_jitter = 2;
-						   if (station_cnt <= 1)
-							 begin
-//								_bx_jitter = 0;
-							 end
+							_bx_jitter = 2;
+							if (station_cnt <= 1)
+							begin
+								//								_bx_jitter = 0;
+							end
 
-						   // increase stub counter only when station changes
-						   old_station = _station;
-						   // end of BX jitter code
+							// increase stub counter only when station changes
+							old_station = _station;
+							// end of BX jitter code
 
-//							$fwrite(sim_out, "primitive: subsec: %d  stat: %d  val: %d  hs: %h  wg: %h  q: %h\n",
-//									_subsector, _station, _valid, _halfstrip, _wiregroup, _quality);
+							//							$fwrite(sim_out, "primitive: subsec: %d  stat: %d  val: %d  hs: %h  wg: %h  q: %h\n",
+							//									_subsector, _station, _valid, _halfstrip, _wiregroup, _quality);
 							
 							// copy data to the corresponding input
 
-						  if (_endcap == endcap_p && _sector == sector_p)
-						  begin
-						   if (_valid == 1) // csc
-							 begin
-								_cscid = _cscid-1; // CSC IDs start from 1 in the input files
-							  if (_station > 5) $fwrite(sim_out, "bad station: %d, event: %d\n", _station, _event);
-							  else if (_cscid > 8) $fwrite(sim_out, "bad cscid: %d, station: %d, event: %d\n", _cscid, _station, _event);
-							  else if (_cscid == 0) $fwrite(sim_out, "removing cscid=1: %d, station: %d, event: %d\n", _cscid, _station, _event);
-							  else if (pr_cnt[_station][_cscid] >= seg_ch)
+							if (_endcap == endcap_p && _sector == sector_p)
+							begin
+								if (_valid == 1) // csc
 								begin
-								   $fwrite(sim_out, "bad segment index. event: %d, index: %d, station: %d, cscid: %d\n",
-										   _event, pr_cnt[_station][_cscid], _station, _cscid);
-								end
-							  else
+									_cscid = _cscid-1; // CSC IDs start from 1 in the input files
+									if (_station > 5) $fwrite(sim_out, "bad station: %d, event: %d\n", _station, _event);
+									else 
+										if (_cscid > 8) $fwrite(sim_out, "bad cscid: %d, station: %d, event: %d\n", _cscid, _station, _event);
+										else
+//											if (_cscid == 0) $fwrite(sim_out, "removing cscid=1: %d, station: %d, event: %d\n", _cscid, _station, _event);
+//											else 
+												if (pr_cnt[_station][_cscid] >= seg_ch)
+												begin
+													$fwrite(sim_out, "bad segment index. event: %d, index: %d, station: %d, cscid: %d\n",
+															_event, pr_cnt[_station][_cscid], _station, _cscid);
+												end
+												else
+												begin
+													valid    [_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _valid;
+													quality  [_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _quality;
+													wiregroup[_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _wiregroup;
+													hstrip   [_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _halfstrip;
+													clctpat  [_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _pattern;
+													// increase primitive counter
+													pr_cnt[_station][_cscid] = pr_cnt[_station][_cscid] + 1;
+												end // else: !if(pr_cnt[_station][_cscid] >= seg_ch)
+								end // if (_valid == 1)
+								else if (_valid == 2) // rpc
 								begin
-								   valid    [_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _valid;
-								   quality  [_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _quality;
-								   wiregroup[_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _wiregroup;
-								   hstrip   [_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _halfstrip;
-								   clctpat  [_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _pattern;
-								   // increase primitive counter
-								   pr_cnt[_station][_cscid] = pr_cnt[_station][_cscid] + 1;
-								end // else: !if(pr_cnt[_station][_cscid] >= seg_ch)
-						   end // if (_valid == 1)
-						   else if (_valid == 2) // rpc
-							 begin
-							  if (pr_cnt_rpc[_station][_cscid] >= seg_ch)
+									if (pr_cnt_rpc[_station][_cscid] >= seg_ch)
+									begin
+//										$fwrite(sim_out, "bad RPC segment index. event: %d, index: %d, station: %d, cscid: %d\n",
+//												_event, pr_cnt_rpc[_station][_cscid], _station, _cscid);
+									end
+									else
+									begin
+//										$fwrite (sim_out, "rpc hit: st: %d ch: %d phi: %d th: %d\n", _station, _cscid, _halfstrip, _wiregroup);
+										rpc_ph [_event + _bx_jitter + rpc_delay][_station][_cscid][pr_cnt_rpc[_station][_cscid]] = _halfstrip; // actually carries phi
+										rpc_th [_event + _bx_jitter + rpc_delay][_station][_cscid][pr_cnt_rpc[_station][_cscid]] = _wiregroup; // actually carries theta
+										// increase primitive counter
+										pr_cnt_rpc[_station][_cscid] = pr_cnt_rpc[_station][_cscid] + 1;
+									end // else: !if(pr_cnt_rpc[_station][_cscid] >= seg_ch)
+								end // if (_valid == 2)
+								else if (_valid == 3) // GE11
 								begin
-								   $fwrite(sim_out, "bad RPC segment index. event: %d, index: %d, station: %d, cscid: %d\n",
-										   _event, pr_cnt_rpc[_station][_cscid], _station, _cscid);
-								end
-							  else
-								begin
-								   $fwrite (sim_out, "rpc hit: st: %d ch: %d phi: %d th: %d\n", _station, _cscid, _halfstrip, _wiregroup);
-								   rpc_ph [_event + _bx_jitter + rpc_delay][_station][_cscid][pr_cnt_rpc[_station][_cscid]] = _halfstrip; // actually carries phi
-								   rpc_th [_event + _bx_jitter + rpc_delay][_station][_cscid][pr_cnt_rpc[_station][_cscid]] = _wiregroup; // actually carries theta
-								   // increase primitive counter
-								   pr_cnt_rpc[_station][_cscid] = pr_cnt_rpc[_station][_cscid] + 1;
-								end // else: !if(pr_cnt_rpc[_station][_cscid] >= seg_ch)
-							 end // if (_valid == 2)
+									if (pr_cnt_ge11[_station][_cscid] >= seg_ch)
+									begin
+//										$fwrite(sim_out, "bad GE11 segment index. event: %d, index: %d, station: %d, cscid: %d\n",
+//												_event, pr_cnt_rpc[_station][_cscid], _station, _cscid);
+									end
+									else
+									begin
+//										$fwrite (sim_out, "GE11 hit: sch: %d ly: %d str: %d prt: %d csz: %d\n", _station, _cscid, _halfstrip, _wiregroup, _pattern);
+										ge11_str [_event + _bx_jitter + ge11_delay][_station][_cscid][pr_cnt_ge11[_station][_cscid]] = _halfstrip; // actually carries strip
+										ge11_prt [_event + _bx_jitter + ge11_delay][_station][_cscid][pr_cnt_ge11[_station][_cscid]] = _wiregroup; // actually carries partition
+										ge11_csz [_event + _bx_jitter + ge11_delay][_station][_cscid][pr_cnt_ge11[_station][_cscid]] = _pattern;   // actually carries cluster size
+										// increase primitive counter
+										pr_cnt_ge11[_station][_cscid]++;
+									end // else: !if(pr_cnt_rpc[_station][_cscid] >= seg_ch)
+								end // if (_valid == 2)
 							end // if (_endcap == endcap_p || _sector == sector_p)
-						   
+							
 						end
 				endcase
 			end
@@ -472,7 +536,7 @@ module sp_tf;
 				begin
 					`clk_drive(clki, j);
 					`__top_module__
-			    end
+						end
             end
 			
 			for (i = 0; i < 200 + max_ev-1; i = i+1)
@@ -509,7 +573,7 @@ module sp_tf;
                     for (pi = 0; pi <= 15; pi++)
                         $fwrite (sim_out, "%h ", ph_init[0][pi]);
                     $fwrite (sim_out, "\n");*/
-           
+/*           
 					$fwrite(sim_out, "st: 0  cid: 0  "); for (si=0; si<6; si++) $fwrite(sim_out, "%d ", uut.pcs.station11[0].csc11[0].pc11.params[si]);$fwrite(sim_out, "\n");
 					$fwrite(sim_out, "st: 0  cid: 1  "); for (si=0; si<6; si++) $fwrite(sim_out, "%d ", uut.pcs.station11[0].csc11[1].pc11.params[si]);$fwrite(sim_out, "\n");
 					$fwrite(sim_out, "st: 0  cid: 2  "); for (si=0; si<6; si++) $fwrite(sim_out, "%d ", uut.pcs.station11[0].csc11[2].pc11.params[si]);$fwrite(sim_out, "\n");
@@ -587,6 +651,7 @@ module sp_tf;
 				   for (si=0; si<128; si++) $fwrite(sim_out, "%h ", uut.pcs.station234[3].csc[1].pc.th_mem[si]);$fwrite(sim_out, "\n");
 				   $fwrite (sim_out, "th_lut 4 1:\n");
 				   for (si=0; si<128; si++) $fwrite(sim_out, "%h ", uut.pcs.station234[4].csc[1].pc.th_mem[si]);$fwrite(sim_out, "\n");
+*/				   
 				end
 
 			   
@@ -634,6 +699,22 @@ module sp_tf;
 						// count stations in this event
 						if (good_ev[ist]) st_cnt = st_cnt + 1;
 					end
+
+					for (ist = 0; ist < 7; ist=ist+1) // schamber
+					begin
+						for (icid = 0; icid < 2; icid=icid+1) // layer
+						begin
+							for (si = 0; si < 8; si = si+1) // cluster
+							  begin
+								    ge11_str_i [ist][icid][si] = ge11_str [ev][ist][icid][si];
+								    ge11_prt_i [ist][icid][si] = ge11_prt [ev][ist][icid][si];
+								    ge11_csz_i [ist][icid][si] = ge11_csz [ev][ist][icid][si];
+								    ge11_vf_i  [ist][icid][si] = ge11_str [ev][ist][icid][si] != 8'hff;
+						      end
+						end
+				    end
+
+
 
 					ev = ev + 1;
 					// count event as good if more than 2 stations, other than 3-4
@@ -701,34 +782,60 @@ module sp_tf;
 					end
 */
 
-					for (ip = 0; ip < 6; ip = ip+1)
+					for (ip = 0; ip < 6; ip = ip+1) // station
 					begin
-						for (j = 0; j < 9; j = j+1)
+						for (j = 0; j < 9; j = j+1) // chamber
 						begin
-							
-							for (k = 0; k < 2; k = k+1)
+							for (k = 0; k < 2; k = k+1) // segment
 							begin
 								if (uut.vl[ip][j][k] != 0)
 								begin
+								
+								    //$fwrite (sim_out, "STUB valid: st: %d ch: %d seg: %d\n", ip, j, k);
+								
 									if (ip <= 1 && j < 3) // ME11
-									  begin
-										$fwrite(sim_out, "st: %d ch: %h ph: %h  th: %h %h\n", 
+								    begin
+										$fwrite(sim_out, "STUB: st: %1d ch: %1h ph: %h  th: %h %h\n", 
 												ip, j, uut.ph[ip][j][k], uut.th11[ip][j][k*2], uut.th11[ip][j][k*2+1]);
 										 ph_high_prec = uut.ph[ip][j][k];
-									  end
+									end
 									else if (ip == 5 && j == 0) // ME11 neighbor
-                                        $fwrite(sim_out, "st: %d ch: %d ph: %h  th: %h %h\n", 
+                                        $fwrite(sim_out, "STUB: st: %1d ch: %1d ph: %h  th: %h %h\n", 
 												ip, j, uut.ph[ip][j][k], uut.th11[2][0][k*2], uut.th11[2][0][k*2+1]);
 									else
-									  begin
-										$fwrite(sim_out, "st: %d ch: %d ph: %h  th: %h ph_hit: %d ph_zone: %d\n", 
+									begin
+										$fwrite(sim_out, "STUB: st: %1d ch: %1d ph: %h  th: %h ph_hit: %d ph_zone: %d\n", 
 												ip, j, uut.ph[ip][j][k], uut.th[ip][j][k],5,5);//uut.ph_hit[ip][j][k],uut.ph_zone[ip][j][k]);
 										 ph_high_prec = uut.ph[ip][j][k];
-									  end
+									end
 								end
 							end
 						end
 					end // for (ip = 0; ip < 6; ip = ip+1)
+
+					for (ip = 0; ip < 7; ip = ip+1) // schamber
+					begin
+						for (j = 0; j < 2; j = j+1) // layer
+						begin
+							for (k = 0; k < 8; k = k+1) // cluster
+							begin
+							
+//							    if (uut.pcs_ge11.ge11_scham_loop[ip].ge11_layer_loop[j].ge11_cluster_loop[k].pcge11.cl.vf != 0)
+//                                if (uut.ge11_cl[ip][j][k].vf != 0)
+//							    begin
+//								    $fwrite(sim_out, "GE11: sch: %1d ly: %1d cluster: %1d\n",
+//								            ip, j, k);
+//							    end
+							
+							    if (uut.ge11_vl[ip][j][k] != 0)
+							    begin
+								    $fwrite(sim_out, "GE11: sch: %1d ly: %1d cluster: %1d ph: %h th: %h\n",
+								            ip, j, k, uut.ge11_ph[ip][j][k], uut.ge11_th[ip][j][k]);
+	                            end
+	                        end
+	                    end
+	                end
+
 /*
 				   if (uut.ph_zone[0][1] != 0)
 				   begin
