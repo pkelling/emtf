@@ -274,7 +274,7 @@ module coord_delay
                                 pho  [0][i][j][k] = ge11_ph[ge11_chm][0][k*4];
                                 tho  [0][i][j][k] = ge11_th[ge11_chm][0][k*4];
                                 vlo  [0][i][j][k] = ge11_vl[ge11_chm][0][k*4];
-                                cpato[0][i][j][k] = 4'h0; // this marks GE11 stub, same as RPC stubs. Distriguishing between RPC and GE11 is done using station/chamber 
+                                cpato[0][i][j][k] = 4'h0; // this marks GE11 stub, same as RPC stubs. Distinguishing between RPC and GE11 is done using station/chamber 
                             end
                             // layer 1
                             else if (ge11_vl[ge11_chm][1][k*4] == 1'b1) // check only clusters 0 and 4 since they are filled first
@@ -283,7 +283,7 @@ module coord_delay
                                 pho  [0][i][j][k] = ge11_ph[ge11_chm][1][k*4];
                                 tho  [0][i][j][k] = ge11_th[ge11_chm][1][k*4];
                                 vlo  [0][i][j][k] = ge11_vl[ge11_chm][1][k*4];
-                                cpato[0][i][j][k] = 4'h0; // this marks GE11 stub, same as RPC stubs. Distriguishing between RPC and GE11 is done using station/chamber 
+                                cpato[0][i][j][k] = 4'h0; // this marks GE11 stub, same as RPC stubs. Distinguishing between RPC and GE11 is done using station/chamber 
                             end
                         end
                     end
