@@ -672,8 +672,8 @@ module sp_tf;
 								 cpati[ist][icid][si] = clctpat [ev][ist][icid][si];
 								 if (vpf [ist][icid][si] == 1'b1)
 								 begin
-									$fwrite(sim_out, "ev: %d st: %d ch: %d prim: %d   q: %h w: %h s: %h\n",
-								 			ev, ist, icid, ipr, qi [ist][icid][si], wgi [ist][icid][si], hstri [ist][icid][si]);
+									$fwrite(sim_out, "CSC_RAW: ev: %4d st: %1d ch: %1d q: %h w: %h s: %h\n",
+								 			ev, ist, icid, qi [ist][icid][si], wgi [ist][icid][si], hstri [ist][icid][si]);
 								 end
 								// check if there is chamber data, update good event station mask
 								if (qi  [ist][icid][si] > 0) good_ev[ist] = 1;
@@ -710,6 +710,11 @@ module sp_tf;
 								    ge11_prt_i [ist][icid][si] = ge11_prt [ev][ist][icid][si];
 								    ge11_csz_i [ist][icid][si] = ge11_csz [ev][ist][icid][si];
 								    ge11_vf_i  [ist][icid][si] = ge11_str [ev][ist][icid][si] != 8'hff;
+                                     if (ge11_vf_i [ist][icid][si] == 1'b1)
+                                     begin
+                                        $fwrite(sim_out, "GEM_RAW: ev: %4d sch: %1d ly: %1d cls: %1h str: %h prt: %h\n",
+                                                ev, ist, icid, si, ge11_str_i [ist][icid][si], ge11_prt_i [ist][icid][si]);
+                                     end
 						      end
 						end
 				    end
@@ -795,16 +800,16 @@ module sp_tf;
 								
 									if (ip <= 1 && j < 3) // ME11
 								    begin
-										$fwrite(sim_out, "STUB: st: %1d ch: %1h ph: %h  th: %h %h\n", 
+										$fwrite(sim_out, "CSC_STUB: st: %1d ch: %1h ph: %h  th: %h %h\n", 
 												ip, j, uut.ph[ip][j][k], uut.th11[ip][j][k*2], uut.th11[ip][j][k*2+1]);
 										 ph_high_prec = uut.ph[ip][j][k];
 									end
 									else if (ip == 5 && j == 0) // ME11 neighbor
-                                        $fwrite(sim_out, "STUB: st: %1d ch: %1d ph: %h  th: %h %h\n", 
+                                        $fwrite(sim_out, "CSC_STUB: st: %1d ch: %1d ph: %h  th: %h %h\n", 
 												ip, j, uut.ph[ip][j][k], uut.th11[2][0][k*2], uut.th11[2][0][k*2+1]);
 									else
 									begin
-										$fwrite(sim_out, "STUB: st: %1d ch: %1d ph: %h  th: %h ph_hit: %d ph_zone: %d\n", 
+										$fwrite(sim_out, "CSC_STUB: st: %1d ch: %1d ph: %h  th: %h ph_hit: %d ph_zone: %d\n", 
 												ip, j, uut.ph[ip][j][k], uut.th[ip][j][k],5,5);//uut.ph_hit[ip][j][k],uut.ph_zone[ip][j][k]);
 										 ph_high_prec = uut.ph[ip][j][k];
 									end
@@ -829,7 +834,7 @@ module sp_tf;
 							
 							    if (uut.ge11_vl[ip][j][k] != 0)
 							    begin
-								    $fwrite(sim_out, "GE11: sch: %1d ly: %1d cluster: %1d ph: %h th: %h\n",
+								    $fwrite(sim_out, "GEM_STUB: sch: %1d ly: %1d cluster: %1d ph: %h th: %h\n",
 								            ip, j, k, uut.ge11_ph[ip][j][k], uut.ge11_th[ip][j][k]);
 	                            end
 	                        end

@@ -321,6 +321,10 @@ module sp
 		 .me11ai(me11a),
 		 .cpati (cpatr),
 		 
+		.ge11_ph (ge11_ph), 
+		.th (ge11_th),
+		.vl (ge11_vl),
+		 
 		 .cppf_rxd (cppf_rxd), 
 		 .cppf_rx_valid (cppf_rx_valid),
 		 .use_rpc (use_rpc),

@@ -35,7 +35,7 @@ module prim_conv_ge11
 
 	`int j;
 
-	reg [10:0] factor; // strip width factor
+	reg [11:0] factor; // strip width factor
 
 	wire [7:0] 		 pc_id; // prim converter ID
 
@@ -67,7 +67,10 @@ module prim_conv_ge11
 		// strip width factor relative to ME234/2 
 		// 1024 == 1
 		// factor needs correction for gem
-		factor = 1024; 
+		factor = 3256; // calculated by Jia Fu, see email from 2020-09-13
+        // The GE1/1 pad pitch according to CMSSW is: 0.0529872. As the nominal pitch is 0.1333333, 
+        // and the nominal 1/8-pitch is 1/8 of that, I calculated the multiplier factor as:
+        // pad_pitch_multiplier = round(pad_pitch / (nominal_pitch / 8) * 1024) = 3256		  
 
 		if (cl.vf) // valid cluster
 		begin

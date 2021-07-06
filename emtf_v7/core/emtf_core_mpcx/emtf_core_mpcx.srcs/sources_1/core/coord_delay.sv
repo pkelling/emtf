@@ -24,6 +24,7 @@
 module coord_delay 
 (
 	phi, th11i, thi, vli, me11ai, cpati,
+	ge11_ph, ge11_th, ge11_vl, 
 	cppf_rxd, cppf_rx_valid,
 	use_rpc,
 	pho, th11o, tho, vlo_o, me11ao, cpato,
@@ -49,7 +50,12 @@ module coord_delay
 	input [seg_ch-1:0] 	me11ai [2:0][2:0];
 	input [3:0] 		cpati  [5:0][8:0][seg_ch-1:0];
 
-    // CPPF data          [subsect][frame][stub*4]
+    // GE11 data [schamber][layer][cluster]
+  	input [bw_fph-1:0] ge11_ph [6:0][1:0][7:0]; 
+	input [bw_th-1:0]  ge11_th [6:0][1:0][7:0];
+	input [7:0]        ge11_vl [6:0][1:0];
+
+  // CPPF data          [subsect][frame][stub*4]
     input [63:0] cppf_rxd [6:0][2:0]; // cppf rx data, 3 frames x 64 bit, for 7 links
     input [6:0] cppf_rx_valid; // cppf rx data valid flags
     input use_rpc; // enables using RPC data in track finding
@@ -125,7 +131,7 @@ module coord_delay
 	reg [seg_ch-1:0] rpc_vl [6:0][5:0]; 
 	reg [15:0] rxd_temp;
 	
-	// correspondence between RPC subsector and chamber to CSC chambers
+	// correspondence between RPC subsector and chamber and CSC chambers
 	// indexes: [ME station][CSCID]
 	integer rpc_subsect[5:0][8:0]; // RPC subsector 
 	integer rpc_ch[5:0][8:0]; // RPC chamber
@@ -190,7 +196,20 @@ module coord_delay
     assign rpc_subsect[5][7] = 7;    assign rpc_ch[5][7] = 7;
     assign rpc_subsect[5][8] = 0;    assign rpc_ch[5][8] = 4;    
 
-    integer rpc_sub, rpc_chm;
+	// correspondence between GE11 chamber and CSC chambers
+	// indexes: [ME station][CSCID]
+	integer ge11_ch     [5:0][2:0]; // GE11 chamber
+	
+	assign ge11_ch[0][0] = 0;	   
+	assign ge11_ch[0][1] = 1;	   
+	assign ge11_ch[0][2] = 2;	   
+	assign ge11_ch[1][0] = 3;	   
+	assign ge11_ch[1][1] = 4;	   
+	assign ge11_ch[1][2] = 5;	   
+	assign ge11_ch[5][0] = 6;	   
+
+
+    integer rpc_sub, rpc_chm, ge11_chm;
   	`int i, j, k, d, f, s;
   
     // process RPC data in the same BX as they appear from CPPF RX
@@ -240,31 +259,64 @@ module coord_delay
                 end
                 else
                 begin
-                    // get RPC chamber corresponding to this CSC
-                    rpc_sub = rpc_subsect[i][j];
-                    rpc_chm = rpc_ch[i][j];
-                
-                    // slip RPC hits if CSC does not have stubs
-                    if (rpc_sub < 7 && rpc_chm < 7 && use_rpc) // subsector and chamber are valid, and using RPC is enabled
+                    if ((i <= 1 && j <= 2) || // ME11 only, can be replaced with GE11
+                        (i == 5 && j == 0)) // ME11 in neighbor sector
                     begin
-                        if (rpc_chm == 2 || rpc_chm == 4) // special case of RE34/2 and RE34/3 chambers
+                        ge11_chm = rpc_ch[i][j]; // extract GE11 chamber number, 0..6
+                        
+                        for (k = 0; k < 2; k++) // cluster/LCT loop 
                         begin
-                            // if RE34/2 does not have a hit, check RE34/3
-                            // check both hits here
-                            if (rpc_vl[rpc_sub][rpc_chm][0] == 1'b0 &&
-                                rpc_vl[rpc_sub][rpc_chm][1] == 1'b0) rpc_chm = rpc_chm + 1; 
+                            // check if GE11 clusters are present
+                            // layer 0
+                            if (ge11_vl[ge11_chm][0][k*4] == 1'b1) // check only clusters 0 and 4 since they are filled first
+                            begin
+                                // finally, assign GE11 clusters to CSC stubs, mark them using CLCT pattern = 0
+                                pho  [0][i][j][k] = ge11_ph[ge11_chm][0][k*4];
+                                tho  [0][i][j][k] = ge11_th[ge11_chm][0][k*4];
+                                vlo  [0][i][j][k] = ge11_vl[ge11_chm][0][k*4];
+                                cpato[0][i][j][k] = 4'h0; // this marks GE11 stub, same as RPC stubs. Distriguishing between RPC and GE11 is done using station/chamber 
+                            end
+                            // layer 1
+                            else if (ge11_vl[ge11_chm][1][k*4] == 1'b1) // check only clusters 0 and 4 since they are filled first
+                            begin
+                                // finally, assign GE11 clusters to CSC stubs, mark them using CLCT pattern = 0
+                                pho  [0][i][j][k] = ge11_ph[ge11_chm][1][k*4];
+                                tho  [0][i][j][k] = ge11_th[ge11_chm][1][k*4];
+                                vlo  [0][i][j][k] = ge11_vl[ge11_chm][1][k*4];
+                                cpato[0][i][j][k] = 4'h0; // this marks GE11 stub, same as RPC stubs. Distriguishing between RPC and GE11 is done using station/chamber 
+                            end
                         end
+                    end
+                    else
+                    begin
+                        // get RPC chamber corresponding to this CSC
+                        rpc_sub = rpc_subsect[i][j];
+                        rpc_chm = rpc_ch[i][j];
                     
-                        // finally, assign RPC hits to CSC stubs, mark them using CLCT pattern = 0
-                        pho[0][i][j][0] =   rpc_ph[rpc_sub][rpc_chm][0];
-                        tho[0][i][j][0] =   rpc_th[rpc_sub][rpc_chm][0];
-                        vlo[0][i][j][0] =   rpc_vl[rpc_sub][rpc_chm][0];
-                        cpato[0][i][j][0] = 4'h0; // this marks RPC stub
-                    
-                        pho[0][i][j][1] =   rpc_ph[rpc_sub][rpc_chm][1];
-                        tho[0][i][j][1] =   rpc_th[rpc_sub][rpc_chm][1];
-                        vlo[0][i][j][1] =   rpc_vl[rpc_sub][rpc_chm][1];
-                        cpato[0][i][j][1] = 4'h0; // this marks RPC stub
+                        // slip RPC hits if CSC does not have stubs
+                        if (rpc_sub < 7 && rpc_chm < 7 && use_rpc) // subsector and chamber are valid, and using RPC is enabled
+                        begin
+                            if (rpc_chm == 2 || rpc_chm == 4) // special case of RE34/2 and RE34/3 chambers
+                            begin
+                                // if RE34/2 does not have a hit, check RE34/3
+                                // check both hits here
+                                if (rpc_vl[rpc_sub][rpc_chm][0] == 1'b0 &&
+                                    rpc_vl[rpc_sub][rpc_chm][1] == 1'b0) rpc_chm = rpc_chm + 1; 
+                            end
+                        
+                            for (k = 0; k < 2; k++) // RPC hit loop
+                            begin
+                                // check if RPC hits are present
+                                if (rpc_vl[rpc_sub][rpc_chm][k] == 1'b1)
+                                begin
+                                    // finally, assign RPC hits to CSC stubs, mark them using CLCT pattern = 0
+                                    pho  [0][i][j][k] = rpc_ph[rpc_sub][rpc_chm][k];
+                                    tho  [0][i][j][k] = rpc_th[rpc_sub][rpc_chm][k];
+                                    vlo  [0][i][j][k] = rpc_vl[rpc_sub][rpc_chm][k];
+                                    cpato[0][i][j][k] = 4'h0; // this marks RPC stub
+                                end
+                            end
+                        end
                     end 
                 end
             end 
