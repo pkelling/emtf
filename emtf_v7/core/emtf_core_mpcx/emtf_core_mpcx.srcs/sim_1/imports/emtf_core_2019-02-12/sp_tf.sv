@@ -498,18 +498,20 @@ module sp_tf;
 								end // if (_valid == 2)
 								else if (_valid == 3) // GE11
 								begin
-									if (pr_cnt_ge11[_station][_cscid] >= seg_ch)
+									if (pr_cnt_ge11[_station][_cscid] >= 2) // can only use two clusters per chamber
 									begin
-//										$fwrite(sim_out, "bad GE11 segment index. event: %d, index: %d, station: %d, cscid: %d\n",
-//												_event, pr_cnt_rpc[_station][_cscid], _station, _cscid);
+										$fwrite(sim_out, "bad GE11 segment index. event: %4d, index: %1d, schamber: %1d, layer: %1d\n",
+												_event, pr_cnt_rpc[_station][_cscid], _station, _cscid);
 									end
 									else
 									begin
 //										$fwrite (sim_out, "GE11 hit: sch: %d ly: %d str: %d prt: %d csz: %d\n", _station, _cscid, _halfstrip, _wiregroup, _pattern);
-										ge11_str [_event + _bx_jitter + ge11_delay][_station][_cscid][pr_cnt_ge11[_station][_cscid]] = _halfstrip; // actually carries strip
-										ge11_prt [_event + _bx_jitter + ge11_delay][_station][_cscid][pr_cnt_ge11[_station][_cscid]] = _wiregroup; // actually carries partition
-										ge11_csz [_event + _bx_jitter + ge11_delay][_station][_cscid][pr_cnt_ge11[_station][_cscid]] = _pattern;   // actually carries cluster size
-										// increase primitive counter
+//                                                                                 [schamber][ layer][         cluster               ]
+										ge11_str [_event + _bx_jitter + ge11_delay][_station][_cscid][pr_cnt_ge11[_station][_cscid]*4] = _halfstrip; // actually carries strip
+										ge11_prt [_event + _bx_jitter + ge11_delay][_station][_cscid][pr_cnt_ge11[_station][_cscid]*4] = _wiregroup; // actually carries partition
+										ge11_csz [_event + _bx_jitter + ge11_delay][_station][_cscid][pr_cnt_ge11[_station][_cscid]*4] = _pattern;   // actually carries cluster size
+										// cluster indexes above are filled 0, then 4, because GE11 fills clusters like that. Current EMTF logic can only use 0 and 4, so ignore all others
+										// increase cluster counter
 										pr_cnt_ge11[_station][_cscid]++;
 									end // else: !if(pr_cnt_rpc[_station][_cscid] >= seg_ch)
 								end // if (_valid == 2)
