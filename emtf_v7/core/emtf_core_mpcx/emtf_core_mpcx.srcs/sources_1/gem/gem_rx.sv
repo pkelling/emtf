@@ -16,6 +16,7 @@ module gem_rx
     output [15:0] correction_cnt [6:0],
     input  [6:0] fiber_enable,
     input  [4:0] gem_data_del [6:0], // manual gem data delay for alignment [schamber=link]
+    // these delays should be set so that GEM data emerges from gem_sh delay line at the same time as RPC data
 	input clk40
 );
 

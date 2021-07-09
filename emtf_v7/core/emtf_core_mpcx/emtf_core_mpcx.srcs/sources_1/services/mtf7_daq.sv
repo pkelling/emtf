@@ -203,7 +203,7 @@ module mtf7_daq
    assign id_addrw     = id_addrr + l1a_delay + core_latency + ptlut_latency;
    assign rpc_id_addrw = id_addrr + l1a_delay + core_latency + ptlut_latency - rpc_late_by; // rpc delay reduced to compensate data coming late
    // FIXME Correct for GEM
-   assign gem_id_addrw = id_addrr + l1a_delay + core_latency + ptlut_latency; // + gem_early_by; // gem delay same as CSC because it's aligned like CSC
+   assign gem_id_addrw = id_addrr + l1a_delay + core_latency + ptlut_latency - rpc_late_by; // gem delay same as RPC for now, need to delay gem data at alignment so they come in just like RPC
    assign od_addrw = od_addrr + l1a_delay;// + ptlut_latency;
    assign od_addrr = id_addrr;
 
