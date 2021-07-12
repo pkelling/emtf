@@ -108,11 +108,11 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
     logic layer15_out_0_V_ap_vld;
 
 
-    logic [1:0] mux_phase;
+    logic [1:0] mux_phase = 2'h0;
     logic [1:0] clk_hist;
     logic clk_120;
     
-    reg clk40_ff;
+    reg clk40_ff = 1'b0;
     always @(posedge clk) clk40_ff = ~clk40_ff;
     
     always @(posedge clk_120)
@@ -230,26 +230,19 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
                 bt_stA[i] = stA[i] + 3'h1;
                 chA[i] = bt_ci[i][bt_stA[i]];
             end
-        end        
-
-        // check if ME1 ring 2 stubs are present
-        if (
-            (bt_vi[i][0][0] == 1'b1 && bt_ci[i][0] <= 4'd2) ||
-            (bt_vi[i][1][0] == 1'b1 && bt_ci[i][1] <= 4'd2)    // station 1 valid and CSCID = 1,2,3 means ME1/1
-        ) 
-        begin
-            ring1_0[i] = 1'b0;
-        end        
-        else
-        begin
+            // check if ME1 ring 2 stubs are present
             ring1_0[i] = 1'b1;
-        end
+            if (
+                (bt_vi[i][0][0] == 1'b1 && bt_ci[i][0] <= 4'd2) ||
+                (bt_vi[i][1][0] == 1'b1 && bt_ci[i][1] <= 4'd2)    // station 1 valid and CSCID = 1,2,3 means ME1/1
+            ) 
+            begin
+                ring1_0[i] = 1'b0;
+            end        
 
-        // convert deltas into signed 2's complements
-        // from Sergo's message 2021-05-14:
-        // "All inputs are defined as ap_fixed<18,18> type.  The MSB (bit 17) has weight -2^(n-1), others 2^(n-1)."
-        for (i = 0; i < 3; i++) // best track loop
-        begin
+            // convert deltas into signed 2's complements
+            // from Sergo's message 2021-05-14:
+            // "All inputs are defined as ap_fixed<18,18> type.  The MSB (bit 17) has weight -2^(n-1), others 2^(n-1)."
             for (j = 0; j < 6; j++) // difference loop
             begin
                 bt_delta_ph_s [i][j] = $signed({ 5'h0, bt_delta_ph[i][j]});
@@ -263,8 +256,9 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
         bt_cpattern_r = bt_cpattern;
         bt_theta_r    = bt_theta;
 
-        clk_hist[1] = clk_hist[0];
-        clk_hist[0] = clk40_ff;
+        // adding delays to prevent issues in simulation
+        clk_hist[1] = #1 clk_hist[0];
+        clk_hist[0] = #1 clk40_ff;
     
     end
 

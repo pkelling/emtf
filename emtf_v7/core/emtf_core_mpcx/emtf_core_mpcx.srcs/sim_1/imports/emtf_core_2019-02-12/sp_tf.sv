@@ -177,7 +177,7 @@ module sp_tf;
     reg [6:0] 		  _wiregroup;
     integer 	      ist, icid, ipr, code, iev, im, iz, ir;
     reg [800-1:0] 	  line;
-    integer 	      in, best_tracks, vllut_in, sim_out, best_tracks_short;
+    integer 	      in, best_tracks, vllut_in, sim_out, best_tracks_short, nn_out;
     integer 	      stat;
     reg [31:0] 		  ev = 0;
     reg [4:0] 		  good_ev = 0;
@@ -239,6 +239,8 @@ module sp_tf;
    reg [63:0] cppf_rxd [6:0][2:0]; // cppf rx data, 3 frames x 64 bit, for 7 links
    wire [6:0] cppf_rx_valid = 7'h7f; // cprx data valid flags, always valid
 
+	wire [17:0] nn_pt [2:0]; // NN PT value
+	wire [2:0] nn_pt_v; // NN valid flag for PT
    
 
     // IMPORTANT: modify 5 parameters below to match endcap/sector and file path
@@ -300,6 +302,9 @@ module sp_tf;
 		 .gmt_qlt (gmt_qlt),
 		 .gmt_crg (gmt_crg),
 
+	     .nn_pt   (nn_pt  ), // NN PT value
+	     .nn_pt_v (nn_pt_v), // NN valid flag for PT
+
 		 .clk      (clki),
 		 .control_clk(clki), // use main clock for control as well
 		 .endcap (endcap),
@@ -319,6 +324,26 @@ module sp_tf;
     `int k;
     `int gz, gn, gs, f, stb;
    integer 			   first_stub, station_cnt;
+
+
+
+/*
+x        .bt_phi (bt_phi),
+x        .bt_theta (bt_theta),
+x        .bt_cpattern (bt_cpattern),
+x        .bt_delta_ph (bt_delta_ph),
+x        .bt_delta_th (bt_delta_th),
+x        .bt_sign_ph (bt_sign_ph),
+x        .bt_sign_th (bt_sign_th),
+x        .bt_rank (bt_rank_i),
+        .bt_vi (bt_vi), 
+        .bt_hi (bt_hi), 
+        .bt_ci (bt_ci), 
+        .bt_si (bt_si),
+*/						
+    
+
+
     initial 
 		begin
 			//sim_out = $fopen("sp_tf.out","w");
@@ -530,6 +555,7 @@ module sp_tf;
 			elapsed_time = 0;
 
 			best_tracks = $fopen({`dpath, "/best_tracks_2nd.out"}, "w");
+			nn_out      = $fopen({`dpath, "/nn.out"}, "w");
 			best_tracks_short = $fopen({`dpath, "/best_tracks_short_2nd.out"}, "w");
 
 			for (i = 0; i < 10; i = i+1)
@@ -1262,6 +1288,7 @@ module sp_tf;
 									ip, bt_rank[ip], bt_phi[ip], bt_theta[ip]);
 
 						end
+						
 
 /*					   
 						for (j = 0; j < 5; j = j+1)
@@ -1821,12 +1848,38 @@ module sp_tf;
 				end
 			end
 
-			$fwrite(sim_out, "elapsed_time: %t\n", elapsed_time);
+			$fwrite (sim_out, "elapsed_time: %t\n", elapsed_time);
 			$fclose (best_tracks);
 			$fclose (best_tracks_short);
 			$fclose (sim_out);
+			$fclose (nn_out);
 
 		end
+
+    always @(posedge uut.nn.clk_120)
+    begin
+        // NN pt assignment
+        //if (nn_pt_v[uut.nn.mux_phase] == 1'b1) // this flag is always == 1
+        if ((nn_pt[uut.nn.mux_phase] & 18'h00fff) != 18'h000ec) // zz0ec seems to be an output value when all inputs = 0 
+        begin
+          $fwrite (nn_out, "ev: %4d i: %1d NN pt: %h\n", iev, uut.nn.mux_phase, nn_pt[uut.nn.mux_phase]);
+          $fflush (nn_out);
+        end
+
+        // NN inputs
+        if (bt_rank[uut.nn.mux_phase] != 0)
+        begin
+            $fwrite (nn_out, "ev: %4d track: %1d \n", iev, uut.nn.mux_phase);
+            $fflush (nn_out);
+//            $fwrite ()
+//            $fwrite (nn_out, " rank: %h ph_deltas: %d %d %d %d %d %d th_deltas: %d %d %d %d %d %d phi: %d, theta: %d cpat: %d sign_ph: %d sign_th: %d\n", 
+//                    bt_rank[ip], 
+//                    bt_delta_ph[ip][0], bt_delta_ph[ip][1], bt_delta_ph[ip][2], bt_delta_ph[ip][3], bt_delta_ph[ip][4], bt_delta_ph[ip][5], 
+//                    bt_delta_th[ip][0], bt_delta_th[ip][1], bt_delta_th[ip][2], bt_delta_th[ip][3], bt_delta_th[ip][4], bt_delta_th[ip][5], 
+//                    bt_phi[ip], bt_theta[ip], bt_cpattern[ip][0], bt_sign_ph[ip], bt_sign_th[ip]
+//                    );
+        end
+     end
     
 endmodule
 

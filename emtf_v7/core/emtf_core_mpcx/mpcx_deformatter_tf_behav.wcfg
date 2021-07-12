@@ -12,15 +12,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="346893674937fs"></ZoomStartTime>
-      <ZoomEndTime time="346893852020fs"></ZoomEndTime>
-      <Cursor1Time time="346893822506fs"></Cursor1Time>
+      <ZoomStartTime time="30408138fs"></ZoomStartTime>
+      <ZoomEndTime time="30639311fs"></ZoomEndTime>
+      <Cursor1Time time="30576666fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="330"></NameColumnWidth>
-      <ValueColumnWidth column_width="142"></ValueColumnWidth>
+      <ValueColumnWidth column_width="130"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="2" />
+   <WVObjectSize size="12" />
    <wvobject type="vbus" fp_name="vbus118">
       <obj_property name="label">fab_clk_80_cnt</obj_property>
       <obj_property name="DisplayName">label</obj_property>
@@ -29,5 +29,50 @@
       <obj_property name="DisplayName">FullPathName</obj_property>
       <obj_property name="ElementShortName">vf</obj_property>
       <obj_property name="ObjectShortName">vf</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/sp_tf/uut/nn/clk_120">
+      <obj_property name="ElementShortName">clk_120</obj_property>
+      <obj_property name="ObjectShortName">clk_120</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/sp_tf/uut/nn/mux_phase">
+      <obj_property name="ElementShortName">mux_phase[1:0]</obj_property>
+      <obj_property name="ObjectShortName">mux_phase[1:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/sp_tf/uut/nn/input1_V">
+      <obj_property name="ElementShortName">input1_V[22:0][17:0]</obj_property>
+      <obj_property name="ObjectShortName">input1_V[22:0][17:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/sp_tf/uut/nn/clk_hist">
+      <obj_property name="ElementShortName">clk_hist[1:0]</obj_property>
+      <obj_property name="ObjectShortName">clk_hist[1:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/sp_tf/uut/nn/clk40_ff">
+      <obj_property name="ElementShortName">clk40_ff</obj_property>
+      <obj_property name="ObjectShortName">clk40_ff</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/sp_tf/uut/nn/layer15_out_0_V">
+      <obj_property name="ElementShortName">layer15_out_0_V[17:0]</obj_property>
+      <obj_property name="ObjectShortName">layer15_out_0_V[17:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/sp_tf/uut/nn/layer15_out_0_V_ap_vld">
+      <obj_property name="ElementShortName">layer15_out_0_V_ap_vld</obj_property>
+      <obj_property name="ObjectShortName">layer15_out_0_V_ap_vld</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/sp_tf/uut/nn/ring1_0">
+      <obj_property name="ElementShortName">ring1_0[2:0]</obj_property>
+      <obj_property name="ObjectShortName">ring1_0[2:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/sp_tf/uut/nn/bt_ci">
+      <obj_property name="ElementShortName">bt_ci[2:0][4:0][3:0]</obj_property>
+      <obj_property name="ObjectShortName">bt_ci[2:0][4:0][3:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/sp_tf/uut/nn/bt_vi">
+      <obj_property name="ElementShortName">bt_vi[2:0][4:0][1:0]</obj_property>
+      <obj_property name="ObjectShortName">bt_vi[2:0][4:0][1:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
    </wvobject>
 </wave_config>
