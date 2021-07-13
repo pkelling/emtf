@@ -109,6 +109,7 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
 
 
     logic [1:0] mux_phase = 2'h0;
+    logic [1:0] mux_phase_out [2:0] = '{2'd0, 2'd1, 2'd2}; // output multiplexor depends on exact NN latency, needs rework if latency changes 
     logic [1:0] clk_hist;
     logic clk_120;
     
@@ -187,74 +188,66 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
             input1_V[17] = 18'b0;
         
 
-        pt_out[mux_phase]   = layer15_out_0_V;
-        pt_valid[mux_phase] = layer15_out_0_V_ap_vld;
+        pt_out   [mux_phase_out[mux_phase]] = layer15_out_0_V;
+        pt_valid [mux_phase_out[mux_phase]] = layer15_out_0_V_ap_vld;
 
-//        dxy_out[mux_phase]   = layer15_out_1_V;
-//        dxy_valid[mux_phase] = layer15_out_1_V_ap_vld;
+        mode[mux_phase] = {bt_rank[mux_phase][5], bt_rank[mux_phase][3], bt_rank[mux_phase][1], bt_rank[mux_phase][0]};
+        // find valid chamber ID from station 1
+        case (mode[mux_phase])
+             4'd1:  begin stA[mux_phase] = 3'h0; delta_valid[mux_phase] = 6'b000000; end // single hit trigger 
+             4'd12: begin stA[mux_phase] = 3'h0; delta_valid[mux_phase] = 6'b000001; end // 1-2
+             4'd10: begin stA[mux_phase] = 3'h0; delta_valid[mux_phase] = 6'b000010; end // 1-3
+             4'd9:  begin stA[mux_phase] = 3'h0; delta_valid[mux_phase] = 6'b000100; end // 1-4
+             4'd6:  begin stA[mux_phase] = 3'h1; delta_valid[mux_phase] = 6'b001000; end // 2-3
+             4'd5:  begin stA[mux_phase] = 3'h1; delta_valid[mux_phase] = 6'b010000; end // 2-4
+             4'd3:  begin stA[mux_phase] = 3'h2; delta_valid[mux_phase] = 6'b100000; end // 3-4
+             4'd14: begin stA[mux_phase] = 3'h0; delta_valid[mux_phase] = 6'b001111; end // 1-2-3
+             4'd13: begin stA[mux_phase] = 3'h0; delta_valid[mux_phase] = 6'b010101; end // 1-2-4
+             4'd11: begin stA[mux_phase] = 3'h0; delta_valid[mux_phase] = 6'b100110; end // 1-3-4
+             4'd7:  begin stA[mux_phase] = 3'h1; delta_valid[mux_phase] = 6'b111000; end // 2-3-4
+             4'd15: begin stA[mux_phase] = 3'h0; delta_valid[mux_phase] = 6'b111111; end // 1-2-3-4
+             default: begin stA[mux_phase] = 3'h0; delta_valid[mux_phase] = 6'b000000; end
+        endcase            
+
+        if (stA[mux_phase] == 3'h0 && bt_vi[mux_phase][0] != 2'b0)
+        begin
+            bt_stA[mux_phase] = stA[mux_phase];
+            chA[mux_phase] = bt_ci[mux_phase][0];
+        end
+        else
+        begin
+            bt_stA[mux_phase] = stA[mux_phase] + 3'h1;
+            chA[mux_phase] = bt_ci[mux_phase][bt_stA[mux_phase]];
+        end
+        // check if ME1 ring 2 stubs are present
+        ring1_0[mux_phase] = 1'b1;
+        if (
+            (bt_vi[mux_phase][0][0] == 1'b1 && bt_ci[mux_phase][0] <= 4'd2) ||
+            (bt_vi[mux_phase][1][0] == 1'b1 && bt_ci[mux_phase][1] <= 4'd2)    // station 1 valid and CSCID = 1,2,3 means ME1/1
+        ) 
+        begin
+            ring1_0[mux_phase] = 1'b0;
+        end        
+
+        // convert deltas into signed 2's complements
+        // from Sergo's message 2021-05-14:
+        // "All inputs are defined as ap_fixed<18,18> type.  The MSB (bit 17) has weight -2^(n-1), others 2^(n-1)."
+        for (j = 0; j < 6; j++) // difference loop
+        begin
+            bt_delta_ph_s [mux_phase][j] = $signed({ 5'h0, bt_delta_ph[mux_phase][j]});
+            bt_delta_th_s [mux_phase][j] = $signed({11'h0, bt_delta_th[mux_phase][j]});
+        
+            bt_delta_ph_r [mux_phase][j] = (bt_sign_ph[mux_phase][j] == 1'b0) ? bt_delta_ph_s[mux_phase][j] : -bt_delta_ph_s[mux_phase][j];
+            bt_delta_th_r [mux_phase][j] = (bt_sign_th[mux_phase][j] == 1'b0) ? bt_delta_th_s[mux_phase][j] : -bt_delta_th_s[mux_phase][j];
+        end
+    
+        bt_cpattern_r = bt_cpattern;
+        bt_theta_r    = bt_theta;
 
         if (clk_hist[0] != clk_hist[1]) // 40 M clk just rose
             mux_phase = 2'h0; // reset multiplexor phase
         else
             mux_phase++;
-
-
-        for (i = 0; i < 3; i++) // best track loop
-        begin
-        
-            mode[i] = {bt_rank[i][5], bt_rank[i][3], bt_rank[i][1], bt_rank[i][0]};
-            // find valid chamber ID from station 1
-            case (mode[i])
-                 4'd1:  begin stA[i] = 3'h0; delta_valid[i] = 6'b000000; end // single hit trigger 
-                 4'd12: begin stA[i] = 3'h0; delta_valid[i] = 6'b000001; end // 1-2
-                 4'd10: begin stA[i] = 3'h0; delta_valid[i] = 6'b000010; end // 1-3
-                 4'd9:  begin stA[i] = 3'h0; delta_valid[i] = 6'b000100; end // 1-4
-                 4'd6:  begin stA[i] = 3'h1; delta_valid[i] = 6'b001000; end // 2-3
-                 4'd5:  begin stA[i] = 3'h1; delta_valid[i] = 6'b010000; end // 2-4
-                 4'd3:  begin stA[i] = 3'h2; delta_valid[i] = 6'b100000; end // 3-4
-                 4'd14: begin stA[i] = 3'h0; delta_valid[i] = 6'b001111; end // 1-2-3
-                 4'd13: begin stA[i] = 3'h0; delta_valid[i] = 6'b010101; end // 1-2-4
-                 4'd11: begin stA[i] = 3'h0; delta_valid[i] = 6'b100110; end // 1-3-4
-                 4'd7:  begin stA[i] = 3'h1; delta_valid[i] = 6'b111000; end // 2-3-4
-                 4'd15: begin stA[i] = 3'h0; delta_valid[i] = 6'b111111; end // 1-2-3-4
-                 default: begin stA[i] = 3'h0; delta_valid[i] = 6'b000000; end
-            endcase            
-
-            if (stA[i] == 3'h0 && bt_vi[i][0] != 2'b0)
-            begin
-                bt_stA[i] = stA[i];
-                chA[i] = bt_ci[i][0];
-            end
-            else
-            begin
-                bt_stA[i] = stA[i] + 3'h1;
-                chA[i] = bt_ci[i][bt_stA[i]];
-            end
-            // check if ME1 ring 2 stubs are present
-            ring1_0[i] = 1'b1;
-            if (
-                (bt_vi[i][0][0] == 1'b1 && bt_ci[i][0] <= 4'd2) ||
-                (bt_vi[i][1][0] == 1'b1 && bt_ci[i][1] <= 4'd2)    // station 1 valid and CSCID = 1,2,3 means ME1/1
-            ) 
-            begin
-                ring1_0[i] = 1'b0;
-            end        
-
-            // convert deltas into signed 2's complements
-            // from Sergo's message 2021-05-14:
-            // "All inputs are defined as ap_fixed<18,18> type.  The MSB (bit 17) has weight -2^(n-1), others 2^(n-1)."
-            for (j = 0; j < 6; j++) // difference loop
-            begin
-                bt_delta_ph_s [i][j] = $signed({ 5'h0, bt_delta_ph[i][j]});
-                bt_delta_th_s [i][j] = $signed({11'h0, bt_delta_th[i][j]});
-            
-                bt_delta_ph_r [i][j] = (bt_sign_ph[i][j] == 1'b0) ? bt_delta_ph_s[i][j] : -bt_delta_ph_s[i][j];
-                bt_delta_th_r [i][j] = (bt_sign_th[i][j] == 1'b0) ? bt_delta_th_s[i][j] : -bt_delta_th_s[i][j];
-            end
-        end
-        
-        bt_cpattern_r = bt_cpattern;
-        bt_theta_r    = bt_theta;
 
         // adding delays to prevent issues in simulation
         clk_hist[1] = #1 clk_hist[0];

@@ -558,7 +558,8 @@ x        .bt_rank (bt_rank_i),
 			nn_out      = $fopen({`dpath, "/nn.out"}, "w");
 			best_tracks_short = $fopen({`dpath, "/best_tracks_short_2nd.out"}, "w");
 
-			for (i = 0; i < 10; i = i+1)
+            // give MMCM time to start, around 4.6 uS 
+			for (i = 0; i < 250; i = i+1)
 			begin
 				for (j = 0; j < 2; j = j+1)
 				begin
@@ -1289,6 +1290,11 @@ x        .bt_rank (bt_rank_i),
 
 						end
 						
+                        if ((nn_pt[ip] & 18'h00fff) != 18'h000ec) // zz0ec seems to be an output value when all inputs = 0 
+                        begin
+                          $fwrite (nn_out, "ev: %4d track: %1d NN_pt: %h\n", iev, ip, nn_pt[ip]);
+                          $fflush (nn_out);
+                        end
 
 /*					   
 						for (j = 0; j < 5; j = j+1)
@@ -1856,30 +1862,36 @@ x        .bt_rank (bt_rank_i),
 
 		end
 
+    reg [3:0] nn_mode_r [2:0];
+/*    
     always @(posedge uut.nn.clk_120)
     begin
         // NN pt assignment
         //if (nn_pt_v[uut.nn.mux_phase] == 1'b1) // this flag is always == 1
         if ((nn_pt[uut.nn.mux_phase] & 18'h00fff) != 18'h000ec) // zz0ec seems to be an output value when all inputs = 0 
         begin
-          $fwrite (nn_out, "ev: %4d i: %1d NN pt: %h\n", iev, uut.nn.mux_phase, nn_pt[uut.nn.mux_phase]);
+          $fwrite (nn_out, "ev: %4d track: %1d NN pt: %h\n", iev, uut.nn.mux_phase, nn_pt[uut.nn.mux_phase]);
           $fflush (nn_out);
         end
 
         // NN inputs
-        if (bt_rank[uut.nn.mux_phase] != 0)
+        if (nn_mode_r[uut.nn.mux_phase] != 0)
         begin
-            $fwrite (nn_out, "ev: %4d track: %1d \n", iev, uut.nn.mux_phase);
-            $fflush (nn_out);
-//            $fwrite ()
+            $fwrite (nn_out, "ev: %4d track: %1d inputs: ", iev, uut.nn.mux_phase);
 //            $fwrite (nn_out, " rank: %h ph_deltas: %d %d %d %d %d %d th_deltas: %d %d %d %d %d %d phi: %d, theta: %d cpat: %d sign_ph: %d sign_th: %d\n", 
 //                    bt_rank[ip], 
 //                    bt_delta_ph[ip][0], bt_delta_ph[ip][1], bt_delta_ph[ip][2], bt_delta_ph[ip][3], bt_delta_ph[ip][4], bt_delta_ph[ip][5], 
 //                    bt_delta_th[ip][0], bt_delta_th[ip][1], bt_delta_th[ip][2], bt_delta_th[ip][3], bt_delta_th[ip][4], bt_delta_th[ip][5], 
 //                    bt_phi[ip], bt_theta[ip], bt_cpattern[ip][0], bt_sign_ph[ip], bt_sign_th[ip]
 //                    );
+            for (i = 0; i < 23; i++)
+                $fwrite (nn_out, " %05x", uut.nn.input1_V[i]);
+            $fwrite (nn_out, "\n");
+            $fflush (nn_out);
         end
+        
+        nn_mode_r = uut.nn.mode;
      end
-    
+  */  
 endmodule
 
