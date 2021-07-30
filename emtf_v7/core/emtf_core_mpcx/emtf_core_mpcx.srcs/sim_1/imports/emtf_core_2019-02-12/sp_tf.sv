@@ -251,7 +251,7 @@ module sp_tf;
 `define fest fest_str
    
 //`define dpath "/exports/uftrig01b/madorsky/projects/modelsim/emtf_data/"
-`define dpath "/home/madorsky/github/emtf/emtf_v7/core/emtf_data/" 
+`define dpath "/home/madorsky/github/vivado/emtf/emtf_v7/core/emtf_data/" 
 //"/home/madorsky/cernbox/projects/modelsim/emtf_data/"
 
    wire [63:0] 	  core_config;
@@ -343,6 +343,13 @@ x        .bt_rank (bt_rank_i),
 */						
     
 
+    reg [3:0] nn_mode_r [2:0];
+    reg [1:0] mux_phase_print [2:0] = '{2'h2, 2'h0, 2'h1};
+    reg [17:0] nn_input [2:0][22:0] = '{
+        '{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        '{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        '{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+    };
 
     initial 
 		begin
@@ -1290,6 +1297,19 @@ x        .bt_rank (bt_rank_i),
 
 						end
 						
+                        if (nn_mode_r[ip] != 0)
+                        begin
+                            $fwrite (nn_out, "ev: %4d ip: %1d mode: %1h ", iev, ip, nn_mode_r[ip]);
+                            for (j = 0; j < 23; j++)
+                            begin
+                                $fwrite (nn_out, " %05x", nn_input[ip][j]);
+                                nn_input[ip][j] = 0;
+                            end
+                            $fwrite (nn_out, "\n");
+                        end
+                        nn_mode_r = uut.nn.mode;
+                        $fflush (nn_out);
+                        
                         if ((nn_pt[ip] & 18'h00fff) != 18'h000ec) // zz0ec seems to be an output value when all inputs = 0 
                         begin
                           $fwrite (nn_out, "ev: %4d track: %1d NN_pt: %h\n", iev, ip, nn_pt[ip]);
@@ -1862,22 +1882,26 @@ x        .bt_rank (bt_rank_i),
 
 		end
 
-    reg [3:0] nn_mode_r [2:0];
+    
+    integer it, jt;
+    always @(posedge uut.nn.clk_120)
+    begin
+        for (it = 0; it < 3; it++) // mux phase loop
+        begin
+            for (jt = 0; jt < 23; jt++) // input loop
+            begin
+                if (uut.nn.input1_V[jt] != 0)
+                    nn_input[it][jt] = uut.nn.input1_V[jt];
+            end
+        end
+    end
 /*    
     always @(posedge uut.nn.clk_120)
     begin
-        // NN pt assignment
-        //if (nn_pt_v[uut.nn.mux_phase] == 1'b1) // this flag is always == 1
-        if ((nn_pt[uut.nn.mux_phase] & 18'h00fff) != 18'h000ec) // zz0ec seems to be an output value when all inputs = 0 
-        begin
-          $fwrite (nn_out, "ev: %4d track: %1d NN pt: %h\n", iev, uut.nn.mux_phase, nn_pt[uut.nn.mux_phase]);
-          $fflush (nn_out);
-        end
-
         // NN inputs
-        if (nn_mode_r[uut.nn.mux_phase] != 0)
+        if (nn_mode_r[0] != 0 || nn_mode_r[1] != 0 || nn_mode_r[2] != 0)
         begin
-            $fwrite (nn_out, "ev: %4d track: %1d inputs: ", iev, uut.nn.mux_phase);
+            $fwrite (nn_out, "ev: %4d track: %1d inputs: ", iev, mux_phase_print[uut.nn.mux_phase]);
 //            $fwrite (nn_out, " rank: %h ph_deltas: %d %d %d %d %d %d th_deltas: %d %d %d %d %d %d phi: %d, theta: %d cpat: %d sign_ph: %d sign_th: %d\n", 
 //                    bt_rank[ip], 
 //                    bt_delta_ph[ip][0], bt_delta_ph[ip][1], bt_delta_ph[ip][2], bt_delta_ph[ip][3], bt_delta_ph[ip][4], bt_delta_ph[ip][5], 
@@ -1892,6 +1916,6 @@ x        .bt_rank (bt_rank_i),
         
         nn_mode_r = uut.nn.mode;
      end
-  */  
+*/  
 endmodule
 
