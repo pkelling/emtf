@@ -144,7 +144,8 @@ module gem_rx
     wire loreset_sync;
 
     // reclock reset to 320M
-    bit_sync bs_loreset (.I(logic_reset), .O(loreset_sync), .CO(clk320));
+    //bit_sync bs_loreset (.I(logic_reset), .O(loreset_sync), .CO(clk320));
+    synchronizer bs_loreset (.async_i(logic_reset), .sync_o(loreset_sync), .clk_i(clk320));
 
     genvar gi, gj, gk;
     generate
@@ -169,7 +170,8 @@ module gem_rx
             );
             
             // reclock rxslide back to RX clock    
-            bit_sync bs_rxslide (.I(ge11_rxslide[gi]), .O(ge11_rx[gi].rxslide), .CO(ge11_rx[gi].rxoutclk));
+            //bit_sync bs_rxslide (.I(ge11_rxslide[gi]), .O(ge11_rx[gi].rxslide), .CO(ge11_rx[gi].rxoutclk));
+            synchronizer bs_rxslide (.async_i(ge11_rxslide[gi]), .sync_o(ge11_rx[gi].rxslide), .clk_i(ge11_rx[gi].rxoutclk));
         
             lpgbt_loopback_test i_lbgbt_test_core  
             (

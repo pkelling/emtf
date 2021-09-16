@@ -302,7 +302,7 @@ begin
             c_requiredTrueHeader      => 30,
             c_resetOnEven             => 0,
             c_resetDuration           => 10,
-            c_bitslip_mindly          => 40
+            c_bitslip_mindly          => 100 --40
         )
         port map(
             clk_pcsRx_i             => mgt_rx_usrclk_i,
