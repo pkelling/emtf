@@ -689,8 +689,7 @@ module emtf_core_top
         .correction_cnt   (ge11_correction_cnt),
         .fiber_enable     (fiber_enable [(49+7) +: 7]),
         .gem_data_del     (gem_data_del),
-        .clk40      (clk40),
-        .clk320     (clk320)
+        .clk40      (clk40)
     );  
 	
 	wire clk_160_pll;

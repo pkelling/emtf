@@ -199,8 +199,6 @@ set_false_path -from [get_pins {crb/crc_err_flag_comb_reg[*]/C}]
 set_false_path -from [get_pins {crb/err_tst_pat_flag_comb_reg[*]/C}]
 set_false_path -from [get_pins {crb/rx_clk_phase_drift_reg[*]/C}]
 
-# weird reset timing problem in lpgbt
-set_false_path -from [get_pins {gem_rx_i/gem_lnk_loop[*].i_lbgbt_test_core/i_tx_gearbox/rst_gearbox_s_reg*/C}] -to [get_pins {gem_rx_i/gem_lnk_loop[*].i_lbgbt_test_core/i_tx_gearbox/gearboxSyncReset_reg/PRE}]
 
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 set_property BITSTREAM.CONFIG.OVERTEMPPOWERDOWN ENABLE [current_design]

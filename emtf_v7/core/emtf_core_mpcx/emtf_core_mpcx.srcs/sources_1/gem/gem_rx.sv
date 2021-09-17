@@ -17,8 +17,7 @@ module gem_rx
     input  [6:0] fiber_enable,
     input  [4:0] gem_data_del [6:0], // manual gem data delay for alignment [schamber=link]
     // these delays should be set so that GEM data emerges from gem_sh delay line at the same time as RPC data
-	input clk40,
-	input clk320
+	input clk40
 );
 
 `include "spbits.sv"
@@ -139,53 +138,25 @@ module gem_rx
 //        lb_gbt_rx_frame_r = lb_gbt_rx_frame;
     end
 
-    wire [31:0] ge11_rxdata_sync [7:0];
-    wire [7:0] ge11_rxslide;
-    wire loreset_sync;
-
-    // reclock reset to 320M
-    //bit_sync bs_loreset (.I(logic_reset), .O(loreset_sync), .CO(clk320));
-    synchronizer bs_loreset (.async_i(logic_reset), .sync_o(loreset_sync), .clk_i(clk320));
 
     genvar gi, gj, gk;
     generate
         for (gi = 0; gi < 7; gi++)
         begin: gem_lnk_loop
         
-            // reclock RX data to fabric 320M clock
-            gem_rx_fifo gem_rx_fifo_i 
-            (
-                .rst         (loreset_sync),
-                .wr_clk      (ge11_rx[gi].rxoutclk),
-                .rd_clk      (clk320),
-                .din         (ge11_rx[gi].rxdata),
-                .wr_en       (1'b1),
-                .rd_en       (1'b1),
-                .dout        (ge11_rxdata_sync[gi]),
-                .full        (),
-                .empty       (),
-                .valid       (),
-                .wr_rst_busy (),
-                .rd_rst_busy ()
-            );
-            
-            // reclock rxslide back to RX clock    
-            //bit_sync bs_rxslide (.I(ge11_rxslide[gi]), .O(ge11_rx[gi].rxslide), .CO(ge11_rx[gi].rxoutclk));
-            synchronizer bs_rxslide (.async_i(ge11_rxslide[gi]), .sync_o(ge11_rx[gi].rxslide), .clk_i(ge11_rx[gi].rxoutclk));
-        
             lpgbt_loopback_test i_lbgbt_test_core  
             (
-                .reset_i                (loreset_sync),
+                .reset_i                (logic_reset),
                 
                 .clk40_i                (clk40), // 40 M sync clock
-                .mgt_tx_usrclk_i        (clk320), // no TX, using RX clock here for now
-                .mgt_rx_usrclk_i        (clk320),
+                .mgt_tx_usrclk_i        (ge11_rx[gi].rxoutclk), // no TX, using RX clock here for now
+                .mgt_rx_usrclk_i        (ge11_rx[gi].rxoutclk),
                 
                 .mgt_tx_ready_i         (tx_ready),
                 .mgt_rx_ready_i         (rx_ready),
-                .mgt_rx_slide_o         (ge11_rxslide[gi]),
+                .mgt_rx_slide_o         (ge11_rx[gi].rxslide),
                 .mgt_tx_data_o          (),
-                .mgt_rx_data_i          (ge11_rxdata_sync[gi]),
+                .mgt_rx_data_i          (ge11_rx[gi].rxdata),
                 
                 .tx_data_i              (234'h0), // nothing to transmit
                 .rx_data_o              (lb_gbt_rx_frame [gi]),

@@ -70,7 +70,26 @@ architecture behavioral of rxGearbox is
     signal clk_dataFlag_outsynch_s               : std_logic;
     signal sta_gbRdy_outsynch_s                  : std_logic;
     signal dat_outFrame_outsynch_s               : std_logic_vector((c_inputWidth*c_clockRatio)-1 downto 0);
+    
+    signal cdc_dout                              : std_logic_vector((c_inputWidth*c_clockRatio)-1 downto 0); -- output data for CDC fifo  
+    signal cdc_valid                             : std_logic;
     --=====================================================================================--     
+COMPONENT ge11_rx_fifo
+  PORT (
+    rst : IN STD_LOGIC;
+    wr_clk : IN STD_LOGIC;
+    rd_clk : IN STD_LOGIC;
+    din : IN STD_LOGIC_VECTOR(255 DOWNTO 0);
+    wr_en : IN STD_LOGIC;
+    rd_en : IN STD_LOGIC;
+    dout : OUT STD_LOGIC_VECTOR(255 DOWNTO 0);
+    full : OUT STD_LOGIC;
+    empty : OUT STD_LOGIC;
+    valid : OUT STD_LOGIC;
+    wr_rst_busy : OUT STD_LOGIC;
+    rd_rst_busy : OUT STD_LOGIC
+  );
+END COMPONENT;
 
 --=================================================================================================--
 begin                 --========####   Architecture Body   ####========-- 
@@ -151,6 +170,25 @@ begin                 --========####   Architecture Body   ####========--
             gbReset_outsynch_s       <= gbReset_s;
         end if;        
     end process;
+
+    -- adding CDC fifo, since the logic in this module is not actually CDCing
+    ge11_rx_fifo_i : ge11_rx_fifo
+    PORT MAP 
+    (
+        rst    => rst_gearbox_i,
+        wr_clk => clk_inClk_i,
+        rd_clk => clk_outClk_i,
+        din    => dat_outFrame_s,
+        wr_en  => clk_dataFlag_s,
+        rd_en  => '1',
+        dout   => cdc_dout,
+        full   => open,
+        empty  => open,
+        valid  => cdc_valid,
+        wr_rst_busy => open,
+        rd_rst_busy => open
+    );
+    
     
     outPipeline_proc: process(gbReset_outsynch_s, clk_outClk_i)
     begin    
@@ -161,9 +199,9 @@ begin                 --========####   Architecture Body   ####========--
             
         elsif rising_edge(clk_outClk_i) then
         
-            clk_dataFlag_o <= clk_dataFlag_s;
-            dat_outFrame_o <= dat_outFrame_s;          
-            sta_gbRdy_o    <= sta_gbRdy_s;
+            clk_dataFlag_o <= cdc_valid; --clk_dataFlag_s;
+            dat_outFrame_o <= cdc_dout;  --dat_outFrame_s;          
+            sta_gbRdy_o    <= cdc_valid; --sta_gbRdy_s;
             
         end if;    
     end process;

@@ -54,14 +54,14 @@
 // (in parentheses) to your own signal names.
 
 //----------- Begin Cut here for INSTANTIATION Template ---// INST_TAG
-gem_rx_fifo your_instance_name (
+ge11_rx_fifo your_instance_name (
   .rst(rst),                  // input wire rst
   .wr_clk(wr_clk),            // input wire wr_clk
   .rd_clk(rd_clk),            // input wire rd_clk
-  .din(din),                  // input wire [31 : 0] din
+  .din(din),                  // input wire [255 : 0] din
   .wr_en(wr_en),              // input wire wr_en
   .rd_en(rd_en),              // input wire rd_en
-  .dout(dout),                // output wire [31 : 0] dout
+  .dout(dout),                // output wire [255 : 0] dout
   .full(full),                // output wire full
   .empty(empty),              // output wire empty
   .valid(valid),              // output wire valid
@@ -70,7 +70,7 @@ gem_rx_fifo your_instance_name (
 );
 // INST_TAG_END ------ End INSTANTIATION Template ---------
 
-// You must compile the wrapper file gem_rx_fifo.v when simulating
-// the core, gem_rx_fifo. When compiling the wrapper file, be sure to
+// You must compile the wrapper file ge11_rx_fifo.v when simulating
+// the core, ge11_rx_fifo. When compiling the wrapper file, be sure to
 // reference the Verilog simulation library.
 
