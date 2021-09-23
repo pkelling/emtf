@@ -85,6 +85,7 @@ void cosmics_rate_monitor();
 
 bool ptlut_training = false;
 bool prim_conv_lut_verify = false;
+int sector_ind[] = {1,6,3,4,2,5}; // determined by the order of boards detected by PCIe
 
 extern char best_rd_delay[4][18];
 
@@ -1042,16 +1043,58 @@ void sp12_qtw::on_resync_pb_released()
 
 void sp12_qtw::on_read_link_ids_button_released()
 {
-    //    key = 'n';
-    for (int id = 0; id < 13; id++)
+    uint32_t MEM_BASE = 0x80000; // bytes
+
+    int ch = REG_BANK_CH; // config register bank
+    // count selected boards first
+	int brd_count = 0;
+	for (int id = 0; id < 13; id++)
     {
         if (devices_d[id] >= 0)
         {
-            device_d = devices_d[id];
-            log_printf ("device index: %d\n", id);
-            fib_en_mask[id] = read_link_ids (endcap_lut[id], sector_lut[id]);
+			brd_count++;
         }
     }
+    for (int id = 0; id < 13; id++)
+    {
+		int sector_num = sector_ind[id%6];
+		if (id >=6) sector_num = -sector_num;
+
+        if (devices_d[id] >= 0)
+        {
+            device_d = devices_d[id];
+			if (brd_count == 1) // if single board selected, read the whole shebang
+			{
+	            log_printf ("device index: %d\n", id);
+    	        fib_en_mask[id] = read_link_ids (endcap_lut[id], sector_lut[id]);
+			}
+			else
+			{
+				// for multiple boards, read GE1/1 IDs for now
+				uint32_t ge11_id_addr = MEM_BASE + (ch << 12) + (0x6e << 3) ;
+
+				uint64_t ge11_lid;
+				mread(device_d, &ge11_lid, 8, ge11_id_addr); // ge11 link ids
+				log_printf ("Sector: %2d GE11 link IDs: ", sector_num);
+				for (unsigned i = 0; i < 7; i++) // link loop, 7 links
+				{
+					uint8_t ge11_idi = (uint8_t)ge11_lid;
+					ge11_lid >>= 8;
+					log_printf ("%02x ", ge11_idi);
+				}
+
+				// reading ge11 link status
+				uint32_t ge11_id_stat = MEM_BASE + (ch << 12) + (0x6f << 3) ;
+				uint64_t ge11_stat;
+				mread(device_d, &ge11_stat, 8, ge11_id_stat);
+
+				uint8_t ge11_locked = (uint8_t)ge11_stat;
+				log_printf ("  locked: %02x\n", ge11_locked);
+
+			}
+        }
+    }
+	log_printf ("\n");
 }
 
 
@@ -1206,7 +1249,6 @@ void sp12_qtw::on_random_addr_test_pb_released()
     key = 'j';
 }
 
-int sector_ind[] = {1,6,3,4,2,5}; // determined by the order of boards detected by PCIe
 
 void sp12_qtw::on_device_list_clicked(const QModelIndex &index)
 {
