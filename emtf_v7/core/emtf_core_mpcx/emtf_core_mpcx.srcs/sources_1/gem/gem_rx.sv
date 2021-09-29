@@ -87,53 +87,54 @@ module gem_rx
 				end
 			end
 
-            if (link_id_flag[i] == 1'b0 && fiber_enable[i] == 1'b1) // have clusters and fiber enabled
-            begin
-                for (j = 0; j < 2; j++) // layer loop
+                if (link_id_flag[i] == 1'b0 && fiber_enable[i] == 1'b1) // have clusters and fiber enabled
                 begin
-                    if (cluster_cnt[i][j] > 4'h0) // count of clusters more than 0
+                    for (j = 0; j < 2; j++) // layer loop
                     begin
-                        single_hit = 1;
-                    end
-                    
-                    // scan clusters
-                    for (k = 0; k < 8; k++) // cluster loop
-                    begin
-                    
-                        if (cluster[i][j][k][7:0] != 8'hff) // valid cluster
+                        if (cluster_cnt[i][j] > 4'h0) // count of clusters more than 0
                         begin
-                            // GE11 cluster format:
-                            // [7:0] - strip 0..191, 0xff is invalid
-                            // [10:8] - partition
-                            // [13:11] - cluster size
-                            // [14] - special_bit
-
-                            // GE21 cluster format:
-                            // [8:0] - strip 0..383, 0x1ff is invalid
-                            // [9] - partition
-                            // [12:10] - cluster size
-                            // [13] - reserved
-                            // [14] - special_bit
-
-							// decode cluster
-							ge11_cl[i][j][k].str = cluster[i][j][k][7:0];
-							ge11_cl[i][j][k].prt = cluster[i][j][k][10:8];
-							ge11_cl[i][j][k].csz = cluster[i][j][k][13:11];
-							// cluster valid if strip code is not 'hff
-							ge11_cl[i][j][k].vf  = 1'b1;
-                        
-                            ph_single = {i[2:0], cluster[i][j][k][7:0]}; // chamber and strip number as phy
-                            th_single = {i[2:0], cluster[i][j][k][10:8]}; // chamber and partition as theta
+                            single_hit = 1;
                         end
-                    end
                         
+                        // scan clusters
+                        for (k = 0; k < 8; k++) // cluster loop
+                        begin
+                        
+                            if (cluster[i][j][k][7:0] != 8'hff) // valid cluster
+                            begin
+                                // GE11 cluster format:
+                                // [7:0] - strip 0..191, 0xff is invalid
+                                // [10:8] - partition
+                                // [13:11] - cluster size
+                                // [14] - special_bit
+    
+                                // GE21 cluster format:
+                                // [8:0] - strip 0..383, 0x1ff is invalid
+                                // [9] - partition
+                                // [12:10] - cluster size
+                                // [13] - reserved
+                                // [14] - special_bit
+    
+                                // decode cluster
+                                ge11_cl[i][j][k].str = cluster[i][j][k][7:0];
+                                ge11_cl[i][j][k].prt = cluster[i][j][k][10:8];
+                                ge11_cl[i][j][k].csz = cluster[i][j][k][13:11];
+                                // cluster valid if strip code is not 'hff
+                                ge11_cl[i][j][k].vf  = 1'b1;
+                            
+                                ph_single = {i[2:0], cluster[i][j][k][7:0]}; // chamber and strip number as phy
+                                th_single = {i[2:0], cluster[i][j][k][10:8]}; // chamber and partition as theta
+                            end
+                        end
+                            
+                    end
                 end
-            end
-			else
-			begin
-				// no clusters in this link, lock link ID 
-				link_id[i] = link_id_val[i];
-			end
+                else
+                begin
+                    // no clusters in this link, lock link ID 
+                    if (fiber_enable[i] == 1'b1) link_id[i] = link_id_val[i];
+    				else link_id[i] = 8'hAB; // link disabled, show invalid ID
+                end
         end
 //        lb_gbt_rx_frame_r = lb_gbt_rx_frame;
     end
