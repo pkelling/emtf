@@ -26,8 +26,10 @@ module nn_tux
     input [3:0]        bt_ci [2:0][4:0], // chamber
     input [4:0]        bt_si [2:0], // segment
     
-    output reg [17:0] pt_out [2:0],
+    output reg [7:0] pt_out [2:0],
     output reg [2:0] pt_valid,
+    output reg [2:0] d0_out [2:0],
+    output reg [2:0] d0_valid,
     // clock
     input                 clk,
     
@@ -104,8 +106,10 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
     
     logic [17:0] input1_V [22:0];
 
-    logic [17:0] layer15_out_0_V;
-    logic layer15_out_0_V_ap_vld;
+    logic [17:0] layer11_out_0_V;
+    logic layer11_out_0_V_ap_vld;
+    logic [17:0] layer11_out_1_V;
+    logic layer11_out_1_V_ap_vld;
 
 
     logic [1:0] mux_phase = 2'h0;
@@ -113,8 +117,44 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
     logic [1:0] clk_hist;
     logic clk_120;
     
+    // conversion LUTs according to Sergo's message from 2021-09-22
+    // separate LUT for each best track
+    // [best_track_num][location]
+    reg [7:0] pt_lut_0[2047:0];
+    reg [2:0] d0_lut_0[2047:0];
+    reg [7:0] pt_lut_1[2047:0];
+    reg [2:0] d0_lut_1[2047:0];
+    reg [7:0] pt_lut_2[2047:0];
+    reg [2:0] d0_lut_2[2047:0];
+    reg [11:0] pt_unconv [2:0];
+    reg [11:0] d0_unconv [2:0];
+    
+    initial
+    begin
+        $readmemb("conv11to8.mem", pt_lut_0);
+        $readmemb("conv11to2.mem", d0_lut_0);
+        $readmemb("conv11to8.mem", pt_lut_1);
+        $readmemb("conv11to2.mem", d0_lut_1);
+        $readmemb("conv11to8.mem", pt_lut_2);
+        $readmemb("conv11to2.mem", d0_lut_2);
+    end
+    
     reg clk40_ff = 1'b0;
-    always @(posedge clk) clk40_ff = ~clk40_ff;
+    always @(posedge clk)
+    begin 
+        clk40_ff = ~clk40_ff;
+
+        // output LUTs for NN, have to be in separate 40M clock for timing
+        pt_out[0] = pt_lut_0 [pt_unconv[0][10:0]];
+        d0_out[0] = d0_lut_0 [d0_unconv[0][11:1]];
+        pt_out[1] = pt_lut_1 [pt_unconv[1][10:0]];
+        d0_out[1] = d0_lut_1 [d0_unconv[1][11:1]];
+        pt_out[2] = pt_lut_2 [pt_unconv[2][10:0]];
+        d0_out[2] = d0_lut_2 [d0_unconv[2][11:1]];
+
+        pt_valid = 3'b111; // these valid flags are ==1 anyway
+        d0_valid = 3'b111; // these valid flags are ==1 anyway
+    end
     
     always @(posedge clk_120)
     begin
@@ -187,9 +227,8 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
         else
             input1_V[17] = 18'b0;
         
-
-        pt_out   [mux_phase_out[mux_phase]] = layer15_out_0_V;
-        pt_valid [mux_phase_out[mux_phase]] = layer15_out_0_V_ap_vld;
+        pt_unconv[mux_phase_out[mux_phase]] = layer11_out_0_V[11:0];
+        d0_unconv[mux_phase_out[mux_phase]] = layer11_out_1_V[11:0];
 
         mode[mux_phase] = {bt_rank[mux_phase][5], bt_rank[mux_phase][3], bt_rank[mux_phase][1], bt_rank[mux_phase][0]};
         // find valid chamber ID from station 1
@@ -318,10 +357,10 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
         .input1_21_V (input1_V[21]),
         .input1_22_V (input1_V[22]),
         
-        .layer11_out_0_V        (layer15_out_0_V),
-        .layer11_out_0_V_ap_vld (layer15_out_0_V_ap_vld),
-        .layer11_out_1_V (),
-        .layer11_out_1_V_ap_vld ()
+        .layer11_out_0_V        (layer11_out_0_V),
+        .layer11_out_0_V_ap_vld (layer11_out_0_V_ap_vld),
+        .layer11_out_1_V        (layer11_out_1_V       ),
+        .layer11_out_1_V_ap_vld (layer11_out_1_V_ap_vld)
     );
 
     nn_mmcm nnmcmc

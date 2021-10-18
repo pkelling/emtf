@@ -69,8 +69,10 @@ module sp
 	output [2:0] gmt_crg,
     output [1:0] hmt_out, // {out_of_time, in_time}
         
-	output [17:0] nn_pt [2:0], // NN PT value
+	output [7:0] nn_pt [2:0], // NN PT value
 	output [2:0] nn_pt_v, // NN valid flag for PT
+	output [2:0] nn_d0 [2:0], // NN D0 value
+	output [2:0] nn_d0_v, // NN valid flag for D0
     
     // clock
     input 				clk,
@@ -538,8 +540,10 @@ module sp
         .bt_ci (bt_ci), 
         .bt_si (bt_si),
         
-        .pt_out (nn_pt),
+        .pt_out   (nn_pt),
         .pt_valid (nn_pt_v),
+        .d0_out   (nn_d0),
+        .d0_valid (nn_d0_v),
                
         .sector (sector),
         .endcap (endcap),

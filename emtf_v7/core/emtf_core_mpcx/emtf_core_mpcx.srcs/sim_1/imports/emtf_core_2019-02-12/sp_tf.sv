@@ -23,7 +23,7 @@
 
 module sp_tf;
 
-    `param max_ev =13000;
+    `param max_ev = 220000; //13000;
 
     `param endcap_p = 1;
     `param sector_p = 1;
@@ -239,8 +239,10 @@ module sp_tf;
    reg [63:0] cppf_rxd [6:0][2:0]; // cppf rx data, 3 frames x 64 bit, for 7 links
    wire [6:0] cppf_rx_valid = 7'h7f; // cprx data valid flags, always valid
 
-	wire [17:0] nn_pt [2:0]; // NN PT value
+	wire [7:0] nn_pt [2:0]; // NN PT value
 	wire [2:0] nn_pt_v; // NN valid flag for PT
+	wire [2:0] nn_d0 [2:0]; // NN PT value
+	wire [2:0] nn_d0_v; // NN valid flag for PT
    
 
     // IMPORTANT: modify 5 parameters below to match endcap/sector and file path
@@ -304,6 +306,8 @@ module sp_tf;
 
 	     .nn_pt   (nn_pt  ), // NN PT value
 	     .nn_pt_v (nn_pt_v), // NN valid flag for PT
+	     .nn_d0   (nn_d0  ), // NN D0 value
+	     .nn_d0_v (nn_d0_v), // NN valid flag for D0
 
 		 .clk      (clki),
 		 .control_clk(clki), // use main clock for control as well
@@ -1310,9 +1314,11 @@ x        .bt_rank (bt_rank_i),
                         nn_mode_r = uut.nn.mode;
                         $fflush (nn_out);
                         
-                        if ((nn_pt[ip] & 18'h00fff) != 18'h000ec) // zz0ec seems to be an output value when all inputs = 0 
+                        if (uut.nn.pt_unconv[ip] != 12'h0ec || nn_pt[ip] != 8'h6) // 0ec seems to be an output value when all inputs = 0 
+//                        if (nn_pt[ip] != 8'h6) // 6 seems to be an output value when all inputs = 0 
                         begin
-                          $fwrite (nn_out, "ev: %4d track: %1d NN_pt: %h\n", iev, ip, nn_pt[ip]);
+                          $fwrite (nn_out, "ev: %4d track: %1d NN_pt: %h NN_d0: %h NN_PT_V: %h NN_D0_V: %h pt_unconv: %h d0_unconv: %h\n", 
+                                   iev, ip, nn_pt[ip], nn_d0[ip], nn_pt_v[ip], nn_d0_v[ip], uut.nn.pt_unconv[ip], uut.nn.d0_unconv[ip]);
                           $fflush (nn_out);
                         end
 

@@ -826,8 +826,10 @@ module emtf_core_top
     wire [3:0] gmt_qlt [2:0]; // quality for gmt
     wire [2:0] gmt_crg; // charge for gmt
     wire [1:0] hmt_out; // {out_of_time, in_time}
-	wire [17:0] nn_pt [2:0]; // NN PT value
+	wire [7:0] nn_pt [2:0]; // NN PT value
     wire [2:0] nn_pt_v; // NN valid flag for PT
+	wire [2:0] nn_d0 [2:0]; // NN D0 value
+    wire [2:0] nn_d0_v; // NN valid flag for D0
     
 `ifdef WITH_CORE    
 	sp core 
