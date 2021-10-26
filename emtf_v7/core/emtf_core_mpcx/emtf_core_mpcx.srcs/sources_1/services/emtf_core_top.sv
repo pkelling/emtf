@@ -938,9 +938,10 @@ module emtf_core_top
         .bt_ci (bt_ci_d),
         .bt_si (bt_si_d),
         
-        .bt_pt (bt_pt),
+        .bt_pt    (bt_pt),
         .bt_pt_tx (bt_pt_tx),
         .hmt      (hmt_out),
+        .nn_pt    (nn_pt),
        
         .txdata (txdata),
        

@@ -24,7 +24,8 @@ module output_formatter
     input [8:0] bt_pt [2:0], // pt values for best tracks
     output reg [8:0] bt_pt_tx [2:0], // pt values for best tracks as transmitted to uGMT
     input  [1:0] hmt,
-    
+    input [7:0]  nn_pt [2:0], // NN PT values
+
     output reg [63:0] txdata [2:0],
     
     input test_patterns_output,
@@ -127,13 +128,16 @@ module output_formatter
             // end of 2mu+LCT logic
             txdata[i][8:0] = bt_pt_tx[i]; 
             txdata[i][12:9] = gmt_qlt_i[i];
-            txdata[i][22] = 1'b0; // halo bit is 0 at this time
+            txdata[i][21:13] = gmt_eta[i]; // eta
+            txdata[i][22]    = 1'b0; // halo bit is 0 at this time
+            txdata[i][30:23] = gmt_phi[i]; // phi
             txdata[i][32] = gmt_crg_i[i]; // finally proper charge
             txdata[i][33] = gmt_cvl_i[i]; 
-            txdata[i][30:23] = gmt_phi[i]; // phi
             // leave HMT bits unoccupied here, assign them outside of the loop (below)
-            txdata[i][62:34] = {bxn[10:0], 2'b0, trk_id[3], trk_id[2], trk_id[1], trk_id[0]}; // track addresses
-            txdata[i][21:13] = gmt_eta[i]; // eta
+            txdata[i][49:34] = {trk_id[3], trk_id[2], trk_id[1], trk_id[0]}; // track addresses
+            txdata[i][51]    = 1'h0; // see bit 50 assignment below
+            txdata[i][59:52] = nn_pt[i]; // Pt unconstrained in specs 
+            txdata[i][62:60] = 3'h0; // IP and reserved in specs
         end
 
         // remove outputs if there was HR recently
@@ -154,6 +158,8 @@ module output_formatter
         // assign HMT bits according to LCTTrigger_EMTF_uGMT_v4.pptx
         txdata[0][50] = hmt[0]; // in time
         txdata[1][50] = hmt[1]; // out of time
+        txdata[2][50] = 1'b0; // reserved
+        
     end
 
     always @(posedge clk)

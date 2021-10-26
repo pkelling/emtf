@@ -1314,7 +1314,7 @@ x        .bt_rank (bt_rank_i),
                         nn_mode_r = uut.nn.mode;
                         $fflush (nn_out);
                         
-                        if (uut.nn.pt_unconv[ip] != 12'h0ec || nn_pt[ip] != 8'h6) // 0ec seems to be an output value when all inputs = 0 
+                        if (uut.nn.pt_unconv[ip] != 12'h14d || nn_pt[ip] != 8'h4) // 0ec seems to be an output value when all inputs = 0 
 //                        if (nn_pt[ip] != 8'h6) // 6 seems to be an output value when all inputs = 0 
                         begin
                           $fwrite (nn_out, "ev: %4d track: %1d NN_pt: %h NN_d0: %h NN_PT_V: %h NN_D0_V: %h pt_unconv: %h d0_unconv: %h\n", 
