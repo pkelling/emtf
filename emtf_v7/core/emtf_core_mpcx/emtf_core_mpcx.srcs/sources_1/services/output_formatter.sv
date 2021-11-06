@@ -25,6 +25,7 @@ module output_formatter
     output reg [8:0] bt_pt_tx [2:0], // pt values for best tracks as transmitted to uGMT
     input  [1:0] hmt,
     input [7:0]  nn_pt [2:0], // NN PT values
+    input [2:0] nn_pt_v, // NN PT valid flags
 
     output reg [63:0] txdata [2:0],
     
@@ -136,7 +137,7 @@ module output_formatter
             // leave HMT bits unoccupied here, assign them outside of the loop (below)
             txdata[i][49:34] = {trk_id[3], trk_id[2], trk_id[1], trk_id[0]}; // track addresses
             txdata[i][51]    = 1'h0; // see bit 50 assignment below
-            txdata[i][59:52] = nn_pt[i]; // Pt unconstrained in specs 
+            txdata[i][59:52] = (nn_pt_v[i] == 1'b1) ? nn_pt[i] : 8'h0; // Pt unconstrained in specs 
             txdata[i][62:60] = 3'h0; // IP and reserved in specs
         end
 

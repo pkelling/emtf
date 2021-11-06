@@ -942,6 +942,7 @@ module emtf_core_top
         .bt_pt_tx (bt_pt_tx),
         .hmt      (hmt_out),
         .nn_pt    (nn_pt),
+        .nn_pt_v  (nn_pt_v),
        
         .txdata (txdata),
        

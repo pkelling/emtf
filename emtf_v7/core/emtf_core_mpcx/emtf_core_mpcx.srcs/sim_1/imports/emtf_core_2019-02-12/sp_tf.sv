@@ -348,6 +348,7 @@ x        .bt_rank (bt_rank_i),
     
 
     reg [3:0] nn_mode_r [2:0];
+    reg [2:0] nn_valid_in;
     reg [1:0] mux_phase_print [2:0] = '{2'h2, 2'h0, 2'h1};
     reg [17:0] nn_input [2:0][22:0] = '{
         '{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -1223,6 +1224,9 @@ x        .bt_rank (bt_rank_i),
 						end
 					end
 */
+
+//                    if (nn_valid_in != 3'b0) $fwrite (nn_out, "ev: %4d valid_all: %03b\n", iev, nn_valid_in);
+
 					for (ip = 0; ip < 3; ip = ip+1)
 					begin
 					
@@ -1309,12 +1313,14 @@ x        .bt_rank (bt_rank_i),
                                 $fwrite (nn_out, " %05x", nn_input[ip][j]);
                                 nn_input[ip][j] = 0;
                             end
+//                            nn_valid_in[ip] = 0;
                             $fwrite (nn_out, "\n");
                         end
                         nn_mode_r = uut.nn.mode;
                         $fflush (nn_out);
                         
-                        if (uut.nn.pt_unconv[ip] != 12'h14d || nn_pt[ip] != 8'h4) // 0ec seems to be an output value when all inputs = 0 
+                        if (nn_pt_v[ip] != 1'b0 || uut.nn.pt_unconv_valid[ip] != 1'b0) // converted or unconverted value valid  
+//                        if (uut.nn.pt_unconv[ip] != 12'h14d || nn_pt[ip] != 8'h4 || nn_pt_v[ip] != 1'b0) // 0ec seems to be an output value when all inputs = 0 
 //                        if (nn_pt[ip] != 8'h6) // 6 seems to be an output value when all inputs = 0 
                         begin
                           $fwrite (nn_out, "ev: %4d track: %1d NN_pt: %h NN_d0: %h NN_PT_V: %h NN_D0_V: %h pt_unconv: %h d0_unconv: %h\n", 
@@ -1899,7 +1905,14 @@ x        .bt_rank (bt_rank_i),
                 if (uut.nn.input1_V[jt] != 0)
                     nn_input[it][jt] = uut.nn.input1_V[jt];
             end
+//            if (uut.nn.valid_in != 1'b0) nn_valid_in[it] = uut.nn.valid_in;
         end
+//        $write ("valid_in: %h\n", uut.nn.valid_in);
+//        if (nn_valid_in != 3'b0)
+//        begin 
+//            $fwrite (nn_out, "valid_in: %03b\n", nn_valid_in);
+//            $fflush (nn_out);
+//        end
     end
 /*    
     always @(posedge uut.nn.clk_120)

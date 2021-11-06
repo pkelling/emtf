@@ -128,6 +128,10 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
     reg [2:0] d0_lut_2[2047:0];
     reg [11:0] pt_unconv [2:0];
     reg [11:0] d0_unconv [2:0];
+    reg [2:0] pt_unconv_valid;
+    
+    localparam NN_LATENCY = 7;
+    reg [2:0] valid_in [NN_LATENCY-1:0];
     
     initial
     begin
@@ -152,8 +156,32 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
         pt_out[2] = pt_lut_2 [pt_unconv[2][10:0]];
         d0_out[2] = d0_lut_2 [d0_unconv[2][11:1]];
 
-        pt_valid = 3'b111; // these valid flags are ==1 anyway
-        d0_valid = 3'b111; // these valid flags are ==1 anyway
+        pt_valid = valid_in[NN_LATENCY-1]; // converted value valid
+        d0_valid = valid_in[NN_LATENCY-1];
+        
+        pt_unconv_valid = valid_in[NN_LATENCY-2]; // unconverted value valid one BX before converted (for simulation only)
+        
+        // delay line for valid input signal matching NN latency
+        // output is used as valid output flags, since NN does not provide any "valid" output flag
+        for (i = NN_LATENCY-2; i >= 0; i--)
+        begin
+            valid_in[i+1] = valid_in[i];
+        end
+
+        valid_in[0] = 3'b0;
+        for (i = 0; i < 3; i++)
+        begin
+            if 
+            (
+                mode[i] != 4'b0000  && 
+                mode[i] != 4'b0001  && 
+                mode[i] != 4'b0010  && 
+                mode[i] != 4'b0100  && 
+                mode[i] != 4'b1000 
+            )
+                valid_in[0][i] = 1'b1; // if more than one station detected, inputs valid
+        end
+
     end
     
     always @(posedge clk_120)
@@ -226,6 +254,7 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
             input1_V[17] = bt_theta[mux_phase];
         else
             input1_V[17] = 18'b0;
+        
         
         pt_unconv[mux_phase_out[mux_phase]] = layer11_out_0_V[11:0];
         d0_unconv[mux_phase_out[mux_phase]] = layer11_out_1_V[11:0];
