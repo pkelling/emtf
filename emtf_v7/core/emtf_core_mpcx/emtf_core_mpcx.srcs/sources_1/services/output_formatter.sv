@@ -26,6 +26,7 @@ module output_formatter
     input  [1:0] hmt,
     input [7:0]  nn_pt [2:0], // NN PT values
     input [2:0] nn_pt_v, // NN PT valid flags
+    input [2:0] nn_d0 [2:0], // NN dXY
 
     output reg [63:0] txdata [2:0],
     
@@ -138,7 +139,8 @@ module output_formatter
             txdata[i][49:34] = {trk_id[3], trk_id[2], trk_id[1], trk_id[0]}; // track addresses
             txdata[i][51]    = 1'h0; // see bit 50 assignment below
             txdata[i][59:52] = (nn_pt_v[i] == 1'b1) ? nn_pt[i] : 8'h0; // Pt unconstrained in specs 
-            txdata[i][62:60] = 3'h0; // IP and reserved in specs
+            txdata[i][60]    = 1'h0; // reserved in specs
+            txdata[i][62:61] = (nn_pt_v[i] == 1'b1) ? nn_d0[i][1:0] : 2'h0; // IP = dXY in specs. Sending only 2-bit value, dropping sign in MSB, according to msg from Sergo 2021-11-14
         end
 
         // remove outputs if there was HR recently

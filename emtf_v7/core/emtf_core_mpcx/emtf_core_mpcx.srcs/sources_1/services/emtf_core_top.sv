@@ -871,6 +871,7 @@ module emtf_core_top
 
         .nn_pt (nn_pt),
         .nn_pt_v (nn_pt_v),
+        .nn_d0 (nn_d0),
         
 		.clk         (clk40),
 		.control_clk (pcie_clk_buf),
@@ -943,6 +944,7 @@ module emtf_core_top
         .hmt      (hmt_out),
         .nn_pt    (nn_pt),
         .nn_pt_v  (nn_pt_v),
+        .nn_d0    (nn_d0),
        
         .txdata (txdata),
        
@@ -1229,6 +1231,7 @@ module emtf_core_top
          .ptlut_addr (ptlut_addr_d),
          .nn_pt (nn_pt),
          .nn_pt_v (nn_pt_v),
+         .nn_d0    (nn_d0),
 
          .gmt_phi (gmt_phi_d),
          .gmt_eta (gmt_eta_d),

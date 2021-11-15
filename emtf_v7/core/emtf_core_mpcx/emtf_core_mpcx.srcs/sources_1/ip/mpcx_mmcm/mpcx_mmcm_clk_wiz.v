@@ -56,12 +56,12 @@
 //  Output     Output      Phase    Duty Cycle   Pk-to-Pk     Phase
 //   Clock     Freq (MHz)  (degrees)    (%)     Jitter (ps)  Error (ps)
 //----------------------------------------------------------------------------
-// clk_out1__320.00000______0.000______50.0______147.202____191.950
+// clk_out1__321.60000______0.000______50.0______146.191____190.896
 //
 //----------------------------------------------------------------------------
 // Input Clock   Freq (MHz)    Input Jitter (UI)
 //----------------------------------------------------------------------------
-// __primary______________40____________0.010
+// __primary____________40.2____________0.010
 
 `timescale 1ps/1ps
 
@@ -135,7 +135,7 @@ wire clk_in2_mpcx_mmcm;
     .CLKOUT0_PHASE        (0.000),
     .CLKOUT0_DUTY_CYCLE   (0.500),
     .CLKOUT0_USE_FINE_PS  ("FALSE"),
-    .CLKIN1_PERIOD        (25.000))
+    .CLKIN1_PERIOD        (24.876))
   mmcm_adv_inst
     // Output clocks
    (

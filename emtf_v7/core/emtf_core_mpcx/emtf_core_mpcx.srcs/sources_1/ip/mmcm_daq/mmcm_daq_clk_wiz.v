@@ -56,7 +56,7 @@
 //  Output     Output      Phase    Duty Cycle   Pk-to-Pk     Phase
 //   Clock     Freq (MHz)  (degrees)    (%)     Jitter (ps)  Error (ps)
 //----------------------------------------------------------------------------
-// clk_out1____80.000______0.000______50.0______191.023____191.950
+// clk_out1__80.00000______0.000______50.0______191.023____191.950
 //
 //----------------------------------------------------------------------------
 // Input Clock   Freq (MHz)    Input Jitter (UI)
@@ -80,6 +80,8 @@ module mmcm_daq_clk_wiz
 wire clk_in1_mmcm_daq;
 wire clk_in2_mmcm_daq;
   assign clk_in1_mmcm_daq = clk_in1;
+
+
 
 
   // Clocking PRIMITIVE
@@ -184,6 +186,9 @@ wire clk_in2_mmcm_daq;
   BUFG clkf_buf
    (.O (clkfbout_buf_mmcm_daq),
     .I (clkfbout_mmcm_daq));
+
+
+
 
 
 

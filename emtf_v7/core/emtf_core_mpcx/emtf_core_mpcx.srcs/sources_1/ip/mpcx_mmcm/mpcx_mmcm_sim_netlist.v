@@ -1,7 +1,7 @@
 // Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
-// Date        : Fri Sep 17 14:26:59 2021
+// Date        : Sun Nov 14 11:35:00 2021
 // Host        : endcap-tf1.phys.ufl.edu running 64-bit CentOS Linux release 7.8.2003 (Core)
 // Command     : write_verilog -force -mode funcsim
 //               /home/madorsky/github/vivado/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/mpcx_mmcm/mpcx_mmcm_sim_netlist.v
@@ -94,7 +94,7 @@ module mpcx_mmcm_mpcx_mmcm_clk_wiz
     .CLKFBOUT_MULT_F(25.000000),
     .CLKFBOUT_PHASE(0.000000),
     .CLKFBOUT_USE_FINE_PS("FALSE"),
-    .CLKIN1_PERIOD(25.000000),
+    .CLKIN1_PERIOD(24.876000),
     .CLKIN2_PERIOD(0.000000),
     .CLKOUT0_DIVIDE_F(3.125000),
     .CLKOUT0_DUTY_CYCLE(0.500000),

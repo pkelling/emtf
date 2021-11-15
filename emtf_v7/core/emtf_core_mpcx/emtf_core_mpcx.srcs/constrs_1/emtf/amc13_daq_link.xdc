@@ -1,9 +1,6 @@
 
-#create_clock -period 25.000 -name clk40_in_p [get_ports clk40_in_p]
-
 
 set_property -dict {LOC BA24 IOSTANDARD LVCMOS12} [get_ports m_aresetn]
-set_property -dict {LOC AT8} [get_ports clk40_in_p]
 
 set_property PACKAGE_PIN AU15 [get_ports k_rx_clk]
 
@@ -45,18 +42,6 @@ set_property IOB TRUE [get_ports {k_rxnotintable[*]}]
 #set_property IOB TRUE [get_ports k_rxresetdone]
 set_property IOB TRUE [get_ports ttc_*]
 
-# for 40 MHz DAQ clk
-#set_false_path -from [get_clocks gt0_txusrclk_i] -to [get_clocks CLK_OUT2_usrclk_mmcm]
-#set_false_path -from [get_clocks CLK_OUT2_usrclk_mmcm] -to [get_clocks gt0_txusrclk_i]
-
-# for 80 MHz DAQ clk
-#set_false_path -from [get_clocks gt0_txusrclk_i] -to [get_clocks clk_out1_mmcm_daq]
-#set_false_path -from [get_clocks clk_out1_mmcm_daq] -to [get_clocks gt0_txusrclk_i]
-
-# unused
-#set_false_path -from [get_clocks clk_out1_k_rx_mmcm] -to [get_clocks gt0_txusrclk_i]
-#set_false_path -from [get_clocks gt0_txusrclk_i] -to [get_clocks  clk_out1_k_rx_mmcm]
-
 set_input_delay -clock k_rx_clk 2.000 [get_ports {k_rxdata[*]}]
 set_input_delay -clock k_rx_clk 2.000 [get_ports {k_rxcharisk[*]}]
 set_input_delay -clock k_rx_clk 2.000 [get_ports {k_rxchariscomma[*]}]
@@ -64,10 +49,4 @@ set_input_delay -clock k_rx_clk 2.000 [get_ports {k_rxnotintable[*]}]
 
 # preset by status signals, don't really care how long it takes
 set_false_path -to [get_pins {amc13_link_tx_/DAQ_LINK_7S_I/reset_SyncRegs_reg[*]/PRE}]
-
-#set_false_path -from [get_clocks clk_out1_mmcm_async] -to [get_clocks CLK_OUT2_usrclk_mmcm]
-#set_false_path -from [get_clocks CLK_OUT2_usrclk_mmcm] -to [get_clocks clk_out1_mmcm_async]
-
-#set_false_path -from [get_clocks clk_out1_mmcm_async] -to [get_clocks pcie_clk]
-#set_false_path -from [get_clocks pcie_clk] -to [get_clocks clk_out1_mmcm_async]
 

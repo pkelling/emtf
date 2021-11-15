@@ -5,7 +5,7 @@
 //    Date:             6/15/2015
 //    Design Name:      PLLE4 DRP
 //    Module Name:      plle4_drp_func.h
-//    Version:          1.20
+//    Version:          2.0
 //    Target Devices:   UltraScale+ Architecture
 //    Tool versions:    2017.1
 //    Description:      This header provides the functions necessary to  
@@ -111,7 +111,9 @@ function [13:0] mmcm_pll_divider
    begin
       // Duty Cycle must be between 0 and 1,000
       if(duty_cycle <=0 || duty_cycle >= 100000) begin
+`ifndef SYNTHESIS
          $display("ERROR: duty_cycle: %d is invalid", duty_cycle);
+   `endif
          $finish;
       end
 
@@ -191,7 +193,9 @@ function [10:0] mmcm_pll_phase
 `endif
    
       if ((phase < -360000) || (phase > 360000)) begin
+`ifndef SYNTHESIS
          $display("ERROR: phase of $phase is not between -360000 and 360000");
+`endif
          $finish;
       end
 
@@ -244,8 +248,8 @@ function [39:0] mmcm_pll_lock_lookup
          40'b01000_01000_1111101000_1111101001_0000000001, //3
          40'b01011_01011_1111101000_1111101001_0000000001, //4
          40'b01110_01110_1111101000_1111101001_0000000001, //5
-         40'b10001_10001_1111101001_1111101001_0000000001, //6
-         40'b10011_10011_0111101000_1111101001_0000000001, //7
+         40'b10001_10001_1111101000_1111101001_0000000001, //6
+         40'b10011_10011_1111101000_1111101001_0000000001, //7
          40'b10110_10110_1111101000_1111101001_0000000001, //8
          40'b11001_11001_1111101000_1111101001_0000000001, //9
          40'b11100_11100_1111101000_1111101001_0000000001, //10
@@ -454,7 +458,9 @@ function [37:0] mmcm_pll_frac_count_calc
    
    //convert phase to fixed
    if ((phase < -360000) || (phase > 360000)) begin
+`ifndef SYNTHESIS
       $display("ERROR: phase of $phase is not between -360000 and 360000");
+	`endif
       $finish;
    end
 
