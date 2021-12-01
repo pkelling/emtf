@@ -1650,10 +1650,11 @@ void sp12_qtw::on_daq_status_pb_released()
 	    uint64_t l1a_wnd = (daq_cfg_rb >> 8) & 0x7;
 	    uint64_t val_dly = (daq_cfg_rb >> 11) & 0xff;
 	    uint64_t val_wnd = (daq_cfg_rb >> 19) & 0x7;
+		uint64_t rpc_late_by = (daq_cfg_rb >> 53) & 0x7;
 	    
 
-            log_printf ("tts: %s wof: %03llx bsy: %03llx oos: %03llx, rdy: %03llx ill: %03llx, amc13_rdy: %x daq_cfg: %016llx L1a_del: %02lld L1a_wnd: %01lld val_del: %02lld val_wnd: %01lld\n",
-                        ttsd[tts_data].c_str(), tts_wof_cnt, tts_bsy_cnt, tts_oos_cnt, tts_rdy_cnt, tts_ill_cnt, amc13_ready, daq_cfg_rb, l1a_del, l1a_wnd, val_dly, val_wnd);
+            log_printf ("tts: %s wof: %03llx bsy: %03llx oos: %03llx, rdy: %03llx ill: %03llx, amc13_rdy: %x L1a_del: %02lld L1a_wnd: %01lld val_del: %02lld val_wnd: %01lld rpc_late_by: %lld\n",
+                        ttsd[tts_data].c_str(), tts_wof_cnt, tts_bsy_cnt, tts_oos_cnt, tts_rdy_cnt, tts_ill_cnt, amc13_ready, l1a_del, l1a_wnd, val_dly, val_wnd, rpc_late_by);
         }
     }
 
@@ -1715,10 +1716,8 @@ void sp12_qtw::on_af_enable_auto_cb_released()
 void sp12_qtw::on_read_delays_pb_released()
 {
     uint32_t REG_MEM_BASE = 0x80000; // bytes
-    uint64_t value, daq_delay, bc0_delay, gmt_delay, auto_af, gem_delay;
 
     int ch = REG_BANK_CH; // config register bank
-    uint32_t saddr = REG_MEM_BASE + (ch << 12) + (0x11 << 3); 
     for (int id = 0; id < 13; id++)
     {
         if (devices_d[id] >= 0)
@@ -1726,25 +1725,28 @@ void sp12_qtw::on_read_delays_pb_released()
             device_d = devices_d[id];
             log_printf ("device index: %d\n", id);
 
-            mread(device_d, &value, 8, saddr);
+			uint32_t saddr1 = REG_MEM_BASE + (ch << 12) + (0x11 << 3); 
+			uint64_t value0, daq_delay, bc0_delay, gmt_delay, auto_af, gem_delay;
 
-            daq_delay = (value & 0x0ff80ULL) >> 7; // clean up delay
-            bc0_delay = (value & 0x7fc00000000ULL) >> 34; // clean up bc0 delay
-            gmt_delay = (value & 0x7ff80000000000ULL) >> 43; // clean up gmt delay
-            auto_af = (value >> 19) & 1ULL;
+            mread(device_d, &value0, 8, saddr1);
 
-            value = 0;
+            daq_delay = (value0 & 0x0ff80ULL) >> 7; // clean up delay
+            bc0_delay = (value0 & 0x7fc00000000ULL) >> 34; // clean up bc0 delay
+            gmt_delay = (value0 & 0x7ff80000000000ULL) >> 43; // clean up gmt delay
+            auto_af = (value0 >> 19) & 1ULL;
+
+            uint64_t value1 = 0;
             uint32_t saddr_d = REG_MEM_BASE + (ch << 12) + (0x32 << 3); // core_config register
-            mread(device_d, &value, 8, saddr_d);
-            int single_delay = (value >> 24)&7ULL;
-            int single_en = (value >> 12) & 1ULL;
+            mread(device_d, &value1, 8, saddr_d);
+            int single_delay = (value1 >> 24)&7ULL;
+            int single_en = (value1 >> 12) & 1ULL;
 
-            saddr = REG_MEM_BASE + (ch << 12) + (0x72 << 3); // gem_data_del register
-            mread(device_d, &value, 8, saddr);
-            gem_delay = value & 0x1f; // just take one of the delays for now
+            saddr1 = REG_MEM_BASE + (ch << 12) + (0x72 << 3); // gem_data_del register
+            mread(device_d, &value1, 8, saddr1);
+            gem_delay = value1 & 0x1f; // just take one of the delays for now
 
-            log_printf("reading delays: BC0: %d, DAQ: %d GMT: %d auto_af: %d single_del: %d single_en: %d GEM: %d\n",
-                       (int)bc0_delay, (int) daq_delay, (int) gmt_delay, (int) auto_af, single_delay, single_en, (int)gem_delay);
+            log_printf("reading delays: BC0: %d, DAQ: %d GMT: %d auto_af: %d single_del: %d single_en: %d GEM: %d value: %016llx\n",
+                       (int)bc0_delay, (int) daq_delay, (int) gmt_delay, (int) auto_af, single_delay, single_en, (int)gem_delay, value0);
 
         }
     }
