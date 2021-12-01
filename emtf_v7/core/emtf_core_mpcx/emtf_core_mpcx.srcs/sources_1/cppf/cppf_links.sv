@@ -33,6 +33,7 @@ module cppf_links
     
     wire [31:0] rxdata [6:0];
     wire [3:0] rxcharisk [6:0];
+    wire [6:0] rxoutclk;
     
     wire [6:0] refclk;
     wire clk_250, clk_240;
@@ -89,24 +90,25 @@ module cppf_links
         for (gi = 0; gi < 7; gi = gi+1) // link loop
         begin: ql
                 
-             assign rxdata [gi] = mgtrx[gi].rxdata;
+             assign rxdata    [gi] = mgtrx[gi].rxdata;
              assign rxcharisk [gi] = mgtrx[gi].rxcharisk;
+             assign rxoutclk  [gi] = mgtrx[gi].rxoutclk;
 
             // RX data deframer
             rx_deframer rxdf
             (
-                .reset (~rxresetdone[gi]), // release deframer reset when link is ready
-                .rxdata_o (rxdb[gi]), // three frames of deframed data
-                .valid_o (rxvb[gi]), // shows when rx data are valid 
-                .rxdata_in (rxdata [gi]), // async data input
+                .reset        (~rxresetdone[gi]), // release deframer reset when link is ready
+                .rxdata_o     (rxdb[gi]), // three frames of deframed data
+                .valid_o      (rxvb[gi]), // shows when rx data are valid 
+                .rxdata_in    (rxdata [gi]), // async data input
                 .rxcharisk_in (rxcharisk [gi]), // async K input
-                .link_id (link_idb[gi]),
-                .crc_match (crc_matchb[gi]),
+                .link_id      (link_idb[gi]),
+                .crc_match    (crc_matchb[gi]),
                 
-                .clk_40 (clk_40),
-                .clk_250 (clk_250),
-                .clk_240 (clk_240),
-                .ttc_bc0_del (ttc_bc0_del)
+                .clk_40       (clk_40),
+                .clk_250      (rxoutclk[gi]), // using rx clocks from each link
+                .clk_240      (clk_240),
+                .ttc_bc0_del  (ttc_bc0_del)
             );
             
         end
