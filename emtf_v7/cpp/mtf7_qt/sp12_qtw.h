@@ -171,6 +171,8 @@ private slots:
 
     void on_prim_ge11_lut_verify_pb_released();
 
+    void on_clk40_psen_exec_released();
+
 private:
     Ui::sp12_qtw *ui;
 };

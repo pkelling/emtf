@@ -2144,3 +2144,56 @@ void sp12_qtw::on_prim_ge11_lut_verify_pb_released()
     key = 'o';
 
 }
+
+void sp12_qtw::on_clk40_psen_exec_released()
+{
+    // clk40 clock phase adjustment for MPCX link tests
+    // read adjustment count. Can be negative or positive
+    int psen_count = ui->psen_count_spin->value();
+    int psen_count_abs = abs(psen_count);
+    int psen_sign = (psen_count > 0) ? 1 : 0;
+
+    uint32_t REG_MEM_BASE = 0x80000; // bytes
+    int ch = REG_BANK_CH; // config register bank
+    uint32_t saddr = REG_MEM_BASE + (ch << 12) + (0 << 3); // control register
+
+    uint64_t value = 0;
+    mread(device_d, &value, 8, saddr);
+    // clean and apply bit 9, increment direction
+    value &= ~(1ULL << 9);
+    value |= (psen_sign << 9);
+
+	// clock phase calculation:
+	// one psen pulse moves phase by 1/56 of the VCO period
+	// VCO freq is 40M X 20 = 800 MHz, period = 1.25 ns
+	// one psen pulse = 1.25 ns / 56 = ~22.32 ps
+	// scanning entire 40M period = 56 x 20 = 1120 psen pulses
+
+    for (int i = 0; i < psen_count_abs; i++)
+    {
+		uint64_t tpaterr = 0;
+	    uint32_t tpaddr = REG_MEM_BASE + (ch << 12) + (0x62 << 3) ; // test pattern errors reg
+	    mread(device_d, &tpaterr, 8, tpaddr); // this read reset transitional errors
+		usleep (10000);
+		tpaterr = 0;
+	    mread(device_d, &tpaterr, 8, tpaddr); // this read reads actual errors
+		tpaterr &= 0xffULL; // only analyze MPC0
+		if (tpaterr != 0) 
+		{
+			log_printf ("test pattern errors: %016llx phase: %d\n", tpaterr, i);
+			break;
+		}
+
+		
+		value |=  (1ULL << 8); // set bit 8, psen
+        mwrite(device_d, &value, 8, saddr);
+
+        value &= ~(1ULL << 8); // clean bit 8, psen
+        mwrite(device_d, &value, 8, saddr);
+
+		usleep (10000);
+
+    }
+
+	log_printf ("done psen count: %d direction: %d\n", psen_count_abs, psen_sign);
+}

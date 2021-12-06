@@ -167,6 +167,10 @@ public:
     QSpinBox *cppf_bc0_delay_sb;
     QLabel *label_14;
     QPushButton *cppf_bc0_delay_set_pb;
+    QGroupBox *groupBox_12;
+    QSpinBox *psen_count_spin;
+    QLabel *label_17;
+    QPushButton *clk40_psen_exec;
     QTableWidget *bc0_source_tbl;
 
     void setupUi(QDialog *sp12_qtw)
@@ -644,6 +648,20 @@ public:
         cppf_bc0_delay_set_pb = new QPushButton(groupBox_11);
         cppf_bc0_delay_set_pb->setObjectName(QString::fromUtf8("cppf_bc0_delay_set_pb"));
         cppf_bc0_delay_set_pb->setGeometry(QRect(10, 50, 91, 22));
+        groupBox_12 = new QGroupBox(frame);
+        groupBox_12->setObjectName(QString::fromUtf8("groupBox_12"));
+        groupBox_12->setGeometry(QRect(950, 210, 111, 80));
+        psen_count_spin = new QSpinBox(groupBox_12);
+        psen_count_spin->setObjectName(QString::fromUtf8("psen_count_spin"));
+        psen_count_spin->setGeometry(QRect(60, 20, 50, 29));
+        psen_count_spin->setMinimum(-2000);
+        psen_count_spin->setMaximum(2000);
+        label_17 = new QLabel(groupBox_12);
+        label_17->setObjectName(QString::fromUtf8("label_17"));
+        label_17->setGeometry(QRect(10, 20, 51, 20));
+        clk40_psen_exec = new QPushButton(groupBox_12);
+        clk40_psen_exec->setObjectName(QString::fromUtf8("clk40_psen_exec"));
+        clk40_psen_exec->setGeometry(QRect(10, 50, 83, 21));
 
         verticalLayout->addWidget(frame);
 
@@ -668,7 +686,7 @@ public:
     {
         sp12_qtw->setWindowTitle(QApplication::translate("sp12_qtw", "mtf7_qt", 0, QApplication::UnicodeUTF8));
         configuration_gb->setTitle(QApplication::translate("sp12_qtw", "Configuration", 0, QApplication::UnicodeUTF8));
-        flash_fname->setPlainText(QApplication::translate("sp12_qtw", "./mtf7_core_top.bin", 0, QApplication::UnicodeUTF8));
+        flash_fname->setPlainText(QApplication::translate("sp12_qtw", "./emtf_core_top.bin", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("sp12_qtw", "Core file name .bin", 0, QApplication::UnicodeUTF8));
         erase_button->setText(QApplication::translate("sp12_qtw", "Erase", 0, QApplication::UnicodeUTF8));
         write_button->setText(QApplication::translate("sp12_qtw", "Write", 0, QApplication::UnicodeUTF8));
@@ -778,6 +796,9 @@ public:
         groupBox_11->setTitle(QApplication::translate("sp12_qtw", "CPPF", 0, QApplication::UnicodeUTF8));
         label_14->setText(QApplication::translate("sp12_qtw", "BC0 delay", 0, QApplication::UnicodeUTF8));
         cppf_bc0_delay_set_pb->setText(QApplication::translate("sp12_qtw", "Set", 0, QApplication::UnicodeUTF8));
+        groupBox_12->setTitle(QApplication::translate("sp12_qtw", "clk40 phase", 0, QApplication::UnicodeUTF8));
+        label_17->setText(QApplication::translate("sp12_qtw", "psen count", 0, QApplication::UnicodeUTF8));
+        clk40_psen_exec->setText(QApplication::translate("sp12_qtw", "clk40 psen exec", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };
