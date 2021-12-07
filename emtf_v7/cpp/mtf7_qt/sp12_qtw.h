@@ -29,21 +29,7 @@ private slots:
 
     void on_loopback_button_released();
 
-    void on_clear_log_button_released();
-
-    void on_prbs_enable_button_released();
-
-    void on_prbs_check_button_released();
-
-    void on_prbs_enable_gtx_button_released();
-
-    void on_prbs_check_gtx_button_released();
-
     void on_send_reset_button_released();
-
-    void on_gtx_err_bits_button_released();
-
-//    void on_gth_inversion_write_button_released();
 
     void on_configure_reset_released();
 
@@ -59,8 +45,6 @@ private slots:
 
     void on_reset_rldram_button_released();
 
-    void on_prbs_enable_mpc_button_released();
-
     void on_mcp_format_button_released();
 
     void on_mpc_status_button_released();
@@ -68,10 +52,6 @@ private slots:
     void on_send_idle_button_released();
 
     void on_prep_mpc_button_released();
-
-    void on_SP04_button_released();
-
-//    void on_reset_cl_b_released();
 
     void on_write_cl_b_released();
 
@@ -170,6 +150,8 @@ private slots:
     void on_prim_ge11_lut_write_pb_released();
 
     void on_prim_ge11_lut_verify_pb_released();
+
+    void on_clk40_psen_exec_released();
 
 private:
     Ui::sp12_qtw *ui;

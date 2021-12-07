@@ -425,17 +425,6 @@ sp12_qtw::sp12_qtw(QWidget *parent) :
     ui->setupUi(this);
     ui->Progress->setValue(0);
 
-    // form loopback mode list
-    ui->gth_prbs_list->addItem("None");
-    ui->gth_prbs_list->addItem("PRBS-7");
-    ui->gth_prbs_list->addItem("PRBS-15");
-    ui->gth_prbs_list->addItem("PRBS-23");
-    ui->gth_prbs_list->addItem("PRBS-31");
-    ui->gth_prbs_list->addItem("PCIe");
-    ui->gth_prbs_list->addItem("1010");
-    ui->gth_prbs_list->addItem("111000");
-    ui->gth_prbs_list->setCurrentRow(0);
-
     ui->reset_list->addItem("GTH");
     ui->reset_list->addItem("Core lnk");
     ui->reset_list->addItem("PTLUT clk");
@@ -700,67 +689,6 @@ void sp12_qtw::on_loopback_button_released()
 
 }
 
-void sp12_qtw::on_clear_log_button_released()
-{
- //   ui->log->clear();
-}
-
-void sp12_qtw::on_prbs_enable_button_released()
-{
-    loopback_code = 0;
-
-    prbs_type = ui->gth_prbs_list->currentRow(); // prbs type code matches row number
-    prbs_force_error = ui->prbs_force_error->isChecked();
-
-    uint32_t REG_MEM_BASE = 0x80000; // bytes
-    uint64_t REG_BASE = 0x40ULL; // bytes
-
-    int ch = REG_BANK_CH; // config register bank
-    uint32_t saddr = REG_MEM_BASE + (ch << 12) + (0x11 << 3); // delay register
-
-    off_t pos = (REG_BASE << 32) + saddr;
-    uint64_t value = 0;
-    mread(device_d, &value, 8, pos); pos += 8; // ME1/1b
-    log_printf("trigger_config readback: %llx\n", value);
-
-
-    value &= ~(7ULL << 31); // remove PRBS bits
-    value |= (prbs_type << 31); // insert new bits
-    log_printf("trigger_config register: %llx\n", value);
-    mwrite(device_d, &value, 8, saddr);
-
-    pos = (REG_BASE << 32) + saddr;
-    value = 0;
-    mread(device_d, &value, 8, pos);
-    log_printf("trigger_config readback: %llx\n", value);
-}
-
-void sp12_qtw::on_prbs_check_button_released()
-{
-    key = 'e';
-}
-
-void sp12_qtw::on_prbs_enable_gtx_button_released()
-{
-    int lrow = 0;
-    switch (lrow) // convert into loopback code for GTX
-    {
-    case 0: loopback_code = 0; break;
-    case 1: loopback_code = 1; break;
-    case 2: loopback_code = 2; break;
-    case 3: loopback_code = 4; break;
-    case 4: loopback_code = 6; break;
-    }
-
-    prbs_type = 0;
-    prbs_force_error = ui->prbs_force_error->isChecked();
-    key = 'x';
-}
-
-void sp12_qtw::on_prbs_check_gtx_button_released()
-{
-    key = 'c';
-}
 
 void sp12_qtw::on_send_reset_button_released()
 {
@@ -800,11 +728,6 @@ void sp12_qtw::on_send_reset_button_released()
     key = 'R';
 }
 
-
-void sp12_qtw::on_gtx_err_bits_button_released()
-{
-    key = 'B';
-}
 
 void sp12_qtw::on_configure_reset_released()
 {
@@ -871,7 +794,8 @@ void sp12_qtw::on_terminate_button_released()
 
 void sp12_qtw::on_read_rldram_button_released()
 {
-    key = 'D';
+    //key = 'D';
+    log_printf ("Currently not working\n");
 }
 
 void sp12_qtw::on_test_rldram_button_released()
@@ -884,12 +808,6 @@ void sp12_qtw::on_reset_rldram_button_released()
 {
     ptlut_training = ui->training_cb->isChecked();
     key = 'I';
-}
-
-void sp12_qtw::on_prbs_enable_mpc_button_released()
-{
-    prbs_type = 0;
-    key = 'M';
 }
 
 void sp12_qtw::on_mcp_format_button_released()
@@ -916,16 +834,6 @@ void sp12_qtw::on_prep_mpc_button_released()
     key = 'a';
 }
 
-
-void sp12_qtw::on_SP04_button_released()
-{
-    key = '4';
-}
-
-//void sp12_qtw::on_reset_cl_b_released()
-//{
-//    key = 'T';
-//}
 
 void sp12_qtw::on_write_cl_b_released()
 {
@@ -2143,4 +2051,60 @@ void sp12_qtw::on_prim_ge11_lut_verify_pb_released()
     ge11_prim = true;
     key = 'o';
 
+}
+
+void sp12_qtw::on_clk40_psen_exec_released()
+{
+    // clk40 clock phase adjustment for MPCX link tests
+    // read adjustment count. Can be negative or positive
+    int psen_count = ui->psen_count_spin->value();
+    int psen_count_abs = abs(psen_count);
+    int psen_sign = (psen_count > 0) ? 1 : 0;
+
+    uint32_t REG_MEM_BASE = 0x80000; // bytes
+    int ch = REG_BANK_CH; // config register bank
+    uint32_t saddr = REG_MEM_BASE + (ch << 12) + (0 << 3); // control register
+
+    uint64_t value = 0;
+    mread(device_d, &value, 8, saddr);
+    // clean and apply bit 9, increment direction
+    value &= ~(1ULL << 9);
+    value |= (psen_sign << 9);
+
+	// clock phase calculation:
+	// one psen pulse moves phase by 1/56 of the VCO period
+	// VCO freq is 40M X 20 = 800 MHz, period = 1.25 ns
+	// one psen pulse = 1.25 ns / 56 = ~22.32 ps
+	// scanning entire 40M period = 56 x 20 = 1120 psen pulses
+
+    for (int i = 0; i < psen_count_abs; i++)
+    {
+		uint64_t tpaterr = 0;
+	    uint32_t tpaddr = REG_MEM_BASE + (ch << 12) + (0x62 << 3) ; // test pattern errors reg
+	    mread(device_d, &tpaterr, 8, tpaddr); // this read reset transitional errors
+		usleep (10000);
+		tpaterr = 0;
+	    mread(device_d, &tpaterr, 8, tpaddr); // this read reads actual errors
+		usleep (10000);
+		tpaterr = 0;
+	    mread(device_d, &tpaterr, 8, tpaddr); // this read reads actual errors
+		tpaterr &= 0xffULL; // only analyze MPC0
+		if (tpaterr != 0) 
+		{
+			log_printf ("test pattern errors: %016llx phase: %d\n", tpaterr, i);
+			break;
+		}
+
+		
+		value |=  (1ULL << 8); // set bit 8, psen
+        mwrite(device_d, &value, 8, saddr);
+
+        value &= ~(1ULL << 8); // clean bit 8, psen
+        mwrite(device_d, &value, 8, saddr);
+
+		usleep (50000);
+
+    }
+
+	log_printf ("done psen count: %d direction: %d\n", psen_count_abs, psen_sign);
 }
