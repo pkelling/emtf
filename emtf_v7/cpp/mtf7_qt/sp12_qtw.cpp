@@ -689,26 +689,6 @@ void sp12_qtw::on_loopback_button_released()
 
 }
 
-void sp12_qtw::on_clear_log_button_released()
-{
- //   ui->log->clear();
-}
-
-void sp12_qtw::on_prbs_enable_button_released()
-{
-}
-
-void sp12_qtw::on_prbs_check_button_released()
-{
-}
-
-void sp12_qtw::on_prbs_enable_gtx_button_released()
-{
-}
-
-void sp12_qtw::on_prbs_check_gtx_button_released()
-{
-}
 
 void sp12_qtw::on_send_reset_button_released()
 {
@@ -748,11 +728,6 @@ void sp12_qtw::on_send_reset_button_released()
     key = 'R';
 }
 
-
-void sp12_qtw::on_gtx_err_bits_button_released()
-{
-    key = 'B';
-}
 
 void sp12_qtw::on_configure_reset_released()
 {
@@ -835,12 +810,6 @@ void sp12_qtw::on_reset_rldram_button_released()
     key = 'I';
 }
 
-void sp12_qtw::on_prbs_enable_mpc_button_released()
-{
-    prbs_type = 0;
-    key = 'M';
-}
-
 void sp12_qtw::on_mcp_format_button_released()
 {
     mpc_test_index = ui->mpc_test_list->currentRow();
@@ -865,16 +834,6 @@ void sp12_qtw::on_prep_mpc_button_released()
     key = 'a';
 }
 
-
-void sp12_qtw::on_SP04_button_released()
-{
-    key = '4';
-}
-
-//void sp12_qtw::on_reset_cl_b_released()
-//{
-//    key = 'T';
-//}
 
 void sp12_qtw::on_write_cl_b_released()
 {
