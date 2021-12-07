@@ -425,17 +425,6 @@ sp12_qtw::sp12_qtw(QWidget *parent) :
     ui->setupUi(this);
     ui->Progress->setValue(0);
 
-    // form loopback mode list
-    ui->gth_prbs_list->addItem("None");
-    ui->gth_prbs_list->addItem("PRBS-7");
-    ui->gth_prbs_list->addItem("PRBS-15");
-    ui->gth_prbs_list->addItem("PRBS-23");
-    ui->gth_prbs_list->addItem("PRBS-31");
-    ui->gth_prbs_list->addItem("PCIe");
-    ui->gth_prbs_list->addItem("1010");
-    ui->gth_prbs_list->addItem("111000");
-    ui->gth_prbs_list->setCurrentRow(0);
-
     ui->reset_list->addItem("GTH");
     ui->reset_list->addItem("Core lnk");
     ui->reset_list->addItem("PTLUT clk");
@@ -707,59 +696,18 @@ void sp12_qtw::on_clear_log_button_released()
 
 void sp12_qtw::on_prbs_enable_button_released()
 {
-    loopback_code = 0;
-
-    prbs_type = ui->gth_prbs_list->currentRow(); // prbs type code matches row number
-    prbs_force_error = ui->prbs_force_error->isChecked();
-
-    uint32_t REG_MEM_BASE = 0x80000; // bytes
-    uint64_t REG_BASE = 0x40ULL; // bytes
-
-    int ch = REG_BANK_CH; // config register bank
-    uint32_t saddr = REG_MEM_BASE + (ch << 12) + (0x11 << 3); // delay register
-
-    off_t pos = (REG_BASE << 32) + saddr;
-    uint64_t value = 0;
-    mread(device_d, &value, 8, pos); pos += 8; // ME1/1b
-    log_printf("trigger_config readback: %llx\n", value);
-
-
-    value &= ~(7ULL << 31); // remove PRBS bits
-    value |= (prbs_type << 31); // insert new bits
-    log_printf("trigger_config register: %llx\n", value);
-    mwrite(device_d, &value, 8, saddr);
-
-    pos = (REG_BASE << 32) + saddr;
-    value = 0;
-    mread(device_d, &value, 8, pos);
-    log_printf("trigger_config readback: %llx\n", value);
 }
 
 void sp12_qtw::on_prbs_check_button_released()
 {
-    key = 'e';
 }
 
 void sp12_qtw::on_prbs_enable_gtx_button_released()
 {
-    int lrow = 0;
-    switch (lrow) // convert into loopback code for GTX
-    {
-    case 0: loopback_code = 0; break;
-    case 1: loopback_code = 1; break;
-    case 2: loopback_code = 2; break;
-    case 3: loopback_code = 4; break;
-    case 4: loopback_code = 6; break;
-    }
-
-    prbs_type = 0;
-    prbs_force_error = ui->prbs_force_error->isChecked();
-    key = 'x';
 }
 
 void sp12_qtw::on_prbs_check_gtx_button_released()
 {
-    key = 'c';
 }
 
 void sp12_qtw::on_send_reset_button_released()
@@ -871,7 +819,8 @@ void sp12_qtw::on_terminate_button_released()
 
 void sp12_qtw::on_read_rldram_button_released()
 {
-    key = 'D';
+    //key = 'D';
+    log_printf ("Currently not working\n");
 }
 
 void sp12_qtw::on_test_rldram_button_released()
