@@ -199,6 +199,12 @@ set_false_path -from [get_pins {crb/crc_err_flag_comb_reg[*]/C}]
 set_false_path -from [get_pins {crb/err_tst_pat_flag_comb_reg[*]/C}]
 set_false_path -from [get_pins {crb/rx_clk_phase_drift_reg[*]/C}]
 
+set_bus_skew                 -from [get_pins {mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/ds/drx_reg[*]/C}] -to [get_pins {mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/inreg_320_reg[*]/D}] 3.0
+set_max_delay -datapath_only -from [get_pins {mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/ds/drx_reg[*]/C}] -to [get_pins {mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/inreg_320_reg[*]/D}] 3.0
+
+set_bus_skew                 -from [get_pins {mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/ds/drx_reg[*]/C}] -to [get_pins {mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/inreg_320_reg[*]/D}] 3.0
+set_max_delay -datapath_only -from [get_pins {mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/ds/drx_reg[*]/C}] -to [get_pins {mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/inreg_320_reg[*]/D}] 3.0
+
 
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 set_property BITSTREAM.CONFIG.OVERTEMPPOWERDOWN ENABLE [current_design]
