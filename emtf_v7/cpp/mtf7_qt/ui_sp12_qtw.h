@@ -600,7 +600,7 @@ public:
         daq_status_pb->setGeometry(QRect(10, 120, 61, 21));
         groupBox_9 = new QGroupBox(frame);
         groupBox_9->setObjectName(QString::fromUtf8("groupBox_9"));
-        groupBox_9->setGeometry(QRect(850, 280, 191, 101));
+        groupBox_9->setGeometry(QRect(850, 300, 191, 101));
         en_input_fibers = new QPushButton(groupBox_9);
         en_input_fibers->setObjectName(QString::fromUtf8("en_input_fibers"));
         en_input_fibers->setGeometry(QRect(10, 20, 41, 16));
@@ -637,7 +637,7 @@ public:
         af_enable_auto_cb->setChecked(true);
         groupBox_11 = new QGroupBox(frame);
         groupBox_11->setObjectName(QString::fromUtf8("groupBox_11"));
-        groupBox_11->setGeometry(QRect(730, 80, 111, 81));
+        groupBox_11->setGeometry(QRect(730, 70, 111, 81));
         cppf_bc0_delay_sb = new QSpinBox(groupBox_11);
         cppf_bc0_delay_sb->setObjectName(QString::fromUtf8("cppf_bc0_delay_sb"));
         cppf_bc0_delay_sb->setGeometry(QRect(67, 20, 41, 23));

@@ -2177,6 +2177,9 @@ void sp12_qtw::on_clk40_psen_exec_released()
 		usleep (10000);
 		tpaterr = 0;
 	    mread(device_d, &tpaterr, 8, tpaddr); // this read reads actual errors
+		usleep (10000);
+		tpaterr = 0;
+	    mread(device_d, &tpaterr, 8, tpaddr); // this read reads actual errors
 		tpaterr &= 0xffULL; // only analyze MPC0
 		if (tpaterr != 0) 
 		{
@@ -2191,7 +2194,7 @@ void sp12_qtw::on_clk40_psen_exec_released()
         value &= ~(1ULL << 8); // clean bit 8, psen
         mwrite(device_d, &value, 8, saddr);
 
-		usleep (10000);
+		usleep (50000);
 
     }
 
