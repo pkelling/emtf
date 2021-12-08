@@ -2081,17 +2081,23 @@ void sp12_qtw::on_clk40_psen_exec_released()
     {
 		uint64_t tpaterr = 0;
 	    uint32_t tpaddr = REG_MEM_BASE + (ch << 12) + (0x62 << 3) ; // test pattern errors reg
-	    mread(device_d, &tpaterr, 8, tpaddr); // this read reset transitional errors
-		usleep (10000);
+		
+		// reset error flags
+		uint64_t cntrlreg;
+		mread  (device_d, &cntrlreg, 8, saddr);
+		value |= (1ULL << 21);
+		mwrite (device_d, &cntrlreg, 8, saddr);
+		value &= ~(1ULL << 21);
+		mwrite (device_d, &cntrlreg, 8, saddr);
+		
+		usleep (50000); // let errors happen
 		tpaterr = 0;
-	    mread(device_d, &tpaterr, 8, tpaddr); // this read reads actual errors
-		usleep (10000);
-		tpaterr = 0;
-	    mread(device_d, &tpaterr, 8, tpaddr); // this read reads actual errors
+	    mread(device_d, &tpaterr, 8, tpaddr); // this reads actual errors
+		
 		tpaterr &= 0xffULL; // only analyze MPC0
 		if (tpaterr != 0) 
 		{
-			log_printf ("test pattern errors: %016llx phase: %d\n", tpaterr, i);
+			log_printf ("\ntest pattern errors: %016llx phase: %d\n", tpaterr, i);
 			break;
 		}
 
@@ -2102,7 +2108,10 @@ void sp12_qtw::on_clk40_psen_exec_released()
         value &= ~(1ULL << 8); // clean bit 8, psen
         mwrite(device_d, &value, 8, saddr);
 
-		usleep (50000);
+		log_printf ("\r%d      ", i);
+		fflush (stdout);
+
+		usleep (1000000);
 
     }
 
