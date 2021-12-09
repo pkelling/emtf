@@ -2085,9 +2085,9 @@ void sp12_qtw::on_clk40_psen_exec_released()
 		// reset error flags
 		uint64_t cntrlreg;
 		mread  (device_d, &cntrlreg, 8, saddr);
-		value |= (1ULL << 21);
+		cntrlreg |= (1ULL << 21);
 		mwrite (device_d, &cntrlreg, 8, saddr);
-		value &= ~(1ULL << 21);
+		cntrlreg &= ~(1ULL << 21);
 		mwrite (device_d, &cntrlreg, 8, saddr);
 		
 		usleep (50000); // let errors happen
@@ -2095,10 +2095,32 @@ void sp12_qtw::on_clk40_psen_exec_released()
 	    mread(device_d, &tpaterr, 8, tpaddr); // this reads actual errors
 		
 		tpaterr &= 0xffULL; // only analyze MPC0
+		//tpaterr &= 0xff0000000000ULL; // only analyze Neighbor
 		if (tpaterr != 0) 
 		{
-			log_printf ("\ntest pattern errors: %016llx phase: %d\n", tpaterr, i);
-			break;
+			log_printf ("%016llx phase: %d\n", tpaterr, i);
+			// give it some more time 
+			usleep (100000);
+
+			// reset error flags
+			uint64_t cntrlreg;
+			mread  (device_d, &cntrlreg, 8, saddr);
+			cntrlreg |= (1ULL << 21);
+			mwrite (device_d, &cntrlreg, 8, saddr);
+			cntrlreg &= ~(1ULL << 21);
+			mwrite (device_d, &cntrlreg, 8, saddr);
+
+			usleep (50000); // let errors happen
+			tpaterr = 0;
+			mread(device_d, &tpaterr, 8, tpaddr); // this reads actual errors
+
+			tpaterr &= 0xffULL; // only analyze MPC0
+			//tpaterr &= 0xff0000000000ULL; // only analyze Neighbor
+			if (tpaterr != 0) 
+			{
+				log_printf ("\nipersistent test pattern errors: %016llx phase: %d\n", tpaterr, i);
+				break;
+			}
 		}
 
 		
@@ -2111,7 +2133,7 @@ void sp12_qtw::on_clk40_psen_exec_released()
 		log_printf ("\r%d      ", i);
 		fflush (stdout);
 
-		usleep (1000000);
+		usleep (10000);
 
     }
 
