@@ -921,42 +921,42 @@ module emtf_core_top
 
     wire [25:0] track_rate [2:0];
 
-    output_formatter of
-    (
-        .bc0 (ttc_bc0_rx),
+//    output_formatter of
+//    (
+//        .bc0 (ttc_bc0_rx),
    
-//        .bt_theta (bt_theta_d),
-//        .bt_sign_ph (bt_sign_ph_d),
+////        .bt_theta (bt_theta_d),
+////        .bt_sign_ph (bt_sign_ph_d),
         
-        .bt_rank (bt_rank_d),
-        .gmt_phi (gmt_phi_d),
-        .gmt_eta (gmt_eta_d),
-        .gmt_qlt (gmt_qlt_d),
-        .gmt_crg (gmt_crg_d),
+//        .bt_rank (bt_rank_d),
+//        .gmt_phi (gmt_phi_d),
+//        .gmt_eta (gmt_eta_d),
+//        .gmt_qlt (gmt_qlt_d),
+//        .gmt_crg (gmt_crg_d),
         
-        .bt_vi (bt_vi_d),
-        .bt_hi (bt_hi_d),
-        .bt_ci (bt_ci_d),
-        .bt_si (bt_si_d),
+//        .bt_vi (bt_vi_d),
+//        .bt_hi (bt_hi_d),
+//        .bt_ci (bt_ci_d),
+//        .bt_si (bt_si_d),
         
-        .bt_pt    (bt_pt),
-        .bt_pt_tx (bt_pt_tx),
-        .hmt      (hmt_out),
-        .nn_pt    (nn_pt),
-        .nn_pt_v  (nn_pt_v),
-        .nn_d0    (nn_d0),
+//        .bt_pt    (bt_pt),
+//        .bt_pt_tx (bt_pt_tx),
+//        .hmt      (hmt_out),
+//        .nn_pt    (nn_pt),
+//        .nn_pt_v  (nn_pt_v),
+//        .nn_d0    (nn_d0),
        
-        .txdata (txdata),
+//        .txdata (txdata),
        
-        .test_patterns_output (test_patterns_output),
-        .link_id (link_id[1][9:0]),
-        .endcap (endcap),
+//        .test_patterns_output (test_patterns_output),
+//        .link_id (link_id[1][9:0]),
+//        .endcap (endcap),
        
-        .clk (clk40),
-        .track_rate(track_rate),
-        .hard_reset (ttc_hard_reset_rx),
-        .hard_reset_to (hard_reset_to)
-    );
+//        .clk (clk40),
+//        .track_rate(track_rate),
+//        .hard_reset (ttc_hard_reset_rx),
+//        .hard_reset_to (hard_reset_to)
+//    );
 
     generate
     for (gi = 0; gi < 2; gi++)
@@ -1135,68 +1135,68 @@ module emtf_core_top
         if (bc0_del_cnt < 9'h1ff) bc0_del_cnt++;
     end
 
-	mtf7_ptlut
-	#(
-		.BA(AP_BEG + 32'h18000)
-	) 
-	ptlut
-    (
-        .s_axi (m_axi),
-        .s_axo (s_axi[3]),
+//	mtf7_ptlut
+//	#(
+//		.BA(AP_BEG + 32'h18000)
+//	) 
+//	ptlut
+//    (
+//        .s_axi (m_axi),
+//        .s_axo (s_axi[3]),
 
-		// rldram interface
-		.dq (pt_dq),
-		.ba (pt_ba),
-		.a (pt_a),
-		.dk_p_ (pt_dk_p_),
-		.dk_n_ (pt_dk_n_),
-		.cs (pt_cs),
-		.pt_ref (pt_ref),
-		.we (pt_we),
+//		// rldram interface
+//		.dq (pt_dq),
+//		.ba (pt_ba),
+//		.a (pt_a),
+//		.dk_p_ (pt_dk_p_),
+//		.dk_n_ (pt_dk_n_),
+//		.cs (pt_cs),
+//		.pt_ref (pt_ref),
+//		.we (pt_we),
 
-		// clock chip inteface
-		.leu (pt_leu), 
-		.clku (pt_clku),
-		.datau (pt_datau),
-		.goe (pt_goe), 
-		.ld (pt_ld), 
-		.sync (pt_sync),
-		.en (pt_clk_reset),
-		.clk_word (pt_clk_word),
+//		// clock chip inteface
+//		.leu (pt_leu), 
+//		.clku (pt_clku),
+//		.datau (pt_datau),
+//		.goe (pt_goe), 
+//		.ld (pt_ld), 
+//		.sync (pt_sync),
+//		.en (pt_clk_reset),
+//		.clk_word (pt_clk_word),
 
-		.clk200 (clk200),
-		.clk400	(clk400),
+//		.clk200 (clk200),
+//		.clk400	(clk400),
 		
-		.mrs_command (pt_mrs_command),
-		.wr_command (pt_wr_command),
-		.rd_command (pt_rd_command),
-		.busy (pt_busy),
+//		.mrs_command (pt_mrs_command),
+//		.wr_command (pt_wr_command),
+//		.rd_command (pt_rd_command),
+//		.busy (pt_busy),
 		
-		.io_reset (io_reset),
+//		.io_reset (io_reset),
 		
-		.in_delay_ce (in_delay_ce),
-		.in_delay_inc_dec (in_delay_inc_dec),
-		.in_delay_reset (in_delay_reset),
-		.in_delay_clk (pcie_clk_buf),
+//		.in_delay_ce (in_delay_ce),
+//		.in_delay_inc_dec (in_delay_inc_dec),
+//		.in_delay_reset (in_delay_reset),
+//		.in_delay_clk (pcie_clk_buf),
 
-		.delayctrl_locked (delayctrl_locked),
-		.in_delay_tap (in_delay_tap),
-		.out_delay_tap (out_delay_tap),
-		.in_delay_tap_rb (in_delay_tap_rb),
-		.out_delay_tap_rb (out_delay_tap_rb),
-		.ddr_clk_del (ddr_clk_del),
-		.ptlut_config (ptlut_config),
+//		.delayctrl_locked (delayctrl_locked),
+//		.in_delay_tap (in_delay_tap),
+//		.out_delay_tap (out_delay_tap),
+//		.in_delay_tap_rb (in_delay_tap_rb),
+//		.out_delay_tap_rb (out_delay_tap_rb),
+//		.ddr_clk_del (ddr_clk_del),
+//		.ptlut_config (ptlut_config),
 		
-		.clk_del (clk_del),
+//		.clk_del (clk_del),
 		
-        .core_addr (ptlut_addr), // memory addresses formed by core
-        .core_val (ptlut_addr_val), // valid flags
-        .core_cs (ptlut_cs), // pre-decoded chip selects
-        .core_pt (bt_pt), // pt values from memory
-        .clk40 (clk40), // core clock 
+//        .core_addr (ptlut_addr), // memory addresses formed by core
+//        .core_val (ptlut_addr_val), // valid flags
+//        .core_cs (ptlut_cs), // pre-decoded chip selects
+//        .core_pt (bt_pt), // pt values from memory
+//        .clk40 (clk40), // core clock 
 
-		.lhc_clk_good (lhc_clk_good)
-	);
+//		.lhc_clk_good (lhc_clk_good)
+//	);
 
 
 	wire [63:0] daq_data;
@@ -1207,108 +1207,108 @@ module emtf_core_top
     wire resync_and_empty;
     wire clk_80;
 
-    mtf7_daq daq
-    (
-        // CSC data
-		 .lct_i    (lct_aligned), //(core_input_lct),
-		 .bc0_err_period (alignment_error), // send alignment error to DAQ as link error
-		 .bc0_err_period_id1 (5'h0),
-		 // RPC data from CPPF
-         .cppf_rxd (cppf_rxd), // rx data, 3 frames x 64 bit, for 7 links
-         .cppf_rx_valid (cppf_rx_valid), // rx data valid flags
-         .fiber_enable (fiber_enable),
-         .cppf_crc_match (cppf_crc_match),
+//    mtf7_daq daq
+//    (
+//        // CSC data
+//		 .lct_i    (lct_aligned), //(core_input_lct),
+//		 .bc0_err_period (alignment_error), // send alignment error to DAQ as link error
+//		 .bc0_err_period_id1 (5'h0),
+//		 // RPC data from CPPF
+//         .cppf_rxd (cppf_rxd), // rx data, 3 frames x 64 bit, for 7 links
+//         .cppf_rx_valid (cppf_rx_valid), // rx data valid flags
+//         .fiber_enable (fiber_enable),
+//         .cppf_crc_match (cppf_crc_match),
     
-         .gem_rxd       (ge11_rxd      ),
-         .gem_rx_valid  (ge11_rx_valid ), 
-         .gem_crc_match (ge11_crc_match),
+//         .gem_rxd       (ge11_rxd      ),
+//         .gem_rx_valid  (ge11_rx_valid ), 
+//         .gem_crc_match (ge11_crc_match),
 
-         // track
-         .bt_pt (bt_pt_tx),
-         .bt_phi (bt_phi_d),
-         .bt_rank (bt_rank_d),
-         .bt_vi (bt_vi_d), 
-         .bt_hi (bt_hi_d), 
-         .bt_ci (bt_ci_d), 
-         .bt_si (bt_si_d),
-         .ptlut_addr (ptlut_addr_d),
-         .nn_pt (nn_pt),
-         .nn_pt_v (nn_pt_v),
-         .nn_d0    (nn_d0),
+//         // track
+//         .bt_pt (bt_pt_tx),
+//         .bt_phi (bt_phi_d),
+//         .bt_rank (bt_rank_d),
+//         .bt_vi (bt_vi_d), 
+//         .bt_hi (bt_hi_d), 
+//         .bt_ci (bt_ci_d), 
+//         .bt_si (bt_si_d),
+//         .ptlut_addr (ptlut_addr_d),
+//         .nn_pt (nn_pt),
+//         .nn_pt_v (nn_pt_v),
+//         .nn_d0    (nn_d0),
 
-         .gmt_phi (gmt_phi_d),
-         .gmt_eta (gmt_eta_d),
-         .gmt_qlt (gmt_qlt_d),
-         .gmt_crg (gmt_crg_d),
+//         .gmt_phi (gmt_phi_d),
+//         .gmt_eta (gmt_eta_d),
+//         .gmt_qlt (gmt_qlt_d),
+//         .gmt_crg (gmt_crg_d),
     
-         .clk (clk40),
+//         .clk (clk40),
     
-         .daq_config (daq_config),
+//         .daq_config (daq_config),
          
-         .l1a_in (ttc_l1a_rx),
-         .ttc_resync (ttc_resync_rx),
-         .ttc_bc0 (ttc_bc0_rx),
-         .ttc_ev_cnt_reset (ttc_ev_cnt_reset_rx),
-         .ttc_or_cnt_reset (ttc_or_cnt_reset_rx),
+//         .l1a_in (ttc_l1a_rx),
+//         .ttc_resync (ttc_resync_rx),
+//         .ttc_bc0 (ttc_bc0_rx),
+//         .ttc_ev_cnt_reset (ttc_ev_cnt_reset_rx),
+//         .ttc_or_cnt_reset (ttc_or_cnt_reset_rx),
          
-         .daq_data (daq_data), 
-         .daq_valid (daq_valid),
-         .daq_first (daq_first),
-         .daq_last (daq_last),
-         .clk_80 (clk_80),
-         .amc13_ready (amc13_ready),
-         .amc13_to_counter (amc13_to_counter),
-         .tts_data (tts_data), 
+//         .daq_data (daq_data), 
+//         .daq_valid (daq_valid),
+//         .daq_first (daq_first),
+//         .daq_last (daq_last),
+//         .clk_80 (clk_80),
+//         .amc13_ready (amc13_ready),
+//         .amc13_to_counter (amc13_to_counter),
+//         .tts_data (tts_data), 
          
-         .sp_addr (5'd1), // slot is unknown so far, needs to arrive from MMC
-         .sp_ts ({endcap, sector}),
-         .reset (daq_reset),
-         .daq_state_cnt(daq_state_cnt),
-         .resync_and_empty (resync_and_empty),
-         .fw_date (fw_date),
-         .af_delays (af_delays),
-         .orbit_count (daq_orbit_count),
-         .bxn_counter (daq_bxn_counter),
-         .l1a_count   (daq_l1a_count),
-         .force_oos (force_oos)
+//         .sp_addr (5'd1), // slot is unknown so far, needs to arrive from MMC
+//         .sp_ts ({endcap, sector}),
+//         .reset (daq_reset),
+//         .daq_state_cnt(daq_state_cnt),
+//         .resync_and_empty (resync_and_empty),
+//         .fw_date (fw_date),
+//         .af_delays (af_delays),
+//         .orbit_count (daq_orbit_count),
+//         .bxn_counter (daq_bxn_counter),
+//         .l1a_count   (daq_l1a_count),
+//         .force_oos (force_oos)
          
-     );
+//     );
     
-     amc13_link_tx amc13_link_tx_
-     (
+//     amc13_link_tx amc13_link_tx_
+//     (
          
-         .mgttx         (daq_tx),
-         .DAQ_0_mmcm_clk (DAQ_0_mmcm_clk),
+//         .mgttx         (daq_tx),
+//         .DAQ_0_mmcm_clk (DAQ_0_mmcm_clk),
 
-         // inputs from receiver in control FPGA
-         .k_rxresetdone (k_rxresetdone),
-         .k_rxnotintable (k_rxnotintable),
-         .k_rxchariscomma (k_rxchariscomma),
-         .k_rxcharisk (k_rxcharisk),
-         .k_rxdata (k_rxdata),
-         .k_rx_clk (k_rx_clk),
+//         // inputs from receiver in control FPGA
+//         .k_rxresetdone (k_rxresetdone),
+//         .k_rxnotintable (k_rxnotintable),
+//         .k_rxchariscomma (k_rxchariscomma),
+//         .k_rxcharisk (k_rxcharisk),
+//         .k_rxdata (k_rxdata),
+//         .k_rx_clk (k_rx_clk),
          
-         // TTS interface (aka FMM)
-         .tts_clk (clk_80),
-//         .tts_clk (clk40), 
-         .tts_data (tts_data), 
-         .resync_and_empty (resync_and_empty),
+//         // TTS interface (aka FMM)
+//         .tts_clk (clk_80),
+////         .tts_clk (clk40), 
+//         .tts_data (tts_data), 
+//         .resync_and_empty (resync_and_empty),
      
-         // DAQ data interface
-         .ev_data_clk (clk_80), // in  ;
-//         .ev_data_clk (clk40), // in  ;
-         .ev_data_valid (daq_valid), // in  ; // used as data write enable
-         .ev_data_header (daq_first), // in  ; // first data word
-         .ev_data_trailer (daq_last), // in  ; // last data word
-         .ev_data (daq_data), // in   (63 : 0);
-         .daq_ready (amc13_ready),
-         .amc13_status_cnt (amc13_status_cnt),
+//         // DAQ data interface
+//         .ev_data_clk (clk_80), // in  ;
+////         .ev_data_clk (clk40), // in  ;
+//         .ev_data_valid (daq_valid), // in  ; // used as data write enable
+//         .ev_data_header (daq_first), // in  ; // first data word
+//         .ev_data_trailer (daq_last), // in  ; // last data word
+//         .ev_data (daq_data), // in   (63 : 0);
+//         .daq_ready (amc13_ready),
+//         .amc13_status_cnt (amc13_status_cnt),
          
-         .gt0_txresetdone_i (amc13_txresetdone),
-         .reset (!m_aresetn),
-         .cnt_reset (daq_reset)
+//         .gt0_txresetdone_i (amc13_txresetdone),
+//         .reset (!m_aresetn),
+//         .cnt_reset (daq_reset)
          
-     );
+//     );
 
     dbg dbg_i
     (

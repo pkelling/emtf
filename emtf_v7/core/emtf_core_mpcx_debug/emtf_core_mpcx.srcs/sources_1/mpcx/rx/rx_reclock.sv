@@ -49,16 +49,30 @@ module rx_reclock
 //    );
     
 
-    FDCE fdce_76[75:0] 
+    mpcx_fifo mpcx_fifo_i 
     (
-        .Q   (rx_data_76[75:0]),
-        .C   (clk80),
-        .CE  (rx_header_80[clk80_sel]), 
-        .CLR (1'b0),
-        .D   (inreg_80[clk80_sel][75:0])
+        .wr_clk (rx_clk),
+        .rd_clk (clk40),
+        .din    (inreg_80[0]),   
+        .wr_en  (rx_header_80[0]), 
+        .rd_en  (1'b1), 
+        .dout   (rx_data_76),  
+        .full   (),  
+        .empty  (), 
+        .valid  ()  
     );
+    
 
-    always @(posedge clk80)
+//    FDCE fdce_76[75:0] 
+//    (
+//        .Q   (rx_data_76[75:0]),
+//        .C   (clk80),
+//        .CE  (rx_header_80[clk80_sel]), 
+//        .CLR (1'b0),
+//        .D   (inreg_80[clk80_sel][75:0])
+//    );
+
+    always @(posedge rx_clk)
     begin
         inreg_80[0][37:0]  = inreg_80[0][75:38];
         inreg_80[0][75:38] = rx_data_38; 
@@ -67,28 +81,28 @@ module rx_reclock
         else rx_header_80[0] = ~rx_header_80[0]; // if normal header, just flip the header flag
     end
     
-    always @(negedge clk80)
-    begin
-        inreg_80[1][37:0]  = inreg_80[1][75:38];
-        inreg_80[1][75:38] = rx_data_38; 
+//    always @(negedge clk80)
+//    begin
+//        inreg_80[1][37:0]  = inreg_80[1][75:38];
+//        inreg_80[1][75:38] = rx_data_38; 
 
-        if (rx_header == 2'b10) rx_header_80[1] = 1'b1; // if special header, reset the header flag
-        else rx_header_80[1] = ~rx_header_80[1]; // if normal header, just flip the header flag
-    end
+//        if (rx_header == 2'b10) rx_header_80[1] = 1'b1; // if special header, reset the header flag
+//        else rx_header_80[1] = ~rx_header_80[1]; // if normal header, just flip the header flag
+//    end
 
-    reg [3:0] err_tst_pat_cnt = 4'h0;
+//    reg [3:0] err_tst_pat_cnt = 4'h0;
 
-    always @(posedge clk40)
-    begin
-        // if error is detected, switch to the other clock edge
-        if (err_tst_pat)
-        begin
-            if (err_tst_pat_cnt == 4'hf) // many errors have happened, time to try another phase
-                clk80_sel = ~clk80_sel;
+//    always @(posedge clk40)
+//    begin
+//        // if error is detected, switch to the other clock edge
+//        if (err_tst_pat)
+//        begin
+//            if (err_tst_pat_cnt == 4'hf) // many errors have happened, time to try another phase
+//                clk80_sel = ~clk80_sel;
 
-            err_tst_pat_cnt++;
-        end 
-    end
+//            err_tst_pat_cnt++;
+//        end 
+//    end
 
 //    always @(posedge clk320)
 //    begin

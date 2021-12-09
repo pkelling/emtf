@@ -22,8 +22,8 @@ module mpcx_deformatter_neighbor
     reg [1:0] crc_rx [8:0];
 	(* async_reg = "TRUE" *) reg [75:0] rx_data_76_r [8:0];
 	integer i, j;
-	reg [4:0] dum5_1 [8:0];
-	reg [4:0] dum5_2 [8:0];
+	reg [3:0] dum4_1 [8:0];
+	reg [3:0] dum4_2 [8:0];
 	reg [18:0] cnt_19 [8:0];
 	reg [1:0] lctvf [8:0];
 	reg [25:0] rate_period;
@@ -33,7 +33,8 @@ module mpcx_deformatter_neighbor
     localparam max_wg = 8'd111;
 
     // all links have identical format, except cscid=1, which we ignore here
-    // cscid=1 data are unpacked into unused dum4, dum5 signals
+    // cscid=1 data are unpacked into unused dum4 signals
+    // and used only to determine that the data is valid and test pattern error should not be detected
   always @(posedge clk40)
   begin
     err_tst_pat = 9'b0;
@@ -83,52 +84,55 @@ module mpcx_deformatter_neighbor
       rate_period++;
   end
 
+    reg [8:0] cscid1_bc0;
+    reg [8:0] cscid1_vpf;
+
   always @(*)
   begin
 
     for (i = 0; i < 9; i++)
-	{
-		crc   [i][1],
-		dum5_1  [i],
-	
-		lct_o [i][1].cid ,
-		lct_o [i][1].ser  ,
-		lct_o [i][1].bx0   ,
-		lct_o [i][1].bc0   ,
-		lctvf [i][1]   ,
-		lct_o [i][1].lr    ,
-		lct_o [i][1].cp  ,
-		lct_o [i][1].ql  ,
-		lct_o [i][1].wg    ,
-		lct_o [i][1].hs    ,
-	
-		crc   [i][0],
-		dum5_2  [i],
-	
-		lct_o [i][0].cid ,
-		lct_o [i][0].ser  ,
-		lct_o [i][0].bx0   ,
-		lct_o [i][0].bc0   ,
-		lctvf [i][0]   ,
-		lct_o [i][0].lr    ,
-		lct_o [i][0].cp  ,
-		lct_o [i][0].ql  ,
-		lct_o [i][0].wg    ,
-		lct_o [i][0].hs    
-	} = rx_data_76_r [i];
-
-	lnk_val[0] = (lctvf[0][1]  || lctvf[0][0]  || lct_o[0][0].bc0);
-	lnk_val[1] = (lctvf[1][1]  || lctvf[1][0]  || lct_o[1][0].bc0);
-	lnk_val[2] = (lctvf[2][1]  || lctvf[2][0]  || lct_o[2][0].bc0);
-	lnk_val[3] = (lctvf[3][1]  || lctvf[3][0]  || lct_o[3][0].bc0);
-	lnk_val[4] = (lctvf[4][1]  || lctvf[4][0]  || lct_o[4][0].bc0);
-	lnk_val[5] = (lctvf[5][1]  || lctvf[5][0]  || lct_o[5][0].bc0);
-	lnk_val[6] = (lctvf[6][1]  || lctvf[6][0]  || lct_o[6][0].bc0);
-	lnk_val[7] = (lctvf[7][1]  || lctvf[7][0]  || lct_o[7][0].bc0);
-	lnk_val[8] = (lctvf[8][1]  || lctvf[8][0]  || lct_o[8][0].bc0);
-
-    for (i = 0; i < 9; i=i+1)
     begin
+        {
+            crc   [i][1],
+            cscid1_bc0[i],
+            dum4_1  [i],
+        
+            lct_o [i][1].cid ,
+            lct_o [i][1].ser  ,
+            lct_o [i][1].bx0   ,
+            lct_o [i][1].bc0   ,
+            lctvf [i][1]   ,
+            lct_o [i][1].lr    ,
+            lct_o [i][1].cp  ,
+            lct_o [i][1].ql  ,
+            lct_o [i][1].wg    ,
+            lct_o [i][1].hs    ,
+        
+            crc   [i][0],
+            cscid1_vpf[i],
+            dum4_2  [i],
+        
+            lct_o [i][0].cid ,
+            lct_o [i][0].ser  ,
+            lct_o [i][0].bx0   ,
+            lct_o [i][0].bc0   ,
+            lctvf [i][0]   ,
+            lct_o [i][0].lr    ,
+            lct_o [i][0].cp  ,
+            lct_o [i][0].ql  ,
+            lct_o [i][0].wg    ,
+            lct_o [i][0].hs    
+        } = rx_data_76_r [i];
+    
+        lnk_val[i] = 
+        (
+            lctvf[i][1]  || 
+            lctvf[i][0]  || 
+            lct_o[i][0].bc0 || 
+            cscid1_bc0[i] || 
+            cscid1_vpf[i]
+        );
+    
         // calculate crc for each link
         // these are just parity bits for half the BX data
         crc_rx[i] = 2'b0;

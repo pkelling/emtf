@@ -31,7 +31,7 @@ module mpcx_deformatter_tf;
     initial
     begin
     
-        for (i = 0; i < 20; i++)
+        for (i = 0; i < 30; i++)
         begin
             #12;
             clk40 = 0;
@@ -42,6 +42,18 @@ module mpcx_deformatter_tf;
             
             if (i == 10)
                 rx_data_76[0][24] = 1; // valid bit
+            else
+            if (i == 12)
+                rx_data_76[0][62] = 1; // valid bit
+            else
+            if (i == 14)
+                rx_data_76[0][25] = 1; // bc0
+            else
+            if (i == 16)
+                rx_data_76[0][36] = 1; // valid bit
+            else
+            if (i == 18)
+                rx_data_76[0][74] = 1; // bc0
             else
                 rx_data_76[0][56:38] = cnt_19_tf; // test pattern
           
