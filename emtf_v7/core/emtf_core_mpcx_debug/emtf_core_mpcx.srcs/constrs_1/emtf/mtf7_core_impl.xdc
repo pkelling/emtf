@@ -199,16 +199,12 @@ set_false_path -from [get_pins {crb/crc_err_flag_comb_reg[*]/C}]
 set_false_path -from [get_pins {crb/err_tst_pat_flag_comb_reg[*]/C}]
 set_false_path -from [get_pins {crb/rx_clk_phase_drift_reg[*]/C}]
 
-set_false_path -from [get_pins {mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/clk80_sel_reg/C}]
-set_false_path -from [get_pins {mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/clk80_sel_reg/C}]
-set_max_delay -reset_path -from [get_pins {mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/fdce_76[*]/C}] -to [get_pins {mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/mpcx_df/rx_data_76_r_reg[*][*]/D}] 6.0 
-set_max_delay -reset_path -from [get_pins {mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/fdce_76[*]/C}] -to [get_pins {mpcx_rx_i/emtf_mpcx_rx_n/mpcx_df_n/rx_data_76_r_reg[*][*]/D}] 6.0
 
-set_bus_skew                 -from [get_pins {mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/ds/drx_reg[*]/C}] -to [get_pins {mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/inreg_80_reg[*][*]/D}] 6.0
-set_max_delay -datapath_only -from [get_pins {mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/ds/drx_reg[*]/C}] -to [get_pins {mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/inreg_80_reg[*][*]/D}] 6.0
+set_max_delay -from [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/inreg_40_reg[*]] -to [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/fdre_i[*]] -datapath_only 2
+set_bus_skew  -from [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/inreg_40_reg[*]] -to [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/fdre_i[*]] 2
 
-set_bus_skew                 -from [get_pins {mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/ds/drx_reg[*]/C}] -to [get_pins {mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/inreg_80_reg[*][*]/D}] 6.0
-set_max_delay -datapath_only -from [get_pins {mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/ds/drx_reg[*]/C}] -to [get_pins {mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/inreg_80_reg[*][*]/D}] 6.0
+set_max_delay -from [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/inreg_40_reg[*]] -to [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/fdre_i[*]] -datapath_only 2
+set_bus_skew  -from [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/inreg_40_reg[*]] -to [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/fdre_i[*]] 2
 
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 set_property BITSTREAM.CONFIG.OVERTEMPPOWERDOWN ENABLE [current_design]

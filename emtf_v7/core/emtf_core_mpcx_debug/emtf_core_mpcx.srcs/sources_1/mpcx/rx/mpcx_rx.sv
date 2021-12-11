@@ -128,8 +128,6 @@ module mpcx_rx
          rx_r = rx_data_38_ds;
     end
 
-    wire [75:0] rx_data_76_preen;
-    assign rx_data_76 = (fiber_enable == 1'b1) ? rx_data_76_preen : 76'b0;
     // clock domain crossing
     rx_reclock rxr
     (
@@ -138,7 +136,8 @@ module mpcx_rx
         .rx_clk         (mgtrx.rxoutclk), // mgt rx clock
         .err_tst_pat    (err_tst_pat),
         
-        .rx_data_76_o (rx_data_76_preen), // at fabric clk domain
+        .rx_data_76_o (rx_data_76), // at fabric clk domain
+        .fiber_enable (fiber_enable),
         .clk40      (clk40), // fabric clk
         .clk80      (clk80), 
         .clk320     (clk320)  // fabric clk x 8

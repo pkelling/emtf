@@ -9,6 +9,7 @@ module rx_reclock_tf;
     wire [75:0] rx_data_76_o; // at fabric clk domain
     wire clk40; // fabric clk
     reg clk320 = 1'b0;  // fabric clk x 8
+    reg [37:0] cnt = 38'h123456;
 
 
     rx_reclock uut 
@@ -21,9 +22,6 @@ module rx_reclock_tf;
         .clk40        (clk40       ), 
         .clk320       (clk320      )
     );
-
-    wire [35:0] inreg_320_0 = uut.inreg_320[37:0];
-    wire [35:0] inreg_320_1 = uut.inreg_320[75:38];
 
     always 
     begin
@@ -48,13 +46,13 @@ module rx_reclock_tf;
     
     always @(posedge rx_clk)
     begin
-        rx_data_38++;
+        if (cnt[0] == 1'b1) rx_data_38 = cnt;
+        else rx_data_38 = 38'h0;
+        cnt++;
     end
 
     initial
     begin
-        uut.clk80_ff = 0;
-        uut.rx_header_320 = 0;
     end
 
 endmodule

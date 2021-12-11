@@ -38,40 +38,40 @@ module emtf_core_top
 	
 	//front panel outputs
 	output [3:0] fp,
-	output resync_tp,
+	output resync_tp
 
 	// pt lut rldram interface
-	inout	[71:0]	pt_dq,
-	output	[3:0]	pt_ba,
-	output	[19:0]	pt_a,
-	output	[7:0]	pt_dk_p_,
-	output	[7:0]	pt_dk_n_,
-	output	[31:0]	pt_cs,
-	output	[3:0]	pt_ref,
-	output	[3:0]	pt_we,
-	output	pt_reset_rldram,
+//	inout	[71:0]	pt_dq,
+//	output	[3:0]	pt_ba,
+//	output	[19:0]	pt_a,
+//	output	[7:0]	pt_dk_p_,
+//	output	[7:0]	pt_dk_n_,
+//	output	[31:0]	pt_cs,
+//	output	[3:0]	pt_ref,
+//	output	[3:0]	pt_we,
+//	output	pt_reset_rldram,
 
-	// pt lut clock chip inteface
-	output pt_leu, 
-	output pt_clku,
-	inout  pt_datau,
-	output pt_goe, 
-	input  pt_ld, 
-	output pt_sync,
+//	// pt lut clock chip inteface
+//	output pt_leu, 
+//	output pt_clku,
+//	inout  pt_datau,
+//	output pt_goe, 
+//	input  pt_ld, 
+//	output pt_sync,
 
-	output ptclk_p_,
-	output ptclk_n_,
-	inout clk_del,
+//	output ptclk_p_,
+//	output ptclk_n_,
+//	inout clk_del,
 	
-    // inputs from amc13 link receiver in control FPGA
-    input k_rxresetdone,
-    input [1:0] k_rxnotintable,
-    input [1:0] k_rxchariscomma,
-    input [1:0] k_rxcharisk,
-    input [15:0] k_rxdata,
-    input k_rx_clk,
+//    // inputs from amc13 link receiver in control FPGA
+//    input k_rxresetdone,
+//    input [1:0] k_rxnotintable,
+//    input [1:0] k_rxchariscomma,
+//    input [1:0] k_rxcharisk,
+//    input [15:0] k_rxdata,
+//    input k_rx_clk,
     
-    input lhc_clk_good
+//    input lhc_clk_good
 	
 );
 
@@ -349,33 +349,33 @@ module emtf_core_top
 	wire [8*5+9-1:0] bc0_err_period_i; // all bc0 period errors combined
 
 
-    spy_mem_axi #
-	(
-		.BA(AP_BEG + 32'h10000)
-	) mpc_spy_mem
-    (
-        .s_axi (m_axi),
-        .s_axo (s_axi[2]),
+//    spy_mem_axi #
+//	(
+//		.BA(AP_BEG + 32'h10000)
+//	) mpc_spy_mem
+//    (
+//        .s_axi (m_axi),
+//        .s_axo (s_axi[2]),
         
-        .clkb (clk_160),
-		.inject (mpc_inject || local_inject), // start recording on mpc_inject command from TTC or local inject command
-        .dout (),
-        .din  (mpc_spy_data_rrr),
+//        .clkb (clk_160),
+//		.inject (mpc_inject || local_inject), // start recording on mpc_inject command from TTC or local inject command
+//        .dout (),
+//        .din  (mpc_spy_data_rrr),
 		
-		.daq_delay (daq_delay),
-		.l1a (ttc_l1a_rx),
-		.rank_valid (bt_rank[0] != 7'h0),
-		.inj_addr (inj_addr),
-		.spy_reset (spy_reset),
-		.spy_l1a (spy_l1a),
-		.spy_valid (spy_valid),
-		.spy_rank (spy_rank),
-		.bc0_err_period_i (bc0_err_period_i),
-		.spy_bc0_err (spy_bc0_err),
-		.mpc_link_use_bc0_ch1 (mpc_link_use_bc0_ch1),
-        .gth_rx_reset (gth_rx_reset)
+//		.daq_delay (daq_delay),
+//		.l1a (ttc_l1a_rx),
+//		.rank_valid (bt_rank[0] != 7'h0),
+//		.inj_addr (inj_addr),
+//		.spy_reset (spy_reset),
+//		.spy_l1a (spy_l1a),
+//		.spy_valid (spy_valid),
+//		.spy_rank (spy_rank),
+//		.bc0_err_period_i (bc0_err_period_i),
+//		.spy_bc0_err (spy_bc0_err),
+//		.mpc_link_use_bc0_ch1 (mpc_link_use_bc0_ch1),
+//        .gth_rx_reset (gth_rx_reset)
 
-    );
+//    );
 
 	//                     [mpc]
 	wire [8*16-1:0] mpc_rxdata [4:0];
@@ -479,19 +479,19 @@ module emtf_core_top
     
 
 
-    // MPC link reset on hard reset logic
-    always @ (posedge clk40)
-    begin
-        if (ttc_hard_reset_rx)
-            mpc_link_hr_cnt = mpc_link_hr_to;
-        else
-        begin
-            if (mpc_link_hr_cnt != 24'h0)
-                mpc_link_hr_cnt--;
-        end
+//    // MPC link reset on hard reset logic
+//    always @ (posedge clk40)
+//    begin
+//        if (ttc_hard_reset_rx)
+//            mpc_link_hr_cnt = mpc_link_hr_to;
+//        else
+//        begin
+//            if (mpc_link_hr_cnt != 24'h0)
+//                mpc_link_hr_cnt--;
+//        end
         
-        mpc_links_reset = mpc_link_hr_cnt == 24'h0 ? 1'b0 : mpc_links_hr_en;
-    end
+//        mpc_links_reset = mpc_link_hr_cnt == 24'h0 ? 1'b0 : mpc_links_hr_en;
+//    end
 	
 
     assign lat_test = rx_valid_tp[0] && lat_test_en; // send latency test pulse if any LCT from station 0 is valid, and latency test enabled
@@ -629,20 +629,20 @@ module emtf_core_top
 
     wire [5:0] rx_clk_phase_drift;
 
-    // this module detects clock phase drift between RX clocks and fabric clock
-    clock_sync_detect clk_sync_det
-    (
-        .rx_clk      ({
-            mpcn_rx[0].rxoutclk, 
-            mpc_rx[4][0].rxoutclk, 
-            mpc_rx[3][0].rxoutclk, 
-            mpc_rx[2][0].rxoutclk, 
-            mpc_rx[1][0].rxoutclk, 
-            mpc_rx[0][0].rxoutclk}), // clocks from MPC RX, 80M
-        .clk_320     (clk320), // fab clk * 8
-        .phase_drift (rx_clk_phase_drift), // flags showing clock phase shift relative to fab clk
-        .flag_reset  (flag_reset)// error flag resets
-    );
+//    // this module detects clock phase drift between RX clocks and fabric clock
+//    clock_sync_detect clk_sync_det
+//    (
+//        .rx_clk      ({
+//            mpcn_rx[0].rxoutclk, 
+//            mpc_rx[4][0].rxoutclk, 
+//            mpc_rx[3][0].rxoutclk, 
+//            mpc_rx[2][0].rxoutclk, 
+//            mpc_rx[1][0].rxoutclk, 
+//            mpc_rx[0][0].rxoutclk}), // clocks from MPC RX, 80M
+//        .clk_320     (clk320), // fab clk * 8
+//        .phase_drift (rx_clk_phase_drift), // flags showing clock phase shift relative to fab clk
+//        .flag_reset  (flag_reset)// error flag resets
+//    );
 
     
     //                                        [link][frame]
@@ -652,45 +652,45 @@ module emtf_core_top
     wire [6:0] cppf_crc_match;
     wire [15:0] ge11_correction_cnt [6:0];
 
-    cppf_links cppfl
-    (
-        .mgtrx (cppf_rx),
+//    cppf_links cppfl
+//    (
+//        .mgtrx (cppf_rx),
         
-        .rxd (cppf_rxd), // rx data, 3 frames x 64 bit, for 7 links
-        .rx_valid (cppf_rx_valid), // rx data valid flags
-        .link_id (cppf_link_id),
-        .crc_match (cppf_crc_match),
-        .clk_40 (clk40), // LHC clk
-        .clk_125 (clk_125),
+//        .rxd (cppf_rxd), // rx data, 3 frames x 64 bit, for 7 links
+//        .rx_valid (cppf_rx_valid), // rx data valid flags
+//        .link_id (cppf_link_id),
+//        .crc_match (cppf_crc_match),
+//        .clk_40 (clk40), // LHC clk
+//        .clk_125 (clk_125),
         
-        .ttc_bc0 (ttc_bc0_rx),
-        .ttc_bc0_delay_cppf (ttc_bc0_delay_cppf),
-        .fiber_enable (fiber_enable[49 +: 7])
-    );
+//        .ttc_bc0 (ttc_bc0_rx),
+//        .ttc_bc0_delay_cppf (ttc_bc0_delay_cppf),
+//        .fiber_enable (fiber_enable[49 +: 7])
+//    );
 
    wire [233:0]      ge11_rxd [6:0]; ///< GEM rx data, 1 frame x 234 bits, for 7 links
    wire [6:0]        ge11_rx_valid;  ///< GEM data valid flags
    wire [6:0]        ge11_crc_match; ///< CRC match flags from GEM links
    wire [4:0] gem_data_del [6:0];
 
-    gem_rx gem_rx_i
-    (
-        .ge11_rx    (ge11_rx), // inputs from serial links
-		.ge11_cl    (ge11_cl), // decoded clusters
-        .ge11_rxd       (ge11_rxd      ),
-        .ge11_rx_valid  (ge11_rx_valid ), 
-        .ge11_crc_match (ge11_crc_match),
-		.link_id    (ge11_link_id), // link IDs
-        .single_hit (gem_single_hit),
-        .ph_single  (gem_ph_single),
-        .th_single  (gem_th_single),
-        .logic_reset      (ge11_link_reset),
-        .ge11_link_status (ge11_link_status),
-        .correction_cnt   (ge11_correction_cnt),
-        .fiber_enable     (fiber_enable [(49+7) +: 7]),
-        .gem_data_del     (gem_data_del),
-        .clk40      (clk40)
-    );  
+//    gem_rx gem_rx_i
+//    (
+//        .ge11_rx    (ge11_rx), // inputs from serial links
+//		.ge11_cl    (ge11_cl), // decoded clusters
+//        .ge11_rxd       (ge11_rxd      ),
+//        .ge11_rx_valid  (ge11_rx_valid ), 
+//        .ge11_crc_match (ge11_crc_match),
+//		.link_id    (ge11_link_id), // link IDs
+//        .single_hit (gem_single_hit),
+//        .ph_single  (gem_ph_single),
+//        .th_single  (gem_th_single),
+//        .logic_reset      (ge11_link_reset),
+//        .ge11_link_status (ge11_link_status),
+//        .correction_cnt   (ge11_correction_cnt),
+//        .fiber_enable     (fiber_enable [(49+7) +: 7]),
+//        .gem_data_del     (gem_data_del),
+//        .clk40      (clk40)
+//    );  
 	
 	wire clk_160_pll;
     reg psen, psen_r, psen_rr;
@@ -749,31 +749,31 @@ module emtf_core_top
 
 
 
-    always @(*)
-    begin
+//    always @(*)
+//    begin
     
-        // split inject data into chambers
-        for (i = 0; i < 54; i = i+1) // chamber loop
-        begin
-            chamber[i/9][i%9] = inject_data[i*48+: 48];
-        end        
+//        // split inject data into chambers
+//        for (i = 0; i < 54; i = i+1) // chamber loop
+//        begin
+//            chamber[i/9][i%9] = inject_data[i*48+: 48];
+//        end        
     
-        for (i = 0; i < 6; i = i+1) // station loop
-        begin
-            for (j = 0; j < 9; j = j+1) // chamber loop
-            begin
-                {stub[i][j][1], stub[i][j][0]} = chamber[i][j];
-                for (k = 0; k < seg_ch; k = k+1) // stub loop
-                begin
-                    inject_lct[i][j][k].ql = stub [i][j][k][23:20];
-                    inject_lct[i][j][k].cp = stub [i][j][k][19:16];
-                    inject_lct[i][j][k].wg = stub [i][j][k][14:8];
-                    inject_lct[i][j][k].hs = stub [i][j][k][7:0];
-                    inject_lct[i][j][k].vf = (inject_lct[i][j][k].ql != 4'b0) ? 1'b1 : 1'b0; // simulate vpf flag for injection
-                end
-            end
-        end
-    end
+//        for (i = 0; i < 6; i = i+1) // station loop
+//        begin
+//            for (j = 0; j < 9; j = j+1) // chamber loop
+//            begin
+//                {stub[i][j][1], stub[i][j][0]} = chamber[i][j];
+//                for (k = 0; k < seg_ch; k = k+1) // stub loop
+//                begin
+//                    inject_lct[i][j][k].ql = stub [i][j][k][23:20];
+//                    inject_lct[i][j][k].cp = stub [i][j][k][19:16];
+//                    inject_lct[i][j][k].wg = stub [i][j][k][14:8];
+//                    inject_lct[i][j][k].hs = stub [i][j][k][7:0];
+//                    inject_lct[i][j][k].vf = (inject_lct[i][j][k].ql != 4'b0) ? 1'b1 : 1'b0; // simulate vpf flag for injection
+//                end
+//            end
+//        end
+//    end
 
 //                      [word][frame]
     reg [63:0] out_word [1:0][3:0];
@@ -882,40 +882,40 @@ module emtf_core_top
 	);
 `endif
 
-    output_delay od
-    (
-        // inputs
-        .bt_phi (bt_phi),
-        .bt_theta (bt_theta),
-        .bt_sign_ph(bt_sign_ph),
-        .bt_rank (bt_rank),
-        .bt_vi (bt_vi), // valid
-        .bt_hi (bt_hi), // bx index
-        .bt_ci (bt_ci), // chamber
-        .bt_si (bt_si), // segment
-        .ptlut_addr (ptlut_addr), // memory addresses formed by core
-        .gmt_phi (gmt_phi),
-        .gmt_eta (gmt_eta),
-        .gmt_qlt (gmt_qlt),
-        .gmt_crg (gmt_crg),
+//    output_delay od
+//    (
+//        // inputs
+//        .bt_phi (bt_phi),
+//        .bt_theta (bt_theta),
+//        .bt_sign_ph(bt_sign_ph),
+//        .bt_rank (bt_rank),
+//        .bt_vi (bt_vi), // valid
+//        .bt_hi (bt_hi), // bx index
+//        .bt_ci (bt_ci), // chamber
+//        .bt_si (bt_si), // segment
+//        .ptlut_addr (ptlut_addr), // memory addresses formed by core
+//        .gmt_phi (gmt_phi),
+//        .gmt_eta (gmt_eta),
+//        .gmt_qlt (gmt_qlt),
+//        .gmt_crg (gmt_crg),
    
-        // delayed outputs
-        .bt_phi_d (bt_phi_d),
-        .bt_theta_d (bt_theta_d),
-        .bt_sign_ph_d(bt_sign_ph_d),
-        .bt_rank_d (bt_rank_d),
-        .bt_vi_d (bt_vi_d), // valid
-        .bt_hi_d (bt_hi_d), // bx index
-        .bt_ci_d (bt_ci_d), // chamber
-        .bt_si_d (bt_si_d), // segment
-        .ptlut_addr_d (ptlut_addr_d), // memory addresses formed by core
-        .gmt_phi_d (gmt_phi_d),
-        .gmt_eta_d (gmt_eta_d),
-        .gmt_qlt_d (gmt_qlt_d),
-        .gmt_crg_d (gmt_crg_d),
+//        // delayed outputs
+//        .bt_phi_d (bt_phi_d),
+//        .bt_theta_d (bt_theta_d),
+//        .bt_sign_ph_d(bt_sign_ph_d),
+//        .bt_rank_d (bt_rank_d),
+//        .bt_vi_d (bt_vi_d), // valid
+//        .bt_hi_d (bt_hi_d), // bx index
+//        .bt_ci_d (bt_ci_d), // chamber
+//        .bt_si_d (bt_si_d), // segment
+//        .ptlut_addr_d (ptlut_addr_d), // memory addresses formed by core
+//        .gmt_phi_d (gmt_phi_d),
+//        .gmt_eta_d (gmt_eta_d),
+//        .gmt_qlt_d (gmt_qlt_d),
+//        .gmt_crg_d (gmt_crg_d),
     
-        .clk (clk40)
-    );
+//        .clk (clk40)
+//    );
 
 
 
@@ -958,22 +958,22 @@ module emtf_core_top
 //        .hard_reset_to (hard_reset_to)
 //    );
 
-    generate
-    for (gi = 0; gi < 2; gi++)
-    begin: gmt_reclock_loop
-        gmt_tx_reclock gmt_tx_rc
-        (
-            .mgttx         (gmt_tx[gi]),
-            .CPPF_7_mmcm_clk (gi == 0 ? CPPF_7_mmcm_clk : CPPF_3_mmcm_clk),
+//    generate
+//    for (gi = 0; gi < 2; gi++)
+//    begin: gmt_reclock_loop
+//        gmt_tx_reclock gmt_tx_rc
+//        (
+//            .mgttx         (gmt_tx[gi]),
+//            .CPPF_7_mmcm_clk (gi == 0 ? CPPF_7_mmcm_clk : CPPF_3_mmcm_clk),
             
-            .txdata        (txdata),
-            .clk_40        (clk40),
-            .ttc_bc0       (ttc_bc0_rx),
-            .bxn_tx_offset (bxn_tx_offset),
-            .link_id       (20'h12345) // need to decide what to do with link id !!!
-        );
-    end
-    endgenerate
+//            .txdata        (txdata),
+//            .clk_40        (clk40),
+//            .ttc_bc0       (ttc_bc0_rx),
+//            .bxn_tx_offset (bxn_tx_offset),
+//            .link_id       (20'h12345) // need to decide what to do with link id !!!
+//        );
+//    end
+//    endgenerate
 
 	`merge_mem_1(link_id_i, link_id, 10*8, 5);
 	wire [8:0] ttc_bc0_delay;
@@ -1322,13 +1322,13 @@ module emtf_core_top
         .jtag_tdo_vector (jtag_tdo_vector)
     );
 
-    dbg_probes_switch dbg_ps
-    (
-        // [station][chamber][segment] station 5 = neighbor sector, all stations
-        .lct_i (lct_aligned),
-		.ge11_cl    (ge11_cl), // decoded clusters
-        .clk40 (clk40)
-    );
+//    dbg_probes_switch dbg_ps
+//    (
+//        // [station][chamber][segment] station 5 = neighbor sector, all stations
+//        .lct_i (lct_aligned),
+//		.ge11_cl    (ge11_cl), // decoded clusters
+//        .clk40 (clk40)
+//    );
 
 
     wire ttc_mpc_inject_rx_w   = ttc_mpc_inject_rx  ; 
