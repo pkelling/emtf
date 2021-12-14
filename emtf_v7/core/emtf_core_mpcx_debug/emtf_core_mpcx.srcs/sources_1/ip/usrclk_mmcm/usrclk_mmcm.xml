@@ -1594,7 +1594,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:f8312774</spirit:value>
+            <spirit:value>9:8c13905a</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1610,11 +1610,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Mon Dec 06 00:01:46 UTC 2021</spirit:value>
+            <spirit:value>Mon Dec 13 13:28:29 UTC 2021</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:c5897599</spirit:value>
+            <spirit:value>9:ac37dbac</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1629,11 +1629,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Mon Dec 06 00:01:46 UTC 2021</spirit:value>
+            <spirit:value>Mon Dec 13 13:28:29 UTC 2021</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:c5897599</spirit:value>
+            <spirit:value>9:ac37dbac</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1644,7 +1644,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:c5897599</spirit:value>
+            <spirit:value>9:ac37dbac</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1659,11 +1659,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Mon Dec 06 00:01:46 UTC 2021</spirit:value>
+            <spirit:value>Mon Dec 13 13:28:29 UTC 2021</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:c5897599</spirit:value>
+            <spirit:value>9:ac37dbac</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1678,11 +1678,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Mon Dec 06 00:01:46 UTC 2021</spirit:value>
+            <spirit:value>Mon Dec 13 13:28:29 UTC 2021</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:53a39da0</spirit:value>
+            <spirit:value>9:a4811f36</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1697,11 +1697,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Mon Dec 06 00:01:46 UTC 2021</spirit:value>
+            <spirit:value>Mon Dec 13 13:28:29 UTC 2021</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:53a39da0</spirit:value>
+            <spirit:value>9:a4811f36</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1715,11 +1715,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Mon Dec 06 00:01:46 UTC 2021</spirit:value>
+            <spirit:value>Mon Dec 13 13:28:30 UTC 2021</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:c5897599</spirit:value>
+            <spirit:value>9:ac37dbac</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1733,11 +1733,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Mon Dec 06 00:01:46 UTC 2021</spirit:value>
+            <spirit:value>Mon Dec 13 13:28:30 UTC 2021</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:c5897599</spirit:value>
+            <spirit:value>9:ac37dbac</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1751,11 +1751,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Mon Dec 06 00:02:15 UTC 2021</spirit:value>
+            <spirit:value>Mon Dec 13 13:29:01 UTC 2021</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:c5897599</spirit:value>
+            <spirit:value>9:ac37dbac</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -3466,7 +3466,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="STRING">
         <spirit:name>C_MMCM_CLKOUT0_USE_FINE_PS</spirit:name>
-        <spirit:value spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_MMCM_CLKOUT0_USE_FINE_PS" spirit:order="331">FALSE</spirit:value>
+        <spirit:value spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_MMCM_CLKOUT0_USE_FINE_PS" spirit:order="331">TRUE</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="STRING">
         <spirit:name>C_MMCM_CLKOUT1_USE_FINE_PS</spirit:name>
@@ -4612,7 +4612,7 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>CLK_OUT1_USE_FINE_PS_GUI</spirit:name>
-      <spirit:value spirit:format="bool" spirit:resolve="user" spirit:id="PARAM_VALUE.CLK_OUT1_USE_FINE_PS_GUI" spirit:order="36" spirit:configGroups="0 NoDisplay">false</spirit:value>
+      <spirit:value spirit:format="bool" spirit:resolve="user" spirit:id="PARAM_VALUE.CLK_OUT1_USE_FINE_PS_GUI" spirit:order="36" spirit:configGroups="0 NoDisplay">true</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>CLK_OUT2_USE_FINE_PS_GUI</spirit:name>
@@ -5060,7 +5060,7 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>MMCM_CLKOUT0_USE_FINE_PS</spirit:name>
-      <spirit:value spirit:format="bool" spirit:resolve="user" spirit:id="PARAM_VALUE.MMCM_CLKOUT0_USE_FINE_PS" spirit:order="140" spirit:configGroups="0 NoDisplay">false</spirit:value>
+      <spirit:value spirit:format="bool" spirit:resolve="user" spirit:id="PARAM_VALUE.MMCM_CLKOUT0_USE_FINE_PS" spirit:order="140" spirit:configGroups="0 NoDisplay">true</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>MMCM_CLKOUT1_DIVIDE</spirit:name>
@@ -5501,6 +5501,7 @@
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.CLKOUT6_REQUESTED_PHASE" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.CLKOUT6_USED" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.CLK_OUT1_PORT" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.CLK_OUT1_USE_FINE_PS_GUI" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.CLK_OUT2_PORT" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.CLK_OUT2_USE_FINE_PS_GUI" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.CLK_OUT3_PORT" xilinx:valueSource="user"/>
@@ -5512,6 +5513,7 @@
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.MMCM_CLKIN1_PERIOD" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.MMCM_CLKIN2_PERIOD" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.MMCM_CLKOUT0_DIVIDE_F" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.MMCM_CLKOUT0_USE_FINE_PS" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.MMCM_CLKOUT1_DIVIDE" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.MMCM_CLKOUT1_USE_FINE_PS" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.MMCM_CLKOUT2_DIVIDE" xilinx:valueSource="user"/>

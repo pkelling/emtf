@@ -8,6 +8,7 @@ module mpcx_rx
     input clk40, // clk40 and clk320 must have relative phase=0
     input clk80, 
     input clk320, // clk320 generated from or together with clk40 
+    input clk160,
     input pcie_clk
 );
 
@@ -94,7 +95,7 @@ module mpcx_rx
 	(* mark_debug *) wire err_tst_pat_local_w = err_tst_pat_local;
 	reg rx_header_phase;
 	reg header_phase_err;
-	wire header_phase_err_w = header_phase_err;
+	(* mark_debug *) wire header_phase_err_w = header_phase_err;
 
     always @(posedge mgtrx.rxoutclk)
     begin
@@ -107,15 +108,10 @@ module mpcx_rx
         end
         else rx_header_phase = ~rx_header_phase; // if normal header, just flip the header flag
 
-
-        
-
          // packaging in TX
          // {19'h0, cnt, 28'h0, mpc_id, i[3:0]}
          if (rx_header_phase)
          begin
-
-
             // check and lock test counter
             if (cnt_19 != rx_rr[18:0]) err_tst_pat_local = 1'b1; 
             else err_tst_pat_local = 1'b0;
@@ -140,6 +136,7 @@ module mpcx_rx
         .fiber_enable (fiber_enable),
         .clk40      (clk40), // fabric clk
         .clk80      (clk80), 
+        .clk160     (clk160),
         .clk320     (clk320)  // fabric clk x 8
     );
     

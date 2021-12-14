@@ -1,10 +1,10 @@
 // Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
-// Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
-// Date        : Fri Sep 17 14:26:57 2021
-// Host        : endcap-tf1.phys.ufl.edu running 64-bit CentOS Linux release 7.8.2003 (Core)
+// Tool Version: Vivado v.2020.1.1 (lin64) Build 2960000 Wed Aug  5 22:57:21 MDT 2020
+// Date        : Sun Dec 12 13:09:29 2021
+// Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
 // Command     : write_verilog -force -mode synth_stub
-//               /home/madorsky/github/vivado/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/debug_bridge_0/bd_0/ip/ip_0/bd_54be_bsip_0_stub.v
+//               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx_debug/emtf_core_mpcx.srcs/sources_1/ip/debug_bridge_0/bd_0/ip/ip_0/bd_54be_bsip_0_stub.v
 // Design      : bd_54be_bsip_0
 // Purpose     : Stub declaration of top-level module interface
 // Device      : xc7vx690tffg1927-2

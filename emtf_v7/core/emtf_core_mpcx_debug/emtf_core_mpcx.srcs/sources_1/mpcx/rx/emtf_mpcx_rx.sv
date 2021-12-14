@@ -46,7 +46,8 @@ module emtf_mpcx_rx #(parameter NEIGHBOR = "FALSE")
 	input clk40,
 	input clk80,
 	input clk320,
-    input pcie_clk
+    input pcie_clk,
+    input clk160
 );
 
     localparam nlinks =  NEIGHBOR == "TRUE" ? 9 : 8; // 9 links are coming from NEIGHBOR sector
@@ -74,6 +75,7 @@ module emtf_mpcx_rx #(parameter NEIGHBOR = "FALSE")
                 .clk40         (clk40), // clk40, 80, and 320 must have relative phase=0
                 .clk80         (clk80), 
                 .clk320        (clk320),
+                .clk160        (clk160),
                 .pcie_clk      (pcie_clk)
             );
         end

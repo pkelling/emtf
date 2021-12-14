@@ -1,7 +1,7 @@
 -- Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
--- Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
--- Date        : Sun Dec  5 19:02:15 2021
+-- Tool Version: Vivado v.2020.1.1 (lin64) Build 2960000 Wed Aug  5 22:57:21 MDT 2020
+-- Date        : Mon Dec 13 08:29:01 2021
 -- Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
 -- Command     : write_vhdl -force -mode synth_stub
 --               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx_debug/emtf_core_mpcx.srcs/sources_1/ip/usrclk_mmcm/usrclk_mmcm_stub.vhdl

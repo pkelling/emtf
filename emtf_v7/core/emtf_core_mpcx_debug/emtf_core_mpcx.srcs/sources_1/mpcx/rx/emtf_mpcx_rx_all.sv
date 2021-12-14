@@ -65,6 +65,7 @@ module emtf_mpcx_rx_all
 
 	input  clk40,
     input  pcie_clk,
+    input  clk160,
 	output clk320
 );
 
@@ -101,6 +102,7 @@ module emtf_mpcx_rx_all
                 .clk40               (clk40                   ),
                 .clk80               (clk80                   ),
                 .clk320              (clk320                  ),
+                .clk160              (clk160                  ),
                 .pcie_clk            (pcie_clk                )
             );
         end
@@ -128,7 +130,8 @@ module emtf_mpcx_rx_all
         .clk40               (clk40              ),
         .clk80               (clk80              ),
         .clk320              (clk320             ),
-        .pcie_clk            (pcie_clk           )
+        .pcie_clk            (pcie_clk           ),
+        .clk160              (clk160             )
     );
 
     mpcx_mmcm mpcx_mmcm_i

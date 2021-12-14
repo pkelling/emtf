@@ -141,7 +141,7 @@ wire clk_in2_usrclk_mmcm;
     .CLKOUT0_DIVIDE_F     (5.000),
     .CLKOUT0_PHASE        (0.000),
     .CLKOUT0_DUTY_CYCLE   (0.500),
-    .CLKOUT0_USE_FINE_PS  ("FALSE"),
+    .CLKOUT0_USE_FINE_PS  ("TRUE"),
     .CLKOUT1_DIVIDE       (20),
     .CLKOUT1_PHASE        (0.000),
     .CLKOUT1_DUTY_CYCLE   (0.500),

@@ -74,11 +74,11 @@ set_property -dict {LOC BA16 IOSTANDARD LVCMOS12} [get_ports ttc_hard_reset]
 set_property -dict {LOC BC14 IOSTANDARD LVCMOS12} [get_ports ttc_ev_cnt_reset]
 set_property -dict {LOC AY16 IOSTANDARD LVCMOS12} [get_ports ttc_or_cnt_reset]
 
-
-set_property -dict {LOC AM27 IOSTANDARD LVCMOS18} [get_ports {fp[0]}]
-set_property -dict {LOC AK28 IOSTANDARD LVCMOS18} [get_ports {fp[1]}]
-set_property -dict {LOC AM28 IOSTANDARD LVCMOS18} [get_ports {fp[2]}]
-set_property -dict {LOC AK27 IOSTANDARD LVCMOS18} [get_ports {fp[3]}]
+# setting IOB=TRUE will only work when registered signals are connected to FP signals
+set_property -dict {LOC AM27 IOSTANDARD LVCMOS18 IOB TRUE} [get_ports {fp[0]}]
+set_property -dict {LOC AK28 IOSTANDARD LVCMOS18 IOB TRUE} [get_ports {fp[1]}]
+set_property -dict {LOC AM28 IOSTANDARD LVCMOS18 IOB TRUE} [get_ports {fp[2]}]
+set_property -dict {LOC AK27 IOSTANDARD LVCMOS18 IOB TRUE} [get_ports {fp[3]}]
 
 set_property -dict {LOC AT30 IOSTANDARD LVCMOS18} [get_ports resync_tp]
 set_false_path -to [get_ports resync_tp]
@@ -200,11 +200,12 @@ set_false_path -from [get_pins {crb/err_tst_pat_flag_comb_reg[*]/C}]
 set_false_path -from [get_pins {crb/rx_clk_phase_drift_reg[*]/C}]
 
 
-set_max_delay -from [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/inreg_40_reg[*]] -to [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/fdre_i[*]] -datapath_only 1.2
-set_bus_skew  -from [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/inreg_40_reg[*]] -to [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/fdre_i[*]] 1.2
+set_max_delay -from [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/fdre_i[*]] -to [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/fdre40_i[*]] -datapath_only 1.2
+#set_bus_skew  -from [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/inreg_40_reg[*]] -to [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/fdre_i[*]] 1.2
 
-set_max_delay -from [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/inreg_40_reg[*]] -to [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/fdre_i[*]] -datapath_only 1.2
-set_bus_skew  -from [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/inreg_40_reg[*]] -to [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/fdre_i[*]] 1.2
+set_max_delay -from [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/fdre_i[*]] -to [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/fdre40_i[*]] -datapath_only 1.2
+#set_bus_skew  -from [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/inreg_40_reg[*]] -to [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/fdre_i[*]] 1.2
+
 
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 set_property BITSTREAM.CONFIG.OVERTEMPPOWERDOWN ENABLE [current_design]

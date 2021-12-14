@@ -624,6 +624,7 @@ module emtf_core_top
 	    .link_id_n           (link_id_na         ),
         .clk40               (clk40              ),
         .pcie_clk            (pcie_clk_buf       ),
+        .clk160              (clk_160            ),
         .clk320              (clk320             )
     );
 
@@ -1097,13 +1098,40 @@ module emtf_core_top
 
     // front panel outputs, [0] is on top of the connector
 	//assign fp[0] = txcharisk_0[1];// ttc_bx0_rx
-	wire [1:0] mpc_rx_rxoutclk;
-	BUFG fp_bufg0 (.I(mpc_rx[0][0].rxoutclk), .O(mpc_rx_rxoutclk[0]));
-	BUFG fp_bufg1 (.I(mpc_rx[0][1].rxoutclk), .O(mpc_rx_rxoutclk[1]));
-    assign fp[0] = clk40_inb;
-	assign fp[1] = clk40;
-	assign fp[2] = mpc_rx_rxoutclk[0];
-	assign fp[3] = mpc_rx_rxoutclk[1];
+	wire mpc_rx_rxoutclk;
+	BUFG fp_bufg0 (.I(mpcn_rx[0].rxoutclk), .O(mpc_rx_rxoutclk));
+	
+	reg clk40_inb_ff, clk40_ff, clk_160_ff, mpc_rx_ff;
+	reg clk40_inb_pin, clk40_pin, clk_160_pin, mpc_rx_pin;
+	always @(posedge clk40_inb      )
+	begin 
+	   clk40_inb_pin = clk40_inb_ff;
+	   clk40_inb_ff = ~clk40_inb_ff;
+	end
+	
+	always @(posedge clk40          ) 
+	begin 
+	   clk40_pin     = clk40_ff;
+	   clk40_ff     = ~clk40_ff;
+	end
+	
+	always @(posedge clk_160        ) 
+	begin 
+	   clk_160_pin   = clk_160_ff;
+	   clk_160_ff   = ~clk_160_ff;
+	end
+	
+	always @(posedge mpc_rx_rxoutclk) 
+	begin 
+	   mpc_rx_pin    = mpc_rx_ff;
+	   mpc_rx_ff    = ~mpc_rx_ff;
+	end
+	
+	
+    assign fp[0] = clk40_inb_pin;
+	assign fp[1] = clk40_pin;
+	assign fp[2] = clk_160_pin;
+	assign fp[3] = mpc_rx_pin;
 	assign resync_tp = ttc_resync_rx;
 
 	(* mark_debug *) wire ttc_l1a_w = ttc_l1a_rx;

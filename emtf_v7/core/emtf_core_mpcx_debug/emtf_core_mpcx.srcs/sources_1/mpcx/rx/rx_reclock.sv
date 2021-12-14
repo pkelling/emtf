@@ -9,34 +9,124 @@ module rx_reclock
     input fiber_enable,
     input clk40, // fabric clk
     input clk80, // fabric clk x 2
+    input clk160,
     input clk320  // fabric clk x 8
 );
 
     reg [75:0] inreg_80;
-    (* async_reg = "TRUE" *) reg [75:0] inreg_40;
-    (* async_reg = "TRUE" *) reg rx_header_80 = 1'b0;
-    (* async_reg = "TRUE" *) reg [75:0] rx_data_76;
-    assign rx_data_76_o = rx_data_76;
+    reg [75:0] inreg_40;
+    reg rx_header_80 = 1'b0;
+    reg [75:0] rx_data_76;
+    reg valid_160;
+//    assign rx_data_76_o = rx_data_76;
     
     (* mark_debug *) wire [75:0] inreg_80_w = inreg_80;
     (* mark_debug *) wire [37:0] rx_data_38_w = rx_data_38;
-    (* mark_debug *) wire [75:0] rx_data_76_w = rx_data_76;
+//    (* mark_debug *) wire [75:0] rx_data_76_w = rx_data_76;
+    (* mark_debug *) wire [75:0] rx_data_76_ow = rx_data_76_o;
     (* mark_debug *) wire [1:0] rx_header_w = rx_header;
     (* mark_debug *) wire rx_header_80_w = rx_header_80;
+    (* mark_debug *) wire valid_160_w = valid_160;
 
     (* async_reg = "TRUE" *) reg [8:0] rx_header_80_r = 9'h0;
+//    (* mark_debug *) wire dest_req, src_rcv;
     
+//    xpm_cdc_handshake
+//    #(
+//        .DEST_EXT_HSK (0),
+//        .DEST_SYNC_FF (2),
+//        .INIT_SYNC_FF (1),
+//        .SIM_ASSERT_CHK (1),
+//        .SRC_SYNC_FF  (2),
+//        .WIDTH (76) 
+//    )
+//    cdc
+//    (
+//        .src_in   (inreg_40),
+//        .src_send (rx_header_80),
+//        .src_clk  (rx_clk),
+//        .dest_ack (),
+        
+//        .dest_clk (clk160),
+//        .dest_out (rx_data_76),
+//        .src_rcv  (src_rcv),
+//        .dest_req (dest_req)
+//    );
+    
+//    FDRE fdre_i[75:0]
+//    (
+//        .C  (clk160),
+//        .CE (dest_req),
+//        .D  (rx_data_76),
+//        .R  (fiber_enable == 1'b0),
+//        .Q  (rx_data_76_o)
+//    );
+    
+    wire valid_rx = rx_header_80_r[4:3] == 2'b01;
+    
+    (* async_reg = "TRUE" *)
+    FDRE fdre40_i[75:0]
+    (
+        .C  (clk40),
+        .CE (1'b1),
+        .D  (rx_data_76),
+        .R  (1'b0),
+        .Q  (rx_data_76_o)
+    );
+
+    (* async_reg = "TRUE" *)
     FDRE fdre_i[75:0]
     (
-        .C  (clk320),
-        .CE (rx_header_80_r[8:7] == 2'b01),
+        .C  (clk160),
+        .CE (valid_rx),
         .D  (inreg_40),
         .R  (fiber_enable == 1'b0),
         .Q  (rx_data_76)
     );
     
-    always @(posedge clk320)
+    (* async_reg = "TRUE" *)
+    FDRE fdre_header
+    (
+        .C  (clk160),
+        .CE (1'b1),
+        .D  (valid_rx),
+        .R  (1'b0),
+        .Q  (valid_160)
+    );
+
+    reg [18:0] cnt_19_160, cnt_19_40;
+    reg err_tst_pat_160, err_tst_pat_40;
+    (* mark_debug *) wire err_tst_pat_160_w = err_tst_pat_160;
+    (* mark_debug *) wire err_tst_pat_40_w = err_tst_pat_40;
+    
+    always @(posedge clk40)
     begin
+         // packaging in TX
+         // {19'h0, cnt, 28'h0, mpc_id, i[3:0]}
+        // check and lock test counter
+        if (cnt_19_40 != rx_data_76_o[56:38]) err_tst_pat_40 = 1'b1; 
+        else err_tst_pat_40 = 1'b0;
+        cnt_19_40 = rx_data_76_o[56:38];
+
+        cnt_19_40++;
+
+    end
+
+    always @(posedge clk160)
+    begin
+         // packaging in TX
+         // {19'h0, cnt, 28'h0, mpc_id, i[3:0]}
+//         if (rx_header_80_r[4:3] == 2'b01)
+         if (valid_160)
+         begin
+            // check and lock test counter
+            if (cnt_19_160 != rx_data_76[56:38]) err_tst_pat_160 = 1'b1; 
+            else err_tst_pat_160 = 1'b0;
+            cnt_19_160 = rx_data_76[56:38];
+    
+            cnt_19_160++;
+         end
+
         rx_header_80_r = {rx_header_80_r[7:0], rx_header_80};
     end
     
