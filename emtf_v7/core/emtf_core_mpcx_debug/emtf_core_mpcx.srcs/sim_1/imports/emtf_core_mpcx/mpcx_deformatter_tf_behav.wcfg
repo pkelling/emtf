@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="10353500fs"></ZoomStartTime>
-      <ZoomEndTime time="11129501fs"></ZoomEndTime>
-      <Cursor1Time time="10414369fs"></Cursor1Time>
+      <ZoomStartTime time="19377536fs"></ZoomStartTime>
+      <ZoomEndTime time="19915311fs"></ZoomEndTime>
+      <Cursor1Time time="19792269fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="247"></NameColumnWidth>
-      <ValueColumnWidth column_width="100"></ValueColumnWidth>
+      <ValueColumnWidth column_width="84"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="15" />
+   <WVObjectSize size="18" />
    <wave_markers>
       <marker label="" time="6649681" />
       <marker label="" time="204747" />
@@ -39,17 +39,9 @@
       <obj_property name="ElementShortName">clk160</obj_property>
       <obj_property name="ObjectShortName">clk160</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/rx_reclock_tf/uut/rx_data_76">
-      <obj_property name="ElementShortName">rx_data_76[75:0]</obj_property>
-      <obj_property name="ObjectShortName">rx_data_76[75:0]</obj_property>
-   </wvobject>
    <wvobject type="array" fp_name="/rx_reclock_tf/rx_data_76_o">
       <obj_property name="ElementShortName">rx_data_76_o[75:0]</obj_property>
       <obj_property name="ObjectShortName">rx_data_76_o[75:0]</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/rx_reclock_tf/clk40">
-      <obj_property name="ElementShortName">clk40</obj_property>
-      <obj_property name="ObjectShortName">clk40</obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/rx_reclock_tf/uut/clk320">
       <obj_property name="ElementShortName">clk320</obj_property>
@@ -67,24 +59,47 @@
       <obj_property name="ElementShortName">rx_header[1:0]</obj_property>
       <obj_property name="ObjectShortName">rx_header[1:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/rx_reclock_tf/uut/rx_data_76">
-      <obj_property name="ElementShortName">rx_data_76[75:0]</obj_property>
-      <obj_property name="ObjectShortName">rx_data_76[75:0]</obj_property>
+   <wvobject type="array" fp_name="/rx_reclock_tf/uut/inreg_40">
+      <obj_property name="ElementShortName">inreg_40[3:0][75:0]</obj_property>
+      <obj_property name="ObjectShortName">inreg_40[3:0][75:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/rx_reclock_tf/uut/dest_req">
-      <obj_property name="ElementShortName">dest_req</obj_property>
-      <obj_property name="ObjectShortName">dest_req</obj_property>
+   <wvobject type="logic" fp_name="/rx_reclock_tf/clk40">
+      <obj_property name="ElementShortName">clk40</obj_property>
+      <obj_property name="ObjectShortName">clk40</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/rx_reclock_tf/uut/dest_ack">
-      <obj_property name="ElementShortName">dest_ack</obj_property>
-      <obj_property name="ObjectShortName">dest_ack</obj_property>
+   <wvobject type="array" fp_name="/rx_reclock_tf/uut/rx_header_r">
+      <obj_property name="ElementShortName">rx_header_r[10:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_header_r[10:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/rx_reclock_tf/uut/src_rcv">
-      <obj_property name="ElementShortName">src_rcv</obj_property>
-      <obj_property name="ObjectShortName">src_rcv</obj_property>
+   <wvobject type="logic" fp_name="/rx_reclock_tf/uut/clk40_ff">
+      <obj_property name="ElementShortName">clk40_ff</obj_property>
+      <obj_property name="ObjectShortName">clk40_ff</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/rx_reclock_tf/uut/src_send_w">
-      <obj_property name="ElementShortName">src_send_w</obj_property>
-      <obj_property name="ObjectShortName">src_send_w</obj_property>
+   <wvobject type="array" fp_name="/rx_reclock_tf/uut/rx_header_40">
+      <obj_property name="ElementShortName">rx_header_40[10:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_header_40[10:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rx_reclock_tf/uut/del_cnt_max">
+      <obj_property name="ElementShortName">del_cnt_max[2:0]</obj_property>
+      <obj_property name="ObjectShortName">del_cnt_max[2:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rx_reclock_tf/uut/del_filter_cnt">
+      <obj_property name="ElementShortName">del_filter_cnt[2:0]</obj_property>
+      <obj_property name="ObjectShortName">del_filter_cnt[2:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rx_reclock_tf/uut/del_cnt">
+      <obj_property name="ElementShortName">del_cnt[3:0][2:0]</obj_property>
+      <obj_property name="ObjectShortName">del_cnt[3:0][2:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rx_reclock_tf/uut/del_sel">
+      <obj_property name="ElementShortName">del_sel[1:0]</obj_property>
+      <obj_property name="ObjectShortName">del_sel[1:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rx_reclock_tf/uut/del_sel_n">
+      <obj_property name="ElementShortName">del_sel_n[1:0]</obj_property>
+      <obj_property name="ObjectShortName">del_sel_n[1:0]</obj_property>
    </wvobject>
 </wave_config>

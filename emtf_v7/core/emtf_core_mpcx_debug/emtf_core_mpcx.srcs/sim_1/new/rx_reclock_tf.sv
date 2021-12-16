@@ -1,5 +1,7 @@
 `timescale 1ns / 1ps
 
+`define RECLOCK_SIMULATION 1
+
 module rx_reclock_tf;
 
     reg [37:0] rx_data_38 = 38'h0; // at mgt clk domain

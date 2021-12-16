@@ -14,73 +14,101 @@ module rx_reclock
 );
 
 
+    `ifdef RECLOCK_SIMULATION
+        localparam DLCBW = 3;
+    `else
+        localparam DLCBW = 16;
+    `endif
+
     reg [75:0] inreg_80;
-    reg [75:0] inreg_40;
+    reg [75:0] inreg_40 [3:0];
     reg rx_header_80 = 1'b0;
-    reg [75:0] rx_data_76;
-    reg valid_160;
-//    assign rx_data_76_o = rx_data_76;
+    reg [1:0] del_sel = 0, del_sel_r, del_sel_n;
+    reg clk40_ff = 0;
+    (* async_reg = "TRUE" *) reg [10:0] rx_header_r, rx_header_40;
+    reg [DLCBW-1:0] del_cnt [3:0] = '{0,0,0,0};
+    reg [DLCBW-1:0] del_filter_cnt = 0, del_cnt_max = 0;
+    
     
     (* mark_debug *) wire [75:0] inreg_80_w = inreg_80;
     (* mark_debug *) wire [37:0] rx_data_38_w = rx_data_38;
-    (* mark_debug *) wire [75:0] rx_data_76_w = rx_data_76;
     (* mark_debug *) wire [75:0] rx_data_76_ow = rx_data_76_o;
     (* mark_debug *) wire [1:0] rx_header_w = rx_header;
     (* mark_debug *) wire rx_header_80_w = rx_header_80;
-    (* mark_debug *) wire valid_160_w = valid_160;
+    (* mark_debug *) wire [10:0] rx_header_rw = rx_header_r;
+    (* mark_debug *) wire [10:0] rx_header_40_w = rx_header_40;
+    (* mark_debug *) wire [1:0] del_sel_w = del_sel;
+    (* mark_debug *) wire err_tst_pat_w = err_tst_pat;
 
-    (* mark_debug *) wire dest_req, src_rcv, dest_ack; 
-    reg src_send;
-    (* mark_debug *) wire src_send_w = src_send;
-    
-    xpm_cdc_handshake
-    #(
-        .DEST_EXT_HSK (0),
-        .DEST_SYNC_FF (2),
-        .INIT_SYNC_FF (1),
-        .SIM_ASSERT_CHK (1),
-        .SRC_SYNC_FF  (2),
-        .WIDTH (76) 
-    )
-    cdc
-    (
-        .src_in   (inreg_40),
-        .src_send (src_send),
-        .src_clk  (rx_clk),
-        .dest_ack (dest_ack),
-        
-        .dest_clk (clk320),
-        .dest_out (rx_data_76),
-        .src_rcv  (src_rcv),
-        .dest_req (dest_req)
-    );
-    
+    (* async_reg = "TRUE" *)
     FDRE fdre_i[75:0]
     (
         .C  (clk40),
         .CE (1'b1),
-        .D  (rx_data_76),
+        .D  (inreg_40[del_sel]),
         .R  (fiber_enable == 1'b0),
         .Q  (rx_data_76_o)
     );
     
-    FDRE fdre_req
-    (
-        .C  (clk40),
-        .CE (1'b1),
-        .D  (dest_req),
-        .R  (1'b0),
-        .Q  (dest_ack)
-    );
+    always @(posedge clk40)
+    begin 
+        del_sel_r = del_sel;
+    
+        // primitive delay value filter, to prevent frequent switching
+        // the problem happens only when switching between 3 and 0, because one data word is dropped or duplicated
+        if (del_filter_cnt == {{(DLCBW-1){1'b1}}, 1'b0}) // count to max count -1 to prevent the delay counters from resetting to 0
+        begin
+            // find which delay was detected the most
+            del_cnt_max = del_cnt[0];
+            del_sel = 2'h0;
+            if (del_cnt[1] > del_cnt_max)
+            begin
+                del_cnt_max = del_cnt[1];
+                del_sel = 2'h1;
+            end
+            else if (del_cnt[2] > del_cnt_max)
+            begin
+                del_cnt_max = del_cnt[2];
+                del_sel = 2'h2;
+            end
+            else if (del_cnt[3] > del_cnt_max)
+            begin
+                del_cnt_max = del_cnt[3];
+                del_sel = 2'h3;
+            end
+            del_cnt [3:0] = '{0,0,0,0}; // reset counters
+            del_filter_cnt = 0; // filter period counter
+        end
+        
+        del_cnt[del_sel_n]++; // increment delay counter for the detected delay
+        del_filter_cnt++; // filter period counter
+    
+        if      (rx_header_40[ 3:2] == 2'b01) del_sel_n = 2'h2; // 2
+        else if (rx_header_40[ 4:3] == 2'b01) del_sel_n = 2'h2; // 2
+        else if (rx_header_40[ 5:4] == 2'b01) del_sel_n = 2'h3; // 3
+        else if (rx_header_40[ 6:5] == 2'b01) del_sel_n = 2'h3; // 3
+        else if (rx_header_40[ 7:6] == 2'b01) del_sel_n = 2'h0; // 0
+        else if (rx_header_40[ 8:7] == 2'b01) del_sel_n = 2'h0; // 0
+        else if (rx_header_40[ 9:8] == 2'b01) del_sel_n = 2'h1; // 1
+        else if (rx_header_40[10:9] == 2'b01) del_sel_n = 2'h1; // 1
+        rx_header_40 = rx_header_r;
+        
+
+        clk40_ff = ~clk40_ff;
+    end
+    
+    always @(posedge clk320)
+    begin
+        
+        #1 rx_header_r = {rx_header_r[9:0], rx_header_80};
+    end
 
     always @(posedge rx_clk)
     begin
         // inreg_40 is updated every 25 ns
-        if (rx_header_80 == 1'b1) inreg_40 = inreg_80;
+        inreg_40[2] = inreg_40[0];
+        if (rx_header_80 == 1'b1) inreg_40[0] = inreg_80;
         
-        if (rx_header_80 & (!src_rcv)) src_send = 1'b1;
-        else if (src_rcv) src_send = 1'b0;
-    
         // inreg_80 is updated every 12.5 ns
         inreg_80[37:0]  = inreg_80[75:38];
         inreg_80[75:38] = rx_data_38; 
@@ -88,80 +116,12 @@ module rx_reclock
         if (rx_header == 2'b10) rx_header_80 = 1'b1; // if special header, reset the header flag
         else rx_header_80 = ~rx_header_80; // if normal header, just flip the header flag
     end
+
+    always @(negedge rx_clk)
+    begin
+        inreg_40[3] = inreg_40[1];
+        inreg_40[1] = inreg_40[0];
+    end
     
 endmodule
 
-
-
-//    reg clk80_ff = 1'b0;
-//    reg clk40_ff = 1'b0;
-//    reg use_delayed;
-//    (* async_reg = "TRUE" *) reg [6:0] clk80_r = 7'h0;
-//    (* async_reg = "TRUE" *) reg [8:0] clk40_r = 9'h0;
-//    (* async_reg = "TRUE" *) reg [75:0] inreg_320;
-//    (* async_reg = "TRUE" *) reg rx_header_320 = 1'b1;
-//    (* async_reg = "TRUE" *) reg [75:0] rx_data_76, rx_data_76_d;
-    
-//    assign rx_data_76_o = use_delayed ? rx_data_76_d : rx_data_76;
-    
-//    (* mark_debug *) wire [75:0] inreg_320_w = inreg_320;
-//    (* mark_debug *) wire [37:0] rx_data_38_w = rx_data_38;
-//    (* mark_debug *) wire [75:0] rx_data_76_w = rx_data_76;
-//    (* mark_debug *) wire        clk80_ffw = clk80_ff;
-//    (* mark_debug *) wire [5:0]  clk80_rw = clk80_r;
-//    (* mark_debug *) wire clk40_w  = clk40_ff;
-//    (* mark_debug *) wire [1:0] rx_header_w = rx_header;
-//    (* mark_debug *) wire rx_header_320_w = rx_header_320;
-    
-//    always @(posedge rx_clk) clk80_ff = ~clk80_ff; // just flip on each rx clock
-//    always @(posedge clk40 ) clk40_ff = ~clk40_ff;
-
-//    FDCE fdce_76[75:0] 
-//    (
-//        .Q   (rx_data_76[75:0]),
-//        .C   (clk320),
-//        .CE  (rx_header_320 && (clk80_r[4] != clk80_r[3])), 
-//        .CLR (1'b0),
-//        .D   (inreg_320[75:0])
-//    );
-
-//    // make data delayed by 1/2 of BX
-//    dyn_shift #(.SELWIDTH(2), .BW(76)) data_sh 
-//    (
-//        .CLK (clk320),
-//        .CE  (1'b1), 
-//        .SEL (2'h3), // delay = 4 = 1/2 BX
-//        .SI  (rx_data_76), 
-//        .DO  (rx_data_76_d)
-//    );
-
-//    // adjust delay precisely based on clk80 phase
-    
-//    always @(posedge clk320)
-//    begin
-//        // detect edge of 80 M clock
-        
-//        if (clk80_r[6] != clk80_r[5])
-//        begin 
-//             // this is the best phase of clk80 to move data to fabric domain
-//            inreg_320[37:0]  = inreg_320[75:38];
-//            inreg_320[75:38] = rx_data_38; 
-            
-//            if (rx_header == 2'b10) rx_header_320 = 1'b1; // if special header, reset the header flag
-//            else rx_header_320 = ~rx_header_320; // if normal header, just flip the header flag
-//        end 
-        
-//        // check if 40M clock rising edge matches the update of fdce_76, this is bad because of jitter 
-//        if (clk40_r[6] != clk40_r[7])
-//        begin 
-//            if (clk80_r[3:2] == 2'h01 || clk80_r[4:3] == 2'h01 || clk80_r[5:4] == 2'h01)
-//                use_delayed = 1'b1; // if so, switch to delayed output 
-//            else
-//                use_delayed = 1'b0;
-//        end
-        
-//        clk80_r = {clk80_r[5:0], clk80_ff}; // clk80 history
-//        clk40_r = {clk40_r[7:0], clk40_ff}; // clk40 history
-//    end
-
-//endmodule
