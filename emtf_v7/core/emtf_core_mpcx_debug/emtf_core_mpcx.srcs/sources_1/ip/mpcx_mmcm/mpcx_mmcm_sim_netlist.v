@@ -1,10 +1,10 @@
 // Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2020.1.1 (lin64) Build 2960000 Wed Aug  5 22:57:21 MDT 2020
-// Date        : Sun Dec 12 17:38:51 2021
+// Date        : Sun Dec 12 13:09:28 2021
 // Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
-// Command     : write_verilog -force -mode funcsim
-//               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx_debug/emtf_core_mpcx.srcs/sources_1/ip/mpcx_mmcm/mpcx_mmcm_sim_netlist.v
+// Command     : write_verilog -force -mode funcsim -rename_top mpcx_mmcm -prefix
+//               mpcx_mmcm_ mpcx_mmcm_sim_netlist.v
 // Design      : mpcx_mmcm
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -39,7 +39,6 @@ module mpcx_mmcm
         .reset(reset));
 endmodule
 
-(* ORIG_REF_NAME = "mpcx_mmcm_clk_wiz" *) 
 module mpcx_mmcm_mpcx_mmcm_clk_wiz
    (clk_out1,
     clk_out2,
@@ -107,7 +106,7 @@ module mpcx_mmcm_mpcx_mmcm_clk_wiz
     .CLKFBOUT_USE_FINE_PS("FALSE"),
     .CLKIN1_PERIOD(24.876000),
     .CLKIN2_PERIOD(0.000000),
-    .CLKOUT0_DIVIDE_F(6.000000),
+    .CLKOUT0_DIVIDE_F(3.000000),
     .CLKOUT0_DUTY_CYCLE(0.500000),
     .CLKOUT0_PHASE(0.000000),
     .CLKOUT0_USE_FINE_PS("FALSE"),

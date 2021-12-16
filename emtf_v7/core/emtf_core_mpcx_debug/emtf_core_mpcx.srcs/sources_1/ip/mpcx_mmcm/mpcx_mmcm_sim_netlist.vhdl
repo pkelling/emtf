@@ -1,10 +1,10 @@
 -- Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2020.1.1 (lin64) Build 2960000 Wed Aug  5 22:57:21 MDT 2020
--- Date        : Sun Dec 12 17:38:51 2021
+-- Date        : Sun Dec 12 13:09:28 2021
 -- Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
--- Command     : write_vhdl -force -mode funcsim
---               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx_debug/emtf_core_mpcx.srcs/sources_1/ip/mpcx_mmcm/mpcx_mmcm_sim_netlist.vhdl
+-- Command     : write_vhdl -force -mode funcsim -rename_top mpcx_mmcm -prefix
+--               mpcx_mmcm_ mpcx_mmcm_sim_netlist.vhdl
 -- Design      : mpcx_mmcm
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -22,8 +22,6 @@ entity mpcx_mmcm_mpcx_mmcm_clk_wiz is
     locked : out STD_LOGIC;
     clk_in1 : in STD_LOGIC
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of mpcx_mmcm_mpcx_mmcm_clk_wiz : entity is "mpcx_mmcm_clk_wiz";
 end mpcx_mmcm_mpcx_mmcm_clk_wiz;
 
 architecture STRUCTURE of mpcx_mmcm_mpcx_mmcm_clk_wiz is
@@ -91,7 +89,7 @@ mmcm_adv_inst: unisim.vcomponents.MMCME2_ADV
       CLKFBOUT_USE_FINE_PS => false,
       CLKIN1_PERIOD => 24.876000,
       CLKIN2_PERIOD => 0.000000,
-      CLKOUT0_DIVIDE_F => 6.000000,
+      CLKOUT0_DIVIDE_F => 3.000000,
       CLKOUT0_DUTY_CYCLE => 0.500000,
       CLKOUT0_PHASE => 0.000000,
       CLKOUT0_USE_FINE_PS => false,

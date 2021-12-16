@@ -199,12 +199,14 @@ set_false_path -from [get_pins {crb/crc_err_flag_comb_reg[*]/C}]
 set_false_path -from [get_pins {crb/err_tst_pat_flag_comb_reg[*]/C}]
 set_false_path -from [get_pins {crb/rx_clk_phase_drift_reg[*]/C}]
 
+set_max_delay -from [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/ds/drx_reg[*]] -to [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/inreg_320_reg[*]] -datapath_only 1.2
+set_max_delay -from [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rx_header_r_reg[*]] -to [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/rx_header_320_reg] -datapath_only 1.2
 
-set_max_delay -from [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/fdre_i[*]] -to [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/fdre40_i[*]] -datapath_only 1.2
-#set_bus_skew  -from [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/inreg_40_reg[*]] -to [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/fdre_i[*]] 1.2
+set_max_delay -from [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/ds/drx_reg[*]] -to [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/inreg_320_reg[*]] -datapath_only 1.2
+set_max_delay -from [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rx_header_r_reg[*]] -to [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/rx_header_320_reg] -datapath_only 1.2
 
-set_max_delay -from [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/fdre_i[*]] -to [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/fdre40_i[*]] -datapath_only 1.2
-#set_bus_skew  -from [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/inreg_40_reg[*]] -to [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/fdre_i[*]] 1.2
+set_false_path -from [get_pins {mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/clk40_ff_reg/C}] -to [get_pins {mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/clk40_r_reg[*]/D}]
+set_false_path -from [get_pins {mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/clk40_ff_reg/C}] -to [get_pins {mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/clk40_r_reg[*]/D}]
 
 
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
