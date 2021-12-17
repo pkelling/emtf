@@ -22,7 +22,7 @@ static const uint qt_meta_data_sp12_qtw[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      67,   14, // methods
+      68,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -97,6 +97,7 @@ static const uint qt_meta_data_sp12_qtw[] = {
     2060,    9,    9,    9, 0x08,
     2097,    9,    9,    9, 0x08,
     2135,    9,    9,    9, 0x08,
+    2165,    9,    9,    9, 0x08,
 
        0        // eod
 };
@@ -169,6 +170,7 @@ static const char qt_meta_stringdata_sp12_qtw[] = {
     "on_prim_ge11_lut_write_pb_released()\0"
     "on_prim_ge11_lut_verify_pb_released()\0"
     "on_clk40_psen_exec_released()\0"
+    "on_pushButton_6_released()\0"
 };
 
 void sp12_qtw::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -244,6 +246,7 @@ void sp12_qtw::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
         case 64: _t->on_prim_ge11_lut_write_pb_released(); break;
         case 65: _t->on_prim_ge11_lut_verify_pb_released(); break;
         case 66: _t->on_clk40_psen_exec_released(); break;
+        case 67: _t->on_pushButton_6_released(); break;
         default: ;
         }
     }
@@ -281,9 +284,9 @@ int sp12_qtw::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 67)
+        if (_id < 68)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 67;
+        _id -= 68;
     }
     return _id;
 }
