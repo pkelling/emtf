@@ -20,7 +20,8 @@ module mpcx_deformatter_neighbor
 	reg [1:0] crc [8:0];
     reg [8:0] lnk_val;
     reg [1:0] crc_rx [8:0];
-	(* async_reg = "TRUE" *) reg [75:0] rx_data_76_r [8:0];
+//	(* async_reg = "TRUE" *) reg [75:0] rx_data_76_r [8:0];
+	wire [75:0] rx_data_76_r [8:0];
 	integer i, j;
 	reg [3:0] dum4_1 [8:0];
 	reg [3:0] dum4_2 [8:0];
@@ -31,6 +32,8 @@ module mpcx_deformatter_neighbor
 
     localparam max_hs = 8'd159;
     localparam max_wg = 8'd111;
+
+    assign rx_data_76_r = rx_data_76;
 
     // all links have identical format, except cscid=1, which we ignore here
     // cscid=1 data are unpacked into unused dum4 signals
@@ -61,7 +64,8 @@ module mpcx_deformatter_neighbor
     err_tst_pat_flag |= err_tst_pat;
     if (flag_reset) err_tst_pat_flag = 9'h0;
 
-    rx_data_76_r = rx_data_76;
+// the register is now in reclocker
+//    rx_data_76_r = rx_data_76;
 
     for (i = 0; i < 9; i++) // chamber loop
     begin

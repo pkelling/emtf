@@ -44,10 +44,8 @@ module emtf_mpcx_rx #(parameter NEIGHBOR = "FALSE")
 	input  [nlinks-1:0] fiber_enable,
 
 	input clk40,
-	input clk80,
 	input clk320,
-    input pcie_clk,
-    input clk160
+    input pcie_clk
 );
 
     localparam nlinks =  NEIGHBOR == "TRUE" ? 9 : 8; // 9 links are coming from NEIGHBOR sector
@@ -71,11 +69,8 @@ module emtf_mpcx_rx #(parameter NEIGHBOR = "FALSE")
                 .rx_data_76    (rx_data_76[gi]), // deframed and reclocked data word
                 .rx_fa_reset   (1'b0), // reset frame alignment and everything else - not really needed
                 .fiber_enable  (fiber_enable[gi]),
-                .err_tst_pat   (err_tst_pat[gi]), // test pattern error feedback
                 .clk40         (clk40), // clk40, 80, and 320 must have relative phase=0
-                .clk80         (clk80), 
                 .clk320        (clk320),
-                .clk160        (clk160),
                 .pcie_clk      (pcie_clk)
             );
         end

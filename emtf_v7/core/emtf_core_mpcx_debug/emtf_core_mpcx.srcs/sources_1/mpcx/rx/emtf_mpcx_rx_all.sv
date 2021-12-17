@@ -72,7 +72,6 @@ module emtf_mpcx_rx_all
 
 
     genvar gi;
-    wire clk80;
     generate
         for (gi = 0; gi < 5; gi++) // MPC loop
         begin: mpc_loop
@@ -100,9 +99,7 @@ module emtf_mpcx_rx_all
 	            .fiber_enable        (fiber_enable [gi*8 +: 8]),
 
                 .clk40               (clk40                   ),
-                .clk80               (clk80                   ),
                 .clk320              (clk320                  ),
-                .clk160              (clk160                  ),
                 .pcie_clk            (pcie_clk                )
             );
         end
@@ -128,17 +125,14 @@ module emtf_mpcx_rx_all
         .fiber_enable        (fiber_enable [48:40]),
 
         .clk40               (clk40              ),
-        .clk80               (clk80              ),
         .clk320              (clk320             ),
-        .pcie_clk            (pcie_clk           ),
-        .clk160              (clk160             )
+        .pcie_clk            (pcie_clk           )
     );
 
     mpcx_mmcm mpcx_mmcm_i
     (
         .clk_in1  (clk40 ),
         .clk_out1 (clk320),
-        .clk_out2 (clk80 ), 
         .reset    (1'b0  ), 
         .locked   (      )
     );    

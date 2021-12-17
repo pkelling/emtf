@@ -24,48 +24,19 @@ module mpcx_deformatter
     reg [7:0] lnk_val;
     reg [1:0] crc_rx [7:0];
 	integer i, j;
-	(* async_reg = "TRUE" *) reg [75:0] rx_data_76_r [7:0];
-	(* async_reg = "TRUE" *) reg [18:0] cnt_19 [7:0];
-	(* async_reg = "TRUE" *) reg [18:0] cnt_19_rx [7:0];
+//	(* async_reg = "TRUE" *) reg [75:0] rx_data_76_r [7:0];
+	wire [75:0] rx_data_76_r [7:0];
+	reg [18:0] cnt_19 [7:0];
+	reg [18:0] cnt_19_rx [7:0];
 	reg [1:0] lctvf [9:2];
 	reg [25:0] rate_period;
 	reg [25:0] rate_counter [8:0];
 
-//	(* async_reg = "TRUE" *) reg [18:0] cnt_19_320 [7:0];
-//	(* async_reg = "TRUE" *) reg [18:0] cnt_19_rx_320 [7:0];
-//	(* async_reg = "TRUE" *) reg [7:0] err_tst_pat_320;
-
-//	(* async_reg = "TRUE" *) reg [18:0] cnt_19_320_r [7:0][7:0];
-//	(* async_reg = "TRUE" *) reg [18:0] cnt_19_rx_320_r [7:0][7:0];
-//	(* async_reg = "TRUE" *) reg [7:0] err_tst_pat_320_r [7:0];
-
-//	(* mark_debug *) wire [18:0] cnt_19_320_w [7:0] = cnt_19_320;
-//	(* mark_debug *) wire [18:0] cnt_19_rx_320_w [7:0] = cnt_19_rx_320;
-//	(* mark_debug *) wire [7:0] err_tst_pat_320_w = err_tst_pat_320;
+    assign rx_data_76_r = rx_data_76;
 
     localparam max_hs = 8'd223; // ME1/1 (64 strips top + 48 strips bottom) * 2
     localparam max_wg = 8'd111; // ME2/1 112 wiregroups max
 
-//    always @(posedge clk_320)
-//    begin
-//        cnt_19_320      = cnt_19_320_r      [0];
-//        cnt_19_rx_320   = cnt_19_rx_320_r   [0];
-//        err_tst_pat_320 = err_tst_pat_320_r [0];
-        
-//        for (i = 1; i < 8; i++)
-//        begin
-//            cnt_19_320_r      [i-1] = cnt_19_320_r      [i];
-//            cnt_19_rx_320_r   [i-1] = cnt_19_rx_320_r   [i];
-//            err_tst_pat_320_r [i-1] = err_tst_pat_320_r [i];
-                
-//        end
-
-//        cnt_19_320_r      [7] = cnt_19;
-//        cnt_19_rx_320_r   [7] = cnt_19_rx;
-//        err_tst_pat_320_r [7] = err_tst_pat;
-//    end
-
-    
   always @(posedge clk40)
   begin
 
@@ -94,7 +65,8 @@ module mpcx_deformatter
     err_tst_pat_flag |= err_tst_pat;
     if (flag_reset) err_tst_pat_flag = 8'h0;
     
-    rx_data_76_r = rx_data_76;
+// register is in reclocker now    
+//    rx_data_76_r = rx_data_76;
     
     for (i = 0; i < 9; i++) // chamber loop
     begin

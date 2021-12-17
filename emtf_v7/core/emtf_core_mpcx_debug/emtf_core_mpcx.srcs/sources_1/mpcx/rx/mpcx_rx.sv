@@ -4,11 +4,8 @@ module mpcx_rx
     output [75:0] rx_data_76, // deframed data word
     input rx_fa_reset, // reset frame alignment and everything else
     input fiber_enable,
-    input err_tst_pat, // test patter error feedback
     input clk40, // clk40 and clk320 must have relative phase=0
-    input clk80, 
     input clk320, // clk320 generated from or together with clk40 
-    input clk160,
     input pcie_clk
 );
 
@@ -130,13 +127,10 @@ module mpcx_rx
         .rx_data_38     (rx_data_38_ds), // at mgt clk domain
         .rx_header      (rx_header_r),
         .rx_clk         (mgtrx.rxoutclk), // mgt rx clock
-        .err_tst_pat    (err_tst_pat),
         
         .rx_data_76_o (rx_data_76), // at fabric clk domain
         .fiber_enable (fiber_enable),
         .clk40      (clk40), // fabric clk
-        .clk80      (clk80), 
-        .clk160     (clk160),
         .clk320     (clk320)  // fabric clk x 8
     );
     

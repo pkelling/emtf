@@ -1,10 +1,10 @@
 // Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2020.1.1 (lin64) Build 2960000 Wed Aug  5 22:57:21 MDT 2020
-// Date        : Sun Dec 12 13:09:28 2021
+// Date        : Fri Dec 17 10:34:12 2021
 // Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
-// Command     : write_verilog -force -mode funcsim -rename_top mpcx_mmcm -prefix
-//               mpcx_mmcm_ mpcx_mmcm_sim_netlist.v
+// Command     : write_verilog -force -mode funcsim
+//               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx_debug/emtf_core_mpcx.srcs/sources_1/ip/mpcx_mmcm/mpcx_mmcm_sim_netlist.v
 // Design      : mpcx_mmcm
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -15,38 +15,33 @@
 (* NotValidForBitStream *)
 module mpcx_mmcm
    (clk_out1,
-    clk_out2,
     reset,
     locked,
     clk_in1);
   output clk_out1;
-  output clk_out2;
   input reset;
   output locked;
   input clk_in1;
 
   (* IBUF_LOW_PWR *) wire clk_in1;
   wire clk_out1;
-  wire clk_out2;
   wire locked;
   wire reset;
 
   mpcx_mmcm_mpcx_mmcm_clk_wiz inst
        (.clk_in1(clk_in1),
         .clk_out1(clk_out1),
-        .clk_out2(clk_out2),
         .locked(locked),
         .reset(reset));
 endmodule
 
+(* ORIG_REF_NAME = "mpcx_mmcm_clk_wiz" *) 
 module mpcx_mmcm_mpcx_mmcm_clk_wiz
    (clk_out1,
-    clk_out2,
     reset,
     locked,
     clk_in1);
   output clk_out1;
-  output clk_out2;
   input reset;
   output locked;
   input clk_in1;
@@ -55,8 +50,6 @@ module mpcx_mmcm_mpcx_mmcm_clk_wiz
   wire clk_in1_mpcx_mmcm;
   wire clk_out1;
   wire clk_out1_mpcx_mmcm;
-  wire clk_out2;
-  wire clk_out2_mpcx_mmcm;
   wire clkfbout_buf_mpcx_mmcm;
   wire clkfbout_mpcx_mmcm;
   wire locked;
@@ -65,6 +58,7 @@ module mpcx_mmcm_mpcx_mmcm_clk_wiz
   wire NLW_mmcm_adv_inst_CLKFBSTOPPED_UNCONNECTED;
   wire NLW_mmcm_adv_inst_CLKINSTOPPED_UNCONNECTED;
   wire NLW_mmcm_adv_inst_CLKOUT0B_UNCONNECTED;
+  wire NLW_mmcm_adv_inst_CLKOUT1_UNCONNECTED;
   wire NLW_mmcm_adv_inst_CLKOUT1B_UNCONNECTED;
   wire NLW_mmcm_adv_inst_CLKOUT2_UNCONNECTED;
   wire NLW_mmcm_adv_inst_CLKOUT2B_UNCONNECTED;
@@ -95,22 +89,18 @@ module mpcx_mmcm_mpcx_mmcm_clk_wiz
        (.I(clk_out1_mpcx_mmcm),
         .O(clk_out1));
   (* BOX_TYPE = "PRIMITIVE" *) 
-  BUFG clkout2_buf
-       (.I(clk_out2_mpcx_mmcm),
-        .O(clk_out2));
-  (* BOX_TYPE = "PRIMITIVE" *) 
   MMCME2_ADV #(
     .BANDWIDTH("OPTIMIZED"),
-    .CLKFBOUT_MULT_F(24.000000),
+    .CLKFBOUT_MULT_F(25.000000),
     .CLKFBOUT_PHASE(0.000000),
     .CLKFBOUT_USE_FINE_PS("FALSE"),
     .CLKIN1_PERIOD(24.876000),
     .CLKIN2_PERIOD(0.000000),
-    .CLKOUT0_DIVIDE_F(3.000000),
+    .CLKOUT0_DIVIDE_F(3.125000),
     .CLKOUT0_DUTY_CYCLE(0.500000),
     .CLKOUT0_PHASE(0.000000),
     .CLKOUT0_USE_FINE_PS("FALSE"),
-    .CLKOUT1_DIVIDE(12),
+    .CLKOUT1_DIVIDE(1),
     .CLKOUT1_DUTY_CYCLE(0.500000),
     .CLKOUT1_PHASE(0.000000),
     .CLKOUT1_USE_FINE_PS("FALSE"),
@@ -159,7 +149,7 @@ module mpcx_mmcm_mpcx_mmcm_clk_wiz
         .CLKINSTOPPED(NLW_mmcm_adv_inst_CLKINSTOPPED_UNCONNECTED),
         .CLKOUT0(clk_out1_mpcx_mmcm),
         .CLKOUT0B(NLW_mmcm_adv_inst_CLKOUT0B_UNCONNECTED),
-        .CLKOUT1(clk_out2_mpcx_mmcm),
+        .CLKOUT1(NLW_mmcm_adv_inst_CLKOUT1_UNCONNECTED),
         .CLKOUT1B(NLW_mmcm_adv_inst_CLKOUT1B_UNCONNECTED),
         .CLKOUT2(NLW_mmcm_adv_inst_CLKOUT2_UNCONNECTED),
         .CLKOUT2B(NLW_mmcm_adv_inst_CLKOUT2B_UNCONNECTED),
