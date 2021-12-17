@@ -36,8 +36,9 @@ module rx_reclock_tf;
     
     always 
     begin
-        //#6.25
-        #6.3
+        //#6.25 // precisely synchronous
+        // #6.3 // rx clk slightly slower
+        #6.2 // rx clk slightly faster
         rx_clk = ~rx_clk;
     end
     

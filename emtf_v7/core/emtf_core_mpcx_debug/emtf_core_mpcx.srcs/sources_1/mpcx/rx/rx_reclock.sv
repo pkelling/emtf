@@ -14,20 +14,12 @@ module rx_reclock
 );
 
 
-    `ifdef RECLOCK_SIMULATION
-        localparam DLCBW = 3;
-    `else
-        localparam DLCBW = 16;
-    `endif
-
     reg [75:0] inreg_80;
-    reg [75:0] inreg_40 [3:0];
+    reg [75:0] inreg_40 [5:0];
     reg rx_header_80 = 1'b0;
-    reg [1:0] del_sel = 0, del_sel_r, del_sel_n;
+    reg [2:0] del_sel = 0, del_sel_n;
     reg clk40_ff = 0;
     (* async_reg = "TRUE" *) reg [10:0] rx_header_r, rx_header_40;
-    reg [DLCBW-1:0] del_cnt [3:0] = '{0,0,0,0};
-    reg [DLCBW-1:0] del_filter_cnt = 0, del_cnt_max = 0;
     
     
     (* mark_debug *) wire [75:0] inreg_80_w = inreg_80;
@@ -37,7 +29,7 @@ module rx_reclock
     (* mark_debug *) wire rx_header_80_w = rx_header_80;
     (* mark_debug *) wire [10:0] rx_header_rw = rx_header_r;
     (* mark_debug *) wire [10:0] rx_header_40_w = rx_header_40;
-    (* mark_debug *) wire [1:0] del_sel_w = del_sel;
+    (* mark_debug *) wire [2:0] del_sel_w = del_sel;
     (* mark_debug *) wire err_tst_pat_w = err_tst_pat;
 
     (* async_reg = "TRUE" *)
@@ -52,47 +44,22 @@ module rx_reclock
     
     always @(posedge clk40)
     begin 
-        del_sel_r = del_sel;
     
-        // primitive delay value filter, to prevent frequent switching
-        // the problem happens only when switching between 3 and 0, because one data word is dropped or duplicated
-        if (del_filter_cnt == {{(DLCBW-1){1'b1}}, 1'b0}) // count to max count -1 to prevent the delay counters from resetting to 0
-        begin
-            // find which delay was detected the most
-            del_cnt_max = del_cnt[0];
-            del_sel = 2'h0;
-            if (del_cnt[1] > del_cnt_max)
-            begin
-                del_cnt_max = del_cnt[1];
-                del_sel = 2'h1;
-            end
-            else if (del_cnt[2] > del_cnt_max)
-            begin
-                del_cnt_max = del_cnt[2];
-                del_sel = 2'h2;
-            end
-            else if (del_cnt[3] > del_cnt_max)
-            begin
-                del_cnt_max = del_cnt[3];
-                del_sel = 2'h3;
-            end
-            del_cnt [3:0] = '{0,0,0,0}; // reset counters
-            del_filter_cnt = 0; // filter period counter
+        del_sel = del_sel_n;
+    
+        if      (rx_header_40[ 3:2] == 2'b01 || rx_header_40[ 4:3] == 2'b01) del_sel_n = 3'h3; // 2
+        else if (rx_header_40[ 9:8] == 2'b01 || rx_header_40[10:9] == 2'b01) del_sel_n = 3'h2; // 1
+        else if (rx_header_40[ 5:4] == 2'b01 || rx_header_40[ 6:5] == 2'b01) 
+        begin 
+            if (del_sel <= 3'h1) del_sel_n = 3'h0; 
+            else del_sel_n = 3'h4; 
         end
-        
-        del_cnt[del_sel_n]++; // increment delay counter for the detected delay
-        del_filter_cnt++; // filter period counter
-    
-        if      (rx_header_40[ 3:2] == 2'b01) del_sel_n = 2'h2; // 2
-        else if (rx_header_40[ 4:3] == 2'b01) del_sel_n = 2'h2; // 2
-        else if (rx_header_40[ 5:4] == 2'b01) del_sel_n = 2'h3; // 3
-        else if (rx_header_40[ 6:5] == 2'b01) del_sel_n = 2'h3; // 3
-        else if (rx_header_40[ 7:6] == 2'b01) del_sel_n = 2'h0; // 0
-        else if (rx_header_40[ 8:7] == 2'b01) del_sel_n = 2'h0; // 0
-        else if (rx_header_40[ 9:8] == 2'b01) del_sel_n = 2'h1; // 1
-        else if (rx_header_40[10:9] == 2'b01) del_sel_n = 2'h1; // 1
+        else if (rx_header_40[ 7:6] == 2'b01 || rx_header_40[ 8:7] == 2'b01)
+        begin
+            if (del_sel >= 3'h4) del_sel_n = 3'h5; 
+            else del_sel_n = 3'h1; 
+        end
         rx_header_40 = rx_header_r;
-        
 
         clk40_ff = ~clk40_ff;
     end
@@ -106,6 +73,7 @@ module rx_reclock
     always @(posedge rx_clk)
     begin
         // inreg_40 is updated every 25 ns
+        inreg_40[4] = inreg_40[2];
         inreg_40[2] = inreg_40[0];
         if (rx_header_80 == 1'b1) inreg_40[0] = inreg_80;
         
@@ -119,9 +87,47 @@ module rx_reclock
 
     always @(negedge rx_clk)
     begin
+        inreg_40[5] = inreg_40[3];
         inreg_40[3] = inreg_40[1];
         inreg_40[1] = inreg_40[0];
     end
     
 endmodule
 
+//    `ifdef RECLOCK_SIMULATION
+//        localparam DLCBW = 3;
+//    `else
+//        localparam DLCBW = 16;
+//    `endif
+
+//    reg [DLCBW-1:0] del_cnt [3:0] = '{0,0,0,0};
+//    reg [DLCBW-1:0] del_filter_cnt = 0, del_cnt_max = 0;
+        // primitive delay value filter, to prevent frequent switching
+        // the problem happens only when switching between 3 and 0, because one data word is dropped or duplicated
+//        if (del_filter_cnt == {{(DLCBW-1){1'b1}}, 1'b0}) // count to max count -1 to prevent the delay counters from resetting to 0
+//        begin
+//            // find which delay was detected the most
+//            del_cnt_max = del_cnt[0];
+//            del_sel = 2'h0;
+//            if (del_cnt[1] > del_cnt_max)
+//            begin
+//                del_cnt_max = del_cnt[1];
+//                del_sel = 2'h1;
+//            end
+//            else if (del_cnt[2] > del_cnt_max)
+//            begin
+//                del_cnt_max = del_cnt[2];
+//                del_sel = 2'h2;
+//            end
+//            else if (del_cnt[3] > del_cnt_max)
+//            begin
+//                del_cnt_max = del_cnt[3];
+//                del_sel = 2'h3;
+//            end
+//            del_cnt [3:0] = '{0,0,0,0}; // reset counters
+//            del_filter_cnt = 0; // filter period counter
+//        end
+        
+//        del_cnt[del_sel_n]++; // increment delay counter for the detected delay
+//        del_filter_cnt++; // filter period counter
+    
