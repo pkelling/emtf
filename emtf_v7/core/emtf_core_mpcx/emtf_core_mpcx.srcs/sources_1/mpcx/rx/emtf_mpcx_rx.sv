@@ -69,7 +69,7 @@ module emtf_mpcx_rx #(parameter NEIGHBOR = "FALSE")
                 .rx_data_76    (rx_data_76[gi]), // deframed and reclocked data word
                 .rx_fa_reset   (1'b0), // reset frame alignment and everything else - not really needed
                 .fiber_enable  (fiber_enable[gi]),
-                .clk40         (clk40), // clk40 and clk320 must have relative phase=0
+                .clk40         (clk40), // clk40, 80, and 320 must have relative phase=0
                 .clk320        (clk320),
                 .pcie_clk      (pcie_clk)
             );

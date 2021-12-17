@@ -15,8 +15,7 @@ module mpcx_deformatter
 	(* async_reg = "TRUE" *) output reg [7:0] err_tst_pat,
 	output reg [7:0] err_tst_pat_flag,
 	input            flag_reset,
-	input clk40,
-	input clk_320
+	input clk40
 );
 
 	reg [3:0] rsv;

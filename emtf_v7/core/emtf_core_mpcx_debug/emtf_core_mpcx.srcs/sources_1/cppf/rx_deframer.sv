@@ -130,7 +130,7 @@ module rx_deframer
         .DO({rxdata_del, rxcharisk_del})
     );
 
-    // clock domain crossing logic
+    // reclocking logic
     // have to use rxclkout
     always @(posedge clk_250)
     begin

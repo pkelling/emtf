@@ -125,8 +125,7 @@ module emtf_mpcx_rx #(parameter NEIGHBOR = "FALSE")
                 .err_tst_pat  (err_tst_pat),
                 .err_tst_pat_flag  (err_tst_pat_flag),
                 .flag_reset   (flag_reset),
-                .clk40        (clk40),
-                .clk_320      (clk320)
+                .clk40        (clk40)
             );
 
             // aligner for CSCID=1

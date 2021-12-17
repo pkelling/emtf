@@ -65,7 +65,6 @@ module emtf_mpcx_rx_all
 
 	input  clk40,
     input  pcie_clk,
-    input  clk160,
 	output clk320
 );
 

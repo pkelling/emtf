@@ -86,11 +86,13 @@ module mpcx_rx
     reg [37:0] rx_r, rx_rr;
 
 	reg [18:0] cnt_19;
+	(* mark_debug *) wire [18:0] cnt_19_local = cnt_19;
+	(* mark_debug *) wire [18:0] cnt_19_rx    = rx_rr[18:0];
 	reg err_tst_pat_local;
-	wire err_tst_pat_local_w = err_tst_pat_local;
+	(* mark_debug *) wire err_tst_pat_local_w = err_tst_pat_local;
 	reg rx_header_phase;
 	reg header_phase_err;
-	wire header_phase_err_w = header_phase_err;
+	(* mark_debug *) wire header_phase_err_w = header_phase_err;
 
     always @(posedge mgtrx.rxoutclk)
     begin
@@ -103,15 +105,10 @@ module mpcx_rx
         end
         else rx_header_phase = ~rx_header_phase; // if normal header, just flip the header flag
 
-
-        
-
          // packaging in TX
          // {19'h0, cnt, 28'h0, mpc_id, i[3:0]}
          if (rx_header_phase)
          begin
-
-
             // check and lock test counter
             if (cnt_19 != rx_rr[18:0]) err_tst_pat_local = 1'b1; 
             else err_tst_pat_local = 1'b0;
@@ -124,8 +121,6 @@ module mpcx_rx
          rx_r = rx_data_38_ds;
     end
 
-    wire [75:0] rx_data_76_preen;
-    assign rx_data_76 = (fiber_enable == 1'b1) ? rx_data_76_preen : 76'b0;
     // clock domain crossing
     rx_reclock rxr
     (
@@ -133,7 +128,8 @@ module mpcx_rx
         .rx_header      (rx_header_r),
         .rx_clk         (mgtrx.rxoutclk), // mgt rx clock
         
-        .rx_data_76_o (rx_data_76_preen), // at fabric clk domain
+        .rx_data_76_o (rx_data_76), // at fabric clk domain
+        .fiber_enable (fiber_enable),
         .clk40      (clk40), // fabric clk
         .clk320     (clk320)  // fabric clk x 8
     );

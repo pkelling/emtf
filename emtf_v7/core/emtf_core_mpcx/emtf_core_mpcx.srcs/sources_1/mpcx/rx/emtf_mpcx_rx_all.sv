@@ -131,7 +131,7 @@ module emtf_mpcx_rx_all
     mpcx_mmcm mpcx_mmcm_i
     (
         .clk_in1  (clk40 ),
-        .clk_out1 (clk320), 
+        .clk_out1 (clk320),
         .reset    (1'b0  ), 
         .locked   (      )
     );    

@@ -1,5 +1,5 @@
 
-// see EMTF_reclockers.docx document for the github for the logic details 
+// see EMTF_reclockers.docx document in github for the logic details 
 module rx_reclock 
 (
     input [37:0] rx_data_38, // at mgt clk domain

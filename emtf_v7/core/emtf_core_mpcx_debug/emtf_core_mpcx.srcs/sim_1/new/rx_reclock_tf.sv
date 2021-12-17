@@ -24,7 +24,6 @@ module rx_reclock_tf;
          
         .rx_data_76_o (rx_data_76_o), 
         .clk40        (clk40       ), 
-        .clk160       (clk160      ), 
         .clk320       (clk320      )
     );
 
@@ -37,8 +36,8 @@ module rx_reclock_tf;
     always 
     begin
         //#6.25 // precisely synchronous
-        // #6.3 // rx clk slightly slower
-        #6.2 // rx clk slightly faster
+        #6.3 // rx clk slightly slower
+        //#6.2 // rx clk slightly faster
         rx_clk = ~rx_clk;
     end
     

@@ -12,7 +12,7 @@ module mpcx_deformatter
 	output reg [7:0] crc_err,
 	output reg [7:0] crc_err_flag,
 	output reg [9:0] link_id [7:0],
-	output reg [7:0] err_tst_pat,
+	(* async_reg = "TRUE" *) output reg [7:0] err_tst_pat,
 	output reg [7:0] err_tst_pat_flag,
 	input            flag_reset,
 	input clk40
@@ -23,16 +23,19 @@ module mpcx_deformatter
     reg [7:0] lnk_val;
     reg [1:0] crc_rx [7:0];
 	integer i, j;
-	(* async_reg = "TRUE" *) reg [75:0] rx_data_76_r [7:0];
+//	(* async_reg = "TRUE" *) reg [75:0] rx_data_76_r [7:0];
+	wire [75:0] rx_data_76_r [7:0];
 	reg [18:0] cnt_19 [7:0];
+	reg [18:0] cnt_19_rx [7:0];
 	reg [1:0] lctvf [9:2];
 	reg [25:0] rate_period;
 	reg [25:0] rate_counter [8:0];
 
+    assign rx_data_76_r = rx_data_76;
+
     localparam max_hs = 8'd223; // ME1/1 (64 strips top + 48 strips bottom) * 2
     localparam max_wg = 8'd111; // ME2/1 112 wiregroups max
 
-    
   always @(posedge clk40)
   begin
 
@@ -49,6 +52,7 @@ module mpcx_deformatter
              // check and lock test counter
              if (cnt_19 [i] != rx_data_76_r[i][56:38]) err_tst_pat[i] = 1'b1; 
              cnt_19 [i] = rx_data_76_r[i][56:38];
+             cnt_19_rx [i] = rx_data_76_r[i][56:38];
         end
         cnt_19 [i]++;
     end    
@@ -60,7 +64,8 @@ module mpcx_deformatter
     err_tst_pat_flag |= err_tst_pat;
     if (flag_reset) err_tst_pat_flag = 8'h0;
     
-    rx_data_76_r = rx_data_76;
+// register is in reclocker now    
+//    rx_data_76_r = rx_data_76;
     
     for (i = 0; i < 9; i++) // chamber loop
     begin
