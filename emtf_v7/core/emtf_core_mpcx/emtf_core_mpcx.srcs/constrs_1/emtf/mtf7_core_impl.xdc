@@ -143,16 +143,8 @@ set_false_path -from [get_pins {crb/ddr_clk_del_reg[*]/C}]
 set_false_path -from [get_pins {crb/control_reg_reg[*]/C}]
 set_false_path -from [get_pins {crb/user_af_delays_n_reg[*]/C}]
 set_false_path -from [get_pins {crb/user_af_delays_reg[*]/C}]
-set_false_path -from [get_pins {crb/endcap_reg[*]/C}]
 set_false_path -from [get_pins {crb/sector_reg[*]/C}]
-set_false_path -from [get_pins {crb/spy_bc0_err_reg[*]/C}]
 set_false_path -from [get_pins {crb/daq_delay_reg[*]/C}]
-set_false_path -from [get_pins {crb/spy_l1a_reg[*]/C}]
-set_false_path -from [get_pins {crb/spy_valid_reg[*]/C}]
-set_false_path -from [get_pins {crb/spy_rank_reg[*]/C}]
-set_false_path -from [get_pins {crb/af_enable_reg[*]/C}]
-set_false_path -from [get_pins {crb/inj_enable_reg[*]/C}]
-set_false_path -from [get_pins {crb/mpc_inj_enable_reg[*]/C}]
 set_false_path -from [get_pins {crb/prbs_sel_reg[*]/C}]
 set_false_path -from [get_pins {crb/ttc_bc0_delay_reg[*]/C}]
 set_false_path -from [get_pins {crb/bxn_tx_offset_reg[*]/C}]
@@ -170,41 +162,19 @@ set_false_path -from [get_pins {crb/gth_rx_reset_reg[*]/C}]
 set_false_path -from [get_pins {crb/mpc_link_hr_to_reg[*]/C}]
 set_false_path -from [get_pins {crb/hard_reset_to_reg[*]/C}]
 set_false_path -from [get_pins {crb/power_down_reg[*]/C}]
-set_false_path -from [get_pins {crb/link_id_reg_reg[*]/C}]
-set_false_path -from [get_pins {crb/bc0_time_counts_n_reg[*]/C}]
-set_false_path -from [get_pins {crb/bc0_time_counts_reg[*]/C}]
 set_false_path -from [get_pins {crb/fiber_enable_reg[*]/C}]
-set_false_path -from [get_pins {crb/bc0_err_period_i_reg[*]/C}]
-set_false_path -from [get_pins {crb/bc0_err_stuck_i_reg[*]/C}]
-set_false_path -from [get_pins {crb/bc0_err_chamber0_i_reg[*]/C}]
-set_false_path -from [get_pins {crb/rxbyteisaligned_i_reg[*]/C}]
-set_false_path -from [get_pins {crb/inj_addr_reg[*]/C}]
-set_false_path -from [get_pins {crb/clk_cnt_reg[*]/C}]
-set_false_path -from [get_pins {crb/fw_date_reg[*]/C}]
 set_false_path -from [get_pins {crb/pt_clk_word_reg[*]/C}]
 set_false_path -from [get_pins {crb/in_delay_tap_rb_r_reg[*]/C}]
 set_false_path -from [get_pins {crb/out_delay_tap_rb_r_reg[*]/C}]
 set_false_path -from [get_pins {crb/ptlut_config_reg[*]/C}]
-set_false_path -from [get_pins {crb/prbs_err_persist_m_reg[*]/C}]
-set_false_path -from [get_pins {crb/amc13_to_counter_reg[*]/C}]
-set_false_path -from [get_pins {crb/amc13_status_cnt_reg[*]/C}]
-set_false_path -from [get_pins {crb/daq_state_cnt_reg[*]/C}]
-set_false_path -from [get_pins {crb/rates_w_reg[*]/C}]
-set_false_path -from [get_pins {crb/unlock_cnt_reg[*]/C}]
-set_false_path -from [get_pins {crb/rx_reset_done_reg[*]/C}]
-set_false_path -from [get_pins {crb/tx_reset_done_reg[*]/C}]
-set_false_path -from [get_pins {crb/cpll_lock_reg[*]/C}]
-set_false_path -from [get_pins {crb/gth_tx_reset_done_reg[*]/C}]
-set_false_path -from [get_pins {crb/crc_err_flag_comb_reg[*]/C}]
-set_false_path -from [get_pins {crb/err_tst_pat_flag_comb_reg[*]/C}]
-set_false_path -from [get_pins {crb/rx_clk_phase_drift_reg[*]/C}]
 
-set_bus_skew                 -from [get_pins {mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/ds/drx_reg[*]/C}] -to [get_pins {mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/inreg_320_reg[*]/D}] 3.0
-set_max_delay -datapath_only -from [get_pins {mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/ds/drx_reg[*]/C}] -to [get_pins {mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/inreg_320_reg[*]/D}] 3.0
+set_max_delay -from [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/inreg_40_reg[*][*]] -to [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/fdre_i[*]] -datapath_only 1.2
+set_max_delay -from [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/inreg_40_reg[*][*]] -to [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/fdre_i[*]] -datapath_only 1.2
 
-set_bus_skew                 -from [get_pins {mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/ds/drx_reg[*]/C}] -to [get_pins {mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/inreg_320_reg[*]/D}] 3.0
-set_max_delay -datapath_only -from [get_pins {mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/ds/drx_reg[*]/C}] -to [get_pins {mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/inreg_320_reg[*]/D}] 3.0
+set_max_delay -from [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/rx_header_80_reg] -to [get_cells mpcx_rx_i/emtf_mpcx_rx_n/rx_loop[*].mpcx_rx_i/rxr/rx_header_r_reg[*]] -datapath_only 1.2
+set_max_delay -from [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/rx_header_80_reg] -to [get_cells mpcx_rx_i/mpc_loop[*].emtf_mpcx_rx_i/rx_loop[*].mpcx_rx_i/rxr/rx_header_r_reg[*]] -datapath_only 1.2
 
+set_max_delay -from [get_clocks -of_objects [get_pins usrclk_mmcm_/inst/mmcm_adv_inst/CLKOUT1]] -to [get_clocks -of_objects [get_pins mpcx_rx_i/mpcx_mmcm_i/inst/mmcm_adv_inst/CLKOUT0]] 3.125
 
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 set_property BITSTREAM.CONFIG.OVERTEMPPOWERDOWN ENABLE [current_design]

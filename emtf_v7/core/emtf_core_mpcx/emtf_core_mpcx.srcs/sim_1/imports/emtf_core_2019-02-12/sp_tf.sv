@@ -253,7 +253,7 @@ module sp_tf;
 `define fest fest_str
    
 //`define dpath "/exports/uftrig01b/madorsky/projects/modelsim/emtf_data/"
-`define dpath "/home/madorsky/github/vivado/emtf/emtf_v7/core/emtf_data/" 
+`define dpath "/home/madorsky/github/emtf/emtf_v7/core/emtf_data/" 
 //"/home/madorsky/cernbox/projects/modelsim/emtf_data/"
 
    wire [63:0] 	  core_config;
@@ -432,8 +432,8 @@ x        .bt_rank (bt_rank_i),
 				v0 = 0; v1 = 0; v2 = 0; v3 = 0; v4 = 0; v5 = 0; v6 = 0; v7 = 0; v8 = 0; v9 = 0; v10 = 0; v11 = 0;
 				sn = $sscanf(line, "%d %d %d %d %d %d %d %d %d %d %d %d", 
 							 v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11);
-				//				$fwrite(sim_out, "code %d read %d items %d %d %d %d %d %d %d %d %d %d %d %d\n", code, sn,
-				//				    v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11);
+//				$fwrite(sim_out, "code %d read %d items %d %d %d %d %d %d %d %d %d %d %d %d\n", code, sn,
+//					    v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11);
 				case (sn)
 					1: 
 						begin	// end of event
@@ -485,8 +485,8 @@ x        .bt_rank (bt_rank_i),
 							old_station = _station;
 							// end of BX jitter code
 
-							//							$fwrite(sim_out, "primitive: subsec: %d  stat: %d  val: %d  hs: %h  wg: %h  q: %h\n",
-							//									_subsector, _station, _valid, _halfstrip, _wiregroup, _quality);
+							//$fwrite(sim_out, "primitive: subsec: %d  stat: %d  val: %d  hs: %h  wg: %h  q: %h\n",
+							//		_subsector, _station, _valid, _halfstrip, _wiregroup, _quality);
 							
 							// copy data to the corresponding input
 

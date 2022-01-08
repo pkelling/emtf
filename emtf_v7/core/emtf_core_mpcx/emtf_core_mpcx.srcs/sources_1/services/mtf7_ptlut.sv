@@ -92,6 +92,22 @@ module mtf7_ptlut #
 	assign goe = 1'b1; // enable clock chip outputs
 	assign sync = 1'b1; // remove sync
 	
+	// reclock idelay and odelay LD pulse to in_delay_clk
+	wire in_delay_reset_rc;
+    xpm_cdc_sync_rst 
+    #(
+        .DEST_SYNC_FF   (4),
+        .INIT           (0),
+        .INIT_SYNC_FF   (0),
+        .SIM_ASSERT_CHK (0) 
+    )
+    ld_reclock 
+    (
+        .dest_rst (in_delay_reset_rc),
+        .dest_clk (in_delay_clk),
+        .src_rst  (in_delay_reset)
+    );
+    
 	wire [11:0] wr_term_count, rd_term_count;
 	wire [5:0] wr_latency, rd_latency;
 	wire [4:0] qr_sel, qw_sel, we_sel;
@@ -368,10 +384,10 @@ module mtf7_ptlut #
 				// From the device out to the system
 				.DATA_OUT_FROM_DEVICE (dq_out[gi/2][(gi%2)*18 +: 18]),
 				.DELAY_CLK (in_delay_clk),
-				.IN_DELAY_RESET (in_delay_reset),                        // Active high synchronous reset for input delay
+				.IN_DELAY_RESET (in_delay_reset_rc),                        // Active high synchronous reset for input delay
 				.IN_DELAY_DATA_CE ({9{in_delay_ce}}),                      // Enable signal for delay
 				.IN_DELAY_DATA_INC (9'b0),                     // Delay increment (high), decrement (low) signal
-				.OUT_DELAY_RESET (in_delay_reset),                       // Active high synchronous reset for output delay
+				.OUT_DELAY_RESET (in_delay_reset_rc),                       // Active high synchronous reset for output delay
 				.OUT_DELAY_DATA_CE ({9{in_delay_ce}}),                     // Enable signal for delay
 				.OUT_DELAY_DATA_INC (9'b0),                    // Delay increment (high), decrement (low) signal
 				.IN_DELAY_TAP_IN (in_delay_tap[gi*5*9 +: 5*9]),      // Dynamically loadable delay tap value for input delay
@@ -428,7 +444,7 @@ module mtf7_ptlut #
 		.CE                     (in_delay_ce),
 		.INC                    (1'b0),
 		.IDATAIN                (clk_in_from_pin),
-		.LD                     (in_delay_reset),
+		.LD                     (in_delay_reset_rc),
 		.LDPIPEEN               (1'b0),
 		.REGRST                 (1'b0),
 		.CNTVALUEIN             (ddr_clk_del),
