@@ -153,6 +153,8 @@ private slots:
 
     void on_clk40_psen_exec_released();
 
+    void on_pushButton_6_released();
+
 private:
     Ui::sp12_qtw *ui;
 };

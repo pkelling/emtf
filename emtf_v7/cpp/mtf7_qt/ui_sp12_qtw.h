@@ -164,6 +164,8 @@ public:
     QLabel *label_17;
     QPushButton *clk40_psen_exec;
     QLabel *label_18;
+    QLabel *label_19;
+    QPushButton *pushButton_6;
     QTableWidget *bc0_source_tbl;
 
     void setupUi(QDialog *sp12_qtw)
@@ -505,7 +507,7 @@ public:
         device_list->setSelectionMode(QAbstractItemView::ExtendedSelection);
         groupBox_7 = new QGroupBox(frame);
         groupBox_7->setObjectName(QString::fromUtf8("groupBox_7"));
-        groupBox_7->setGeometry(QRect(570, 120, 151, 81));
+        groupBox_7->setGeometry(QRect(570, 130, 151, 71));
         occup_counters_read_pb = new QPushButton(groupBox_7);
         occup_counters_read_pb->setObjectName(QString::fromUtf8("occup_counters_read_pb"));
         occup_counters_read_pb->setGeometry(QRect(10, 20, 131, 21));
@@ -617,10 +619,10 @@ public:
         cppf_bc0_delay_set_pb->setGeometry(QRect(10, 50, 91, 22));
         groupBox_12 = new QGroupBox(frame);
         groupBox_12->setObjectName(QString::fromUtf8("groupBox_12"));
-        groupBox_12->setGeometry(QRect(570, 10, 151, 101));
+        groupBox_12->setGeometry(QRect(570, 10, 151, 121));
         psen_count_spin = new QSpinBox(groupBox_12);
         psen_count_spin->setObjectName(QString::fromUtf8("psen_count_spin"));
-        psen_count_spin->setGeometry(QRect(70, 20, 71, 29));
+        psen_count_spin->setGeometry(QRect(70, 20, 71, 21));
         psen_count_spin->setMinimum(-2000);
         psen_count_spin->setMaximum(2000);
         label_17 = new QLabel(groupBox_12);
@@ -628,10 +630,16 @@ public:
         label_17->setGeometry(QRect(10, 20, 51, 20));
         clk40_psen_exec = new QPushButton(groupBox_12);
         clk40_psen_exec->setObjectName(QString::fromUtf8("clk40_psen_exec"));
-        clk40_psen_exec->setGeometry(QRect(10, 50, 131, 21));
+        clk40_psen_exec->setGeometry(QRect(10, 40, 131, 21));
         label_18 = new QLabel(groupBox_12);
         label_18->setObjectName(QString::fromUtf8("label_18"));
-        label_18->setGeometry(QRect(10, 70, 111, 20));
+        label_18->setGeometry(QRect(10, 60, 131, 16));
+        label_19 = new QLabel(groupBox_12);
+        label_19->setObjectName(QString::fromUtf8("label_19"));
+        label_19->setGeometry(QRect(10, 70, 131, 20));
+        pushButton_6 = new QPushButton(groupBox_12);
+        pushButton_6->setObjectName(QString::fromUtf8("pushButton_6"));
+        pushButton_6->setGeometry(QRect(10, 90, 131, 21));
 
         verticalLayout->addWidget(frame);
 
@@ -759,10 +767,12 @@ public:
         groupBox_11->setTitle(QApplication::translate("sp12_qtw", "CPPF", 0, QApplication::UnicodeUTF8));
         label_14->setText(QApplication::translate("sp12_qtw", "BC0 delay", 0, QApplication::UnicodeUTF8));
         cppf_bc0_delay_set_pb->setText(QApplication::translate("sp12_qtw", "Set", 0, QApplication::UnicodeUTF8));
-        groupBox_12->setTitle(QApplication::translate("sp12_qtw", "clk40 phase", 0, QApplication::UnicodeUTF8));
+        groupBox_12->setTitle(QApplication::translate("sp12_qtw", "MPCX RX tests", 0, QApplication::UnicodeUTF8));
         label_17->setText(QApplication::translate("sp12_qtw", "psen count", 0, QApplication::UnicodeUTF8));
         clk40_psen_exec->setText(QApplication::translate("sp12_qtw", "Shift phase clk40", 0, QApplication::UnicodeUTF8));
-        label_18->setText(QApplication::translate("sp12_qtw", "Works only with debug fw", 0, QApplication::UnicodeUTF8));
+        label_18->setText(QApplication::translate("sp12_qtw", "<html><head/><body><p>Works only with debug fw</p></body></html>", 0, QApplication::UnicodeUTF8));
+        label_19->setText(QApplication::translate("sp12_qtw", "max psen count = +/-1120", 0, QApplication::UnicodeUTF8));
+        pushButton_6->setText(QApplication::translate("sp12_qtw", "periodic MPC resets", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

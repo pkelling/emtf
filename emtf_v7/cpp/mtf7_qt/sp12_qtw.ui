@@ -1285,9 +1285,9 @@
         <property name="geometry">
          <rect>
           <x>570</x>
-          <y>120</y>
+          <y>130</y>
           <width>151</width>
-          <height>81</height>
+          <height>71</height>
          </rect>
         </property>
         <property name="title">
@@ -1737,11 +1737,11 @@
           <x>570</x>
           <y>10</y>
           <width>151</width>
-          <height>101</height>
+          <height>121</height>
          </rect>
         </property>
         <property name="title">
-         <string>clk40 phase</string>
+         <string>MPCX RX tests</string>
         </property>
         <widget class="QSpinBox" name="psen_count_spin">
          <property name="geometry">
@@ -1749,7 +1749,7 @@
            <x>70</x>
            <y>20</y>
            <width>71</width>
-           <height>29</height>
+           <height>21</height>
           </rect>
          </property>
          <property name="minimum">
@@ -1776,7 +1776,7 @@
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>50</y>
+           <y>40</y>
            <width>131</width>
            <height>21</height>
           </rect>
@@ -1789,13 +1789,39 @@
          <property name="geometry">
           <rect>
            <x>10</x>
+           <y>60</y>
+           <width>131</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Works only with debug fw&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_19">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
            <y>70</y>
-           <width>111</width>
+           <width>131</width>
            <height>20</height>
           </rect>
          </property>
          <property name="text">
-          <string>Works only with debug fw</string>
+          <string>max psen count = +/-1120</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="pushButton_6">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>90</y>
+           <width>131</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>periodic MPC resets</string>
          </property>
         </widget>
        </widget>

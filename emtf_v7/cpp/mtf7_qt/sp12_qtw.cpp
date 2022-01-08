@@ -2094,11 +2094,12 @@ void sp12_qtw::on_clk40_psen_exec_released()
 		tpaterr = 0;
 	    mread(device_d, &tpaterr, 8, tpaddr); // this reads actual errors
 		
-		tpaterr &= 0xffULL; // only analyze MPC0
-		//tpaterr &= 0xff0000000000ULL; // only analyze Neighbor
+		//tpaterr &= 0xffULL; // only analyze MPC0
+		tpaterr &= 0xff0000000000ULL; // only analyze Neighbor
 		if (tpaterr != 0) 
 		{
 			log_printf ("%016llx phase: %d\n", tpaterr, i);
+			
 			// give it some more time 
 			usleep (100000);
 
@@ -2114,13 +2115,14 @@ void sp12_qtw::on_clk40_psen_exec_released()
 			tpaterr = 0;
 			mread(device_d, &tpaterr, 8, tpaddr); // this reads actual errors
 
-			tpaterr &= 0xffULL; // only analyze MPC0
-			//tpaterr &= 0xff0000000000ULL; // only analyze Neighbor
+			//tpaterr &= 0xffULL; // only analyze MPC0
+			tpaterr &= 0xff0000000000ULL; // only analyze Neighbor
 			if (tpaterr != 0) 
 			{
 				log_printf ("\nipersistent test pattern errors: %016llx phase: %d\n", tpaterr, i);
 				break;
 			}
+			
 		}
 
 		
@@ -2138,4 +2140,79 @@ void sp12_qtw::on_clk40_psen_exec_released()
     }
 
 	log_printf ("done psen count: %d direction: %d\n", psen_count_abs, psen_sign);
+}
+
+void sp12_qtw::on_pushButton_6_released()
+{
+    // test with periodic MPC reset and check for errors
+    // read adjustment count. Can be negative or positive
+    int psen_count = ui->psen_count_spin->value();
+    int psen_count_abs = abs(psen_count);
+
+    uint32_t REG_MEM_BASE = 0x80000; // bytes
+    int ch = REG_BANK_CH; // config register bank
+    uint32_t saddr = REG_MEM_BASE + (ch << 12) + (0 << 3); // control register
+
+    uint64_t value = 0;
+
+    for (int i = 0; i < psen_count_abs; i++)
+    {
+        uint64_t tpaterr = 0;
+        uint32_t tpaddr = REG_MEM_BASE + (ch << 12) + (0x62 << 3) ; // test pattern errors reg
+
+        // reset error flags
+        uint64_t cntrlreg;
+        mread  (device_d, &cntrlreg, 8, saddr);
+        cntrlreg |= (1ULL << 21);
+        mwrite (device_d, &cntrlreg, 8, saddr);
+        cntrlreg &= ~(1ULL << 21);
+        mwrite (device_d, &cntrlreg, 8, saddr);
+
+        usleep (50000); // let errors happen
+        tpaterr = 0;
+        mread(device_d, &tpaterr, 8, tpaddr); // this reads actual errors
+
+        //tpaterr &= 0xffULL; // only analyze MPC0
+        tpaterr &= 0xff0000000000ULL; // only analyze Neighbor
+        if (tpaterr != 0)
+        {
+            log_printf ("%016llx phase: %d\n", tpaterr, i);
+
+            // give it some more time
+            usleep (100000);
+
+            // reset error flags
+            uint64_t cntrlreg;
+            mread  (device_d, &cntrlreg, 8, saddr);
+            cntrlreg |= (1ULL << 21);
+            mwrite (device_d, &cntrlreg, 8, saddr);
+            cntrlreg &= ~(1ULL << 21);
+            mwrite (device_d, &cntrlreg, 8, saddr);
+
+            usleep (50000); // let errors happen
+            tpaterr = 0;
+            mread(device_d, &tpaterr, 8, tpaddr); // this reads actual errors
+
+            //tpaterr &= 0xffULL; // only analyze MPC0
+            tpaterr &= 0xff0000000000ULL; // only analyze Neighbor
+            if (tpaterr != 0)
+            {
+                log_printf ("\nipersistent test pattern errors: %016llx phase: %d\n", tpaterr, i);
+                break;
+            }
+
+        }
+
+        // reset MPC here
+        system ("../mpc_resetter/mpc_resetter");
+
+        log_printf ("\r%d      ", i);
+        fflush (stdout);
+
+        usleep (1000000); // let it reboot
+
+    }
+
+    log_printf ("done MPC reset count: %d\n", psen_count_abs);
+
 }
