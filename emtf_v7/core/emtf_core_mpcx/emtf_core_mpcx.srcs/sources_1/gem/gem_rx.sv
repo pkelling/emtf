@@ -172,15 +172,19 @@ module gem_rx
                 .rx_correction_flag_o   (lb_gbt_correction_flag [gi])
             );
 
-            // programmable alignment delay, manual so far
-            dyn_shift #(.SELWIDTH(5), .BW(234)) gem_sh 
+            gem_aligner gem_aligner_i
             (
-                .CLK(clk40), 
-                .CE(1'b1), 
-                .SEL(gem_data_del[gi]), 
-                .SI(lb_gbt_rx_frame [gi]), 
-                .DO(lb_gbt_rx_frame_r [gi])
-            );
+                .frame_i         (lb_gbt_rx_frame [gi]), // input frame
+                .frame_o         (lb_gbt_rx_frame_r [gi]), // aligned frame
+                .ttc_bc0_del     (), // delayed BC0 from TTC to align to
+                .automatic_delay (), // calculated delay
+                .manual_delay    (gem_data_del[gi]), // manually applied delay
+                .en_manual       (), // enable manual delay
+                .alg_out_range   (), // alignment counter out of range
+                .bc0_period_err  (), // BC0 period is not exactly one orbit
+                .bxn             (), // BX counter for BC0 period error detection
+                .clk             (clk40)
+            );            
             
             // data decoder according to "GEM Trigger Data Format Proposal"
             for (gj = 0; gj < 2; gj++) // layer loop
