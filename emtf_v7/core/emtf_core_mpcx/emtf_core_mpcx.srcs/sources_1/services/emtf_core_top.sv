@@ -668,10 +668,16 @@ module emtf_core_top
         .fiber_enable (fiber_enable[49 +: 7])
     );
 
-   wire [233:0]      ge11_rxd [6:0]; ///< GEM rx data, 1 frame x 234 bits, for 7 links
-   wire [6:0]        ge11_rx_valid;  ///< GEM data valid flags
-   wire [6:0]        ge11_crc_match; ///< CRC match flags from GEM links
-   wire [4:0] gem_data_del [6:0];
+    wire [233:0]      ge11_rxd [6:0]; ///< GEM rx data, 1 frame x 234 bits, for 7 links
+    wire [6:0]        ge11_rx_valid;  ///< GEM data valid flags
+    wire [6:0]        ge11_crc_match; ///< CRC match flags from GEM links
+    wire [4:0] gem_data_del [6:0];
+    
+    wire [5:0] ttc_bc0_delay_gem;
+    wire [4:0] automatic_delay_gem [6:0];
+    wire       en_manual_gem;
+    wire [6:0] alg_out_range_gem;
+    wire [6:0] bc0_period_err_gem;
 
     gem_rx gem_rx_i
     (
@@ -689,7 +695,13 @@ module emtf_core_top
         .correction_cnt   (ge11_correction_cnt),
         .fiber_enable     (fiber_enable [(49+7) +: 7]),
         .gem_data_del     (gem_data_del),
-        .clk40      (clk40)
+        .ttc_bc0           (ttc_bc0_rx),
+        .ttc_bc0_delay_gem (ttc_bc0_delay_gem  ),
+        .automatic_delay   (automatic_delay_gem),
+        .en_manual         (en_manual_gem      ),
+        .alg_out_range     (alg_out_range_gem  ),
+        .bc0_period_err    (bc0_period_err_gem ),
+        .clk40             (clk40)
     );  
 	
 	wire clk_160_pll;
@@ -1080,7 +1092,13 @@ module emtf_core_top
 		.automatic_delay_id1 (automatic_delay_id1),
 		.manual_delay_id1    (manual_delay_id1),
 		.ge11_correction_cnt (ge11_correction_cnt),
-		.gem_data_del     (gem_data_del)
+		.gem_data_del     (gem_data_del),
+        .ttc_bc0_delay_gem   (ttc_bc0_delay_gem  ),
+        .automatic_delay_gem (automatic_delay_gem),
+        .en_manual_gem       (en_manual_gem      ),
+        .alg_out_range_gem   (alg_out_range_gem  ),
+        .bc0_period_err_gem  (bc0_period_err_gem )
+            
     );
 
 	wire [8*5+9-1:0] bc0_mrg;

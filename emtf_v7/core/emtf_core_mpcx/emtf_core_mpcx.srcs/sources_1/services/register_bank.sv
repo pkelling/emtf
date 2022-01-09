@@ -98,11 +98,31 @@ module register_bank
     input      [4:0] automatic_delay_id1 [4:0][7:0], // [station][cscid=1 data fragment]
     output reg [4:0] manual_delay_id1 [4:0][7:0], // [station][cscid=1 data fragment] 
     input      [15:0] ge11_correction_cnt [6:0],
-    output  [4:0] gem_data_del [6:0] // GE1/1 input data delay, per link [schamber=link]
+    output  [4:0] gem_data_del [6:0], // GE1/1 input data delay, per link [schamber=link]
+    
+    output reg [5:0] ttc_bc0_delay_gem,
+    input  [4:0] automatic_delay_gem [6:0],
+    output reg      en_manual_gem,
+    input  [6:0] alg_out_range_gem,
+    input  [6:0] bc0_period_err_gem
 );
+
 
 	wire [63:0] automatic_delay_id1_64 [4:0];
 	reg  [63:0] manual_delay_id1_64 [4:0];
+	
+	wire [63:0] gem_align_status = 
+	{
+	   bc0_period_err_gem,
+	   alg_out_range_gem,
+	   automatic_delay_gem [6],
+	   automatic_delay_gem [5],
+	   automatic_delay_gem [4],
+	   automatic_delay_gem [3],
+	   automatic_delay_gem [2],
+	   automatic_delay_gem [1],
+	   automatic_delay_gem [0]
+	};
 
 	genvar gi;
 	generate
@@ -305,6 +325,7 @@ module register_bank
                 9'h06c: begin manual_delay_id1_64[3] = r_in; end
                 9'h06d: begin manual_delay_id1_64[4] = r_in; end
 				9'h072: begin gem_data_del_comb = r_in; end
+				9'h074: begin {en_manual_gem, ttc_bc0_delay_gem} = r_in; end
 			endcase
 		end
 		else
@@ -613,6 +634,9 @@ module register_bank
 				9'h070: begin r_out = r_out | ge11_corr_cnt[0]; end 
 				9'h071: begin r_out = r_out | ge11_corr_cnt[1]; end 
 				9'h072: begin r_out = r_out | gem_data_del_comb; end
+				9'h073: begin r_out = r_out | gem_align_status; end
+				9'h074: begin r_out = r_out | {en_manual_gem, ttc_bc0_delay_gem}; end
+				
 			endcase
 			in_delay_tap_rb_r = in_delay_tap_rb;
 			out_delay_tap_rb_r = out_delay_tap_rb;

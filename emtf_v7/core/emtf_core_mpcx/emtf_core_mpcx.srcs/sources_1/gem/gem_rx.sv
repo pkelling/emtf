@@ -17,6 +17,13 @@ module gem_rx
     input  [6:0] fiber_enable,
     input  [4:0] gem_data_del [6:0], // manual gem data delay for alignment [schamber=link]
     // these delays should be set so that GEM data emerges from gem_sh delay line at the same time as RPC data
+    input ttc_bc0,
+    input [5:0] ttc_bc0_delay_gem,
+    output [4:0] automatic_delay [6:0],
+    input en_manual,
+    output [6:0] alg_out_range,
+    output [6:0] bc0_period_err,
+
 	input clk40
 );
 
@@ -35,6 +42,7 @@ module gem_rx
     (* mark_debug *) wire [6:0] lb_gbt_rx_header_locked     ;
     (* mark_debug *) wire [15:0] lb_gbt_correction_cnt [6:0];
     assign correction_cnt = lb_gbt_correction_cnt;
+    wire ttc_bc0_del;
     
     assign ge11_link_status = 
     {
@@ -64,6 +72,7 @@ module gem_rx
     (* mark_debug *) wire gem_single_hit = single_hit;
     (* mark_debug *) wire [bw_fph-1:0] gem_ph_single = ph_single;
     (* mark_debug *) wire [bw_th-1:0]  gem_th_single = th_single;
+    reg [11:0] bxn;
 
     integer i, j, k;
     always @(posedge clk40)
@@ -174,15 +183,15 @@ module gem_rx
 
             gem_aligner gem_aligner_i
             (
-                .frame_i         (lb_gbt_rx_frame [gi]), // input frame
+                .frame_i         (lb_gbt_rx_frame   [gi]), // input frame
                 .frame_o         (lb_gbt_rx_frame_r [gi]), // aligned frame
-                .ttc_bc0_del     (), // delayed BC0 from TTC to align to
-                .automatic_delay (), // calculated delay
+                .ttc_bc0_del     (ttc_bc0_del), // delayed BC0 from TTC to align to
+                .automatic_delay (automatic_delay [gi]), // calculated delay
                 .manual_delay    (gem_data_del[gi]), // manually applied delay
-                .en_manual       (), // enable manual delay
-                .alg_out_range   (), // alignment counter out of range
-                .bc0_period_err  (), // BC0 period is not exactly one orbit
-                .bxn             (), // BX counter for BC0 period error detection
+                .en_manual       (en_manual), // enable manual delay
+                .alg_out_range   (alg_out_range [gi]), // alignment counter out of range
+                .bc0_period_err  (bc0_period_err [gi]), // BC0 period is not exactly one orbit
+                .bxn             (bxn), // BX counter for BC0 period error detection
                 .clk             (clk40)
             );            
             
@@ -203,6 +212,16 @@ module gem_rx
 
         end
     endgenerate;
+
+    // generate delayed bc0 for alignment
+    dyn_shift #(.BW(1), .SELWIDTH(6)) bc0_del (.CLK(clk40), .CE(1'b1), .SEL(ttc_bc0_delay_gem), .SI(ttc_bc0), .DO(ttc_bc0_del));
+    always @(posedge clk40)
+    begin
+        // free-running BX counter for BC0 period error detection
+        // does not need resetting
+        bxn++;
+        if (bxn == 12'd3564) bxn = 12'h0;
+    end
 
 
 endmodule
