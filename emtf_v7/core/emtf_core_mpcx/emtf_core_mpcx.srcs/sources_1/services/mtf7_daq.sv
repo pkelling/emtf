@@ -42,7 +42,9 @@ module mtf7_daq
    input [7:0]        gmt_phi [2:0],
    input [8:0]        gmt_eta [2:0],
    input [3:0]        gmt_qlt [2:0],
-    input [2:0] gmt_crg,
+   input [2:0]        gmt_crg,
+   input [2:0]        hmt,
+    
 
    input              clk,  ///< Clock
 
@@ -204,7 +206,7 @@ module mtf7_daq
    assign id_addrw     = id_addrr + l1a_delay + core_latency + ptlut_latency;
    assign rpc_id_addrw = id_addrr + l1a_delay + core_latency + ptlut_latency - rpc_late_by; // rpc delay reduced to compensate data coming late
    // FIXME Correct for GEM
-   assign gem_id_addrw = id_addrr + l1a_delay + core_latency + ptlut_latency - rpc_late_by; // gem delay same as RPC for now, need to delay gem data at alignment so they come in just like RPC
+   assign gem_id_addrw = id_addrr + l1a_delay + core_latency + ptlut_latency - rpc_late_by; // gem delay same as RPC, need to delay gem data at alignment so they come in just like RPC
    assign od_addrw = od_addrr + l1a_delay;// + ptlut_latency;
    assign od_addrr = id_addrr;
 
@@ -531,7 +533,8 @@ module mtf7_daq
 
          out_del_in[out_pos +: out_lng] =
          {
-              bxn_counter[2:0],
+//              bxn_counter[2:0],
+              {1'b0, hmt}, // send HMT bits instead of BX counter
               ptlut_nnpt [j],
               bt_pt_tx [j],
               bt_phi [j],
@@ -548,7 +551,7 @@ module mtf7_daq
          for (i = 0; i < 8; i = i+1) // daq_bank word loop
          begin
             {
-                 bxn_counter_d [i][j],
+                 bxn_counter_d [i][j], // actually HMT bits
                  ptlut_addr_d [i][j],
                  bt_pt_d [i][j],
                  bt_phi_d [i][j],
@@ -624,7 +627,7 @@ module mtf7_daq
                                   bt_pt_d[i][j],
 
                                   1'b1, // d15
-                                  bxn_counter_d [i][j][1:0], // mistake in specs, need to fix
+                                  bxn_counter_d [i][j][1:0], // actually HMT bits
                                   bt_q_d[i][j],
                                   gmt_eta_d[i][j],
 
@@ -914,7 +917,7 @@ module mtf7_daq
                          }; //sp
    assign daq_head[3] = {
                          4'ha, me1a_en,                                                    // HD2d
-                         4'ha, 1'b0, l1a_window, ddm, spa, rpca, skip, rdy, bsy, osy, wof, // HD2c
+                         4'ha, use_nn_pt, l1a_window, ddm, spa, rpca, skip, rdy, bsy, osy, wof, // HD2c
                          4'ha, sp_ts, sp_ersv, sp_addr,                                    // HD2b
                          // FIXME
                          4'ha, gem_crc_match_d[0][4:0], gem_en[6:0]                        // HD2a

@@ -1255,7 +1255,7 @@ module emtf_core_top
          .gmt_eta (gmt_eta_d),
          .gmt_qlt (gmt_qlt_d),
          .gmt_crg (gmt_crg_d),
-    
+         .hmt     (hmt_out),    
          .clk (clk40),
     
          .daq_config (daq_config),
