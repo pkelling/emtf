@@ -21,8 +21,8 @@
 
 module prim_conv_sector
 (
-    vpf, q, wg, hstr, cpat,
-    ph, th11, th, vl, phzvl, me11a, cpatr, qses,
+    vpf, q, wg, hstr, cpat, lr,
+    ph, th11, th, vl, phzvl, me11a, cpatr, lr_r, qses,
     ph_hit, 
     cs, sel, addr, r_in, r_out, we,
 
@@ -41,6 +41,7 @@ module prim_conv_sector
 	input [bw_wg-1:0]  wg   [5:0][8:0][seg_ch-1:0];
 	input [bw_hs-1:0]  hstr [5:0][8:0][seg_ch-1:0];
 	input [3:0] 	   cpat [5:0][8:0][seg_ch-1:0];
+    input [seg_ch-1:0] lr   [5:0][8:0];
 	input [1:0] 	   qses [5:0][8:0][seg_ch-1:0];
 
 	output [bw_fph-1:0]  ph   [5:0][8:0][seg_ch-1:0];
@@ -55,6 +56,7 @@ module prim_conv_sector
 	// [station][chamber][segment], station 2 = neighbor segment
 	output [seg_ch-1:0] me11a [2:0][2:0];
 	output [3:0] 		cpatr [5:0][8:0][seg_ch-1:0];
+	output [seg_ch-1:0]	lr_r [5:0][8:0];
 	// ph and th raw hits
 	output [ph_hit_w-1:0] ph_hit [5:0][8:0];
 
@@ -111,6 +113,7 @@ module prim_conv_sector
 				    .wiregroup   (wg [i][j]), 
 				    .hstrip      (hstr[i][j]),
 				    .clctpat     (cpat[i][j]),
+				    .lr          (lr[i][j]),
 				    .qses        (qses[i][j]),
 				    .ph          (ph [i][j]), 
 				    .th          (th11 [i][j]), // use special th11 array for ME11 
@@ -118,6 +121,7 @@ module prim_conv_sector
 				    .phzvl       (phzvl[i][j]),
 				    .me11a       (me11a[i][j]),
 				    .clctpat_r   (cpatr[i][j]),
+				    .lr_r        (lr_r[i][j]),
 				    .ph_hit      (ph_hit [i][j]),
 				    .sel         (sel), 
 				    .addr        (addr), 
@@ -142,6 +146,7 @@ module prim_conv_sector
 					 .wiregroup	  (wg [i][j]), 
 					 .hstrip	  (hstr[i][j]), 
  				     .clctpat     (cpat[i][j]),
+ 				     .lr          (lr[i][j]),
  				     .qses        (qses[i][j]),
 					 .ph		  (ph [i][j]), 
 					 .th		  (th [i][j]), 
@@ -149,6 +154,7 @@ module prim_conv_sector
 					 .phzvl		  (phzvl[i][j]),
 					 .me11a		  (dummy[i][j]),
 				     .clctpat_r   (cpatr[i][j]),
+				     .lr_r        (lr_r[i][j]),
 					 .ph_hit	  (ph_hit [i][j]),
 					 .sel		  (sel), 
 					 .addr		  (addr), 
@@ -173,6 +179,7 @@ module prim_conv_sector
 					 .wiregroup	  (wg [i][j]), 
 					 .hstrip	  (hstr[i][j]), 
  				     .clctpat     (cpat[i][j]),
+				     .lr          (lr[i][j]),
 				     .qses        (qses[i][j]),
 					 .ph		  (ph [i][j]), 
 					 .th		  (th [i][j]), 
@@ -180,6 +187,7 @@ module prim_conv_sector
 					 .phzvl		  (phzvl[i][j]),
 					 .me11a		  (dummy[i][j]),
 				     .clctpat_r   (cpatr[i][j]),
+				     .lr_r        (lr_r[i][j]),
 					 .ph_hit	  (ph_hit [i][j]),
 					 .sel		  (sel), 
 					 .addr		  (addr), 
@@ -202,6 +210,7 @@ module prim_conv_sector
             .wiregroup   (wg [5][0]), 
             .hstrip      (hstr[5][0]),
             .clctpat     (cpat[5][0]),
+	        .lr          (lr[5][0]),
 		    .qses        (qses[5][0]),
             .ph          (ph [5][0]), 
             .th          (th11[2][0]), // use special th11 array for ME11 
@@ -209,6 +218,7 @@ module prim_conv_sector
             .phzvl       (phzvl[5][0]),
             .me11a       (me11a[2][0]),
             .clctpat_r   (cpatr[5][0]),
+		    .lr_r        (lr_r[5][0]),
             .ph_hit      (ph_hit [5][0]),
             .sel         (sel), 
             .addr        (addr), 
@@ -230,6 +240,7 @@ module prim_conv_sector
                  .wiregroup	  (wg [5][j]), 
                  .hstrip	  (hstr[5][j]), 
                  .clctpat     (cpat[5][j]),
+				 .lr          (lr[5][j]),
 				 .qses        (qses[5][j]),
                  .ph		  (ph [5][j]), 
                  .th		  (th [5][j]), 
@@ -237,6 +248,7 @@ module prim_conv_sector
                  .phzvl		  (phzvl[5][j]),
                  .me11a		  (dummy[5][j]),
                  .clctpat_r   (cpatr[5][j]),
+				 .lr_r        (lr_r[5][j]),
                  .ph_hit	  (ph_hit [5][j]),
                  .sel		  (sel), 
                  .addr		  (addr), 

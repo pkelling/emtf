@@ -5,6 +5,7 @@ module ptlut_address
     bt_phi_i,
     bt_theta_i,
     bt_cpattern,
+    bt_lr,
     bt_delta_ph,
     bt_delta_th,
     bt_sign_ph,
@@ -47,6 +48,7 @@ module ptlut_address
 	input [bw_th-1:0] 	bt_theta_i [2:0];
 	// [best_track_num][station 0-3]
 	input [3:0] 		bt_cpattern [2:0][3:0];
+	input [3:0] 		bt_lr [2:0];
 	// ph and th deltas from best stations
 	// [best_track_num], last index: 0=12, 1=13, 2=14, 3=23, 4=24, 5=34
 	input [bw_fph-1:0] bt_delta_ph [2:0][5:0];
@@ -274,6 +276,7 @@ module ptlut_address
     assign dth_3b_lut[0][2] = 3'd2; assign dth_3b_lut[1][2] = 3'd6; assign dth_2b_lut[0][2] = 2'd1; assign dth_2b_lut[1][2] = 2'd1; 
     assign dth_3b_lut[0][3] = 3'd1; assign dth_3b_lut[1][3] = 3'd7; assign dth_2b_lut[0][3] = 2'd0; assign dth_2b_lut[1][3] = 2'd3; 
     assign dth_3b_lut[0][4] = 3'd0; assign dth_3b_lut[1][4] = 3'd7; assign dth_2b_lut[0][4] = 2'd0; assign dth_2b_lut[1][4] = 2'd3; 
+    
     
     reg [2:0] mode2 [2:0];
     reg [1:0] mode3 [2:0];

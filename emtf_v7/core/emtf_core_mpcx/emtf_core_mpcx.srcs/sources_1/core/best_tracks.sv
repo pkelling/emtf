@@ -25,6 +25,7 @@ module best_tracks
      phi,
      theta,
      cpattern,
+     lr_bit,
      delta_ph,
      delta_th,
      sign_ph,
@@ -38,6 +39,7 @@ module best_tracks
      bt_phi,
      bt_theta,
      bt_cpattern,
+     bt_lr,
      bt_delta_ph,
      bt_delta_th,
      bt_sign_ph,
@@ -58,6 +60,7 @@ module best_tracks
 	input [bw_th-1:0]  theta [3:0][2:0];
 	// [zone][pattern_num][station]
 	input [3:0] 	   cpattern [3:0][2:0][3:0];
+	input [3:0] 	   lr_bit [3:0][2:0];
 	// ph and th deltas from best stations
 	// [zone][pattern_num], last index: 0=12, 1=13, 2=14, 3=23, 4=24, 5=34
 	input [bw_fph-1:0] delta_ph [3:0][2:0][5:0];
@@ -78,6 +81,7 @@ module best_tracks
 	output reg [bw_th-1:0] 	bt_theta [2:0];
 	// [best_track_num][station]
 	output reg [3:0] 		bt_cpattern [2:0][3:0];
+	output reg [3:0] 		bt_lr [2:0];
 	// ph and th deltas from best stations
 	// [best_track_num], last index: 0=12, 1=13, 2=14, 3=23, 4=24, 5=34
 	output reg [bw_fph-1:0] bt_delta_ph [2:0][5:0];
@@ -192,6 +196,7 @@ module best_tracks
    reg [bw_fph-1:0] phi_r [3:0][2:0];
    reg [bw_th-1:0] 	theta_r [3:0][2:0];
    reg [3:0] 		cpattern_r [3:0][2:0][3:0];
+   reg [3:0] 		lr_r [3:0][2:0];
    reg [bw_fph-1:0] delta_ph_r [3:0][2:0][5:0];
    reg [bw_th-1:0] 	delta_th_r [3:0][2:0][5:0]; 
    reg [5:0] 		sign_ph_r[3:0][2:0];
@@ -205,6 +210,7 @@ module best_tracks
    reg [bw_fph-1:0] phi_rr [3:0][2:0];
    reg [bw_th-1:0] 	theta_rr [3:0][2:0];
    reg [3:0] 		cpattern_rr [3:0][2:0][3:0];
+   reg [3:0] 		lr_rr [3:0][2:0];
    reg [bw_fph-1:0] delta_ph_rr [3:0][2:0][5:0];
    reg [bw_th-1:0] 	delta_th_rr [3:0][2:0][5:0]; 
    reg [5:0] 		sign_ph_rr[3:0][2:0];
@@ -445,7 +451,10 @@ module best_tracks
 			bt_phi[n] = 0;
 			bt_theta[n] = 0;
 			for (s = 0; s < 4; s = s+1) // station loop
+			begin
 			    bt_cpattern[n][s] = 0;
+			    bt_lr[n][s] = 0;
+			end
 			    
 			for (s = 0; s < 6; s = s+1) // delta loop
 			begin
@@ -615,6 +624,7 @@ module best_tracks
 					for (s = 0; s < 4; s = s+1) // station loop
 					begin
 					   bt_cpattern[n][s] = bt_cpattern[n][s] | cpattern[i%4][i/4][s];
+					   bt_lr[n][s] = bt_lr[n][s] | lr_bit[i%4][i/4][s];
 					end
 					
 					for (s = 0; s < 6; s = s+1) // delta loop
@@ -645,6 +655,7 @@ module best_tracks
 					for (s = 0; s < 4; s = s+1) // station loop
 					begin
 					   bt_cpattern[n][s] = bt_cpattern[n][s] | cpattern_r[i%4][i/4][s];
+					   bt_lr[n][s] = bt_lr[n][s] | lr_r[i%4][i/4][s];
 					end
 					
 					for (s = 0; s < 6; s = s+1) // delta loop
@@ -675,6 +686,7 @@ module best_tracks
 					for (s = 0; s < 4; s = s+1) // station loop
 					begin
 					   bt_cpattern[n][s] = bt_cpattern[n][s] | cpattern_rr[i%4][i/4][s];
+					   bt_lr[n][s] = bt_lr[n][s] | lr_rr[i%4][i/4][s];
 					end
 					
 					for (s = 0; s < 6; s = s+1) // delta loop
@@ -700,6 +712,7 @@ module best_tracks
        phi_rr = 	    phi_r; 	  
        theta_rr =  	theta_r;  
        cpattern_rr =   cpattern_r; 
+       lr_rr =   lr_r; 
        delta_ph_rr =   delta_ph_r; 
        delta_th_rr =   delta_th_r; 
        sign_ph_rr = 	sign_ph_r;
@@ -713,6 +726,7 @@ module best_tracks
        phi_r = 	    phi; 	  
        theta_r =  	theta;  
        cpattern_r =   cpattern; 
+       lr_r =   lr_bit; 
        delta_ph_r =   delta_ph; 
        delta_th_r =   delta_th; 
        sign_ph_r = 	sign_ph;

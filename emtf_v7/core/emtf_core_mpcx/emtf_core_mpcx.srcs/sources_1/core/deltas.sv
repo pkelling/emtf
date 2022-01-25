@@ -6,6 +6,7 @@ module deltas
 	 ph_match,
 	 th_match,
      cpat_match,
+     lr_match,
      ph_q,
      th_window,
      two_st_tight_timing,
@@ -13,6 +14,7 @@ module deltas
      phi,
      theta,
      cpattern,
+     lr_bit,
      delta_ph,
      delta_th,
      sign_ph,
@@ -37,6 +39,7 @@ module deltas
 	input [bw_th-1:0]  th_match [3:0][seg_ch-1:0]; 
 	// ME11 duplicated thetas [segment]
 	input [3:0] cpat_match [3:0]; // matching pattern
+	input [3:0] lr_match; // matching LR
 	input [bwr-1:0]    ph_q; // pattern rank, carries straigtness and ph station information
 	input [bw_th-1:0]  th_window; // max th diff
 	input two_st_tight_timing; // check 2-station tracks for tight stub timing
@@ -46,6 +49,7 @@ module deltas
 	output reg [bw_th-1:0]  theta; 
 	// [station]
 	output reg [3:0] 		cpattern [3:0]; 
+	output reg [3:0] 		lr_bit; 
 	// ph and th deltas from best stations 
 	// indexes: 0=12, 1=13, 2=14, 3=23, 4=24, 5=34
 	output reg [bw_fph-1:0] delta_ph [5:0];
@@ -273,6 +277,7 @@ module deltas
 			rank = 0;
 
 		cpattern = cpat_match; // take all CLCT patterns
+		lr_bit = lr_match;
 
 	end
 

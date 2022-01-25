@@ -21,8 +21,8 @@
 
 module prim_conv11
 (
-	vpf, quality, wiregroup, hstrip, clctpat, qses,
-	ph, th, vl, phzvl, me11a, clctpat_r,
+	vpf, quality, wiregroup, hstrip, clctpat, lr, qses,
+	ph, th, vl, phzvl, me11a, clctpat_r, lr_r,
     ph_hit, 
 	sel, addr, r_in, r_out, we,
 	clk,
@@ -39,6 +39,7 @@ module prim_conv11
 	input [bw_wg-1:0] wiregroup [seg_ch-1:0]; // wiregroup numbers
 	input [bw_hs-1:0] hstrip    [seg_ch-1:0]; // halfstrip numbers
 	input [3:0] 	  clctpat   [seg_ch-1:0]; // clct pattern numbers
+	input [seg_ch-1:0] lr;                    // left-right
 	input [1:0] 	  qses      [seg_ch-1:0]; // qs, es bits
 
 	// outputs
@@ -53,6 +54,7 @@ module prim_conv11
 	output reg [2:0] 		phzvl; // raw hit valid flags for up to 3 ph zones
 	output reg [seg_ch-1:0] me11a;
 	output reg [3:0] 		clctpat_r [seg_ch-1:0]; // clct pattern numbers
+	output reg [seg_ch-1:0] lr_r;
 
 	// ph and th raw hits
 	output reg [ph_hit_w-1:0] ph_hit;
@@ -118,6 +120,42 @@ module prim_conv11
    reg 	[bw_fph-5-1:0] ph_reduced [1:0];
    reg [bw_fph-1:0]    fph_to_reduce[1:0];
 
+    // conversion of Run-3 bend angle into Run-2 pattern
+    // message from Efe 2022-01-22
+    // input address is {LR, bend[3:0]}
+    reg [3:0] run2_patt [31:0];
+    assign run2_patt[ 0] = 4'd10;
+    assign run2_patt[ 1] = 4'd10;
+    assign run2_patt[ 2] = 4'd10;
+    assign run2_patt[ 3] = 4'd8;
+    assign run2_patt[ 4] = 4'd8;
+    assign run2_patt[ 5] = 4'd8;
+    assign run2_patt[ 6] = 4'd6;
+    assign run2_patt[ 7] = 4'd6;
+    assign run2_patt[ 8] = 4'd6;
+    assign run2_patt[ 9] = 4'd4;
+    assign run2_patt[10] = 4'd4;
+    assign run2_patt[11] = 4'd4;
+    assign run2_patt[12] = 4'd2;
+    assign run2_patt[13] = 4'd2;
+    assign run2_patt[14] = 4'd2;
+    assign run2_patt[15] = 4'd2;
+    assign run2_patt[16] = 4'd10;
+    assign run2_patt[17] = 4'd10;
+    assign run2_patt[18] = 4'd10;
+    assign run2_patt[19] = 4'd9;
+    assign run2_patt[20] = 4'd9;
+    assign run2_patt[21] = 4'd9;
+    assign run2_patt[22] = 4'd7;
+    assign run2_patt[23] = 4'd7;
+    assign run2_patt[24] = 4'd7;
+    assign run2_patt[25] = 4'd5;
+    assign run2_patt[26] = 4'd5;
+    assign run2_patt[27] = 4'd5;
+    assign run2_patt[28] = 4'd3;
+    assign run2_patt[29] = 4'd3;
+    assign run2_patt[30] = 4'd3;
+    assign run2_patt[31] = 4'd3;
 	
 	assign pc_id[3:0] = cscid;
 	assign pc_id[7:4] = station;
@@ -149,7 +187,7 @@ module prim_conv11
 		// zero outputs
 		vl = 0;
 		phzvl = 0;
-		for (i = 0; i < seg_ch; i = i+1) begin fph[i] = 0; clctpat_r[i] = 0; end
+		for (i = 0; i < seg_ch; i = i+1) begin fph[i] = 0; clctpat_r[i] = 0; lr_r[i] = 0; end
 		for (i = 0; i < th_ch;  i = i+1) th[i] = 0;
 		ph_hit = 0;
 
@@ -242,7 +280,9 @@ module prim_conv11
                         
 					end
 				end
-				clctpat_r[i] = clctpat[i]; // just propagate pattern downstream
+				//clctpat_r[i] = clctpat[i]; // just propagate pattern downstream
+				clctpat_r[i] = run2_patt[{lr[i], clctpat[i]}]; // convert run-3 bend into run-2 pattern
+				lr_r     [i] = lr     [i]; // just propagate lr as well
 			end 
 			
 			ph[i] = fph[i];
