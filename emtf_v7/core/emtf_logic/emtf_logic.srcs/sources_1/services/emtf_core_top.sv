@@ -646,8 +646,8 @@ module emtf_core_top
 
     
     //                                        [link][frame]
-    (* mark_debug = "FALSE" *) wire  [63:0] cppf_rxd [6:0][2:0]; // rx data, 3 frames x 64 bit, for 7 links
-    (* mark_debug = "FALSE" *) wire  [6:0] cppf_rx_valid; // rx data valid flags
+    (* mark_debug *) wire  [63:0] cppf_rxd [6:0][2:0]; // rx data, 3 frames x 64 bit, for 7 links
+    (* mark_debug *) wire  [6:0] cppf_rx_valid; // rx data valid flags
     (* mark_debug = "FALSE" *) wire [7:0] cppf_link_id [6:0];
     wire [6:0] cppf_crc_match;
     wire [15:0] ge11_correction_cnt [6:0];

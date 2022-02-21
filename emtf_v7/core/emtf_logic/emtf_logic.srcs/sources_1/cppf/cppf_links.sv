@@ -31,8 +31,8 @@ module cppf_links
     assign txcharisk[5] = 4'h0;
     assign txcharisk[6] = 4'h0;
     
-    wire [31:0] rxdata [6:0];
-    wire [3:0] rxcharisk [6:0];
+    (* mark_debug *) wire [31:0] rxdata [6:0];
+    (* mark_debug *) wire [3:0] rxcharisk [6:0];
     wire [6:0] rxoutclk;
     
     wire [6:0] refclk;
@@ -43,7 +43,6 @@ module cppf_links
     wire  [2:0] qpll_outclk;
     wire  [2:0] qpll_outrefclk;
     wire  [6:0] qpll_reset;
-    (* mark_debug = "FALSE" *) wire [6:0] rxresetdone;
     wire ttc_bc0_del;
     
 
@@ -97,7 +96,7 @@ module cppf_links
             // RX data deframer
             rx_deframer rxdf
             (
-                .reset        (~rxresetdone[gi]), // release deframer reset when link is ready
+                .reset        (1'b0), // not really needed
                 .rxdata_o     (rxdb[gi]), // three frames of deframed data
                 .valid_o      (rxvb[gi]), // shows when rx data are valid 
                 .rxdata_in    (rxdata [gi]), // async data input
