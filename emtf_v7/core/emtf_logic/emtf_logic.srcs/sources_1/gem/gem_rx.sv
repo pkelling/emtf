@@ -15,14 +15,14 @@ module gem_rx
     output [63:0] ge11_link_status,
     output [15:0] correction_cnt [6:0],
     input  [6:0] fiber_enable,
-    input  [4:0] gem_data_del [6:0], // manual gem data delay for alignment [schamber=link]
+    input  [4:0] gem_data_del [6:0][1:0], // manual gem data delay for alignment [schamber=link][layer]
     // these delays should be set so that GEM data emerges from gem_sh delay line at the same time as RPC data
     input ttc_bc0,
     input [5:0] ttc_bc0_delay_gem,
-    output [4:0] automatic_delay [6:0],
+    output [4:0] automatic_delay [6:0][1:0], // automatic alignment delay caluculated [schamber=link][layer]
     input en_manual,
-    output [6:0] alg_out_range,
-    output [6:0] bc0_period_err,
+    output [1:0] alg_out_range [6:0], // [schamber=link][layer]
+    output [1:0] bc0_period_err [6:0], // [schamber=link][layer]
 
 	input clk40
 );
@@ -64,7 +64,7 @@ module gem_rx
     assign ge11_crc_match = 7'b1111111;
     reg  [233:0] r [11:0][6:0] ;
 
-    (* mark_debug *) wire [6:0] bc0; //[schamber]
+    (* mark_debug *) wire [1:0] bc0 [6:0]; //[schamber][layer]
     (* mark_debug *) wire [6:0] link_id_flag; // [schamber]
 	wire [7:0] link_id_val [6:0]; // [schamber]
     (* mark_debug *) wire [3:0] cluster_cnt [6:0][1:0]; //[schamber][layer]
@@ -148,6 +148,7 @@ module gem_rx
 //        lb_gbt_rx_frame_r = lb_gbt_rx_frame;
     end
 
+    wire [1:0] lct_bc0 [6:0];
 
     genvar gi, gj, gk;
     generate
@@ -181,20 +182,36 @@ module gem_rx
                 .rx_correction_flag_o   (lb_gbt_correction_flag [gi])
             );
 
-            gem_aligner gem_aligner_i
+            gem_aligner gem_aligner_layer_1
             (
-                .frame_i         (lb_gbt_rx_frame   [gi]), // input frame
-                .frame_o         (lb_gbt_rx_frame_r [gi]), // aligned frame
+                .frame_i         (lb_gbt_rx_frame   [gi][121:10]), // input frame
+                .frame_o         (lb_gbt_rx_frame_r [gi][121:10]), // aligned frame
                 .ttc_bc0_del     (ttc_bc0_del), // delayed BC0 from TTC to align to
-                .automatic_delay (automatic_delay [gi]), // calculated delay
-                .manual_delay    (gem_data_del[gi]), // manually applied delay
+                .lct_bc0         (lct_bc0[gi][0]), // BC0 from this chamber
+                .automatic_delay (automatic_delay [gi][0]), // calculated delay
+                .manual_delay    (gem_data_del[gi][0]), // manually applied delay
                 .en_manual       (en_manual), // enable manual delay
-                .alg_out_range   (alg_out_range [gi]), // alignment counter out of range
-                .bc0_period_err  (bc0_period_err [gi]), // BC0 period is not exactly one orbit
+                .alg_out_range   (alg_out_range [gi][0]), // alignment counter out of range
+                .bc0_period_err  (bc0_period_err [gi][0]), // BC0 period is not exactly one orbit
                 .bxn             (bxn), // BX counter for BC0 period error detection
                 .clk             (clk40)
             );            
             
+            gem_aligner gem_aligner_layer_2
+            (
+                .frame_i         (lb_gbt_rx_frame   [gi][233:122]), // input frame
+                .frame_o         (lb_gbt_rx_frame_r [gi][233:122]), // aligned frame
+                .ttc_bc0_del     (ttc_bc0_del), // delayed BC0 from TTC to align to
+                .lct_bc0         (lct_bc0[gi][1]), // BC0 from this chamber
+                .automatic_delay (automatic_delay [gi][1]), // calculated delay
+                .manual_delay    (gem_data_del[gi][1]), // manually applied delay
+                .en_manual       (en_manual), // enable manual delay
+                .alg_out_range   (alg_out_range [gi][1]), // alignment counter out of range
+                .bc0_period_err  (bc0_period_err [gi][1]), // BC0 period is not exactly one orbit
+                .bxn             (bxn), // BX counter for BC0 period error detection
+                .clk             (clk40)
+            );            
+
             // data decoder according to "GEM Trigger Data Format Proposal"
             for (gj = 0; gj < 2; gj++) // layer loop
             begin: layer_loop
@@ -205,10 +222,15 @@ module gem_rx
                 end
                 
                 assign cluster_cnt[gi][gj] = lb_gbt_rx_frame_r[gi][4*gj + 2 +: 4];
+                
+                // decode BC0 bits from input frame for alignment (note missing _r at the end)
+                assign lct_bc0[gi][gj] = lb_gbt_rx_frame[gi][gj];
+
+                // decode BC0 bits from output frame for ILA probe
+                assign bc0[gi][gj] = lb_gbt_rx_frame_r[gi][gj];
             end
-            assign bc0[gi] = lb_gbt_rx_frame_r[gi][0];
-            assign link_id_flag[gi] = lb_gbt_rx_frame_r[gi][1];
-			assign link_id_val [gi] = lb_gbt_rx_frame_r[gi][9:2];
+            assign link_id_flag[gi] = lb_gbt_rx_frame_r[gi][9:2] == 8'hff ? 1'b1 : 1'b0;
+			assign link_id_val [gi] = lb_gbt_rx_frame_r[gi][17:10];
 
         end
     endgenerate;

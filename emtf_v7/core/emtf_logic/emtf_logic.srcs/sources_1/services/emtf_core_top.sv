@@ -671,13 +671,13 @@ module emtf_core_top
     wire [233:0]      ge11_rxd [6:0]; ///< GEM rx data, 1 frame x 234 bits, for 7 links
     wire [6:0]        ge11_rx_valid;  ///< GEM data valid flags
     wire [6:0]        ge11_crc_match; ///< CRC match flags from GEM links
-    wire [4:0] gem_data_del [6:0];
+    wire [4:0] gem_data_del [6:0][1:0];
     
     wire [5:0] ttc_bc0_delay_gem;
-    wire [4:0] automatic_delay_gem [6:0];
+    wire [4:0] automatic_delay_gem [6:0][1:0];
     wire       en_manual_gem;
-    wire [6:0] alg_out_range_gem;
-    wire [6:0] bc0_period_err_gem;
+    wire [1:0] alg_out_range_gem [6:0];
+    wire [1:0] bc0_period_err_gem [6:0];
 
     gem_rx gem_rx_i
     (

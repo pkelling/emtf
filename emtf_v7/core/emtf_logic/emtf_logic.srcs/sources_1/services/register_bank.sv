@@ -98,30 +98,67 @@ module register_bank
     input      [4:0] automatic_delay_id1 [4:0][7:0], // [station][cscid=1 data fragment]
     output reg [4:0] manual_delay_id1 [4:0][7:0], // [station][cscid=1 data fragment] 
     input      [15:0] ge11_correction_cnt [6:0],
-    output  [4:0] gem_data_del [6:0], // GE1/1 input data delay, per link [schamber=link]
+    output  [4:0] gem_data_del [6:0][1:0], // GE1/1 input data delay, per link [schamber=link]
     
     output reg [5:0] ttc_bc0_delay_gem,
-    input  [4:0] automatic_delay_gem [6:0],
+    input  [4:0] automatic_delay_gem [6:0][1:0],
     output reg      en_manual_gem,
-    input  [6:0] alg_out_range_gem,
-    input  [6:0] bc0_period_err_gem
+    input  [1:0] alg_out_range_gem [6:0],
+    input  [1:0] bc0_period_err_gem [6:0]
 );
 
 
 	wire [63:0] automatic_delay_id1_64 [4:0];
 	reg  [63:0] manual_delay_id1_64 [4:0];
 	
-	wire [63:0] gem_align_status = 
+	wire [63:0] gem_align_status [1:0];
+	assign gem_align_status[0] = 
 	{
-	   bc0_period_err_gem,
-	   alg_out_range_gem,
-	   automatic_delay_gem [6],
-	   automatic_delay_gem [5],
-	   automatic_delay_gem [4],
-	   automatic_delay_gem [3],
-	   automatic_delay_gem [2],
-	   automatic_delay_gem [1],
-	   automatic_delay_gem [0]
+	   bc0_period_err_gem [6][0],
+	   bc0_period_err_gem [5][0],
+	   bc0_period_err_gem [4][0],
+	   bc0_period_err_gem [3][0],
+	   bc0_period_err_gem [2][0],
+	   bc0_period_err_gem [1][0],
+	   bc0_period_err_gem [0][0],
+	   alg_out_range_gem  [6][0],
+	   alg_out_range_gem  [5][0],
+	   alg_out_range_gem  [4][0],
+	   alg_out_range_gem  [3][0],
+	   alg_out_range_gem  [2][0],
+	   alg_out_range_gem  [1][0],
+	   alg_out_range_gem  [0][0],
+	   automatic_delay_gem [6][0],
+	   automatic_delay_gem [5][0],
+	   automatic_delay_gem [4][0],
+	   automatic_delay_gem [3][0],
+	   automatic_delay_gem [2][0],
+	   automatic_delay_gem [1][0],
+	   automatic_delay_gem [0][0]
+	};
+	assign gem_align_status[1] = 
+	{
+	   bc0_period_err_gem [6][1],
+	   bc0_period_err_gem [5][1],
+	   bc0_period_err_gem [4][1],
+	   bc0_period_err_gem [3][1],
+	   bc0_period_err_gem [2][1],
+	   bc0_period_err_gem [1][1],
+	   bc0_period_err_gem [0][1],
+	   alg_out_range_gem  [6][1],
+	   alg_out_range_gem  [5][1],
+	   alg_out_range_gem  [4][1],
+	   alg_out_range_gem  [3][1],
+	   alg_out_range_gem  [2][1],
+	   alg_out_range_gem  [1][1],
+	   alg_out_range_gem  [0][1],
+	   automatic_delay_gem [6][1],
+	   automatic_delay_gem [5][1],
+	   automatic_delay_gem [4][1],
+	   automatic_delay_gem [3][1],
+	   automatic_delay_gem [2][1],
+	   automatic_delay_gem [1][1],
+	   automatic_delay_gem [0][1]
 	};
 
 	genvar gi;
@@ -159,17 +196,27 @@ module register_bank
     reg [63:0] user_af_delays [4:0];
     reg [71:0] user_af_delays_n;
     reg [31:0] jtag_in3_r;
-    reg [5*7-1:0] gem_data_del_comb;
+    reg [5*7-1:0] gem_data_del_comb [1:0]; // [layer]
     assign 
     {
-        gem_data_del[6], 
-        gem_data_del[5], 
-        gem_data_del[4], 
-        gem_data_del[3], 
-        gem_data_del[2], 
-        gem_data_del[1], 
-        gem_data_del[0] 
-    } = gem_data_del_comb;
+        gem_data_del[6][0], 
+        gem_data_del[5][0], 
+        gem_data_del[4][0], 
+        gem_data_del[3][0], 
+        gem_data_del[2][0], 
+        gem_data_del[1][0], 
+        gem_data_del[0][0] 
+    } = gem_data_del_comb[0];
+    assign 
+    {
+        gem_data_del[6][1], 
+        gem_data_del[5][1], 
+        gem_data_del[4][1], 
+        gem_data_del[3][1], 
+        gem_data_del[2][1], 
+        gem_data_del[1][1], 
+        gem_data_del[0][1] 
+    } = gem_data_del_comb[1];
     
     
 	integer i, j, k;
@@ -206,7 +253,8 @@ module register_bank
 		mpc_link_hr_to = 24'd4000000; // ~100 ms
 		
 		control_reg[19] = 1'b1; // mpc_links_hr_en
-		gem_data_del_comb = {7{5'h1}};
+		gem_data_del_comb[0] = {7{5'h1}};
+		gem_data_del_comb[1] = {7{5'h1}};
 	end
 
 	wire [8:0] reg_addr = {sel, addr}; // combined address
@@ -324,8 +372,9 @@ module register_bank
                 9'h06b: begin manual_delay_id1_64[2] = r_in; end
                 9'h06c: begin manual_delay_id1_64[3] = r_in; end
                 9'h06d: begin manual_delay_id1_64[4] = r_in; end
-				9'h072: begin gem_data_del_comb = r_in; end
-				9'h074: begin {en_manual_gem, ttc_bc0_delay_gem} = r_in; end
+				9'h072: begin gem_data_del_comb[0] = r_in; end
+				9'h073: begin gem_data_del_comb[1] = r_in; end
+				9'h076: begin {en_manual_gem, ttc_bc0_delay_gem} = r_in; end
 			endcase
 		end
 		else
@@ -633,9 +682,11 @@ module register_bank
 				9'h06f: begin r_out = r_out | ge11_link_status; end 
 				9'h070: begin r_out = r_out | ge11_corr_cnt[0]; end 
 				9'h071: begin r_out = r_out | ge11_corr_cnt[1]; end 
-				9'h072: begin r_out = r_out | gem_data_del_comb; end
-				9'h073: begin r_out = r_out | gem_align_status; end
-				9'h074: begin r_out = r_out | {en_manual_gem, ttc_bc0_delay_gem}; end
+				9'h072: begin r_out = r_out | gem_data_del_comb[0]; end
+				9'h073: begin r_out = r_out | gem_data_del_comb[1]; end
+				9'h074: begin r_out = r_out | gem_align_status[0]; end
+				9'h075: begin r_out = r_out | gem_align_status[1]; end
+				9'h076: begin r_out = r_out | {en_manual_gem, ttc_bc0_delay_gem}; end
 				
 			endcase
 			in_delay_tap_rb_r = in_delay_tap_rb;
