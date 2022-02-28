@@ -689,6 +689,7 @@ int flash_main(string command, string fname_core, string fname_control, bool do_
                 fet[i].nblocks = nblocks; // block count
                 fet[i].start_block = start_block; // start block
                 fet[i].start(); // start erase thread for this device
+                usleep (100000);
             }
         }
         // wait until all threads exit
