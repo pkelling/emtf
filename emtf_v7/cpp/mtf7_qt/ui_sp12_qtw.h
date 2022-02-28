@@ -692,7 +692,7 @@ public:
         read_delays_pb->setText(QApplication::translate("sp12_qtw", "Read delays", 0, QApplication::UnicodeUTF8));
         label_15->setText(QApplication::translate("sp12_qtw", "Single trg delay", 0, QApplication::UnicodeUTF8));
         single_en_cb->setText(QApplication::translate("sp12_qtw", "Single en", 0, QApplication::UnicodeUTF8));
-        label_16->setText(QApplication::translate("sp12_qtw", "GEM delay", 0, QApplication::UnicodeUTF8));
+        label_16->setText(QApplication::translate("sp12_qtw", "GEM BC0 delay", 0, QApplication::UnicodeUTF8));
         qpll_gb->setTitle(QApplication::translate("sp12_qtw", "Core link", 0, QApplication::UnicodeUTF8));
         test_core_link_button->setText(QApplication::translate("sp12_qtw", "Rd", 0, QApplication::UnicodeUTF8));
         write_cl_b->setText(QApplication::translate("sp12_qtw", "Wr", 0, QApplication::UnicodeUTF8));

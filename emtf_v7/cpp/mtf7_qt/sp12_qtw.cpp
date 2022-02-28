@@ -1041,14 +1041,22 @@ void sp12_qtw::on_set_delays_pb_released()
             mwrite(fd, &value, 8, saddr);
             log_printf("core_config readback: %016llx\n", value);
 
-            saddr = REG_MEM_BASE + (ch << 12) + (0x72 << 3); // gem_data_del register
+//            saddr = REG_MEM_BASE + (ch << 12) + (0x72 << 3); // gem_data_del register - manual delays
+//            mread(fd, &value, 8, saddr);
+//            log_printf("gem_data_del readback: %016llx\n", value);
+//            uint64_t gdd = gem_delay;
+//            value = (gdd << 30) |(gdd << 25) | (gdd << 20) | (gdd << 15) | (gdd << 10) | (gdd << 5) | gdd;
+//            mwrite(fd, &value, 8, saddr);
+//            mread(fd, &value, 8, saddr);
+//            log_printf("gem_data_del readback: %016llx\n", value);
+
+            saddr = REG_MEM_BASE + (ch << 12) + (0x76 << 3);
             mread(fd, &value, 8, saddr);
-            log_printf("gem_data_del readback: %016llx\n", value);
-            uint64_t gdd = gem_delay;
-            value = (gdd << 30) |(gdd << 25) | (gdd << 20) | (gdd << 15) | (gdd << 10) | (gdd << 5) | gdd;
+            log_printf("gem bc0 delay readback: %016llx\n", value);
+            value = gem_delay & 0x3f;
             mwrite(fd, &value, 8, saddr);
             mread(fd, &value, 8, saddr);
-            log_printf("gem_data_del readback: %016llx\n", value);
+            log_printf("gem bc0 delay readback: %016llx\n", value);
         }
     }
 }
@@ -1587,7 +1595,6 @@ void sp12_qtw::on_read_delays_pb_released()
     uint64_t value, daq_delay, bc0_delay, gmt_delay, auto_af, gem_delay;
 
     int ch = REG_BANK_CH; // config register bank
-    uint32_t saddr = REG_MEM_BASE + (ch << 12) + (0x11 << 3); 
     for (int id = 0; id < 13; id++)
     {
         if (devices_d[id] >= 0)
@@ -1595,6 +1602,7 @@ void sp12_qtw::on_read_delays_pb_released()
             device_d = devices_d[id];
             log_printf ("device index: %d\n", id);
 
+            uint32_t saddr = REG_MEM_BASE + (ch << 12) + (0x11 << 3);
             mread(device_d, &value, 8, saddr);
 
             daq_delay = (value & 0x0ff80ULL) >> 7; // clean up delay
@@ -1608,12 +1616,13 @@ void sp12_qtw::on_read_delays_pb_released()
             int single_delay = (value >> 24)&7ULL;
             int single_en = (value >> 12) & 1ULL;
 
-            saddr = REG_MEM_BASE + (ch << 12) + (0x72 << 3); // gem_data_del register
+            saddr = REG_MEM_BASE + (ch << 12) + (0x76 << 3); // gem_data_del register
             mread(device_d, &value, 8, saddr);
-            gem_delay = value & 0x1f; // just take one of the delays for now
+            gem_delay = value & 0x3f; // just take one of the delays for now
+            int gem_en_manual = (value >> 7) & 1;
 
-            log_printf("reading delays: BC0: %d, DAQ: %d GMT: %d auto_af: %d single_del: %d single_en: %d GEM: %d\n",
-                       (int)bc0_delay, (int) daq_delay, (int) gmt_delay, (int) auto_af, single_delay, single_en, (int)gem_delay);
+            log_printf("reading delays: BC0: %d, DAQ: %d GMT: %d auto_af: %d single_del: %d single_en: %d GEMbc0: %d GEMman: %d\n",
+                       (int)bc0_delay, (int) daq_delay, (int) gmt_delay, (int) auto_af, single_delay, single_en, (int)gem_delay, gem_en_manual);
 
         }
     }
