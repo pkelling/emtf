@@ -25,6 +25,7 @@ module coord_delay
 (
 	phi, th11i, thi, vli, me11ai, cpati, lr_i,
 	ge11_ph, ge11_th, ge11_vl, 
+	use_gem,
 	cppf_rxd, cppf_rx_valid,
 	use_rpc,
 	pho, th11o, tho, vlo_o, me11ao, cpato, lr_o,
@@ -56,6 +57,7 @@ module coord_delay
   	input [bw_fph-1:0] ge11_ph [6:0][1:0][7:0]; 
 	input [bw_th-1:0]  ge11_th [6:0][1:0][7:0];
 	input [7:0]        ge11_vl [6:0][1:0];
+	input use_gem;
 
   // CPPF data          [subsect][frame][stub*4]
     input [63:0] cppf_rxd [6:0][2:0]; // cppf rx data, 3 frames x 64 bit, for 7 links
@@ -279,7 +281,7 @@ module coord_delay
                         begin
                             // check if GE11 clusters are present
                             // layer 0
-                            if (ge11_vl[ge11_chm][0][k*4] == 1'b1) // check only clusters 0 and 4 since they are filled first
+                            if (ge11_vl[ge11_chm][0][k*4] == 1'b1 && use_gem) // check only clusters 0 and 4 since they are filled first
                             begin
                                 // finally, assign GE11 clusters to CSC stubs, mark them using CLCT pattern = 0
                                 pho  [0][i][j][k] = ge11_ph[ge11_chm][0][k*4];
@@ -289,7 +291,7 @@ module coord_delay
                                 lr_o [0][i][j][k] = 1'h0;
                             end
                             // layer 1
-                            else if (ge11_vl[ge11_chm][1][k*4] == 1'b1) // check only clusters 0 and 4 since they are filled first
+                            else if (ge11_vl[ge11_chm][1][k*4] == 1'b1 && use_gem) // check only clusters 0 and 4 since they are filled first
                             begin
                                 // finally, assign GE11 clusters to CSC stubs, mark them using CLCT pattern = 0
                                 pho  [0][i][j][k] = ge11_ph[ge11_chm][1][k*4];

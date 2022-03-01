@@ -5,9 +5,10 @@
 
 module gem_aligner
 (
-    input            [233:0] frame_i, // input frame
-    output           [233:0] frame_o, // aligned frame
+    input            [111:0] frame_i, // input frame
+    output           [111:0] frame_o, // aligned frame
     input            ttc_bc0_del, // delayed BC0 from TTC to align to
+    input            lct_bc0, // BC0 input from this chamber
     output reg [4:0] automatic_delay, // calculated delay
     input      [4:0] manual_delay, // manually applied delay
     input            en_manual, // enable manual delay
@@ -19,15 +20,13 @@ module gem_aligner
 
     wire [4:0] applied_delay = (en_manual == 'b1) ? manual_delay : automatic_delay;
 
-    wire [233:0] frame_d;
+    wire [111:0] frame_d;
     // if alignment delay is 0, feed inputs directly to outputs
     assign frame_o = (applied_delay == 'b0) ? frame_i : frame_d;
 
 
     reg [4:0] cnt = 'h0;
     assign alg_out_range = (cnt == 5'h1f); // counter reached terminal value = alignment out of range, or BC0 did not come
-    
-    wire lct_bc0 = frame_i[0]; // BC0 coming from link, without delay
     
     reg lct_bc0_r;
     reg [11:0] bc0_bxn; // BX number when BC0 came
@@ -61,7 +60,7 @@ module gem_aligner
         lct_bc0_r = lct_bc0; // LCT BC0 history
     end
     
-    dyn_shift #(.SELWIDTH(5), .BW (64)) ds 
+    dyn_shift #(.SELWIDTH(5), .BW (112)) ds 
     (
         .CLK (clk), 
         .CE  ('b1), 
