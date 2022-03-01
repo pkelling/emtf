@@ -570,7 +570,7 @@
           </rect>
          </property>
          <property name="text">
-          <string>GEM delay</string>
+          <string>GEM BC0 delay</string>
          </property>
         </widget>
        </widget>
