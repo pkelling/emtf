@@ -18,7 +18,7 @@ module gem_rx
     input  [4:0] gem_data_del [6:0][1:0], // manual gem data delay for alignment [schamber=link][layer]
     // these delays should be set so that GEM data emerges from gem_sh delay line at the same time as RPC data
     input ttc_bc0,
-    input [5:0] ttc_bc0_delay_gem,
+    input [9:0] ttc_bc0_delay_gem,
     output [4:0] automatic_delay [6:0][1:0], // automatic alignment delay caluculated [schamber=link][layer]
     input en_manual,
     output [1:0] alg_out_range [6:0], // [schamber=link][layer]
@@ -42,7 +42,7 @@ module gem_rx
     (* mark_debug *) wire [6:0] lb_gbt_rx_header_locked     ;
     (* mark_debug *) wire [15:0] lb_gbt_correction_cnt [6:0];
     assign correction_cnt = lb_gbt_correction_cnt;
-    wire ttc_bc0_del;
+    (* mark_debug *) wire ttc_bc0_del;
     
     assign ge11_link_status = 
     {
@@ -65,13 +65,15 @@ module gem_rx
     reg  [233:0] r [11:0][6:0] ;
 
     (* mark_debug *) wire [1:0] bc0 [6:0]; //[schamber][layer]
+    (* mark_debug *) wire [1:0] lct_bc0 [6:0];
     (* mark_debug *) wire [6:0] link_id_flag; // [schamber]
-	wire [7:0] link_id_val [6:0]; // [schamber]
     (* mark_debug *) wire [3:0] cluster_cnt [6:0][1:0]; //[schamber][layer]
     (* mark_debug *) wire [13:0] cluster [6:0][1:0][7:0]; // [schamber][layer][cluster]
     (* mark_debug *) wire gem_single_hit = single_hit;
     (* mark_debug *) wire [bw_fph-1:0] gem_ph_single = ph_single;
     (* mark_debug *) wire [bw_th-1:0]  gem_th_single = th_single;
+    (* mark_debug *) wire [1:0] link_id_flag_r [6:0];
+    
     reg [11:0] bxn;
 
     integer i, j, k;
@@ -96,9 +98,11 @@ module gem_rx
 				end
 			end
 
-                if (link_id_flag[i] == 1'b0 && fiber_enable[i] == 1'b1) // have clusters and fiber enabled
+            if (fiber_enable[i] == 1'b1) // fiber enabled
+            begin
+                for (j = 0; j < 2; j++) // layer loop
                 begin
-                    for (j = 0; j < 2; j++) // layer loop
+                    if (link_id_flag_r[i][j] == 1'b0) // not Link ID
                     begin
                         if (cluster_cnt[i][j] > 4'h0) // count of clusters more than 0
                         begin
@@ -135,20 +139,22 @@ module gem_rx
                                 th_single = {i[2:0], cluster[i][j][k][10:8]}; // chamber and partition as theta
                             end
                         end
-                            
                     end
+                    else
+                    begin
+                       // link ID is transmitted
+                        // no clusters in this link, lock link ID 
+                        link_id[i] = cluster[i][0][0][7:0]; // link ID value is in lower bits of first cluster
+    	       			
+                    end      
                 end
-                else
-                begin
-                    // no clusters in this link, lock link ID 
-                    if (fiber_enable[i] == 1'b1) link_id[i] = link_id_val[i];
-    				else link_id[i] = 8'hAB; // link disabled, show invalid ID
-                end
+            end
+            else
+            begin
+                link_id[i] = 8'hAB; // link disabled, show invalid ID
+            end
         end
-//        lb_gbt_rx_frame_r = lb_gbt_rx_frame;
     end
-
-    wire [1:0] lct_bc0 [6:0];
 
     genvar gi, gj, gk;
     generate
@@ -188,6 +194,9 @@ module gem_rx
                 .frame_o         (lb_gbt_rx_frame_r [gi][121:10]), // aligned frame
                 .ttc_bc0_del     (ttc_bc0_del), // delayed BC0 from TTC to align to
                 .lct_bc0         (lct_bc0[gi][0]), // BC0 from this chamber
+                .bc0             (bc0[gi][0]), // aligned BC0
+                .link_id_flag    (link_id_flag[gi]), // link ID flag
+                .link_id_flag_o  (link_id_flag_r[gi][0]), // aligned link ID flag
                 .automatic_delay (automatic_delay [gi][0]), // calculated delay
                 .manual_delay    (gem_data_del[gi][0]), // manually applied delay
                 .en_manual       (en_manual), // enable manual delay
@@ -203,6 +212,9 @@ module gem_rx
                 .frame_o         (lb_gbt_rx_frame_r [gi][233:122]), // aligned frame
                 .ttc_bc0_del     (ttc_bc0_del), // delayed BC0 from TTC to align to
                 .lct_bc0         (lct_bc0[gi][1]), // BC0 from this chamber
+                .bc0             (bc0[gi][1]), // aligned BC0
+                .link_id_flag    (link_id_flag[gi]), // link ID flag
+                .link_id_flag_o  (link_id_flag_r[gi][1]), // aligned link ID flag
                 .automatic_delay (automatic_delay [gi][1]), // calculated delay
                 .manual_delay    (gem_data_del[gi][1]), // manually applied delay
                 .en_manual       (en_manual), // enable manual delay
@@ -226,17 +238,13 @@ module gem_rx
                 // decode BC0 bits from input frame for alignment (note missing _r at the end)
                 assign lct_bc0[gi][gj] = lb_gbt_rx_frame[gi][gj];
 
-                // decode BC0 bits from output frame for ILA probe
-                assign bc0[gi][gj] = lb_gbt_rx_frame_r[gi][gj];
             end
-            assign link_id_flag[gi] = lb_gbt_rx_frame_r[gi][9:2] == 8'hff ? 1'b1 : 1'b0;
-			assign link_id_val [gi] = lb_gbt_rx_frame_r[gi][17:10];
-
+            assign link_id_flag[gi] = lb_gbt_rx_frame[gi][9:2] == 8'hff ? 1'b1 : 1'b0;
         end
     endgenerate;
 
     // generate delayed bc0 for alignment
-    dyn_shift #(.BW(1), .SELWIDTH(6)) bc0_del (.CLK(clk40), .CE(1'b1), .SEL(ttc_bc0_delay_gem), .SI(ttc_bc0), .DO(ttc_bc0_del));
+    dyn_shift #(.BW(1), .SELWIDTH(10)) bc0_del (.CLK(clk40), .CE(1'b1), .SEL(ttc_bc0_delay_gem), .SI(ttc_bc0), .DO(ttc_bc0_del));
     always @(posedge clk40)
     begin
         // free-running BX counter for BC0 period error detection

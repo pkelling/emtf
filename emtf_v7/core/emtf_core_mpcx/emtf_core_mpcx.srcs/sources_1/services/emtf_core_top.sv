@@ -673,7 +673,7 @@ module emtf_core_top
     wire [6:0]        ge11_crc_match; ///< CRC match flags from GEM links
     wire [4:0] gem_data_del [6:0][1:0];
     
-    wire [5:0] ttc_bc0_delay_gem;
+    wire [9:0] ttc_bc0_delay_gem;
     wire [4:0] automatic_delay_gem [6:0][1:0];
     wire       en_manual_gem;
     wire [1:0] alg_out_range_gem [6:0];

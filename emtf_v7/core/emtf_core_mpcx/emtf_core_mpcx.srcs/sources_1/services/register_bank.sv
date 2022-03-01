@@ -100,7 +100,7 @@ module register_bank
     input      [15:0] ge11_correction_cnt [6:0],
     output  [4:0] gem_data_del [6:0][1:0], // GE1/1 input data delay, per link [schamber=link]
     
-    output reg [5:0] ttc_bc0_delay_gem,
+    output reg [9:0] ttc_bc0_delay_gem,
     input  [4:0] automatic_delay_gem [6:0][1:0],
     output reg      en_manual_gem,
     input  [1:0] alg_out_range_gem [6:0],
