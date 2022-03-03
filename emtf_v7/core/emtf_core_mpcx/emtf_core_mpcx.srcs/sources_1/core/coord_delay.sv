@@ -24,7 +24,7 @@
 module coord_delay 
 (
 	phi, th11i, thi, vli, me11ai, cpati,
-	ge11_ph, ge11_th, ge11_vl, 
+	ge11_ph, ge11_th, ge11_vl, use_gem,
 	cppf_rxd, cppf_rx_valid,
 	use_rpc,
 	pho, th11o, tho, vlo_o, me11ao, cpato,
@@ -54,6 +54,7 @@ module coord_delay
   	input [bw_fph-1:0] ge11_ph [6:0][1:0][7:0]; 
 	input [bw_th-1:0]  ge11_th [6:0][1:0][7:0];
 	input [7:0]        ge11_vl [6:0][1:0];
+	input use_gem;
 
   // CPPF data          [subsect][frame][stub*4]
     input [63:0] cppf_rxd [6:0][2:0]; // cppf rx data, 3 frames x 64 bit, for 7 links
@@ -259,8 +260,8 @@ module coord_delay
                 end
                 else
                 begin
-                    if ((i <= 1 && j <= 2) || // ME11 only, can be replaced with GE11
-                        (i == 5 && j == 0)) // ME11 in neighbor sector
+                    if (((i <= 1 && j <= 2) || // ME11 only, can be replaced with GE11
+                        (i == 5 && j == 0)) && use_gem) // ME11 in neighbor sector
                     begin
                         ge11_chm = rpc_ch[i][j]; // extract GE11 chamber number, 0..6
                         
