@@ -2103,8 +2103,8 @@ void sp12_qtw::on_clk40_psen_exec_released()
 		tpaterr = 0;
 	    mread(device_d, &tpaterr, 8, tpaddr); // this reads actual errors
 		
-		//tpaterr &= 0xffULL; // only analyze MPC0
-		tpaterr &= 0xff0000000000ULL; // only analyze Neighbor
+		tpaterr &= 0xffffffffffULL; // only analyze MPC0..4
+		//tpaterr &= 0xff0000000000ULL; // only analyze Neighbor
 		if (tpaterr != 0) 
 		{
 			log_printf ("%016llx phase: %d\n", tpaterr, i);
@@ -2124,8 +2124,8 @@ void sp12_qtw::on_clk40_psen_exec_released()
 			tpaterr = 0;
 			mread(device_d, &tpaterr, 8, tpaddr); // this reads actual errors
 
-			//tpaterr &= 0xffULL; // only analyze MPC0
-			tpaterr &= 0xff0000000000ULL; // only analyze Neighbor
+			tpaterr &= 0xffffffffffULL; // only analyze MPC0..4
+			//tpaterr &= 0xff0000000000ULL; // only analyze Neighbor
 			if (tpaterr != 0) 
 			{
 				log_printf ("\nipersistent test pattern errors: %016llx phase: %d\n", tpaterr, i);
