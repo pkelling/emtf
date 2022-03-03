@@ -1053,7 +1053,7 @@ void sp12_qtw::on_set_delays_pb_released()
             saddr = REG_MEM_BASE + (ch << 12) + (0x76 << 3);
             mread(fd, &value, 8, saddr);
             log_printf("gem bc0 delay readback: %016llx\n", value);
-            value = gem_delay & 0x3f;
+            value = gem_delay & 0x3ff;
             mwrite(fd, &value, 8, saddr);
             mread(fd, &value, 8, saddr);
             log_printf("gem bc0 delay readback: %016llx\n", value);

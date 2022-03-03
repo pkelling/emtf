@@ -331,6 +331,7 @@ public:
         gem_delay_sb = new QSpinBox(gtx_bitrate_gb);
         gem_delay_sb->setObjectName(QString::fromUtf8("gem_delay_sb"));
         gem_delay_sb->setGeometry(QRect(170, 170, 51, 21));
+        gem_delay_sb->setMaximum(1023);
         gem_delay_sb->setValue(6);
         label_16 = new QLabel(gtx_bitrate_gb);
         label_16->setObjectName(QString::fromUtf8("label_16"));
