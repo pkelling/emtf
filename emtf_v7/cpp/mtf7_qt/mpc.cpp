@@ -1104,7 +1104,7 @@ uint64_t read_link_ids(int endcap, int sector)
 		//        log_printf ("bc0 counters #%02d: %016llx\n", i, value);
 
 		// see if any of the counters is out of bounds
-		log_printf ("bc0 counters %d: ", i);
+		log_printf ("MPC align delays %d: ", i);
 		for ( j = 0; j < 8; j++) // fiber loop
 		{
 			cnt = (value >> (j*8)) & 0xff;
@@ -1118,7 +1118,7 @@ uint64_t read_link_ids(int endcap, int sector)
 	}
 
 	// read neighbor sector counters
-	log_printf ("bc0 counters N: ");
+	log_printf ("MPC align delays N: ");
 	saddr = MEM_BASE + (ch << 12) + (10 << 3) ;
 	mread(fd, &value, 8, saddr);
 	i = 5; // call neighbor sector station 5
@@ -1132,7 +1132,6 @@ uint64_t read_link_ids(int endcap, int sector)
 		log_printf ("%02x ", cnt);
 	}
 
-
 	saddr = MEM_BASE + (ch << 12) + (9 << 3) ;
 	mread(fd, &value, 8, saddr);
 	j = 8; // read last fiber from register 9
@@ -1143,6 +1142,28 @@ uint64_t read_link_ids(int endcap, int sector)
 	}
 	log_printf ("%02x\n", cnt);
 
+
+	log_printf ("GE1/1 align delays ly 0: ");
+	saddr = MEM_BASE + (ch << 12) + (0x74 << 3) ;
+	mread(fd, &value, 8, saddr);
+	for (j = 0; j < 7; j++)
+	{
+		cnt = value & 0x1f;
+		log_printf ("%02x ", cnt);
+		value >>= 5;
+	}
+	log_printf ("\n");
+
+    log_printf ("GE1/1 align delays ly 1: ");
+	saddr = MEM_BASE + (ch << 12) + (0x75 << 3) ;
+	mread(fd, &value, 8, saddr);
+	for (j = 0; j < 7; j++)
+	{
+		cnt = value & 0x1f;
+		log_printf ("%02x ", cnt);
+		value >>= 5;
+	}
+	log_printf ("\n");
 
 
 	log_printf ("bad_alignment : %016llx\n", bad_alignment);

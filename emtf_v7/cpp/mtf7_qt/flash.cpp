@@ -285,7 +285,7 @@ protected:
     }
 };
 
-flash_erase_thread_c fet[13];
+flash_erase_thread_c fet[20];
 
 class flash_verify_thread_c : public QThread
 {
@@ -334,7 +334,7 @@ protected:
     }
 };
 
-flash_verify_thread_c fvt[13];
+flash_verify_thread_c fvt[20];
 
 class flash_write_thread_c : public QThread
 {
@@ -357,14 +357,14 @@ protected:
     }
 };
 
-flash_write_thread_c fwt[13];
+flash_write_thread_c fwt[20];
 
 int flash_main(string command, string fname_core, string fname_control, bool do_control)
 {
 
     uint32_t val;
 
-    flash f[13]; // make flash objects for all boards in the system
+    flash f[20]; // make flash objects for all boards in the system
 
     for (int i = 0; i < 13; i++)
     {
