@@ -1152,6 +1152,12 @@ uint64_t read_link_ids(int endcap, int sector)
 		log_printf ("%02x ", cnt);
 		value >>= 5;
 	}
+
+	int ge11_align_oor = value & 0x7f;
+	value >>= 7;
+	int ge11_bc0_per_err = value & 0x7f;
+	log_printf ("OOR: %02x BC0err: %02x", ge11_align_oor, ge11_bc0_per_err);
+
 	log_printf ("\n");
 
     log_printf ("GE1/1 align delays ly 1: ");
@@ -1163,6 +1169,11 @@ uint64_t read_link_ids(int endcap, int sector)
 		log_printf ("%02x ", cnt);
 		value >>= 5;
 	}
+	ge11_align_oor = value & 0x7f;
+	value >>= 7;
+	ge11_bc0_per_err = value & 0x7f;
+	log_printf ("OOR: %02x BC0err: %02x", ge11_align_oor, ge11_bc0_per_err);
+
 	log_printf ("\n");
 
 

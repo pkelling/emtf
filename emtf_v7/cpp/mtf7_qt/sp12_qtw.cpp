@@ -983,7 +983,7 @@ void sp12_qtw::on_set_delays_pb_released()
     int gem_delay = ui->gem_delay_sb->text().toInt(0,10);
 
 
-    log_printf("setting delays: BC0: %d, DAQ: %d GMT: %d\n", (int)bc0_delay, daq_delay, (int) gmt_delay);
+    log_printf("setting delays: BC0: %d, DAQ: %d GMT: %d GEM: %d\n", (int)bc0_delay, daq_delay, (int) gmt_delay, (int) gem_delay);
 
     int trg_src = ui->trigger_src->currentRow(); // read user's trigger source selection
     QList<QListWidgetItem*> selection = ui->trigger_src->selectedItems();
@@ -1618,7 +1618,7 @@ void sp12_qtw::on_read_delays_pb_released()
 
             saddr = REG_MEM_BASE + (ch << 12) + (0x76 << 3); // gem_data_del register
             mread(device_d, &value, 8, saddr);
-            gem_delay = value & 0x3f; // just take one of the delays for now
+            gem_delay = value & 0x3ff; // just take one of the delays for now
             int gem_en_manual = (value >> 7) & 1;
 
             log_printf("reading delays: BC0: %d, DAQ: %d GMT: %d auto_af: %d single_del: %d single_en: %d GEMbc0: %d GEMman: %d\n",
