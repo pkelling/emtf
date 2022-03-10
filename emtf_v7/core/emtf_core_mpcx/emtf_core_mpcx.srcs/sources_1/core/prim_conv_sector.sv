@@ -22,7 +22,7 @@
 module prim_conv_sector
 (
     vpf, q, wg, hstr, cpat, lr,
-    ph, th11, th, vl, phzvl, me11a, cpatr, lr_r, qses,
+    ph, th11, th, vl, phzvl, me11a, cpatr, qses,
     ph_hit, 
     cs, sel, addr, r_in, r_out, we,
 
@@ -56,7 +56,6 @@ module prim_conv_sector
 	// [station][chamber][segment], station 2 = neighbor segment
 	output [seg_ch-1:0] me11a [2:0][2:0];
 	output [3:0] 		cpatr [5:0][8:0][seg_ch-1:0];
-	output [seg_ch-1:0]	lr_r [5:0][8:0];
 	// ph and th raw hits
 	output [ph_hit_w-1:0] ph_hit [5:0][8:0];
 
@@ -121,7 +120,6 @@ module prim_conv_sector
 				    .phzvl       (phzvl[i][j]),
 				    .me11a       (me11a[i][j]),
 				    .clctpat_r   (cpatr[i][j]),
-				    .lr_r        (lr_r[i][j]),
 				    .ph_hit      (ph_hit [i][j]),
 				    .sel         (sel), 
 				    .addr        (addr), 
@@ -154,7 +152,6 @@ module prim_conv_sector
 					 .phzvl		  (phzvl[i][j]),
 					 .me11a		  (dummy[i][j]),
 				     .clctpat_r   (cpatr[i][j]),
-				     .lr_r        (lr_r[i][j]),
 					 .ph_hit	  (ph_hit [i][j]),
 					 .sel		  (sel), 
 					 .addr		  (addr), 
@@ -187,7 +184,6 @@ module prim_conv_sector
 					 .phzvl		  (phzvl[i][j]),
 					 .me11a		  (dummy[i][j]),
 				     .clctpat_r   (cpatr[i][j]),
-				     .lr_r        (lr_r[i][j]),
 					 .ph_hit	  (ph_hit [i][j]),
 					 .sel		  (sel), 
 					 .addr		  (addr), 
@@ -218,7 +214,6 @@ module prim_conv_sector
             .phzvl       (phzvl[5][0]),
             .me11a       (me11a[2][0]),
             .clctpat_r   (cpatr[5][0]),
-		    .lr_r        (lr_r[5][0]),
             .ph_hit      (ph_hit [5][0]),
             .sel         (sel), 
             .addr        (addr), 
@@ -248,7 +243,6 @@ module prim_conv_sector
                  .phzvl		  (phzvl[5][j]),
                  .me11a		  (dummy[5][j]),
                  .clctpat_r   (cpatr[5][j]),
-				 .lr_r        (lr_r[5][j]),
                  .ph_hit	  (ph_hit [5][j]),
                  .sel		  (sel), 
                  .addr		  (addr), 

@@ -22,7 +22,7 @@
 module prim_conv11
 (
 	vpf, quality, wiregroup, hstrip, clctpat, lr, qses,
-	ph, th, vl, phzvl, me11a, clctpat_r, lr_r,
+	ph, th, vl, phzvl, me11a, clctpat_r,
     ph_hit, 
 	sel, addr, r_in, r_out, we,
 	clk,
@@ -54,7 +54,6 @@ module prim_conv11
 	output reg [2:0] 		phzvl; // raw hit valid flags for up to 3 ph zones
 	output reg [seg_ch-1:0] me11a;
 	output reg [3:0] 		clctpat_r [seg_ch-1:0]; // clct pattern numbers
-	output reg [seg_ch-1:0] lr_r;
 
 	// ph and th raw hits
 	output reg [ph_hit_w-1:0] ph_hit;
@@ -187,7 +186,7 @@ module prim_conv11
 		// zero outputs
 		vl = 0;
 		phzvl = 0;
-		for (i = 0; i < seg_ch; i = i+1) begin fph[i] = 0; clctpat_r[i] = 0; lr_r[i] = 0; end
+		for (i = 0; i < seg_ch; i = i+1) begin fph[i] = 0; clctpat_r[i] = 0; end
 		for (i = 0; i < th_ch;  i = i+1) th[i] = 0;
 		ph_hit = 0;
 
@@ -282,7 +281,6 @@ module prim_conv11
 				end
 				//clctpat_r[i] = clctpat[i]; // just propagate pattern downstream
 				clctpat_r[i] = run2_patt[{lr[i], clctpat[i]}]; // convert run-3 bend into run-2 pattern
-				lr_r     [i] = lr     [i]; // just propagate lr as well
 			end 
 			
 			ph[i] = fph[i];
