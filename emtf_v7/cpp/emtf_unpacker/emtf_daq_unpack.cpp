@@ -11,10 +11,13 @@ int main (int argc, char* argv[])
 	uint64_t * buffer;
 	size_t result;
 	bool check_range = true;
+	bool single_event = false;
 
-	if (argc > 2) check_range = false;
+	if (argv[2][0] == 'r') check_range = false;
+	if (argv[2][0] == 's') single_event = true;
 
 	if (check_range) printf ("checking range on halfstrips and wiregroups\n");
+	if (single_event) printf ("decoding single event without AMC13 header/trailer\n");
 
 	pFile = fopen ( argv[1] , "rb" );
 	if (pFile==NULL) {fputs ("File error\n",stderr); exit (1);}
@@ -43,31 +46,37 @@ int main (int argc, char* argv[])
 #define b(m) (buffer[i] & m)
 #define inci(n) i+=n; if (i >= twc) {printf("reached end of buffer, line: %d\n", __LINE__); exit(4);}
 
-	// determine whether it's read out from AMC13 buffer or from DAQ stream
+	int payload_start;
+	uint64_t amc13_bx_id;
+	uint64_t amc13_lv1_id;
+	uint64_t amc13_orn; 
+	uint64_t amc13_namc;
+	uint64_t amc_size[12];
+	uint64_t board_id[12], amc_bx_id[12], amc_lv1_id[12], amc_orn[12], amc_board_id[12];
+	uint64_t amc_data_lng[12], amc_lv1_id_8b[12];
+	uint64_t amc_l1a, amc_l1a_bxn, amc_sp_ts, amc_me_en[5];
+	// determine whether it's read out from AMC13 buffer or from
+	// DAQ stream
 	bool amc13_format = (buffer[0] == 0xbadc0ffeebadcafe);
 
 	if (amc13_format) printf ("AMC13 buffer readout\n");
 
 	for (i = 0; i < twc;)
 	{
-
+	    if (!single_event)
+	    {
 		if (amc13_format) {inci(2)}
 		else {inci(3)} //  CDF header word 1
-		uint64_t amc13_bx_id  = w(20,12);
-		uint64_t amc13_lv1_id = w(32,24);
+		amc13_bx_id  = w(20,12);
+		amc13_lv1_id = w(32,24);
 
 		inci(1); // CDF header word 2
-		uint64_t amc13_orn = w(4,32); 
-		uint64_t amc13_namc = w(52,4);
+		amc13_orn = w(4,32); 
+		amc13_namc = w(52,4);
 
 		printf ("AMC13 header: bx: %04ld lv1: %06lx orn: %08lx namc: %ld\n", 
 				amc13_bx_id, amc13_lv1_id, amc13_orn, amc13_namc);
 
-		// read AMC sizes
-		uint64_t amc_size[12];
-		uint64_t board_id[12], amc_bx_id[12], amc_lv1_id[12], amc_orn[12], amc_board_id[12];
-		uint64_t amc_data_lng[12], amc_lv1_id_8b[12];
-		uint64_t amc_l1a, amc_l1a_bxn, amc_sp_ts, amc_me_en[5];
 		for (int j = 0; j < amc13_namc; j++) // amc loop
 		{
 			inci(1);
@@ -76,10 +85,17 @@ int main (int argc, char* argv[])
 			//	  if (amc_size[j] != 3ULL)
 			printf ("amc %d size: %06lx id: %04lx\n", j, amc_size[j], board_id[j]);
 		}
-
+	    }
+	    else
+	    {
+	      amc13_namc = 1;
+	      amc_size[0] = 10; // just make it more than 3
+	    }
 		// read AMC payloads
 		for (int j = 0; j < amc13_namc; j++) // amc loop
 		{
+		  if (!single_event)
+		  {
 			inci(1); // at amc header word 1
 			amc_bx_id[j] = w(20, 12);
 			amc_lv1_id[j] = w(32, 24);
@@ -88,10 +104,15 @@ int main (int argc, char* argv[])
 			amc_board_id[j] = w(0, 16);
 			amc_orn[j] = w(16, 16);
 
-			int payload_start = i; // remember where payload started for this AMC
+			payload_start = i; // remember where payload started for this AMC
+		  }
 			if (amc_size[j] > 3ULL) // payload not empty
 			{
+			  if (!single_event)
+			  {
 				inci(1); // first payload header word
+			  }
+				
 				if (b(0xf000f000f000f000ULL) == 0x9000900090009000ULL)
 				{
 					amc_l1a = w(0,12) | (w(16,12) << 12);
@@ -124,18 +145,19 @@ int main (int argc, char* argv[])
 				else
 					printf ("ERROR: EMUTF head 3 does not match: %016lx %016llx\n", buffer[i], 0x0000000000008000ULL);
 
-				inci(1); // block of counters
-				if (b(0x8000800080008000ULL) == 0x0000000080000000ULL)
-				{
-					// not implemented in fw so far
-				}
-				else
-					printf ("ERROR: EMUTF block of counters does not match: %016lx %016llx\n", buffer[i], 0x0000000080000000ULL);
+				// inci(1); // block of counters
+				// if (b(0x8000800080008000ULL) == 0x0000000080000000ULL)
+				// {
+				// 	// not implemented in fw so far
+				// }
+				// else
+				// 	printf ("ERROR: EMUTF block of counters does not match: %016lx %016lx\n", buffer[i], 0x0000000080000000ULL);
 
 				uint64_t me_q, me_wg, me_hs, me_cscid, me_bxn, me_tbin, me_station;
 				uint64_t trk_tbin, trk_phi_inner, trk_phi_outer, trk_eta, trk_pt, trk_q;
 				uint64_t trk_me_id[4], trk_me_tbin[4], trk_pt_lut_address;
 				uint64_t rpc_ph,rpc_th,rpc_ln, rpc_fr, rpc_wr, rpc_tb;
+				uint64_t ge11_st,ge11_pr,ge11_sz,ge11_cn,ge11_ln,ge11_tb, ge11_vf;
 				inci(1); // data records
 				while (b(0xf000f000f000f000ULL) != 0xf000f000f000f000ULL) // scan data until we see the trailer
 					//while (b(0xf000f000f000f000ULL) != 0xf000e000f000f000ULL) // scan data until we see the trailer (this line is for defective fw)
@@ -149,7 +171,7 @@ int main (int argc, char* argv[])
 						me_bxn = w(32, 12);
 						me_tbin = w(48, 3);
 						me_station = w(52, 3);
-						printf ("EMUTF stub: q: %ld wg: %03ld hs: %03ld cscid: %ld bxn: %03lx tbin: %ld station: %ld\n",
+						printf ("CSC   stub: q: %ld wg: %03ld hs: %03ld cscid: %ld bxn: %03lx tbin: %ld station: %ld\n",
 								me_q, me_wg, me_hs, me_cscid, me_bxn, me_tbin, me_station);
 						if (check_range)
 						{
@@ -168,6 +190,20 @@ int main (int argc, char* argv[])
 						rpc_tb = w(48, 3);
 						printf ("RPC   stub: ph: %04ld th: %02ld ln: %ld fr: %ld wr: %lx tbin: %ld\n",
 								rpc_ph,rpc_th,rpc_ln, rpc_fr, rpc_wr, rpc_tb);
+					}
+
+					if (b(0x8000800080008000ULL) == 0x0000800080008000ULL) // GEM data
+					{
+ 					        ge11_st = w(0,  9); // strip
+						ge11_pr = w(9,  3); // partition
+						ge11_sz = w(12, 3); // cluster size
+						ge11_cn = w(24, 4); // cluster number
+						ge11_ln = w(28, 3); // link #
+						ge11_tb = w(48, 3); // time bin
+						ge11_vf = w(51, 1); // valid flag
+						if (ge11_st > 0) // TEMP, remove
+						  printf ("GE11  stub: st: %04ld pr: %02ld sz: %ld cn: %ld ln: %lx tbin: %ld vf: %ld\n",
+							ge11_st, ge11_pr, ge11_sz, ge11_cn, ge11_ln, ge11_tb, ge11_vf);
 					}
 
 					if (b(0x8000800080008000ULL) == 0x0000800000008000ULL) // SP output word 1
