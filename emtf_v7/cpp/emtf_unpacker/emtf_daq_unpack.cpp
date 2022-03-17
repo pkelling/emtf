@@ -201,7 +201,7 @@ int main (int argc, char* argv[])
 						ge11_ln = w(28, 3); // link #
 						ge11_tb = w(48, 3); // time bin
 						ge11_vf = w(51, 1); // valid flag
-						if (ge11_st > 0) // TEMP, remove
+						//						if (ge11_st > 0) // TEMP, remove
 						  printf ("GE11  stub: st: %04ld pr: %02ld sz: %ld cn: %ld ln: %lx tbin: %ld vf: %ld\n",
 							ge11_st, ge11_pr, ge11_sz, ge11_cn, ge11_ln, ge11_tb, ge11_vf);
 					}
@@ -248,6 +248,7 @@ int main (int argc, char* argv[])
 				inci(1); // payload trailer word 2
 				amc_day = w(0,5);
 				printf ("EMUTF trlr: date: %04ld-%02ld-%02ld\n", amc_year, amc_month, amc_day);
+				if (single_event) exit(0);
 
 			} // if payload is not empty
 
