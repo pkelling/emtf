@@ -482,6 +482,12 @@ sp12_qtw::sp12_qtw(QWidget *parent) :
     //ui->bc0_source_tbl->horizontalHeader()->setResizeMode(QHeaderView::Fixed);
     ui->bc0_source_tbl->verticalHeader()->setResizeMode(QHeaderView::Fixed);
 
+	// set default values for delays that are currently optimal
+	ui->bc0_delay_spin->setValue(117);
+	ui->gmt_link_comma_delay_spin->setValue(31);
+	ui->single_delay_sb->setValue(7);
+	ui->gem_delay_sb->setValue(110);
+
     QTableWidgetItem *checkBoxItem[4][68];
     QTableWidgetItem *st_item[68], *ch_item[68];
     char stn[6][10] = {"1A", "1B", "2", "3", "4", "N"}; // station names
