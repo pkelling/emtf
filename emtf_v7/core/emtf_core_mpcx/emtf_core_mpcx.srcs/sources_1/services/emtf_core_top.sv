@@ -1328,7 +1328,7 @@ module emtf_core_top
     dbg dbg_i
     (
         .pcie_clk        (pcie_clk_buf   ),
-        .reset           (!m_aresetn     ),
+        .reset           ((!m_aresetn) | soft_reset),
         .jtag_enable     (jtag_enable    ),    
         .jtag_done       (jtag_done      ),      
         .jtag_length     (jtag_length    ),    
