@@ -1237,6 +1237,8 @@ module emtf_core_top
          .gem_rxd       (ge11_rxd      ),
          .gem_rx_valid  (ge11_rx_valid ), 
          .gem_crc_match (ge11_crc_match),
+         .gem_alg_out_range     (alg_out_range_gem  ),
+         .gem_bc0_period_err    (bc0_period_err_gem ),
 
          // track
          .bt_pt (bt_pt_tx),

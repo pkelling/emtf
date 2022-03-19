@@ -98,45 +98,48 @@ module gem_rx
 				end
 			end
 
-            if (fiber_enable[i] == 1'b1) // fiber enabled
+            if (fiber_enable[i] == 1'b1) // fiber enabled and link is up
             begin
                 for (j = 0; j < 2; j++) // layer loop
                 begin
                     if (link_id_flag_r[i][j] == 1'b0) // not Link ID
                     begin
-                        if (cluster_cnt[i][j] > 4'h0) // count of clusters more than 0
+                        if (bc0_period_err[i][j] == 1'b0 && alg_out_range[i][j] == 1'b0) // decode clusters only if no BC0 errors and alignment is good
                         begin
-                            single_hit = 1;
-                        end
-                        
-                        // scan clusters
-                        for (k = 0; k < 8; k++) // cluster loop
-                        begin
-                        
-                            if (cluster[i][j][k][7:0] != 8'hff) // valid cluster
+                            if (cluster_cnt[i][j] > 4'h0) // count of clusters more than 0
                             begin
-                                // GE11 cluster format:
-                                // [7:0] - strip 0..191, 0xff is invalid
-                                // [10:8] - partition
-                                // [13:11] - cluster size
-                                // [14] - special_bit
-    
-                                // GE21 cluster format:
-                                // [8:0] - strip 0..383, 0x1ff is invalid
-                                // [9] - partition
-                                // [12:10] - cluster size
-                                // [13] - reserved
-                                // [14] - special_bit
-    
-                                // decode cluster
-                                ge11_cl[i][j][k].str = cluster[i][j][k][7:0];
-                                ge11_cl[i][j][k].prt = cluster[i][j][k][10:8];
-                                ge11_cl[i][j][k].csz = cluster[i][j][k][13:11];
-                                // cluster valid if strip code is not 'hff
-                                ge11_cl[i][j][k].vf  = 1'b1;
+                                single_hit = 1;
+                            end
                             
-                                ph_single = {i[2:0], cluster[i][j][k][7:0]}; // chamber and strip number as phy
-                                th_single = {i[2:0], cluster[i][j][k][10:8]}; // chamber and partition as theta
+                            // scan clusters
+                            for (k = 0; k < 8; k++) // cluster loop
+                            begin
+                            
+                                if (cluster[i][j][k][7:0] != 8'hff) // valid cluster
+                                begin
+                                    // GE11 cluster format:
+                                    // [7:0] - strip 0..191, 0xff is invalid
+                                    // [10:8] - partition
+                                    // [13:11] - cluster size
+                                    // [14] - special_bit
+        
+                                    // GE21 cluster format:
+                                    // [8:0] - strip 0..383, 0x1ff is invalid
+                                    // [9] - partition
+                                    // [12:10] - cluster size
+                                    // [13] - reserved
+                                    // [14] - special_bit
+        
+                                    // decode cluster
+                                    ge11_cl[i][j][k].str = cluster[i][j][k][7:0];
+                                    ge11_cl[i][j][k].prt = cluster[i][j][k][10:8];
+                                    ge11_cl[i][j][k].csz = cluster[i][j][k][13:11];
+                                    // cluster valid if strip code is not 'hff
+                                    ge11_cl[i][j][k].vf  = 1'b1;
+                                
+                                    ph_single = {i[2:0], cluster[i][j][k][7:0]}; // chamber and strip number as phy
+                                    th_single = {i[2:0], cluster[i][j][k][10:8]}; // chamber and partition as theta
+                                end
                             end
                         end
                     end

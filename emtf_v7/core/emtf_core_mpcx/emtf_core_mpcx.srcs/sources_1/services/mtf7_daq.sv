@@ -20,6 +20,8 @@ module mtf7_daq
    input [233:0]      gem_rxd [6:0], ///< GEM rx data, 1 frame x 234 bits, for 7 links
    input [6:0]        gem_rx_valid,  ///< GEM data valid flags
    input [6:0]        gem_crc_match, ///< CRC match flags from GEM links
+   input [1:0] gem_alg_out_range [6:0],
+   input [1:0] gem_bc0_period_err [6:0],
 
    // precise phi and eta of best tracks
    // [best_track_num]
@@ -475,7 +477,10 @@ module mtf7_daq
                       gem_tbin_ofs    = 0;                       // timebin offset
                       gem_val         = gem_str_d[i][station_][j][k] != 8'hff; // GE1/1
                       // gem_val          = gem_str_d[i][station_][j][k] != 9'h1ff; // GE2/1
+                      if (gem_en[station_] == 1'b0) gem_val = 1'b0; // link is disabled, kill all
                       if (gem_link_id_flag[i][station_] == 1'b1) gem_val = 1'b0; // if link ID is transmitted, not a valid primitive
+                      if (gem_alg_out_range[station_][j] == 1'b1) gem_val = 1'b0; // bad alignment, invalidate
+                      if (gem_bc0_period_err[station_][j] == 1'b1) gem_val = 1'b0; // bad bc0, invalidate
 
 // FIXME: logic for out-of-time clusters is disabled so far
 // 
