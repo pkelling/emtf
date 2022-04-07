@@ -673,7 +673,7 @@ module emtf_core_top
     wire [6:0]        ge11_crc_match; ///< CRC match flags from GEM links
     wire [4:0] gem_data_del [6:0][1:0];
     
-    wire [5:0] ttc_bc0_delay_gem;
+    wire [9:0] ttc_bc0_delay_gem;
     wire [4:0] automatic_delay_gem [6:0][1:0];
     wire       en_manual_gem;
     wire [1:0] alg_out_range_gem [6:0];
@@ -894,6 +894,8 @@ module emtf_core_top
 	);
 `endif
 
+    wire fp_trigger;
+
     output_delay od
     (
         // inputs
@@ -925,6 +927,8 @@ module emtf_core_top
         .gmt_eta_d (gmt_eta_d),
         .gmt_qlt_d (gmt_qlt_d),
         .gmt_crg_d (gmt_crg_d),
+        
+        .fp_trigger (fp_trigger),
     
         .clk (clk40)
     );
@@ -1117,7 +1121,7 @@ module emtf_core_top
 	//assign fp[0] = txcharisk_0[1];// ttc_bx0_rx
     assign fp[0] = (cppf_rxd[0][0][15:11] != 5'b11111 && cppf_rx_valid[0] == 1'b1) ? 1'b1 : 1'b0; // for RPC latency measurement
 	assign fp[1] = |rx_valid_tp; // valid bits from any input link, before any deframing, for latency measurement with scope
-	assign fp[2] = bt_rank_d[0] == 7'h0 && bt_rank_d[2] == 7'h0; // output valid track flag for local trigger
+	assign fp[2] = fp_trigger; // bt_rank_d[0] == 7'h0 && bt_rank_d[2] == 7'h0; // output valid track flag for local trigger
 	assign fp[3] = txoutclk_async_div[3];//clk40;
 	assign resync_tp = ttc_resync_rx;
 
@@ -1237,6 +1241,8 @@ module emtf_core_top
          .gem_rxd       (ge11_rxd      ),
          .gem_rx_valid  (ge11_rx_valid ), 
          .gem_crc_match (ge11_crc_match),
+         .gem_alg_out_range     (alg_out_range_gem  ),
+         .gem_bc0_period_err    (bc0_period_err_gem ),
 
          // track
          .bt_pt (bt_pt_tx),
@@ -1328,7 +1334,7 @@ module emtf_core_top
     dbg dbg_i
     (
         .pcie_clk        (pcie_clk_buf   ),
-        .reset           (!m_aresetn     ),
+        .reset           ((!m_aresetn) | soft_reset),
         .jtag_enable     (jtag_enable    ),    
         .jtag_done       (jtag_done      ),      
         .jtag_length     (jtag_length    ),    
@@ -1342,6 +1348,7 @@ module emtf_core_top
         // [station][chamber][segment] station 5 = neighbor sector, all stations
         .lct_i (lct_aligned),
 		.ge11_cl    (ge11_cl), // decoded clusters
+		.ge11_rxd   (ge11_rxd),
         .clk40 (clk40)
     );
 

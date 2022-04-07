@@ -67,7 +67,7 @@ module gem_rx
     (* mark_debug *) wire [1:0] bc0 [6:0]; //[schamber][layer]
     (* mark_debug *) wire [1:0] lct_bc0 [6:0];
     (* mark_debug *) wire [6:0] link_id_flag; // [schamber]
-    (* mark_debug *) wire [3:0] cluster_cnt [6:0][1:0]; //[schamber][layer]
+    //(* mark_debug *) wire [3:0] cluster_cnt [6:0][1:0]; //[schamber][layer]
     (* mark_debug *) wire [13:0] cluster [6:0][1:0][7:0]; // [schamber][layer][cluster]
     (* mark_debug *) wire gem_single_hit = single_hit;
     (* mark_debug *) wire [bw_fph-1:0] gem_ph_single = ph_single;
@@ -106,10 +106,10 @@ module gem_rx
                     begin
                         if (bc0_period_err[i][j] == 1'b0 && alg_out_range[i][j] == 1'b0) // decode clusters only if no BC0 errors and alignment is good
                         begin
-                            if (cluster_cnt[i][j] > 4'h0) // count of clusters more than 0
-                            begin
-                                single_hit = 1;
-                            end
+//                            if (cluster_cnt[i][j] > 4'h0) // count of clusters more than 0
+//                            begin
+//                                single_hit = 1;
+//                            end
                             
                             // scan clusters
                             for (k = 0; k < 8; k++) // cluster loop
@@ -146,8 +146,9 @@ module gem_rx
                     else
                     begin
                        // link ID is transmitted
-                        // no clusters in this link, lock link ID 
-                        link_id[i] = cluster[i][0][0][7:0]; // link ID value is in lower bits of first cluster
+                        // no clusters in this link, lock link ID
+                        if (j == 0) // take ID value only from layer 0 flag, layer 1 may have different alignment  
+                            link_id[i] = cluster[i][0][0][7:0]; // link ID value is in lower bits of first cluster
     	       			
                     end      
                 end
@@ -236,7 +237,8 @@ module gem_rx
                     assign cluster[gi][gj][gk] = lb_gbt_rx_frame_r[gi][112*gj + 14*gk + 10 +: 14];
                 end
                 
-                assign cluster_cnt[gi][gj] = lb_gbt_rx_frame_r[gi][4*gj + 2 +: 4];
+                // this is incorrect, cluster count bits are not filled in lb_gbt_rx_frame_r
+                //assign cluster_cnt[gi][gj] = lb_gbt_rx_frame_r[gi][4*gj + 2 +: 4];
                 
                 // decode BC0 bits from input frame for alignment (note missing _r at the end)
                 assign lct_bc0[gi][gj] = lb_gbt_rx_frame[gi][gj];

@@ -20,6 +20,8 @@ module mtf7_daq
    input [233:0]      gem_rxd [6:0], ///< GEM rx data, 1 frame x 234 bits, for 7 links
    input [6:0]        gem_rx_valid,  ///< GEM data valid flags
    input [6:0]        gem_crc_match, ///< CRC match flags from GEM links
+   input [1:0] gem_alg_out_range [6:0],
+   input [1:0] gem_bc0_period_err [6:0],
 
    // precise phi and eta of best tracks
    // [best_track_num]
@@ -298,7 +300,8 @@ module mtf7_daq
    reg [2:0]                    gmt_cvl_i;
    reg [8:0]                    gmt_eta_abs [2:0];
    reg [8:0]                    bt_pt_tx [2:0];
-   reg [6:0]                    gem_bc0  [7:0]   ;               
+   reg [6:0]                    gem_bc0  [7:0];     // BC0 from layer 0          
+   reg [6:0]                    gem_bc0_ly1  [7:0]; // BC0 from layer 1               
    reg [6:0]                    gem_link_id_flag [7:0];   
 
 
@@ -444,9 +447,12 @@ module mtf7_daq
              {
                   gem_n_clu_d[i][station_][1], // any valid clusters(8-15) after this are from BX-1
                   gem_n_clu_d[i][station_][0], // any valid clusters(0-7)  after this are from BX-1
-                  gem_link_id_flag[i][station_],
+                  gem_bc0_ly1[i][station_],
                   gem_bc0[i][station_]
              } = gem_head_d[i];
+
+            // rework according to upgraded GEM data format. See GEX_1 Trigger Data Proposal_2022.pdf document
+             gem_link_id_flag[i][station_] = (gem_n_clu_d[i][station_][1] == 4'hf && gem_n_clu_d[i][station_][0] == 4'hf) ? 1'b1 : 1'b0;
              
              gem_ring_pos += GEM_HD_SZ; // move the read pointer past the header words
              
@@ -471,7 +477,10 @@ module mtf7_daq
                       gem_tbin_ofs    = 0;                       // timebin offset
                       gem_val         = gem_str_d[i][station_][j][k] != 8'hff; // GE1/1
                       // gem_val          = gem_str_d[i][station_][j][k] != 9'h1ff; // GE2/1
-                      if (gem_link_id_flag[i] == 1'b1) gem_val = 1'b0; // if link ID is transmitted, not a valid primitive
+                      if (gem_en[station_] == 1'b0) gem_val = 1'b0; // link is disabled, kill all
+                      if (gem_link_id_flag[i][station_] == 1'b1) gem_val = 1'b0; // if link ID is transmitted, not a valid primitive
+                      if (gem_alg_out_range[station_][j] == 1'b1) gem_val = 1'b0; // bad alignment, invalidate
+                      if (gem_bc0_period_err[station_][j] == 1'b1) gem_val = 1'b0; // bad bc0, invalidate
 
 // FIXME: logic for out-of-time clusters is disabled so far
 // 
@@ -484,7 +493,7 @@ module mtf7_daq
                       gem_data[i][gemw] = 
                       {
                            1'b0, 11'b0, gem_val, tbin, // - gem_tbin_ofs,                                                        // GE11d
-                           1'b1, gem_bc0[i][station_], 2'b0, 12'h0,                                                                          // GE11c
+                           1'b1, gem_bc0[i][station_], gem_bc0_ly1[i][station_], 1'b0, 12'h0,                                    // GE11c
                            1'b1, station_, gem_clu_id_d[i], 8'h0,                                                            // GE11b
                            1'b1, gem_clu_sz_d[i][station_][j][k], gem_par_d[i][station_][j][k], 1'b0, gem_str_d[i][station_][j][k] // GE11a
                       };
