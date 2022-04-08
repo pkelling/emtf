@@ -77,7 +77,7 @@ int resets_main(bool gth_reset, bool clink_reset, bool mpc_enable, bool spy_addr
 //                int fd = device_d;
                 uint64_t value;
 
-                log_printf("resetting all GTHs\n");
+                log_printf("resetting PCIe XVC JTAG\n");
 
                 // module addresses
                 uint32_t MEM_BASE = 0x80000; // 0xc0000  bytes

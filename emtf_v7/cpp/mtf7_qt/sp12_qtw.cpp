@@ -425,7 +425,7 @@ sp12_qtw::sp12_qtw(QWidget *parent) :
     ui->setupUi(this);
     ui->Progress->setValue(0);
 
-    ui->reset_list->addItem("GTH");
+    ui->reset_list->addItem("PCIe JTAG");
     ui->reset_list->addItem("Core lnk");
     ui->reset_list->addItem("PTLUT clk");
     ui->reset_list->addItem("Sync clk");

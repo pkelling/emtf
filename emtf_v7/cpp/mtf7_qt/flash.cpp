@@ -272,7 +272,7 @@ public:
 protected:
     void run()
     {
-        log_printf ("flash erase thread starts, fd: %d\n", fp->fd);
+//        log_printf ("flash erase thread starts, fd: %d\n", fp->fd);
         for (uint32_t i = 0; i < nblocks; i++)
         {
             set_progress(i*100/nblocks);
@@ -280,7 +280,7 @@ protected:
             if (((val >> 5) & 1) == 1) break; // error erasing block
         }
         set_progress (100);
-        log_printf ("flash erase thread exits, fd: %d\n", fp->fd);
+//        log_printf ("flash erase thread exits, fd: %d\n", fp->fd);
 
     }
 };
@@ -297,7 +297,7 @@ protected:
     void run()
     {
         uint16_t val;
-        log_printf ("flash verify thread starts, fd: %d\n", fp->fd);
+//        log_printf ("flash verify thread starts, fd: %d\n", fp->fd);
 
         uint16_t* rbuffer = (uint16_t*) malloc (BLK_SIZE_B);
         if (rbuffer == NULL) {log_printf ("Memory error, fd: %d\n", fp->fd); return;}
@@ -328,7 +328,7 @@ protected:
 
         //fclose (vout);
         set_progress (100);
-        log_printf ("flash verify thread exits, fd: %d\n", fp->fd);
+//        log_printf ("flash verify thread exits, fd: %d\n", fp->fd);
         free(rbuffer);
 
     }
@@ -345,14 +345,14 @@ public:
 protected:
     void run()
     {
-        log_printf ("flash write thread starts, fd: %d\n", fp->fd);
+//        log_printf ("flash write thread starts, fd: %d\n", fp->fd);
         for (uint32_t j = 0; j < nblocks; j++)
         {
             set_progress(j*100/nblocks);
             fp->program_block ((start_block + j) * BLK_SIZE, &buffer[j * BLK_SIZE]);
         }
         set_progress (100);
-        log_printf ("flash write thread exits, fd: %d\n", fp->fd);
+//        log_printf ("flash write thread exits, fd: %d\n", fp->fd);
 
     }
 };
