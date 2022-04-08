@@ -77,7 +77,7 @@ set_property -dict {LOC AY16 IOSTANDARD LVCMOS12} [get_ports ttc_or_cnt_reset]
 
 set_property -dict {LOC AM27 IOSTANDARD LVCMOS18} [get_ports {fp[0]}]
 set_property -dict {LOC AK28 IOSTANDARD LVCMOS18} [get_ports {fp[1]}]
-set_property -dict {LOC AM28 IOSTANDARD LVCMOS18} [get_ports {fp[2]}]
+set_property -dict {LOC AM28 IOSTANDARD LVCMOS18 IOB TRUE} [get_ports {fp[2]}]
 set_property -dict {LOC AK27 IOSTANDARD LVCMOS18} [get_ports {fp[3]}]
 
 set_property -dict {LOC AT30 IOSTANDARD LVCMOS18} [get_ports resync_tp]
@@ -104,7 +104,9 @@ set_false_path -from [get_pins ctoc/rst_isd_reg/C] -to [get_pins ctoc/rst_isd_r_
 set_false_path -from [get_clocks pcie_clk] -to [get_clocks clk_out1_mmcm_daq]
 set_false_path -from [get_clocks clk_out1_mmcm_daq] -to [get_clocks pcie_clk]
 
-set_false_path -to [get_ports {fp[*]}]
+set_false_path -to [get_ports {fp[0]}]
+set_false_path -to [get_ports {fp[1]}]
+set_false_path -to [get_ports {fp[3]}]
 
 set_false_path -from [get_clocks clk_out1_mmcm_sync] -to [get_clocks pcie_clk]
 set_false_path -from [get_clocks pcie_clk] -to [get_clocks clk_out1_mmcm_sync]

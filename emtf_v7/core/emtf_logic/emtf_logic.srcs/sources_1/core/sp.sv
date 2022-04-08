@@ -89,8 +89,6 @@ module sp
 `include "spbits.sv"
 
 
-	wire [3:0] 		bt_lr [2:0];
-
     // coordinates [station][chamber][segment]
     (* mark_debug = "TRUE" *) wire [bw_fph-1:0]   ph   [5:0][8:0][seg_ch-1:0];
     (* mark_debug = "TRUE" *) wire [bw_th-1:0] 	th11 [2:0][2:0][th_ch11-1:0];
@@ -99,7 +97,6 @@ module sp
     wire [2:0] 			phzvl[5:0][8:0];
 	wire [seg_ch-1:0] 	me11a [2:0][2:0];
     wire [3:0] 			cpatr [5:0][8:0][seg_ch-1:0];
-	wire [seg_ch-1:0]	lr_r [5:0][8:0];
 
 	// numbers of best ranks [zone][num]
 	(* mark_debug = "TRUE" *) wire [bpow:0] ph_num [3:0][2:0]; 
@@ -146,7 +143,6 @@ module sp
     wire [seg_ch-1:0] 	vld   [max_drift-1:0][5:0][8:0];
 	wire [seg_ch-1:0] 	me11ad [max_drift-1:0][2:0][2:0];
     wire [3:0] 			cpatd [max_drift-1:0][5:0][8:0][seg_ch-1:0];
-    wire [seg_ch-1:0] 	lr_d  [max_drift-1:0][5:0][8:0];
     
     (* mark_debug = "TRUE" *) wire [seg_ch-1:0] 	vld_w   [5:0][8:0];
     (* mark_debug = "TRUE" *) wire [3:0]        	cpatd_w [5:0][8:0][seg_ch-1:0];
@@ -161,12 +157,10 @@ module sp
 	(* mark_debug = "TRUE" *) wire [bw_fph-1:0]	ph_match [3:0][2:0][3:0]; // matching ph
 	wire [bw_th-1:0]	th_match   [3:0][2:0][3:0][seg_ch-1:0]; // matching th, 2 segments 
 	wire [3:0] 			cpat_match [3:0][2:0][3:0]; // matching pattern
-	wire [3:0] 			lr_match [3:0][2:0]; // matching LR
 
 	wire [bw_fph-1:0] phi [3:0][2:0];
 	wire [bw_th-1:0] theta [3:0][2:0];
 	wire [3:0] cpattern [3:0][2:0][3:0];
-	wire [3:0] lr_bit [3:0][2:0];
 	// ph and th deltas from best stations
 	// [zone][pattern_num], last index: 0=12, 1=13, 2=14, 3=23, 4=24, 5=34
 	wire [bw_fph-1:0] 	delta_ph [3:0][2:0][5:0];
@@ -249,7 +243,6 @@ module sp
 		 .phzvl  (phzvl),
 		 .me11a  (me11a),
 		 .cpatr  (cpatr),
-		 .lr_r   (lr_r),
 		 .ph_hit (ph_hito),
 		 .cs     (pcs_cs), 
 		 .sel    (sel), 
@@ -332,7 +325,6 @@ module sp
 		 .vli   (vl),
 		 .me11ai(me11a),
 		 .cpati (cpatr),
-		 .lr_i  (lr_r),
 		 
 		 .ge11_ph (ge11_ph), 
 		 .ge11_th (ge11_th),
@@ -350,7 +342,6 @@ module sp
 		 .vlo_o (vld),
 		 .me11ao(me11ad),
 		 .cpato (cpatd),
-		 .lr_o  (lr_d),
 		 
 		 .clk   (clk)
 		 );
@@ -368,7 +359,6 @@ module sp
      .th11	(th11d), 
 	 .th	(thd),
 	 .cpat  (cpatd),
-	 .lr    (lr_d),
     
      .vi	(patt_ph_vi), 
 	 .hi	(patt_ph_hi), 
@@ -377,7 +367,6 @@ module sp
 	 .ph_match (ph_match),
 	 .th_match (th_match),
 	 .cpat_match (cpat_match),
-	 .lr_match (lr_match),
 	 .ph_qr (ph_qr),
 	 
      .clk	(clk)
@@ -393,7 +382,6 @@ module sp
 	 .ph_match (ph_match),
 	 .th_match (th_match),
 	 .cpat_match (cpat_match),
-	 .lr_match (lr_match),
 	 .ph_q (ph_qr),
 	 .th_window (th_window),
 	 .th_window_z0 (th_window_z0),
@@ -402,7 +390,6 @@ module sp
 	 .phi (phi),
 	 .theta (theta),
 	 .cpattern (cpattern),
-	 .lr_bit (lr_bit),
 	 .delta_ph (delta_ph),
 	 .delta_th (delta_th),
 	 .sign_ph (sign_ph),
@@ -422,7 +409,6 @@ module sp
      .phi (phi),
      .theta (theta),
 	 .cpattern (cpattern),
-	 .lr_bit (lr_bit),
      .delta_ph (delta_ph),
      .delta_th (delta_th),
      .sign_ph (sign_ph),
@@ -436,7 +422,6 @@ module sp
      .bt_phi (bt_phi),
      .bt_theta (bt_theta),
 	 .bt_cpattern (bt_cpattern),
-	 .bt_lr (bt_lr),
      .bt_delta_ph (bt_delta_ph),
      .bt_delta_th (bt_delta_th),
      .bt_sign_ph (bt_sign_ph),
@@ -515,7 +500,6 @@ module sp
         .bt_phi_i (bt_phi),
         .bt_theta_i (bt_theta),
         .bt_cpattern (bt_cpattern),
-        .bt_lr (bt_lr), 
         .bt_delta_ph (bt_delta_ph),
         .bt_delta_th (bt_delta_th),
         .bt_sign_ph (bt_sign_ph),

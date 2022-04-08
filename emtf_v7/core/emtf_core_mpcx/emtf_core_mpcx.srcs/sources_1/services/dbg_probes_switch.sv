@@ -5,6 +5,7 @@ module dbg_probes_switch
 (
     // [station][chamber][segment] station 5 = neighbor sector, all stations
     input csc_lct_mpcx lct_i [5:0][8:0][seg_ch-1:0],
+    input [233:0]      ge11_rxd [6:0],
 	ge11_cluster.in ge11_cl [6:0][1:0][7:0], // [schamber][layer][cluster]
     input clk40
 );
@@ -12,6 +13,7 @@ module dbg_probes_switch
 
     (* mark_debug *) csc_lct_mpcx lct_sel [2:0][seg_ch-1:0]; // selected LCTs
     (* mark_debug *) ge11_cluster_struct ge11_sel [2:0];
+    (* mark_debug *) wire [233:0] ge11_rxd_sel;
     ge11_cluster_struct ge11_cl_in [6:0][1:0][7:0]; // [schamber][layer][cluster]
 
     genvar gi, gj, gk;
@@ -41,6 +43,8 @@ module dbg_probes_switch
     assign ge11_sel[0] = ge11_cl_in [gsel_schamber[0]][gsel_layer[0]][ gsel_cluster[0]];
     assign ge11_sel[1] = ge11_cl_in [gsel_schamber[1]][gsel_layer[1]][ gsel_cluster[1]];
     assign ge11_sel[2] = ge11_cl_in [gsel_schamber[2]][gsel_layer[2]][ gsel_cluster[2]];
+    
+    assign ge11_rxd_sel = ge11_rxd[gsel_schamber[0]];
     
     mpcx_dbg_vio mpcx_vio 
     (

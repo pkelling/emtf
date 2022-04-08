@@ -1,4 +1,5 @@
 `ifdef SIMULATION_DAQ
+`include "interfaces.sv"
 `include "mpcx_interface.sv"
 `endif
 
@@ -15,11 +16,13 @@ module mtf7_daq
 
    // GEM inputs FIXME COPY OF RPC
    // 8 clusters for 2 super-chamber layers
-   // 234 bits transmitted per BX
    // GE1/1 SuperChamber (2xOH) is input to EMTF
-   input [233:0]      gem_rxd [6:0], ///< GEM rx data, 1 frame x 234 bits, for 7 links
+	// gem data, [schamber][layer][cluster]
+   ge11_cluster.in    ge11_cl [6:0][1:0][7:0],
    input [6:0]        gem_rx_valid,  ///< GEM data valid flags
    input [6:0]        gem_crc_match, ///< CRC match flags from GEM links
+   input [1:0] gem_alg_out_range [6:0],
+   input [1:0] gem_bc0_period_err [6:0],
 
    // precise phi and eta of best tracks
    // [best_track_num]
@@ -91,9 +94,8 @@ module mtf7_daq
   `localpar N_GE21_LAY     = 2;   ///< Number of layers in the GE2/1 superchamber
   `localpar N_ME0_LAY      = 6;   ///< Number of layers in the ME0 stack
   `localpar GEM_CLS_PER_BX = 8;   ///< 8 clusters per BX in GEM transmitted frame
-  `localpar GEM_FR_W       = 234; ///< Number of bits in the GEM data frame
-  `localpar GEM_HD_SZ      = 10;  ///< Number of bits in the GEM header word
-  `localpar GEM_CLU_BW     = 14;  ///< Number of bits in the GEM cluster word
+  `localpar GEM_CLU_BW     = 15;  ///< Number of bits in the GEM cluster word, including valid flag
+  `localpar GEM_FR_W       = (N_GE11_LAY * GEM_CLS_PER_BX * GEM_CLU_BW); ///< Number of bits in the GEM data frame, 2 layers * 8 clusters * 15 bits
 
 
    // chamber enable flags. Linkless chambers are enabled only when all links carrying them are enabled.
@@ -283,6 +285,7 @@ module mtf7_daq
    reg [7:0]                    gem_str_d        [7:0][6:0][1:0][7:0]; // GE1/1 strip/pad is 8 bits
    reg [2:0]                    gem_par_d        [7:0][6:0][1:0][7:0]; // GEM eta partition
    reg [2:0]                    gem_clu_sz_d     [7:0][6:0][1:0][7:0]; // GEM cluster size
+   reg [0:0]                    gem_vf_d         [7:0][6:0][1:0][7:0]; // GE1/1 valid bit
    reg [9:0]                    gem_head_d       [7:0];                // GEM frame header
    reg [6:0]                    gem_rx_valid_d   [7:0];                // GEM data valid flags
    reg [6:0]                    gem_crc_match_d  [7:0];                // GEM crc match
@@ -429,9 +432,21 @@ module mtf7_daq
        */
       for (station_ = 0; station_ < 3'd7; station_ = station_+1) // GEM sub-sector loop
       begin
-         // pack GEM data (234 bits) into the input delay line
-         gem_inp_del_in[gem_pos +: 234] = gem_rxd[station_];
-         gem_pos += 234;
+         // pack GEM clusters into the input delay line
+         for (j = 0; j < N_GE11_LAY; j = j+1) // superchamber/stack layer?
+         begin
+            for (k = 0; k < GEM_CLS_PER_BX; k = k+1) // cluster in layer loop
+            begin
+                gem_inp_del_in[gem_pos +: GEM_CLU_BW] = 
+                {
+                    ge11_cl[station_][j][k].vf,
+                    ge11_cl[station_][j][k].csz,
+                    ge11_cl[station_][j][k].prt,
+                    ge11_cl[station_][j][k].str
+                };
+                gem_pos += GEM_CLU_BW;
+            end
+         end
       end
       gem_inp_del_in[gem_pos +: 14] = {gem_crc_match, gem_rx_valid};
          
@@ -441,28 +456,15 @@ module mtf7_daq
           gemw = 0;
           for (station_ = 0; station_ < 3'd7; station_ = station_+1) // GEM sub-sector loop
           begin
-             gem_head_d[i] = daq_bank[i][gem_ring_pos +: GEM_HD_SZ];  // first gem_hd_sz bits are the header
-             {
-                  gem_n_clu_d[i][station_][1], // any valid clusters(8-15) after this are from BX-1
-                  gem_n_clu_d[i][station_][0], // any valid clusters(0-7)  after this are from BX-1
-                  gem_bc0_ly1[i][station_],
-                  gem_bc0[i][station_]
-             } = gem_head_d[i];
-
             // rework according to upgraded GEM data format. See GEX_1 Trigger Data Proposal_2022.pdf document
-             gem_link_id_flag[i][station_] = (gem_n_clu_d[i][station_][1] == 4'hf && gem_n_clu_d[i][station_][0] == 4'hf) ? 1'b1 : 1'b0;
-             
-             gem_ring_pos += GEM_HD_SZ; // move the read pointer past the header words
              
              for (j = 0; j < N_GE11_LAY; j = j+1) // superchamber/stack layer?
              begin
                 for (k = 0; k < GEM_CLS_PER_BX; k = k+1) // cluster in layer loop
                 begin
-                      // unpack GEM data header (10 bits) from the DAQ bank
-                      // only for first layer and cluster
-    
                       // GE1/1
                       {
+                           gem_vf_d     [i][station_][j][k],     // as above
                            gem_clu_sz_d [i][station_][j][k],     // as above
                            gem_par_d    [i][station_][j][k],        // as above
                            gem_str_d    [i][station_][j][k]         // as above
@@ -473,9 +475,6 @@ module mtf7_daq
                       gem_clu_id_d[i] = {j[0], k[2:0]};                 // cluster ID 0-7 for layer1, 8-15 for layer2?
                       tbin            = i;                       // timebin
                       gem_tbin_ofs    = 0;                       // timebin offset
-                      gem_val         = gem_str_d[i][station_][j][k] != 8'hff; // GE1/1
-                      // gem_val          = gem_str_d[i][station_][j][k] != 9'h1ff; // GE2/1
-                      if (gem_link_id_flag[i][station_] == 1'b1) gem_val = 1'b0; // if link ID is transmitted, not a valid primitive
 
 // FIXME: logic for out-of-time clusters is disabled so far
 // 
@@ -487,7 +486,7 @@ module mtf7_daq
 
                       gem_data[i][gemw] = 
                       {
-                           1'b0, 11'b0, gem_val, tbin, // - gem_tbin_ofs,                                                        // GE11d
+                           1'b0, 11'b0, gem_vf_d[i][station_][j][k], tbin, // - gem_tbin_ofs,                                                        // GE11d
                            1'b1, gem_bc0[i][station_], gem_bc0_ly1[i][station_], 1'b0, 12'h0,                                    // GE11c
                            1'b1, station_, gem_clu_id_d[i], 8'h0,                                                            // GE11b
                            1'b1, gem_clu_sz_d[i][station_][j][k], gem_par_d[i][station_][j][k], 1'b0, gem_str_d[i][station_][j][k] // GE11a

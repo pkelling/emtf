@@ -1234,9 +1234,11 @@ module emtf_core_top
          .fiber_enable (fiber_enable),
          .cppf_crc_match (cppf_crc_match),
     
-         .gem_rxd       (ge11_rxd      ),
+		 .ge11_cl       (ge11_cl), // decoded clusters
          .gem_rx_valid  (ge11_rx_valid ), 
          .gem_crc_match (ge11_crc_match),
+         .gem_alg_out_range     (alg_out_range_gem  ),
+         .gem_bc0_period_err    (bc0_period_err_gem ),
 
          // track
          .bt_pt (bt_pt_tx),
@@ -1342,6 +1344,7 @@ module emtf_core_top
         // [station][chamber][segment] station 5 = neighbor sector, all stations
         .lct_i (lct_aligned),
 		.ge11_cl    (ge11_cl), // decoded clusters
+		.ge11_rxd   (ge11_rxd),
         .clk40 (clk40)
     );
 
