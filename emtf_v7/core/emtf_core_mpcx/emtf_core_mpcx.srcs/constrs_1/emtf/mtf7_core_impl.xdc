@@ -77,7 +77,7 @@ set_property -dict {LOC AY16 IOSTANDARD LVCMOS12} [get_ports ttc_or_cnt_reset]
 
 set_property -dict {LOC AM27 IOSTANDARD LVCMOS18} [get_ports {fp[0]}]
 set_property -dict {LOC AK28 IOSTANDARD LVCMOS18} [get_ports {fp[1]}]
-set_property -dict {LOC AM28 IOSTANDARD LVCMOS18} [get_ports {fp[2]}]
+set_property -dict {LOC AM28 IOSTANDARD LVCMOS18 IOB TRUE} [get_ports {fp[2]}]
 set_property -dict {LOC AK27 IOSTANDARD LVCMOS18} [get_ports {fp[3]}]
 
 set_property -dict {LOC AT30 IOSTANDARD LVCMOS18} [get_ports resync_tp]
@@ -105,7 +105,7 @@ set_false_path -from [get_clocks pcie_clk] -to [get_clocks clk_out1_mmcm_daq]
 set_false_path -from [get_clocks clk_out1_mmcm_daq] -to [get_clocks pcie_clk]
 
 # fp[2] is not false path, this is for local trigger
-set_max_delay -to [get_ports {fp[2]}] -datapath_only 3.0
+#set_max_delay -from [get_clocks CLK_OUT2_usrclk_mmcm] -to [get_ports {fp[2]}] -datapath_only 3.0
 set_false_path -to [get_ports {fp[0]}]
 set_false_path -to [get_ports {fp[1]}]
 set_false_path -to [get_ports {fp[3]}]

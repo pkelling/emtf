@@ -43,6 +43,11 @@ module gem_rx
     (* mark_debug *) wire [15:0] lb_gbt_correction_cnt [6:0];
     assign correction_cnt = lb_gbt_correction_cnt;
     (* mark_debug *) wire ttc_bc0_del;
+
+    reg [2:0] dupl_detect_cnt [6:0][1:0][7:0]; // [schamber][layer][cluster]
+    reg [7:0] dupl_str [6:0][1:0][7:0];
+    reg [7:0] dupl_flag [6:0][1:0];
+    (* mark_debug *) wire [7:0] dupl_flag_w [6:0][1:0] = dupl_flag;
     
     assign ge11_link_status = 
     {
@@ -59,7 +64,7 @@ module gem_rx
 
     (* mark_debug *) wire [233:0] lb_gbt_rx_frame[6:0] ;
     wire  [233:0] lb_gbt_rx_frame_r[6:0] ;
-    assign ge11_rxd = lb_gbt_rx_frame_r;
+    assign ge11_rxd = lb_gbt_rx_frame;
     assign ge11_rx_valid = lb_gbt_rx_header_locked;
     assign ge11_crc_match = 7'b1111111;
     reg  [233:0] r [11:0][6:0] ;
@@ -139,6 +144,22 @@ module gem_rx
                                 
                                     ph_single = {i[2:0], cluster[i][j][k][7:0]}; // chamber and strip number as phy
                                     th_single = {i[2:0], cluster[i][j][k][10:8]}; // chamber and partition as theta
+                                    
+                                    // duplicate detector logic
+                                    if (dupl_detect_cnt[i][j][k] == 3'h7) // seven in a row
+                                        dupl_flag [i][j][k] = 1'b1;
+                                    
+                                    if (dupl_str[i][j][k] == cluster[i][j][k][7:0]) // strip code matches previous cluster
+                                        dupl_detect_cnt[i][j][k]++; // increase count
+                                    else
+                                        dupl_detect_cnt[i][j][k] = 3'b0; // reset, different cluster
+                                        
+                                    dupl_str[i][j][k] = cluster[i][j][k][7:0]; // remember strip code
+                                end
+                                else
+                                begin
+                                    dupl_detect_cnt[i][j][k] = 3'b0; // reset duplicate detector counter
+                                    dupl_flag[i][j][k] = 1'b0; // reset flag
                                 end
                             end
                         end
@@ -149,6 +170,9 @@ module gem_rx
                         // no clusters in this link, lock link ID
                         if (j == 0) // take ID value only from layer 0 flag, layer 1 may have different alignment  
                             link_id[i] = cluster[i][0][0][7:0]; // link ID value is in lower bits of first cluster
+
+                        dupl_detect_cnt[i][j] = '{8{3'b0}}; // reset duplicate detector counters
+                        dupl_flag[i][j] = 8'b0; // reset duplicate flags
     	       			
                     end      
                 end

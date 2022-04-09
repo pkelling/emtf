@@ -43,6 +43,8 @@ module output_delay
     output [8:0] gmt_eta_d [2:0],
     output [3:0] gmt_qlt_d [2:0],
     output [2:0] gmt_crg_d,
+    
+    output fp_trigger,
 
     input clk
 );
@@ -95,6 +97,9 @@ module output_delay
 
     // PT LUT latency compensator, for all bt_ parameters
     dyn_shift #(.BW(bt_bw)) bt_dl (.CLK(clk), .CE(1'b1), .SEL(bt_delay), .SI(comb_out_in), .DO(comb_out_out));
+
+    // separate delay line for front panel trigger
+    dyn_shift #(.BW(1)) fp_dl (.CLK(clk), .CE(1'b1), .SEL(bt_delay), .SI(bt_rank[0] == 7'h0 && bt_rank[2] == 7'h0), .DO(fp_trigger));
 
     // for pt addresses and gmt parameters
     dyn_shift #(.BW(pta_bw)) pta_dl 

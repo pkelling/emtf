@@ -38,6 +38,7 @@ module mpcx_aligner_id2_9
     reg lct_bc0_r;
     reg [11:0] bc0_bxn; // BX number when BC0 came
     reg cnt_run = 1'b0;
+    reg [1:0] orbit_cnt;
     
     integer i;
     always @(posedge clk)
@@ -46,6 +47,7 @@ module mpcx_aligner_id2_9
         begin 
             cnt = 'h0; // reset counter when BC0 came from link
             cnt_run = 1'b1; // enable counter
+            orbit_cnt = 2'h0; // reset orbit count on each BC0 from link
         end
         else
             if (cnt < 'h1f && cnt_run == 1'b1) 
@@ -55,6 +57,9 @@ module mpcx_aligner_id2_9
         begin 
             automatic_delay = cnt; // lock delay value when delayed TTC BC0 comes
             cnt_run = 1'b0; // disable counter
+            if (orbit_cnt == 2'h3) // BC0 from link did not come during last 3 orbits
+                bc0_period_err = 1'b1;
+            orbit_cnt++; // count orbits for missing BC0 detector
         end
         
         if (!lct_bc0_r && lct_bc0) // BC0 edge
