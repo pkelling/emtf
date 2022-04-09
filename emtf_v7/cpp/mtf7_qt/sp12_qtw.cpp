@@ -425,7 +425,7 @@ sp12_qtw::sp12_qtw(QWidget *parent) :
     ui->setupUi(this);
     ui->Progress->setValue(0);
 
-    ui->reset_list->addItem("GTH");
+    ui->reset_list->addItem("PCIe JTAG");
     ui->reset_list->addItem("Core lnk");
     ui->reset_list->addItem("PTLUT clk");
     ui->reset_list->addItem("Sync clk");
@@ -481,6 +481,12 @@ sp12_qtw::sp12_qtw(QWidget *parent) :
       // set the resize mode to fixed, so the user cannot change the height/width
     //ui->bc0_source_tbl->horizontalHeader()->setResizeMode(QHeaderView::Fixed);
     ui->bc0_source_tbl->verticalHeader()->setResizeMode(QHeaderView::Fixed);
+
+	// set default values for delays that are currently optimal
+	ui->bc0_delay_spin->setValue(117);
+	ui->gmt_link_comma_delay_spin->setValue(31);
+	ui->single_delay_sb->setValue(7);
+	ui->gem_delay_sb->setValue(110);
 
     QTableWidgetItem *checkBoxItem[4][68];
     QTableWidgetItem *st_item[68], *ch_item[68];

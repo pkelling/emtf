@@ -1023,8 +1023,9 @@ uint64_t read_link_ids(int endcap, int sector)
 	uint64_t ge11_stat;
 	mread(fd, &ge11_stat, 8, ge11_id_stat);
 
-	uint8_t ge11_locked = (uint8_t)ge11_stat;
-	log_printf ("GE11 locked: %02x\n", ge11_locked);
+	uint8_t ge11_locked = (uint8_t)(ge11_stat & 0x7f);
+	uint8_t ge11_rx_ready = (uint8_t)((ge11_stat >> 35) & 0x7f);
+	log_printf ("GE11 locked: %02x rx_ready: %02x\n", ge11_locked, ge11_rx_ready);
 
 	uint64_t fib_en_mask = 0x1ffffffffffffULL; // fiber enable mask, all
 
