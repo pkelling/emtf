@@ -2163,12 +2163,11 @@ void sp12_qtw::on_pushButton_6_released()
     // read adjustment count. Can be negative or positive
     int psen_count = ui->psen_count_spin->value();
     int psen_count_abs = abs(psen_count);
+	if (psen_count == 0) psen_count_abs = 2000000000; // 0 means infinite
 
     uint32_t REG_MEM_BASE = 0x80000; // bytes
     int ch = REG_BANK_CH; // config register bank
     uint32_t saddr = REG_MEM_BASE + (ch << 12) + (0 << 3); // control register
-
-    uint64_t value = 0;
 
     for (int i = 0; i < psen_count_abs; i++)
     {
