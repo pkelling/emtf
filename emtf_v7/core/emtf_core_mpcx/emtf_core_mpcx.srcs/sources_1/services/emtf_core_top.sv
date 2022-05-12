@@ -842,6 +842,7 @@ module emtf_core_top
     wire [2:0] nn_pt_v; // NN valid flag for PT
 	wire [2:0] nn_d0 [2:0]; // NN D0 value
     wire [2:0] nn_d0_v; // NN valid flag for D0
+    wire [25:0] hmt_rate [1:0];
     
 `ifdef WITH_CORE    
 	sp core 
@@ -880,6 +881,7 @@ module emtf_core_top
         .gmt_qlt (gmt_qlt),
         .gmt_crg (gmt_crg),
         .hmt_out (hmt_out),
+        .hmt_rate (hmt_rate),
 
         .nn_pt (nn_pt),
         .nn_pt_v (nn_pt_v),
@@ -1099,8 +1101,8 @@ module emtf_core_top
         .automatic_delay_gem (automatic_delay_gem),
         .en_manual_gem       (en_manual_gem      ),
         .alg_out_range_gem   (alg_out_range_gem  ),
-        .bc0_period_err_gem  (bc0_period_err_gem )
-            
+        .bc0_period_err_gem  (bc0_period_err_gem ),
+        .hmt_rate            (hmt_rate)
     );
 
 	wire [8*5+9-1:0] bc0_mrg;

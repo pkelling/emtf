@@ -6,6 +6,7 @@ module shower
 (
 	input csc_lct_mpcx lct_i [5:0][8:0][seg_ch-1:0], // [station][chamber]
     output [1:0] hmt_out, // {out_of_time, in_time}
+	output reg [25:0] hmt_rate [1:0],
     input [3:0] hmt_delay,
     input clk
 );
@@ -19,6 +20,8 @@ module shower
 
     reg [1:0] hmt_out_d [DEL-1:0]; // delay line to match trigger latency
     reg [1:0] mus;
+	reg [25:0] rate_period;
+	reg [25:0] rate_counter [1:0];
 
     assign hmt_out = hmt_out_d[hmt_delay];
 
@@ -51,7 +54,26 @@ module shower
             end
         end
         
-        
+        for (i = 0; i < 2; i++) // mus bit loop
+        begin
+            // rate counter update
+            if (mus[i] != 1'h0 && rate_counter[i] != 26'h3ffffff) 
+              rate_counter[i]++;
+        end
+    
+        if (rate_period == 26'd40078700) // 1 sec 
+        begin
+            // rate period expired, store and reset all counters
+            for (i = 0; i < 2; i = i+1) // mus bit loop
+            begin
+              hmt_rate[i] = rate_counter[i]; 
+              rate_counter[i] = 26'h0;
+            end
+            rate_period = 26'h0;
+        end
+        else 
+            rate_period++;
+            
     end
 
 endmodule

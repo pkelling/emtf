@@ -68,6 +68,7 @@ module sp
     output [3:0] gmt_qlt [2:0], // quality for gmt
 	output [2:0] gmt_crg,
     output [1:0] hmt_out, // {out_of_time, in_time}
+    output [25:0] hmt_rate [1:0],
         
 	output [7:0] nn_pt [2:0], // NN PT value
 	output [2:0] nn_pt_v, // NN valid flag for PT
@@ -484,6 +485,7 @@ module sp
     (
         .lct_i     (lct_i    ),
         .hmt_out   (hmt_out  ), // {out_of_time, in_time}
+        .hmt_rate  (hmt_rate),
         .hmt_delay (hmt_delay),
         .clk       (clk      )
     );
