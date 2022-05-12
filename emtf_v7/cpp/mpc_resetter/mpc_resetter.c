@@ -59,7 +59,7 @@ int main (int argc, char *argv[])
    w_data[0] = 0x0;
 //   printf("Data to write: 0x%lX\n", w_data[0]);
    DAQmxErrChk (DAQmxBaseWriteDigitalU32(taskHandle,1,1,10.0,DAQmx_Val_GroupByChannel,w_data,&written,NULL));
-   sleep(1);
+   usleep(10000);
    
    // Write 1 to port0
    w_data[0] = 0x1;
