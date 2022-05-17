@@ -325,13 +325,14 @@ module mtf7_daq
                lct_valid = lct_valid | lct_i[station_][j][k].vf;
                // pack delay line inputs
                    
-               hmt_inp_del = {lct_i[station_][j][k].cp[3:1], lct_i[station_][j][k].bx0}; // repurposed hmt bits, valid only with k==1
+               hmt_inp_del = lct_i[station_][j][k].cp;
+               if (k == 1) hmt_inp_del[0] = lct_i[station_][j][k].bx0; // repurposed hmt bits, valid only with k==1
                inp_del_in[pos+: lng] =
                                       {
                                        lct_i[station_][j][k].ql,
                                        lct_i[station_][j][k].wg,
                                        lct_i[station_][j][k].hs,
-                                       (k == 0 ? lct_i[station_][j][k].cp : hmt_inp_del), // slip HMT bits when in Frame 1
+                                       hmt_inp_del, // slip HMT bits when in Frame 1, otherwise it carries cpattern
                                        lct_i[station_][j][k].lr,
                                        lct_i[station_][j][k].vf
                                        };
