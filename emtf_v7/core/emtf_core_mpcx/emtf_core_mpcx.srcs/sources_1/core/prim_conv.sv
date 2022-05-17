@@ -188,7 +188,7 @@ module prim_conv
             // clct pattern convertion array from CMSSW
             //{0.0, 0.0, -0.60,  0.60, -0.64,  0.64, -0.23,  0.23, -0.21,  0.21, 0.0}
             // 0    0    -5      +5    -5      +5    -2      +2    -2      +2    0
-            case (clctpat[i])
+            case (clctpat[i]) // actually taken from "cscid" field repurposed as "bend", but carries clctpat now, see CMS note DN-20-016, page 10, top section
                 0  : begin clct_pat_corr = 3'h0; clct_pat_sign = 0; end
                 1  : begin clct_pat_corr = 3'h0; clct_pat_sign = 0; end
                 2  : begin clct_pat_corr = 3'h5; clct_pat_sign = 1; end

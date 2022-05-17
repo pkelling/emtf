@@ -41,26 +41,38 @@ module sp_tf;
     reg [bw_wg-1:0]  wgi   [5:0][8:0][seg_ch-1:0];
     reg [bw_hs-1:0]  hstri [5:0][8:0][seg_ch-1:0];
     reg [3:0] 		 cpati [5:0][8:0][seg_ch-1:0];
+    reg [3:0] 		 hmti  [5:0][8:0][seg_ch-1:0];
 
 
    genvar 			 gi, gj, gk;
    generate
-	  for (gi = 0; gi < 6; gi++)
+	  for (gi = 0; gi < 6; gi++) // station loop
 		begin
-		   for (gj = 0; gj < 9; gj++)
+		   for (gj = 0; gj < 9; gj++) // chamber loop
 			 begin
-				for (gk = 0; gk < 2; gk++)
+				for (gk = 0; gk < 2; gk++) // LCT loop
 				  begin
 					 assign lct_ii[gi][gj][gk].vf = vpf[gi][gj][gk];
 					 assign lct_ii[gi][gj][gk].ql = qi[gi][gj][gk];
 					 assign lct_ii[gi][gj][gk].wg = wgi[gi][gj][gk];
 					 assign lct_ii[gi][gj][gk].hs = hstri[gi][gj][gk];
-					 assign lct_ii[gi][gj][gk].cp = cpati[gi][gj][gk];
+//					 assign lct_ii[gi][gj][gk].cp = cpati[gi][gj][gk];
 					 // zero out new parameters for now, TBD: need to take these from input file
 					 assign lct_ii[gi][gj][gk].lr  = 0;   // left-right flag
 					 assign lct_ii[gi][gj][gk].ser = 0;  // sync error
 					 assign lct_ii[gi][gj][gk].cid = 0;  // CSC ID
-					 
+					 assign lct_ii[gi][gj][gk].bc0 = 0;  
+					 if (gk == 1)
+					 begin
+					   // HMT bits are only in LCT1
+					   assign lct_ii[gi][gj][gk].cp = {2'b00, hmti[gi][gj][gk][1], 1'b0}; // repurposed hmt[1] bit 
+					   assign lct_ii[gi][gj][gk].bx0 = hmti[gi][gj][gk][0]; // repurposed hmt[0] bit
+					 end
+					 else
+					 begin
+					   assign lct_ii[gi][gj][gk].cp = 0; 
+					   assign lct_ii[gi][gj][gk].bx0 = 0;
+					 end
 				  end
 			 end
 		end
@@ -142,6 +154,7 @@ module sp_tf;
     reg [6:0] 		  wiregroup [max_ev-1:0][5:0][8:0][seg_ch-1:0];
     reg [bw_hs-1:0]   hstrip    [max_ev-1:0][5:0][8:0][seg_ch-1:0];
     reg [3:0] 		  clctpat   [max_ev-1:0][5:0][8:0][seg_ch-1:0];
+    reg [1:0] 		  hmt       [max_ev-1:0][5:0][8:0][seg_ch-1:0];
     
     // [subsector][chamber][hit]
     reg [10:0] rpc_ph [max_ev+rpc_delay-1:0][6:0][5:0][seg_ch-1:0];
@@ -175,6 +188,7 @@ module sp_tf;
     reg [3:0] 		  _quality;
     reg [3:0] 		  _pattern;
     reg [6:0] 		  _wiregroup;
+    reg [1:0]         _hmt;
     integer 	      ist, icid, ipr, code, iev, im, iz, ir;
     reg [800-1:0] 	  line;
     integer 	      in, best_tracks, vllut_in, sim_out, best_tracks_short, nn_out;
@@ -249,6 +263,7 @@ module sp_tf;
    reg       endcap = 1'b1; // 0=ME+ 1=ME-
    reg [2:0] sector = 3'd5; // sector #-1
    reg [20*8-1:0] fes_str, fest_str;
+   wire [1:0] hmt_out; // {out_of_time, in_time}
 `define fes fes_str
 `define fest fest_str
    
@@ -265,6 +280,7 @@ module sp_tf;
     assign core_config[15]        = 0;// wire use_rpc
 	assign core_config[22:16]     = 8;// wire [bw_th-1:0] th_window_z0
     assign core_config[23]        = 0;// wire two_st_tight_timing
+    assign core_config[30:27]     = 5; // HMT delay
 	
 	integer 	   ibx,ich,isg, ii, kp;
     // Instantiate the Unit Under Test (UUT)
@@ -303,6 +319,7 @@ module sp_tf;
 		 .gmt_eta (gmt_eta),
 		 .gmt_qlt (gmt_qlt),
 		 .gmt_crg (gmt_crg),
+         .hmt_out (hmt_out),
 
 	     .nn_pt   (nn_pt  ), // NN PT value
 	     .nn_pt_v (nn_pt_v), // NN valid flag for PT
@@ -389,8 +406,9 @@ x        .bt_rank (bt_rank_i),
 							valid    [iev][ist][icid][ipr] = 1'b0;
 							quality  [iev][ist][icid][ipr] = 4'b0;
 							wiregroup[iev][ist][icid][ipr] = 7'b0;
-							hstrip [iev][ist][icid][ipr] = 8'b0;
-							clctpat [iev][ist][icid][ipr] = 4'b0;
+							hstrip   [iev][ist][icid][ipr] = 8'b0;
+							clctpat  [iev][ist][icid][ipr] = 4'b0;
+							hmt      [iev][ist][icid][ipr] = 2'b0;
 						end
 
 				for (ist = 0; ist < 7; ist=ist+1) // rpc subsector
@@ -454,7 +472,7 @@ x        .bt_rank (bt_rank_i),
 					12: 
 						begin	// primitive
 						    //$fwrite (sim_out, "entering primitive *****************************************\n");
-							_bx_jitter = v0;	
+							_hmt = v0;	
 							_endcap = v1;
 							_sector = v2;
 							_subsector = v3;
@@ -513,6 +531,7 @@ x        .bt_rank (bt_rank_i),
 													wiregroup[_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _wiregroup;
 													hstrip   [_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _halfstrip;
 													clctpat  [_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _pattern;
+													hmt      [_event + _bx_jitter][_station][_cscid][1] = _hmt; // HMT always and only in LCT1, see CMS note DN-20-016
 													// increase primitive counter
 													pr_cnt[_station][_cscid] = pr_cnt[_station][_cscid] + 1;
 												end // else: !if(pr_cnt[_station][_cscid] >= seg_ch)
@@ -706,15 +725,16 @@ x        .bt_rank (bt_rank_i),
 						begin
 							for (si = 0; si < seg_ch; si = si+1) // stub
 							  begin
-								 vpf [ist][icid][si] = valid    [ev][ist][icid][si];
-								 qi  [ist][icid][si] = quality  [ev][ist][icid][si];
-								 wgi [ist][icid][si] = wiregroup[ev][ist][icid][si];
-								 hstri[ist][icid][si] = hstrip  [ev][ist][icid][si];
-								 cpati[ist][icid][si] = clctpat [ev][ist][icid][si];
+								 vpf  [ist][icid][si] = valid    [ev][ist][icid][si];
+								 qi   [ist][icid][si] = quality  [ev][ist][icid][si];
+								 wgi  [ist][icid][si] = wiregroup[ev][ist][icid][si];
+								 hstri[ist][icid][si] = hstrip   [ev][ist][icid][si];
+								 cpati[ist][icid][si] = clctpat  [ev][ist][icid][si];
+								 hmti [ist][icid][si] = hmt      [ev][ist][icid][si];
 								 if (vpf [ist][icid][si] == 1'b1)
 								 begin
-									$fwrite(sim_out, "CSC_RAW: ev: %4d st: %1d ch: %1d q: %h w: %h s: %h\n",
-								 			ev, ist, icid, qi [ist][icid][si], wgi [ist][icid][si], hstri [ist][icid][si]);
+									$fwrite(sim_out, "CSC_RAW: ev: %4d st: %1d ch: %1d q: %h w: %h s: %h hmt: %h\n",
+								 			ev, ist, icid, qi [ist][icid][si], wgi [ist][icid][si], hstri [ist][icid][si], hmti [ist][icid][si]);
 								 end
 								// check if there is chamber data, update good event station mask
 								if (qi  [ist][icid][si] > 0) good_ev[ist] = 1;
@@ -1254,6 +1274,11 @@ x        .bt_rank (bt_rank_i),
 					   if (uut.ptlut_addr_val[ip])
                            $fwrite(sim_out, " GMT charge: %d\n", uut.gmt_crg[ip]);
 */					
+					
+					    if (hmt_out != 0)
+					    begin
+					       $fwrite (sim_out, "HMT trigger: %b\n", hmt_out);
+					    end
 					
 						if (bt_rank[ip] != 0)
 						begin

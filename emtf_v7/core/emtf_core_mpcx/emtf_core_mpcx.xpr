@@ -37,7 +37,7 @@
     <Option Name="IPUserFilesDir" Val="$PIPUSERFILESDIR"/>
     <Option Name="IPStaticSourceDir" Val="$PIPUSERFILESDIR/ipstatic"/>
     <Option Name="EnableBDX" Val="FALSE"/>
-    <Option Name="WTXSimLaunchSim" Val="230"/>
+    <Option Name="WTXSimLaunchSim" Val="242"/>
     <Option Name="WTModelSimLaunchSim" Val="0"/>
     <Option Name="WTQuestaLaunchSim" Val="0"/>
     <Option Name="WTIesLaunchSim" Val="0"/>
@@ -1606,14 +1606,6 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sim_1/imports/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/mpcx/mpcx_interface.sv">
-        <FileInfo SFType="VHeader">
-          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/mpcx/mpcx_interface.sv"/>
-          <Attr Name="ImportTime" Val="1617631090"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PSRCDIR/sim_1/imports/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/core/spbits.sv">
         <FileInfo SFType="VHeader">
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/core/spbits.sv"/>
@@ -1630,27 +1622,24 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sim_1/new/mtf7_daq_tf.sv">
-        <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sim_1/new/mtf7_daq_tf.sv"/>
-          <Attr Name="ImportTime" Val="1622839194"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PSRCDIR/sim_1/imports/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/core/ph_init_hard.sv">
         <FileInfo SFType="VHeader">
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/core/ph_init_hard.sv"/>
           <Attr Name="ImportTime" Val="1615061441"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PSRCDIR/sim_1/imports/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/mpcx/mpcx_interface.sv">
+        <FileInfo SFType="VHeader">
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/mpcx/mpcx_interface.sv"/>
+          <Attr Name="ImportTime" Val="1617631090"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PSRCDIR/sim_1/new/fill_params_ge11.sv">
         <FileInfo SFType="VHeader">
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sim_1/new/fill_params_ge11.sv"/>
           <Attr Name="ImportTime" Val="1625091360"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1659,7 +1648,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/emtf_core_2019-02-12/fill_params.sv">
         <FileInfo SFType="VHeader">
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../../../../../cernbox/projects/modelsim/emtf_core_2019-02-12/fill_params.sv"/>
           <Attr Name="ImportTime" Val="1571663379"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1668,9 +1656,18 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/emtf_core_2019-02-12/sp_tf.sv">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../../../../../cernbox/projects/modelsim/emtf_core_2019-02-12/sp_tf.sv"/>
           <Attr Name="ImportTime" Val="1571935660"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sim_1/new/mtf7_daq_tf.sv">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sim_1/new/mtf7_daq_tf.sv"/>
+          <Attr Name="ImportTime" Val="1622839194"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
@@ -1742,7 +1739,7 @@
       </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
-        <Option Name="TopModule" Val="mtf7_daq_tf"/>
+        <Option Name="TopModule" Val="sp_tf"/>
         <Option Name="TopLib" Val="xil_defaultlib"/>
         <Option Name="TransportPathDelay" Val="0"/>
         <Option Name="TransportIntDelay" Val="0"/>

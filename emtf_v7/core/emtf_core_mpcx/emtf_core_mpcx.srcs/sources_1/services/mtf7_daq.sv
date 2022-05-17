@@ -304,7 +304,9 @@ module mtf7_daq
    reg [6:0]                    gem_bc0  [7:0];     // BC0 from layer 0          
    reg [6:0]                    gem_bc0_ly1  [7:0]; // BC0 from layer 1               
    reg [6:0]                    gem_link_id_flag [7:0];   
-
+   reg [3:0] hmt_inp_del;
+   reg       hmt_valid;
+   reg [3:0] hmt_dr, cpat_dr;
 
    // pack data into delay lines' inputs, unpack the outputs of ring buffer
    always @(*)
@@ -322,12 +324,14 @@ module mtf7_daq
             begin
                lct_valid = lct_valid | lct_i[station_][j][k].vf;
                // pack delay line inputs
+                   
+               hmt_inp_del = {lct_i[station_][j][k].cp[3:1], lct_i[station_][j][k].bx0}; // repurposed hmt bits, valid only with k==1
                inp_del_in[pos+: lng] =
                                       {
                                        lct_i[station_][j][k].ql,
                                        lct_i[station_][j][k].wg,
                                        lct_i[station_][j][k].hs,
-                                       lct_i[station_][j][k].cp,
+                                       (k == 0 ? lct_i[station_][j][k].cp : hmt_inp_del), // slip HMT bits when in Frame 1
                                        lct_i[station_][j][k].lr,
                                        lct_i[station_][j][k].vf
                                        };
@@ -349,10 +353,14 @@ module mtf7_daq
                   if (stress == 1'b1) vp_d[0][station_][0][0] = 1'b1;
 
                   // pack ME LCT into daq word
-                  me_data[i][mew] = {1'h0, 8'h0, station_, vp_d[i][station_][j][k], tbin,
+                  hmt_valid = cpat_d[i][station_][j][k] != 4'h0 && k == 1; // HMT valid flag. cpat_d carries HMT only when K == 1
+                  hmt_dr  = (k == 1) ? cpat_d[i][station_][j][k] : 4'b0; // HMT bits only valid when k == 1
+                  cpat_dr = (k == 0) ? cpat_d[i][station_][j][k] : 4'b0; // Cpattern only valid when k == 0
+                  
+                  me_data[i][mew] = {1'h0, 3'h0, hmt_dr, hmt_valid, station_, vp_d[i][station_][j][k], tbin,
                                      1'b0, 3'b0, 12'h0,
-                                     1'b1, 2'h0, lr_d[i][station_][j][k], csc_id, hstr_d[i][station_][j][k],
-                                     1'b1, wg_d[i][station_][j][k], q_d[i][station_][j][k], cpat_d[i][station_][j][k]};
+                                     1'b1, 1'h0, k[0], lr_d[i][station_][j][k], csc_id, hstr_d[i][station_][j][k],
+                                     1'b1, wg_d[i][station_][j][k], q_d[i][station_][j][k], cpat_dr};
                end
                mew = mew + 1;
                pos = pos + lng;
@@ -622,6 +630,7 @@ module mtf7_daq
 
             bt_valid = bt_q_d[i][j] != 4'h0;
             if (i == 0 && j == 0 && stress == 1'b1) bt_valid = 1'b1; // make one track valid for stress test
+            if (bxn_counter_d[i][j][1:0] != 2'h0) bt_valid = 1'b1; // make valid if HMT bits are non-zero
 
             track_data[i][j][0] =
                                  {
@@ -1215,10 +1224,10 @@ module mtf7_daq
            begin
               // proceed with output of each LCT if:
               // amc13_ready and LCT is valid, or
-              // LCT is invalid. In this case, we don't care about AMC13 since daq_valid = 0
-              if (amc13_ready || !me_data[tbc][mewc][51])
+              // LCT or HMT is invalid. In this case, we don't care about AMC13 since daq_valid = 0
+              if (amc13_ready || !(me_data[tbc][mewc][51] || me_data[tbc][mewc][55]))
               begin
-                 daq_valid = me_data[tbc][mewc][51]; // valid bit, AMC13 will take the word only if set
+                 daq_valid = me_data[tbc][mewc][51] | me_data[tbc][mewc][55]; // LCT | HMT valid bits, AMC13 will take the word only if set
                  daq_data  = me_data[tbc][mewc];     // stub data to output even if invalid
                  mewc      = mewc + 7'h1;            // me word counter
                  if (daq_valid) data_lgth = data_lgth + 20'h1; // update length
