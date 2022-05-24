@@ -25,8 +25,8 @@ module sp_tf;
 
     `param max_ev = 220000; //13000;
 
-    `param endcap_p = 1;
-    `param sector_p = 1;
+    `param endcap_p = 2;
+    `param sector_p = 2;
     `param rpc_delay = 6; // delay of rpc data relative to csc
     `param ge11_delay = 3; // delay of ge11 data relative to csc
    
@@ -1351,6 +1351,10 @@ x        .bt_rank (bt_rank_i),
                           $fwrite (nn_out, "ev: %4d track: %1d NN_pt: %h NN_d0: %h NN_PT_V: %h NN_D0_V: %h pt_unconv: %h d0_unconv: %h\n", 
                                    iev, ip, nn_pt[ip], nn_d0[ip], nn_pt_v[ip], nn_d0_v[ip], uut.nn.pt_unconv[ip], uut.nn.d0_unconv[ip]);
                           $fflush (nn_out);
+
+                          $fwrite (sim_out, "ev: %4d track: %1d NN_pt: %h NN_d0: %h NN_PT_V: %h NN_D0_V: %h pt_unconv: %h d0_unconv: %h\n", 
+                                   iev, ip, nn_pt[ip], nn_d0[ip], nn_pt_v[ip], nn_d0_v[ip], uut.nn.pt_unconv[ip], uut.nn.d0_unconv[ip]);
+                          $fflush (sim_out);
                         end
 
 /*					   
