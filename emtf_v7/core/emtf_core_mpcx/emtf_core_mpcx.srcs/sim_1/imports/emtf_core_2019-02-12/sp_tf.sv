@@ -277,9 +277,9 @@ module sp_tf;
     assign core_config[12]        = 0;// wire en_single
     assign core_config[13]        = 0;// wire en_two_mu
     assign core_config[14]        = 0;// wire low_th_promote
-    assign core_config[15]        = 0;// wire use_rpc
-	assign core_config[22:16]     = 8;// wire [bw_th-1:0] th_window_z0
-    assign core_config[23]        = 0;// wire two_st_tight_timing
+    assign core_config[15]        = 1;// wire use_rpc
+	assign core_config[22:16]     = 4;// wire [bw_th-1:0] th_window_z0
+    assign core_config[23]        = 1;// wire two_st_tight_timing
     assign core_config[30:27]     = 5; // HMT delay
 	
 	integer 	   ibx,ich,isg, ii, kp;
@@ -733,7 +733,7 @@ x        .bt_rank (bt_rank_i),
 								 hmti [ist][icid][si] = hmt      [ev][ist][icid][si];
 								 if (vpf [ist][icid][si] == 1'b1)
 								 begin
-									$fwrite(sim_out, "CSC_RAW: ev: %4d st: %1d ch: %1d q: %h w: %h s: %h hmt: %h\n",
+									$fwrite(sim_out, "CSC_RAW: ev: %4d st: %1d ch: %1d q: %h wg: %3d hs: %3d hmt: %h\n",
 								 			ev, ist, icid, qi [ist][icid][si], wgi [ist][icid][si], hstri [ist][icid][si], hmti [ist][icid][si]);
 								 end
 								// check if there is chamber data, update good event station mask
@@ -861,16 +861,16 @@ x        .bt_rank (bt_rank_i),
 								
 									if (ip <= 1 && j < 3) // ME11
 								    begin
-										$fwrite(sim_out, "CSC_STUB: st: %1d ch: %1h ph: %h  th: %h %h\n", 
+										$fwrite(sim_out, "CSC_STUB: st: %1d ch: %1d ph: %d  th: %d %d\n", 
 												ip, j, uut.ph[ip][j][k], uut.th11[ip][j][k*2], uut.th11[ip][j][k*2+1]);
 										 ph_high_prec = uut.ph[ip][j][k];
 									end
 									else if (ip == 5 && j == 0) // ME11 neighbor
-                                        $fwrite(sim_out, "CSC_STUB: st: %1d ch: %1d ph: %h  th: %h %h\n", 
+                                        $fwrite(sim_out, "CSC_STUB: st: %1d ch: %1d ph: %d  th: %d %d\n", 
 												ip, j, uut.ph[ip][j][k], uut.th11[2][0][k*2], uut.th11[2][0][k*2+1]);
 									else
 									begin
-										$fwrite(sim_out, "CSC_STUB: st: %1d ch: %1d ph: %h  th: %h ph_hit: %d ph_zone: %d\n", 
+										$fwrite(sim_out, "CSC_STUB: st: %1d ch: %1d ph: %d  th: %d ph_hit: %d ph_zone: %d\n", 
 												ip, j, uut.ph[ip][j][k], uut.th[ip][j][k],5,5);//uut.ph_hit[ip][j][k],uut.ph_zone[ip][j][k]);
 										 ph_high_prec = uut.ph[ip][j][k];
 									end
@@ -961,20 +961,20 @@ x        .bt_rank (bt_rank_i),
 									   );
 						end
 					end // for (iz = 0; iz < 4; iz = iz+1)
-
-					for (iz = 0; iz < 4; iz = iz+1)
+*/
+					for (iz = 0; iz < 4; iz = iz+1) // zone loop
 					begin
-						for (ir = 0; ir < 3; ir = ir+1)
+						for (ir = 0; ir < 3; ir = ir+1) // sorted pattern number
 						begin
 							if (uut.ph_q[iz][ir] > 0)
-								$fwrite(sim_out, "pattern on match input: z: %d r: %d ph_num: %d ph_q: %h ly: %b%b%b str: %b%b%b\n", 
+								$fwrite(sim_out, "PATTERN BEST: zone: %1d best_index: %1d ph_num: %3d rank: %2h ly: %b%b%b str: %b%b%b\n", 
 								iz, ir, uut.ph_num[iz][ir], uut.ph_q[iz][ir],
 								uut.ph_q[iz][ir][4], uut.ph_q[iz][ir][2], uut.ph_q[iz][ir][0], 
 								uut.ph_q[iz][ir][5], uut.ph_q[iz][ir][3], uut.ph_q[iz][ir][1]
 								);
 						end
 					end // for (iz = 0; iz < 4; iz = iz+1)
-*/
+
 //				   $fwrite (sim_out, "csc ME2 ch 5: vl: %d th: %d cpat: %d\n", 
 //							uut.cdl.vlo_csc[2][4][0], uut.cdl.tho_csc[2][4][0], uut.cdl.cpato_csc[2][4][0]);
 //				   $fwrite (sim_out, "csc ME4 ch 5: vl: %d th: %d cpat: %d\n", 
@@ -984,17 +984,16 @@ x        .bt_rank (bt_rank_i),
 //							uut.cdl.vlo[0][2][4][0], uut.cdl.tho[0][2][4][0], uut.cdl.cpato[0][2][4][0]);
 //				   $fwrite (sim_out, "dl0 ME4 ch 5: vl: %d th: %d cpat: %d\n", 
 //							uut.cdl.vlo[0][4][4][0], uut.cdl.tho[0][4][4][0], uut.cdl.cpato[0][4][4][0]);
-/*
-				   $fwrite(sim_out, "ph_rank: ");
-					for (iz = 0; iz < 4; iz = iz+1)
+
+					for (iz = 0; iz < 4; iz = iz+1) // zone loop
 					begin
-						for (ir = 0; ir < 3; ir = ir+1)
+						for (ir = 0; ir < ph_raw_w; ir = ir+1) // key strip loop
 						  begin
-							 $fwrite(sim_out, "%b ", uut.ph_rank[iz][ir]);
+						      if (uut.ph_rank[iz][ir] > 0)
+							     $fwrite(sim_out, "PATTERN: zone: %1d phi_num: %3d rank: %2h\n", iz, ir, uut.ph_rank[iz][ir]);
 						  end
 					end
-				   $fwrite(sim_out, "\n");
-
+/*
 				   $fwrite(sim_out, "valid: %b %b %b %d\n",
 						   uut.srts.gb.ph_zone[0].zb3.wini[0],
 						   uut.srts.gb.ph_zone[0].zb3.wini[1],
@@ -1038,7 +1037,7 @@ x        .bt_rank (bt_rank_i),
 									if (uut.vld[ibx][ist][ich][isg]) $fwrite(sim_out, "delayed stub: bx:%d st:%d ch:%d sg:%d  ph: %d\n", 
 																			 ibx,ist,ich,isg, uut.phd[ibx][ist][ich][isg]);
 */
-/*
+
 					for (iz = 0; iz < 4; iz = iz+1) // zone loop
 					begin
 						for (ip = 0; ip < 3; ip = ip+1) // best pattern number
@@ -1063,7 +1062,7 @@ x        .bt_rank (bt_rank_i),
 							end // for (ist = 0; ist < 4; ist = ist + 1)
 						end
 					end // for (iz = 0; iz < 4; iz = iz+1)
-*/
+
 /*
 					for (ip = 0; ip < 6; ip = ip+1)
 					begin
