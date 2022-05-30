@@ -20,6 +20,9 @@
 `include "vppc_macros.sv"
 `include "interfaces.sv"
 `include "mpcx_interface.sv"
+`ifdef SIMULATION_DAQ
+    `include "spbits.sv"
+`endif
 
 module sp
 (
@@ -219,7 +222,7 @@ module sp
                     assign wg  [gi][gj][gk] = lct_i[gi][gj][gk].wg;
                     assign hstr[gi][gj][gk] = lct_i[gi][gj][gk].hs;
                     // ql[3] repurposed as qs, ser repurposed as es
-                    assign qses[gi][gj][gk] = {lct_i[gi][gj][gk].ql[3], lct_i[gi][gj][gk].ser} ; 
+                    assign qses[gi][gj][gk] = {lct_i[gi][gj][gk].ql[3], lct_i[gi][gj][gk].ser} ;  
                     assign cpat[gi][gj][gk] = lct_i[gi][gj][gk].cid; // CSCID repurposed as bend angle, using CLCT pattern field for that
                     assign lr  [gi][gj][gk] = lct_i[gi][gj][gk].lr;
                 end

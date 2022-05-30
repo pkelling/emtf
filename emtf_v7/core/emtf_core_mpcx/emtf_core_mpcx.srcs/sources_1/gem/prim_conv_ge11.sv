@@ -1,4 +1,7 @@
 `include "vppc_macros.sv"
+`ifdef SIMULATION_DAQ
+    `include "spbits.sv"
+`endif
 
 module prim_conv_ge11
 (

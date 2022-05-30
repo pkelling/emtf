@@ -15,11 +15,15 @@
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+// !!!!DO NOT USE VIVADO SIMULATOR!!!! 
+// THIS CODE SIMULATES OK WITH QUESTASIM OR MODELSIM
 ////////////////////////////////////////////////////////////////////////////////
 `include "vppc_macros.sv"
 `include "interfaces.sv"
 `include "spbits.sv"
+`ifdef SIMULATION_DAQ
+    `include "mpcx_interface.sv"
+`endif
 
 module sp_tf;
 
@@ -43,6 +47,11 @@ module sp_tf;
     reg [3:0] 		 cpati [5:0][8:0][seg_ch-1:0];
     reg [3:0] 		 hmti  [5:0][8:0][seg_ch-1:0];
 
+    reg [7:0] ge11_str_i [6:0][1:0][7:0];
+    reg [2:0] ge11_prt_i [6:0][1:0][7:0];
+    reg [2:0] ge11_csz_i [6:0][1:0][7:0];
+    reg [7:0] ge11_vf_i  [6:0][1:0];
+   
 
    genvar 			 gi, gj, gk;
    generate
@@ -165,11 +174,6 @@ module sp_tf;
     reg [2:0] ge11_prt [max_ev+ge11_delay-1:0][6:0][1:0][7:0];
     reg [2:0] ge11_csz [max_ev+ge11_delay-1:0][6:0][1:0][7:0];
 
-    reg [7:0] ge11_str_i [6:0][1:0][7:0];
-    reg [2:0] ge11_prt_i [6:0][1:0][7:0];
-    reg [2:0] ge11_csz_i [6:0][1:0][7:0];
-    reg [7:0] ge11_vf_i  [6:0][1:0];
-   
     integer 	      iadr = 0, s = 0, i = 0, pi, j = 0, sn, c;
     reg [15:0] 		  v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11;
     reg [2:0] 		  pr_cnt      [6:0][8:0];
@@ -268,7 +272,8 @@ module sp_tf;
 `define fest fest_str
    
 //`define dpath "/exports/uftrig01b/madorsky/projects/modelsim/emtf_data/"
-`define dpath "/home/madorsky/github/emtf/emtf_v7/core/emtf_data/" 
+//`define dpath "/home/madorsky/github/emtf/emtf_v7/core/emtf_data/" 
+`define dpath "C:/github/emtf/emtf_v7/core/emtf_data/" 
 //"/home/madorsky/cernbox/projects/modelsim/emtf_data/"
 
    wire [63:0] 	  core_config;
@@ -1329,20 +1334,20 @@ x        .bt_rank (bt_rank_i),
 
 						end
 						
-                        if (nn_mode_r[ip] != 0)
-                        begin
-                            $fwrite (nn_out, "ev: %4d ip: %1d mode: %1h ", iev, ip, nn_mode_r[ip]);
-                            for (j = 0; j < 23; j++)
-                            begin
-                                $fwrite (nn_out, " %05x", nn_input[ip][j]);
-                                nn_input[ip][j] = 0;
-                            end
-//                            nn_valid_in[ip] = 0;
-                            $fwrite (nn_out, "\n");
-                        end
-                        nn_mode_r = uut.nn.mode;
-                        $fflush (nn_out);
-                        
+//                        nn_mode_r = uut.nn.mode;
+//                        if (nn_mode_r[ip] != 0)
+//                        begin
+//                            $fwrite (nn_out, "ev: %4d ip: %1d mode: %1h ", iev, ip, nn_mode_r[ip]);
+//                            for (j = 0; j < 23; j++)
+//                            begin
+//                                $fwrite (nn_out, " %05x", nn_input[ip][j]);
+//                                nn_input[ip][j] = 0;
+//                            end
+////                            nn_valid_in[ip] = 0;
+//                            $fwrite (nn_out, "\n");
+//                        end
+//                        $fflush (nn_out);
+                        #1 // to let 120M clock print inputs first
                         if (nn_pt_v[ip] != 1'b0 || uut.nn.pt_unconv_valid[ip] != 1'b0) // converted or unconverted value valid  
 //                        if (uut.nn.pt_unconv[ip] != 12'h14d || nn_pt[ip] != 8'h4 || nn_pt_v[ip] != 1'b0) // 0ec seems to be an output value when all inputs = 0 
 //                        if (nn_pt[ip] != 8'h6) // 6 seems to be an output value when all inputs = 0 
@@ -1924,23 +1929,26 @@ x        .bt_rank (bt_rank_i),
 
     
     integer it, jt;
+    reg nn_input_val;
+    integer true_mux[2:0] = '{2,0,1};
     always @(posedge uut.nn.clk_120)
     begin
-        for (it = 0; it < 3; it++) // mux phase loop
+        nn_input_val = 0;
+        for (jt = 0; jt < 23; jt++) // input loop
         begin
+            if (uut.nn.input1_V[jt] != 0) nn_input_val = 1; 
+        end
+        if (nn_input_val)
+        begin
+
+            $fwrite (nn_out, "mux: %1d ", true_mux[uut.nn.mux_phase]);
             for (jt = 0; jt < 23; jt++) // input loop
             begin
-                if (uut.nn.input1_V[jt] != 0)
-                    nn_input[it][jt] = uut.nn.input1_V[jt];
+                $fwrite (nn_out, "%05h ", uut.nn.input1_V[jt]); 
             end
-//            if (uut.nn.valid_in != 1'b0) nn_valid_in[it] = uut.nn.valid_in;
+            $fwrite (nn_out, "\n");
         end
-//        $write ("valid_in: %h\n", uut.nn.valid_in);
-//        if (nn_valid_in != 3'b0)
-//        begin 
-//            $fwrite (nn_out, "valid_in: %03b\n", nn_valid_in);
-//            $fflush (nn_out);
-//        end
+        $fflush (nn_out);
     end
 /*    
     always @(posedge uut.nn.clk_120)
