@@ -329,7 +329,8 @@ module mtf7_daq
                if (k == 1) hmt_inp_del[0] = lct_i[station_][j][k].bx0; // repurposed hmt bits, valid only with k==1
                inp_del_in[pos+: lng] =
                                       {
-                                       lct_i[station_][j][k].ql,
+                                       //lct_i[station_][j][k].ql,
+                                       {2'b0, lct_i[station_][j][k].ql[3], lct_i[station_][j][k].ser}, // qs, es
                                        lct_i[station_][j][k].wg,
                                        lct_i[station_][j][k].hs,
                                        hmt_inp_del, // slip HMT bits when in Frame 1, otherwise it carries cpattern
