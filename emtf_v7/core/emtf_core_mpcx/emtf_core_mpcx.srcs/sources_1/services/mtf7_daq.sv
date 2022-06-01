@@ -110,9 +110,10 @@ module mtf7_daq
 
 
    // FIXME Convert magic numbers to constants!!!
-   // width of input data (q, wg, hstr, cpat, lr, vp) * 2 segments * 9 chambers * 6 stations (incl. neighbor) + link statuses
-   `localpar INP_DEL_BW = ((4+bw_wg+bw_hs+4+1+1)*seg_ch*(9*6)+49+5);
-
+   `localpar lng = (4 + bw_wg + bw_hs + 4 + 1 + 1 + 4 + 1 + 1); // q, wg, hstr, cpat, lr, vp, cid, bx0, ser
+   // width of input data (q, wg, hstr, cpat, lr, vp, cid, bx0, ser) * 2 segments * 9 chambers * 6 stations (incl. neighbor) + link statuses
+   `localpar INP_DEL_BW = (lng*seg_ch*(9*6)+49+5);
+   
    // width of RPC input data (7 links by 3 frames by 64 bits each, plus 7 valid bits, plus 7 CRC match bits)
    `localpar RPC_INP_DEL_BW = 64*3*7 + 7 + 7;
 
@@ -173,6 +174,9 @@ module mtf7_daq
    wire [7:0]                   rpc_late_by = {5'h0, rpc_late_by_bxs}; // cppf data are late by this many clocks
 
    // first index in the declarations below is daq_bank word
+   reg [seg_ch-1:0]             ser_d   [7:0][5:0][8:0];
+   reg [seg_ch-1:0]             bx0_d   [7:0][5:0][8:0];
+   reg [3:0]                    cid_d    [7:0][5:0][8:0][seg_ch-1:0];
    reg [3:0]                    q_d    [7:0][5:0][8:0][seg_ch-1:0];
    reg [bw_wg-1:0]              wg_d   [7:0][5:0][8:0][seg_ch-1:0];
    reg [bw_hs-1:0]              hstr_d [7:0][5:0][8:0][seg_ch-1:0];
@@ -233,7 +237,6 @@ module mtf7_daq
    wire [OUT_DEL_BW-1:0]        out_del_out;
 
    // FIXME Convert magic numbers to constants!!
-   `localpar lng = 4 + bw_wg + bw_hs + 4 + 1 + 1;
    `localpar out_lng = OUT_DEL_BW/3;
 
    // FIXME Convert magic numbers to constants!!
@@ -304,9 +307,7 @@ module mtf7_daq
    reg [6:0]                    gem_bc0  [7:0];     // BC0 from layer 0          
    reg [6:0]                    gem_bc0_ly1  [7:0]; // BC0 from layer 1               
    reg [6:0]                    gem_link_id_flag [7:0];   
-   reg [3:0] hmt_inp_del;
-   reg       hmt_valid;
-   reg [3:0] hmt_dr, cpat_dr;
+   reg hmv;
 
    // pack data into delay lines' inputs, unpack the outputs of ring buffer
    always @(*)
@@ -325,15 +326,15 @@ module mtf7_daq
                lct_valid = lct_valid | lct_i[station_][j][k].vf;
                // pack delay line inputs
                    
-               hmt_inp_del = lct_i[station_][j][k].cp;
-               if (k == 1) hmt_inp_del[0] = lct_i[station_][j][k].bx0; // repurposed hmt bits, valid only with k==1
                inp_del_in[pos+: lng] =
                                       {
-                                       //lct_i[station_][j][k].ql,
-                                       {2'b0, lct_i[station_][j][k].ql[3], lct_i[station_][j][k].ser}, // qs, es
+                                       lct_i[station_][j][k].ser,
+                                       lct_i[station_][j][k].bx0,
+                                       lct_i[station_][j][k].cid,
+                                       lct_i[station_][j][k].ql,
                                        lct_i[station_][j][k].wg,
                                        lct_i[station_][j][k].hs,
-                                       hmt_inp_del, // slip HMT bits when in Frame 1, otherwise it carries cpattern
+                                       lct_i[station_][j][k].cp,
                                        lct_i[station_][j][k].lr,
                                        lct_i[station_][j][k].vf
                                        };
@@ -341,6 +342,9 @@ module mtf7_daq
                begin
                   // unpack ring buffer outputs (from daq bank)
                   {
+                   ser_d  [i][station_][j][k],
+                   bx0_d  [i][station_][j][k],
+                   cid_d  [i][station_][j][k],
                    q_d    [i][station_][j][k],
                    wg_d   [i][station_][j][k],
                    hstr_d [i][station_][j][k],
@@ -353,16 +357,16 @@ module mtf7_daq
 
                   // make one LCT in each station valid in case of stress test
                   if (stress == 1'b1) vp_d[0][station_][0][0] = 1'b1;
+                  
+                  // HMT valid flag
+                  hmv = 1'b0;
+                  if (k == 1 && (bx0_d[i][station_][j][k] == 1'b1 || cpat_d [i][station_][j][k][3:1] != 3'b0)) hmv = 1'b1;
 
                   // pack ME LCT into daq word
-                  hmt_valid = cpat_d[i][station_][j][k] != 4'h0 && k == 1; // HMT valid flag. cpat_d carries HMT only when K == 1
-                  hmt_dr  = (k == 1) ? cpat_d[i][station_][j][k] : 4'b0; // HMT bits only valid when k == 1
-                  cpat_dr = (k == 0) ? cpat_d[i][station_][j][k] : 4'b0; // Cpattern only valid when k == 0
-                  
-                  me_data[i][mew] = {1'h0, 3'h0, hmt_dr, hmt_valid, station_, vp_d[i][station_][j][k], tbin,
-                                     1'b0, 3'b0, 12'h0,
-                                     1'b1, 1'h0, k[0], lr_d[i][station_][j][k], csc_id, hstr_d[i][station_][j][k],
-                                     1'b1, wg_d[i][station_][j][k], q_d[i][station_][j][k], cpat_dr};
+                  me_data[i][mew] = {1'h0, 1'h0, ser_d[i][station_][j][k], 1'h0, cid_d[i][station_][j][k], hmv, station_, vp_d[i][station_][j][k], tbin,
+                                     1'b0, 2'b0, k[0], 12'h0,
+                                     1'b1, 1'h0,  bx0_d[i][station_][j][k], lr_d[i][station_][j][k], csc_id, hstr_d[i][station_][j][k],
+                                     1'b1, wg_d[i][station_][j][k], q_d[i][station_][j][k], cpat_d [i][station_][j][k]};
                end
                mew = mew + 1;
                pos = pos + lng;
