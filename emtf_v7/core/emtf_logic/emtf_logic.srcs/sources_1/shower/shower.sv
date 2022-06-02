@@ -1,11 +1,15 @@
 `include "vppc_macros.sv"
 `include "interfaces.sv"
 `include "mpcx_interface.sv"
+`ifdef SIMULATION_DAQ
+    `include "spbits.sv"
+`endif
 
 module shower
 (
 	input csc_lct_mpcx lct_i [5:0][8:0][seg_ch-1:0], // [station][chamber]
     output [1:0] hmt_out, // {out_of_time, in_time}
+	output reg [25:0] hmt_rate [1:0],
     input [3:0] hmt_delay,
     input clk
 );
@@ -18,8 +22,9 @@ module shower
     reg [3:0] hmt [4:0][8:0]; // high-mult triggers per chamber [station][chamber]
 
     reg [1:0] hmt_out_d [DEL-1:0]; // delay line to match trigger latency
-    reg hmt_in_time; // in time
-    reg hmt_oo_time;  // out of time
+    reg [1:0] mus;
+	reg [25:0] rate_period;
+	reg [25:0] rate_counter [1:0];
 
     assign hmt_out = hmt_out_d[hmt_delay];
 
@@ -31,10 +36,9 @@ module shower
             hmt_out_d[i+1] = hmt_out_d[i];
         end
     
-        hmt_out_d[0] = {hmt_oo_time, hmt_in_time}; 
+        hmt_out_d[0] = mus; 
     
-        hmt_in_time = 1'b0;
-        hmt_oo_time = 1'b0;
+        mus = 2'h0;
     
         for (i = 0; i < 5; i++) // station loop - neighbor sector not used
         begin
@@ -47,13 +51,32 @@ module shower
                     lct_i[i][j][1].bx0
                 };
                 
-                // logic according to LCTTrigger_EMTF_uGMT_v4.pptx
-                if (hmt[i][j][1:0] > 2'b01) hmt_in_time = 1'b1;
-                if (hmt[i][j][3:2] > 2'b01) hmt_oo_time = 1'b1;
+                // logic according to msg from Efe 2022-04-18
+                if (hmt[i][j][1:0] >= 2'b10) mus[0] = 1'b1;
+                if (hmt[i][j][1:0] == 2'b11) mus[1] = 1'b1;
             end
         end
         
-        
+        for (i = 0; i < 2; i++) // mus bit loop
+        begin
+            // rate counter update
+            if (mus[i] != 1'h0 && rate_counter[i] != 26'h3ffffff) 
+              rate_counter[i]++;
+        end
+    
+        if (rate_period == 26'd40078700) // 1 sec 
+        begin
+            // rate period expired, store and reset all counters
+            for (i = 0; i < 2; i = i+1) // mus bit loop
+            begin
+              hmt_rate[i] = rate_counter[i]; 
+              rate_counter[i] = 26'h0;
+            end
+            rate_period = 26'h0;
+        end
+        else 
+            rate_period++;
+            
     end
 
 endmodule

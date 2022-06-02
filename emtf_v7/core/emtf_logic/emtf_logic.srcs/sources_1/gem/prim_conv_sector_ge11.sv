@@ -1,3 +1,6 @@
+`ifdef SIMULATION_DAQ
+    `include "spbits.sv"
+`endif
 
 module prim_conv_sector_ge11
 (

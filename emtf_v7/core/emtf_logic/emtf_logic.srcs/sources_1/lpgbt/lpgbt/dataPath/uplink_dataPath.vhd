@@ -294,7 +294,8 @@ BEGIN                 --========####   Architecture Body   ####========--
        );
 
     -- Routes data depending on the datarate and FEC configurations
-    uplinkUserData_10g24_s  <= (others => '0') when uplinkReady_1_s = '0' else
+    -- Maq: output all ones when link is not ready. This will prevent firmware from detecting valid clusters
+    uplinkUserData_10g24_s  <= (others => '1') when uplinkReady_1_s = '0' else
                                fec5_data_from_descrambler_s(229 downto 0) when (FEC = FEC5 or (FEC = DYNAMIC and uplinkSelectFEC_i = '0')) else
                                "0000000000000000000000000000" & fec12_data_from_descrambler_s(201 downto 0);
                          

@@ -1,7 +1,9 @@
 `timescale 1ns / 1ps
 
 `include "vppc_macros.sv"
-
+`ifdef SIMULATION_DAQ
+    `include "spbits.sv"
+`endif
 // neural net tux, IOs are matching SP core
 module nn_tux
 (
@@ -126,9 +128,9 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
     
     logic [17:0] input1_V [22:0];
 
-    logic [17:0] layer11_out_0_V;
+    logic [11:0] layer11_out_0_V;
     logic layer11_out_0_V_ap_vld;
-    logic [17:0] layer11_out_1_V;
+    logic [11:0] layer11_out_1_V;
     logic layer11_out_1_V_ap_vld;
 
 
@@ -406,9 +408,9 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
         .input1_21_V (input1_V[21]),
         .input1_22_V (input1_V[22]),
         
-        .layer11_out_0_V        (layer11_out_0_V),
+        .layer11_out_0_V        (layer11_out_0_V[11:0]),
         .layer11_out_0_V_ap_vld (layer11_out_0_V_ap_vld),
-        .layer11_out_1_V        (layer11_out_1_V       ),
+        .layer11_out_1_V        (layer11_out_1_V[11:0]),
         .layer11_out_1_V_ap_vld (layer11_out_1_V_ap_vld)
     );
 

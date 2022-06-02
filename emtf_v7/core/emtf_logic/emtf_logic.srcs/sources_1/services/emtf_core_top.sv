@@ -837,11 +837,12 @@ module emtf_core_top
     wire [8:0] gmt_eta [2:0]; // eta for gmt
     wire [3:0] gmt_qlt [2:0]; // quality for gmt
     wire [2:0] gmt_crg; // charge for gmt
-    wire [1:0] hmt_out; // {out_of_time, in_time}
+    (* mark_debug *) wire [1:0] hmt_out; // {out_of_time, in_time}
 	wire [7:0] nn_pt [2:0]; // NN PT value
     wire [2:0] nn_pt_v; // NN valid flag for PT
 	wire [2:0] nn_d0 [2:0]; // NN D0 value
     wire [2:0] nn_d0_v; // NN valid flag for D0
+    wire [25:0] hmt_rate [1:0];
     
 `ifdef WITH_CORE    
 	sp core 
@@ -880,6 +881,7 @@ module emtf_core_top
         .gmt_qlt (gmt_qlt),
         .gmt_crg (gmt_crg),
         .hmt_out (hmt_out),
+        .hmt_rate (hmt_rate),
 
         .nn_pt (nn_pt),
         .nn_pt_v (nn_pt_v),
@@ -895,7 +897,6 @@ module emtf_core_top
 `endif
 
     wire fp_trigger;
-
     output_delay od
     (
         // inputs
@@ -927,7 +928,6 @@ module emtf_core_top
         .gmt_eta_d (gmt_eta_d),
         .gmt_qlt_d (gmt_qlt_d),
         .gmt_crg_d (gmt_crg_d),
-        
         .fp_trigger (fp_trigger),
     
         .clk (clk40)
@@ -1101,8 +1101,8 @@ module emtf_core_top
         .automatic_delay_gem (automatic_delay_gem),
         .en_manual_gem       (en_manual_gem      ),
         .alg_out_range_gem   (alg_out_range_gem  ),
-        .bc0_period_err_gem  (bc0_period_err_gem )
-            
+        .bc0_period_err_gem  (bc0_period_err_gem ),
+        .hmt_rate            (hmt_rate)
     );
 
 	wire [8*5+9-1:0] bc0_mrg;
@@ -1121,7 +1121,8 @@ module emtf_core_top
 	//assign fp[0] = txcharisk_0[1];// ttc_bx0_rx
     assign fp[0] = (cppf_rxd[0][0][15:11] != 5'b11111 && cppf_rx_valid[0] == 1'b1) ? 1'b1 : 1'b0; // for RPC latency measurement
 	assign fp[1] = |rx_valid_tp; // valid bits from any input link, before any deframing, for latency measurement with scope
-	assign fp[2] = fp_trigger; // bt_rank_d[0] == 7'h0 && bt_rank_d[2] == 7'h0; // output valid track flag for local trigger
+//	assign fp[2] = bt_rank_d[0] == 7'h0 && bt_rank_d[2] == 7'h0; // output valid track flag for local trigger
+	assign fp[2] = fp_trigger; // output valid track flag for local trigger
 	assign fp[3] = txoutclk_async_div[3];//clk40;
 	assign resync_tp = ttc_resync_rx;
 
@@ -1238,7 +1239,7 @@ module emtf_core_top
          .fiber_enable (fiber_enable),
          .cppf_crc_match (cppf_crc_match),
     
-         .gem_rxd       (ge11_rxd      ),
+		 .ge11_cl       (ge11_cl), // decoded clusters
          .gem_rx_valid  (ge11_rx_valid ), 
          .gem_crc_match (ge11_crc_match),
          .gem_alg_out_range     (alg_out_range_gem  ),

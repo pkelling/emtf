@@ -1,4 +1,5 @@
 `ifdef SIMULATION_DAQ
+`include "interfaces.sv"
 `include "mpcx_interface.sv"
 `endif
 
@@ -15,9 +16,9 @@ module mtf7_daq
 
    // GEM inputs FIXME COPY OF RPC
    // 8 clusters for 2 super-chamber layers
-   // 234 bits transmitted per BX
    // GE1/1 SuperChamber (2xOH) is input to EMTF
-   input [233:0]      gem_rxd [6:0], ///< GEM rx data, 1 frame x 234 bits, for 7 links
+	// gem data, [schamber][layer][cluster]
+   ge11_cluster.in    ge11_cl [6:0][1:0][7:0],
    input [6:0]        gem_rx_valid,  ///< GEM data valid flags
    input [6:0]        gem_crc_match, ///< CRC match flags from GEM links
    input [1:0] gem_alg_out_range [6:0],
@@ -93,9 +94,8 @@ module mtf7_daq
   `localpar N_GE21_LAY     = 2;   ///< Number of layers in the GE2/1 superchamber
   `localpar N_ME0_LAY      = 6;   ///< Number of layers in the ME0 stack
   `localpar GEM_CLS_PER_BX = 8;   ///< 8 clusters per BX in GEM transmitted frame
-  `localpar GEM_FR_W       = 234; ///< Number of bits in the GEM data frame
-  `localpar GEM_HD_SZ      = 10;  ///< Number of bits in the GEM header word
-  `localpar GEM_CLU_BW     = 14;  ///< Number of bits in the GEM cluster word
+  `localpar GEM_CLU_BW     = 15;  ///< Number of bits in the GEM cluster word, including valid flag
+  `localpar GEM_FR_W       = (N_GE11_LAY * GEM_CLS_PER_BX * GEM_CLU_BW); ///< Number of bits in the GEM data frame, 2 layers * 8 clusters * 15 bits
 
 
    // chamber enable flags. Linkless chambers are enabled only when all links carrying them are enabled.
@@ -110,9 +110,10 @@ module mtf7_daq
 
 
    // FIXME Convert magic numbers to constants!!!
-   // width of input data (q, wg, hstr, cpat, lr, vp) * 2 segments * 9 chambers * 6 stations (incl. neighbor) + link statuses
-   `localpar INP_DEL_BW = ((4+bw_wg+bw_hs+4+1+1)*seg_ch*(9*6)+49+5);
-
+   `localpar lng = (4 + bw_wg + bw_hs + 4 + 1 + 1 + 4 + 1 + 1); // q, wg, hstr, cpat, lr, vp, cid, bx0, ser
+   // width of input data (q, wg, hstr, cpat, lr, vp, cid, bx0, ser) * 2 segments * 9 chambers * 6 stations (incl. neighbor) + link statuses
+   `localpar INP_DEL_BW = (lng*seg_ch*(9*6)+49+5);
+   
    // width of RPC input data (7 links by 3 frames by 64 bits each, plus 7 valid bits, plus 7 CRC match bits)
    `localpar RPC_INP_DEL_BW = 64*3*7 + 7 + 7;
 
@@ -173,6 +174,9 @@ module mtf7_daq
    wire [7:0]                   rpc_late_by = {5'h0, rpc_late_by_bxs}; // cppf data are late by this many clocks
 
    // first index in the declarations below is daq_bank word
+   reg [seg_ch-1:0]             ser_d   [7:0][5:0][8:0];
+   reg [seg_ch-1:0]             bx0_d   [7:0][5:0][8:0];
+   reg [3:0]                    cid_d    [7:0][5:0][8:0][seg_ch-1:0];
    reg [3:0]                    q_d    [7:0][5:0][8:0][seg_ch-1:0];
    reg [bw_wg-1:0]              wg_d   [7:0][5:0][8:0][seg_ch-1:0];
    reg [bw_hs-1:0]              hstr_d [7:0][5:0][8:0][seg_ch-1:0];
@@ -233,7 +237,6 @@ module mtf7_daq
    wire [OUT_DEL_BW-1:0]        out_del_out;
 
    // FIXME Convert magic numbers to constants!!
-   `localpar lng = 4 + bw_wg + bw_hs + 4 + 1 + 1;
    `localpar out_lng = OUT_DEL_BW/3;
 
    // FIXME Convert magic numbers to constants!!
@@ -285,6 +288,7 @@ module mtf7_daq
    reg [7:0]                    gem_str_d        [7:0][6:0][1:0][7:0]; // GE1/1 strip/pad is 8 bits
    reg [2:0]                    gem_par_d        [7:0][6:0][1:0][7:0]; // GEM eta partition
    reg [2:0]                    gem_clu_sz_d     [7:0][6:0][1:0][7:0]; // GEM cluster size
+   reg [0:0]                    gem_vf_d         [7:0][6:0][1:0][7:0]; // GE1/1 valid bit
    reg [9:0]                    gem_head_d       [7:0];                // GEM frame header
    reg [6:0]                    gem_rx_valid_d   [7:0];                // GEM data valid flags
    reg [6:0]                    gem_crc_match_d  [7:0];                // GEM crc match
@@ -303,7 +307,7 @@ module mtf7_daq
    reg [6:0]                    gem_bc0  [7:0];     // BC0 from layer 0          
    reg [6:0]                    gem_bc0_ly1  [7:0]; // BC0 from layer 1               
    reg [6:0]                    gem_link_id_flag [7:0];   
-
+   reg hmv;
 
    // pack data into delay lines' inputs, unpack the outputs of ring buffer
    always @(*)
@@ -321,8 +325,12 @@ module mtf7_daq
             begin
                lct_valid = lct_valid | lct_i[station_][j][k].vf;
                // pack delay line inputs
+                   
                inp_del_in[pos+: lng] =
                                       {
+                                       lct_i[station_][j][k].ser,
+                                       lct_i[station_][j][k].bx0,
+                                       lct_i[station_][j][k].cid,
                                        lct_i[station_][j][k].ql,
                                        lct_i[station_][j][k].wg,
                                        lct_i[station_][j][k].hs,
@@ -334,6 +342,9 @@ module mtf7_daq
                begin
                   // unpack ring buffer outputs (from daq bank)
                   {
+                   ser_d  [i][station_][j][k],
+                   bx0_d  [i][station_][j][k],
+                   cid_d  [i][station_][j][k],
                    q_d    [i][station_][j][k],
                    wg_d   [i][station_][j][k],
                    hstr_d [i][station_][j][k],
@@ -346,12 +357,16 @@ module mtf7_daq
 
                   // make one LCT in each station valid in case of stress test
                   if (stress == 1'b1) vp_d[0][station_][0][0] = 1'b1;
+                  
+                  // HMT valid flag
+                  hmv = 1'b0;
+                  if (k == 1 && (bx0_d[i][station_][j][k] == 1'b1 || cpat_d [i][station_][j][k][3:1] != 3'b0)) hmv = 1'b1;
 
                   // pack ME LCT into daq word
-                  me_data[i][mew] = {1'h0, 8'h0, station_, vp_d[i][station_][j][k], tbin,
-                                     1'b0, 3'b0, 12'h0,
-                                     1'b1, 2'h0, lr_d[i][station_][j][k], csc_id, hstr_d[i][station_][j][k],
-                                     1'b1, wg_d[i][station_][j][k], q_d[i][station_][j][k], cpat_d[i][station_][j][k]};
+                  me_data[i][mew] = {1'h0, 1'h0, ser_d[i][station_][j][k], 1'h0, cid_d[i][station_][j][k], hmv, station_, vp_d[i][station_][j][k], tbin,
+                                     1'b0, 2'b0, k[0], 12'h0,
+                                     1'b1, 1'h0,  bx0_d[i][station_][j][k], lr_d[i][station_][j][k], csc_id, hstr_d[i][station_][j][k],
+                                     1'b1, wg_d[i][station_][j][k], q_d[i][station_][j][k], cpat_d [i][station_][j][k]};
                end
                mew = mew + 1;
                pos = pos + lng;
@@ -431,9 +446,21 @@ module mtf7_daq
        */
       for (station_ = 0; station_ < 3'd7; station_ = station_+1) // GEM sub-sector loop
       begin
-         // pack GEM data (234 bits) into the input delay line
-         gem_inp_del_in[gem_pos +: 234] = gem_rxd[station_];
-         gem_pos += 234;
+         // pack GEM clusters into the input delay line
+         for (j = 0; j < N_GE11_LAY; j = j+1) // superchamber/stack layer?
+         begin
+            for (k = 0; k < GEM_CLS_PER_BX; k = k+1) // cluster in layer loop
+            begin
+                gem_inp_del_in[gem_pos +: GEM_CLU_BW] = 
+                {
+                    ge11_cl[station_][j][k].vf,
+                    ge11_cl[station_][j][k].csz,
+                    ge11_cl[station_][j][k].prt,
+                    ge11_cl[station_][j][k].str
+                };
+                gem_pos += GEM_CLU_BW;
+            end
+         end
       end
       gem_inp_del_in[gem_pos +: 14] = {gem_crc_match, gem_rx_valid};
          
@@ -443,28 +470,15 @@ module mtf7_daq
           gemw = 0;
           for (station_ = 0; station_ < 3'd7; station_ = station_+1) // GEM sub-sector loop
           begin
-             gem_head_d[i] = daq_bank[i][gem_ring_pos +: GEM_HD_SZ];  // first gem_hd_sz bits are the header
-             {
-                  gem_n_clu_d[i][station_][1], // any valid clusters(8-15) after this are from BX-1
-                  gem_n_clu_d[i][station_][0], // any valid clusters(0-7)  after this are from BX-1
-                  gem_bc0_ly1[i][station_],
-                  gem_bc0[i][station_]
-             } = gem_head_d[i];
-
             // rework according to upgraded GEM data format. See GEX_1 Trigger Data Proposal_2022.pdf document
-             gem_link_id_flag[i][station_] = (gem_n_clu_d[i][station_][1] == 4'hf && gem_n_clu_d[i][station_][0] == 4'hf) ? 1'b1 : 1'b0;
-             
-             gem_ring_pos += GEM_HD_SZ; // move the read pointer past the header words
              
              for (j = 0; j < N_GE11_LAY; j = j+1) // superchamber/stack layer?
              begin
                 for (k = 0; k < GEM_CLS_PER_BX; k = k+1) // cluster in layer loop
                 begin
-                      // unpack GEM data header (10 bits) from the DAQ bank
-                      // only for first layer and cluster
-    
                       // GE1/1
                       {
+                           gem_vf_d     [i][station_][j][k],     // as above
                            gem_clu_sz_d [i][station_][j][k],     // as above
                            gem_par_d    [i][station_][j][k],        // as above
                            gem_str_d    [i][station_][j][k]         // as above
@@ -475,12 +489,6 @@ module mtf7_daq
                       gem_clu_id_d[i] = {j[0], k[2:0]};                 // cluster ID 0-7 for layer1, 8-15 for layer2?
                       tbin            = i;                       // timebin
                       gem_tbin_ofs    = 0;                       // timebin offset
-                      gem_val         = gem_str_d[i][station_][j][k] != 8'hff; // GE1/1
-                      // gem_val          = gem_str_d[i][station_][j][k] != 9'h1ff; // GE2/1
-                      if (gem_en[station_] == 1'b0) gem_val = 1'b0; // link is disabled, kill all
-                      if (gem_link_id_flag[i][station_] == 1'b1) gem_val = 1'b0; // if link ID is transmitted, not a valid primitive
-                      if (gem_alg_out_range[station_][j] == 1'b1) gem_val = 1'b0; // bad alignment, invalidate
-                      if (gem_bc0_period_err[station_][j] == 1'b1) gem_val = 1'b0; // bad bc0, invalidate
 
 // FIXME: logic for out-of-time clusters is disabled so far
 // 
@@ -492,7 +500,7 @@ module mtf7_daq
 
                       gem_data[i][gemw] = 
                       {
-                           1'b0, 11'b0, gem_val, tbin, // - gem_tbin_ofs,                                                        // GE11d
+                           1'b0, 11'b0, gem_vf_d[i][station_][j][k], tbin, // - gem_tbin_ofs,                                                        // GE11d
                            1'b1, gem_bc0[i][station_], gem_bc0_ly1[i][station_], 1'b0, 12'h0,                                    // GE11c
                            1'b1, station_, gem_clu_id_d[i], 8'h0,                                                            // GE11b
                            1'b1, gem_clu_sz_d[i][station_][j][k], gem_par_d[i][station_][j][k], 1'b0, gem_str_d[i][station_][j][k] // GE11a
@@ -628,6 +636,7 @@ module mtf7_daq
 
             bt_valid = bt_q_d[i][j] != 4'h0;
             if (i == 0 && j == 0 && stress == 1'b1) bt_valid = 1'b1; // make one track valid for stress test
+            if (bxn_counter_d[i][j][1:0] != 2'h0) bt_valid = 1'b1; // make valid if HMT bits are non-zero
 
             track_data[i][j][0] =
                                  {
@@ -1221,10 +1230,10 @@ module mtf7_daq
            begin
               // proceed with output of each LCT if:
               // amc13_ready and LCT is valid, or
-              // LCT is invalid. In this case, we don't care about AMC13 since daq_valid = 0
-              if (amc13_ready || !me_data[tbc][mewc][51])
+              // LCT or HMT is invalid. In this case, we don't care about AMC13 since daq_valid = 0
+              if (amc13_ready || !(me_data[tbc][mewc][51] || me_data[tbc][mewc][55]))
               begin
-                 daq_valid = me_data[tbc][mewc][51]; // valid bit, AMC13 will take the word only if set
+                 daq_valid = me_data[tbc][mewc][51] | me_data[tbc][mewc][55]; // LCT | HMT valid bits, AMC13 will take the word only if set
                  daq_data  = me_data[tbc][mewc];     // stub data to output even if invalid
                  mewc      = mewc + 7'h1;            // me word counter
                  if (daq_valid) data_lgth = data_lgth + 20'h1; // update length

@@ -15,18 +15,22 @@
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+// !!!!DO NOT USE VIVADO SIMULATOR!!!! 
+// THIS CODE SIMULATES OK WITH QUESTASIM OR MODELSIM
 ////////////////////////////////////////////////////////////////////////////////
 `include "vppc_macros.sv"
 `include "interfaces.sv"
 `include "spbits.sv"
+`ifdef SIMULATION_DAQ
+    `include "mpcx_interface.sv"
+`endif
 
 module sp_tf;
 
     `param max_ev = 220000; //13000;
 
-    `param endcap_p = 1;
-    `param sector_p = 1;
+    `param endcap_p = 2;
+    `param sector_p = 2;
     `param rpc_delay = 6; // delay of rpc data relative to csc
     `param ge11_delay = 3; // delay of ge11 data relative to csc
    
@@ -41,26 +45,43 @@ module sp_tf;
     reg [bw_wg-1:0]  wgi   [5:0][8:0][seg_ch-1:0];
     reg [bw_hs-1:0]  hstri [5:0][8:0][seg_ch-1:0];
     reg [3:0] 		 cpati [5:0][8:0][seg_ch-1:0];
+    reg [3:0] 		 hmti  [5:0][8:0][seg_ch-1:0];
 
+    reg [7:0] ge11_str_i [6:0][1:0][7:0];
+    reg [2:0] ge11_prt_i [6:0][1:0][7:0];
+    reg [2:0] ge11_csz_i [6:0][1:0][7:0];
+    reg [7:0] ge11_vf_i  [6:0][1:0];
+   
 
    genvar 			 gi, gj, gk;
    generate
-	  for (gi = 0; gi < 6; gi++)
+	  for (gi = 0; gi < 6; gi++) // station loop
 		begin
-		   for (gj = 0; gj < 9; gj++)
+		   for (gj = 0; gj < 9; gj++) // chamber loop
 			 begin
-				for (gk = 0; gk < 2; gk++)
+				for (gk = 0; gk < 2; gk++) // LCT loop
 				  begin
 					 assign lct_ii[gi][gj][gk].vf = vpf[gi][gj][gk];
 					 assign lct_ii[gi][gj][gk].ql = qi[gi][gj][gk];
 					 assign lct_ii[gi][gj][gk].wg = wgi[gi][gj][gk];
 					 assign lct_ii[gi][gj][gk].hs = hstri[gi][gj][gk];
-					 assign lct_ii[gi][gj][gk].cp = cpati[gi][gj][gk];
+//					 assign lct_ii[gi][gj][gk].cp = cpati[gi][gj][gk];
 					 // zero out new parameters for now, TBD: need to take these from input file
 					 assign lct_ii[gi][gj][gk].lr  = 0;   // left-right flag
 					 assign lct_ii[gi][gj][gk].ser = 0;  // sync error
 					 assign lct_ii[gi][gj][gk].cid = 0;  // CSC ID
-					 
+					 assign lct_ii[gi][gj][gk].bc0 = 0;  
+					 if (gk == 1)
+					 begin
+					   // HMT bits are only in LCT1
+					   assign lct_ii[gi][gj][gk].cp = {2'b00, hmti[gi][gj][gk][1], 1'b0}; // repurposed hmt[1] bit 
+					   assign lct_ii[gi][gj][gk].bx0 = hmti[gi][gj][gk][0]; // repurposed hmt[0] bit
+					 end
+					 else
+					 begin
+					   assign lct_ii[gi][gj][gk].cp = 0; 
+					   assign lct_ii[gi][gj][gk].bx0 = 0;
+					 end
 				  end
 			 end
 		end
@@ -142,6 +163,7 @@ module sp_tf;
     reg [6:0] 		  wiregroup [max_ev-1:0][5:0][8:0][seg_ch-1:0];
     reg [bw_hs-1:0]   hstrip    [max_ev-1:0][5:0][8:0][seg_ch-1:0];
     reg [3:0] 		  clctpat   [max_ev-1:0][5:0][8:0][seg_ch-1:0];
+    reg [1:0] 		  hmt       [max_ev-1:0][5:0][8:0][seg_ch-1:0];
     
     // [subsector][chamber][hit]
     reg [10:0] rpc_ph [max_ev+rpc_delay-1:0][6:0][5:0][seg_ch-1:0];
@@ -152,11 +174,6 @@ module sp_tf;
     reg [2:0] ge11_prt [max_ev+ge11_delay-1:0][6:0][1:0][7:0];
     reg [2:0] ge11_csz [max_ev+ge11_delay-1:0][6:0][1:0][7:0];
 
-    reg [7:0] ge11_str_i [6:0][1:0][7:0];
-    reg [2:0] ge11_prt_i [6:0][1:0][7:0];
-    reg [2:0] ge11_csz_i [6:0][1:0][7:0];
-    reg [7:0] ge11_vf_i  [6:0][1:0];
-   
     integer 	      iadr = 0, s = 0, i = 0, pi, j = 0, sn, c;
     reg [15:0] 		  v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11;
     reg [2:0] 		  pr_cnt      [6:0][8:0];
@@ -175,6 +192,7 @@ module sp_tf;
     reg [3:0] 		  _quality;
     reg [3:0] 		  _pattern;
     reg [6:0] 		  _wiregroup;
+    reg [1:0]         _hmt;
     integer 	      ist, icid, ipr, code, iev, im, iz, ir;
     reg [800-1:0] 	  line;
     integer 	      in, best_tracks, vllut_in, sim_out, best_tracks_short, nn_out;
@@ -249,11 +267,13 @@ module sp_tf;
    reg       endcap = 1'b1; // 0=ME+ 1=ME-
    reg [2:0] sector = 3'd5; // sector #-1
    reg [20*8-1:0] fes_str, fest_str;
+   wire [1:0] hmt_out; // {out_of_time, in_time}
 `define fes fes_str
 `define fest fest_str
    
 //`define dpath "/exports/uftrig01b/madorsky/projects/modelsim/emtf_data/"
-`define dpath "/home/madorsky/github/emtf/emtf_v7/core/emtf_data/" 
+//`define dpath "/home/madorsky/github/emtf/emtf_v7/core/emtf_data/" 
+`define dpath "C:/github/emtf/emtf_v7/core/emtf_data/" 
 //"/home/madorsky/cernbox/projects/modelsim/emtf_data/"
 
    wire [63:0] 	  core_config;
@@ -262,9 +282,10 @@ module sp_tf;
     assign core_config[12]        = 0;// wire en_single
     assign core_config[13]        = 0;// wire en_two_mu
     assign core_config[14]        = 0;// wire low_th_promote
-    assign core_config[15]        = 0;// wire use_rpc
-	assign core_config[22:16]     = 8;// wire [bw_th-1:0] th_window_z0
-    assign core_config[23]        = 0;// wire two_st_tight_timing
+    assign core_config[15]        = 1;// wire use_rpc
+	assign core_config[22:16]     = 4;// wire [bw_th-1:0] th_window_z0
+    assign core_config[23]        = 1;// wire two_st_tight_timing
+    assign core_config[30:27]     = 5; // HMT delay
 	
 	integer 	   ibx,ich,isg, ii, kp;
     // Instantiate the Unit Under Test (UUT)
@@ -303,6 +324,7 @@ module sp_tf;
 		 .gmt_eta (gmt_eta),
 		 .gmt_qlt (gmt_qlt),
 		 .gmt_crg (gmt_crg),
+         .hmt_out (hmt_out),
 
 	     .nn_pt   (nn_pt  ), // NN PT value
 	     .nn_pt_v (nn_pt_v), // NN valid flag for PT
@@ -389,8 +411,9 @@ x        .bt_rank (bt_rank_i),
 							valid    [iev][ist][icid][ipr] = 1'b0;
 							quality  [iev][ist][icid][ipr] = 4'b0;
 							wiregroup[iev][ist][icid][ipr] = 7'b0;
-							hstrip [iev][ist][icid][ipr] = 8'b0;
-							clctpat [iev][ist][icid][ipr] = 4'b0;
+							hstrip   [iev][ist][icid][ipr] = 8'b0;
+							clctpat  [iev][ist][icid][ipr] = 4'b0;
+							hmt      [iev][ist][icid][ipr] = 2'b0;
 						end
 
 				for (ist = 0; ist < 7; ist=ist+1) // rpc subsector
@@ -454,7 +477,7 @@ x        .bt_rank (bt_rank_i),
 					12: 
 						begin	// primitive
 						    //$fwrite (sim_out, "entering primitive *****************************************\n");
-							_bx_jitter = v0;	
+							_hmt = v0;	
 							_endcap = v1;
 							_sector = v2;
 							_subsector = v3;
@@ -513,6 +536,7 @@ x        .bt_rank (bt_rank_i),
 													wiregroup[_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _wiregroup;
 													hstrip   [_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _halfstrip;
 													clctpat  [_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _pattern;
+													hmt      [_event + _bx_jitter][_station][_cscid][1] = _hmt; // HMT always and only in LCT1, see CMS note DN-20-016
 													// increase primitive counter
 													pr_cnt[_station][_cscid] = pr_cnt[_station][_cscid] + 1;
 												end // else: !if(pr_cnt[_station][_cscid] >= seg_ch)
@@ -706,15 +730,16 @@ x        .bt_rank (bt_rank_i),
 						begin
 							for (si = 0; si < seg_ch; si = si+1) // stub
 							  begin
-								 vpf [ist][icid][si] = valid    [ev][ist][icid][si];
-								 qi  [ist][icid][si] = quality  [ev][ist][icid][si];
-								 wgi [ist][icid][si] = wiregroup[ev][ist][icid][si];
-								 hstri[ist][icid][si] = hstrip  [ev][ist][icid][si];
-								 cpati[ist][icid][si] = clctpat [ev][ist][icid][si];
+								 vpf  [ist][icid][si] = valid    [ev][ist][icid][si];
+								 qi   [ist][icid][si] = quality  [ev][ist][icid][si];
+								 wgi  [ist][icid][si] = wiregroup[ev][ist][icid][si];
+								 hstri[ist][icid][si] = hstrip   [ev][ist][icid][si];
+								 cpati[ist][icid][si] = clctpat  [ev][ist][icid][si];
+								 hmti [ist][icid][si] = hmt      [ev][ist][icid][si];
 								 if (vpf [ist][icid][si] == 1'b1)
 								 begin
-									$fwrite(sim_out, "CSC_RAW: ev: %4d st: %1d ch: %1d q: %h w: %h s: %h\n",
-								 			ev, ist, icid, qi [ist][icid][si], wgi [ist][icid][si], hstri [ist][icid][si]);
+									$fwrite(sim_out, "CSC_RAW: ev: %4d st: %1d ch: %1d q: %h wg: %3d hs: %3d hmt: %h\n",
+								 			ev, ist, icid, qi [ist][icid][si], wgi [ist][icid][si], hstri [ist][icid][si], hmti [ist][icid][si]);
 								 end
 								// check if there is chamber data, update good event station mask
 								if (qi  [ist][icid][si] > 0) good_ev[ist] = 1;
@@ -841,16 +866,16 @@ x        .bt_rank (bt_rank_i),
 								
 									if (ip <= 1 && j < 3) // ME11
 								    begin
-										$fwrite(sim_out, "CSC_STUB: st: %1d ch: %1h ph: %h  th: %h %h\n", 
+										$fwrite(sim_out, "CSC_STUB: st: %1d ch: %1d ph: %d  th: %d %d\n", 
 												ip, j, uut.ph[ip][j][k], uut.th11[ip][j][k*2], uut.th11[ip][j][k*2+1]);
 										 ph_high_prec = uut.ph[ip][j][k];
 									end
 									else if (ip == 5 && j == 0) // ME11 neighbor
-                                        $fwrite(sim_out, "CSC_STUB: st: %1d ch: %1d ph: %h  th: %h %h\n", 
+                                        $fwrite(sim_out, "CSC_STUB: st: %1d ch: %1d ph: %d  th: %d %d\n", 
 												ip, j, uut.ph[ip][j][k], uut.th11[2][0][k*2], uut.th11[2][0][k*2+1]);
 									else
 									begin
-										$fwrite(sim_out, "CSC_STUB: st: %1d ch: %1d ph: %h  th: %h ph_hit: %d ph_zone: %d\n", 
+										$fwrite(sim_out, "CSC_STUB: st: %1d ch: %1d ph: %d  th: %d ph_hit: %d ph_zone: %d\n", 
 												ip, j, uut.ph[ip][j][k], uut.th[ip][j][k],5,5);//uut.ph_hit[ip][j][k],uut.ph_zone[ip][j][k]);
 										 ph_high_prec = uut.ph[ip][j][k];
 									end
@@ -941,20 +966,20 @@ x        .bt_rank (bt_rank_i),
 									   );
 						end
 					end // for (iz = 0; iz < 4; iz = iz+1)
-
-					for (iz = 0; iz < 4; iz = iz+1)
+*/
+					for (iz = 0; iz < 4; iz = iz+1) // zone loop
 					begin
-						for (ir = 0; ir < 3; ir = ir+1)
+						for (ir = 0; ir < 3; ir = ir+1) // sorted pattern number
 						begin
 							if (uut.ph_q[iz][ir] > 0)
-								$fwrite(sim_out, "pattern on match input: z: %d r: %d ph_num: %d ph_q: %h ly: %b%b%b str: %b%b%b\n", 
+								$fwrite(sim_out, "PATTERN BEST: zone: %1d best_index: %1d ph_num: %3d rank: %2h ly: %b%b%b str: %b%b%b\n", 
 								iz, ir, uut.ph_num[iz][ir], uut.ph_q[iz][ir],
 								uut.ph_q[iz][ir][4], uut.ph_q[iz][ir][2], uut.ph_q[iz][ir][0], 
 								uut.ph_q[iz][ir][5], uut.ph_q[iz][ir][3], uut.ph_q[iz][ir][1]
 								);
 						end
 					end // for (iz = 0; iz < 4; iz = iz+1)
-*/
+
 //				   $fwrite (sim_out, "csc ME2 ch 5: vl: %d th: %d cpat: %d\n", 
 //							uut.cdl.vlo_csc[2][4][0], uut.cdl.tho_csc[2][4][0], uut.cdl.cpato_csc[2][4][0]);
 //				   $fwrite (sim_out, "csc ME4 ch 5: vl: %d th: %d cpat: %d\n", 
@@ -964,17 +989,16 @@ x        .bt_rank (bt_rank_i),
 //							uut.cdl.vlo[0][2][4][0], uut.cdl.tho[0][2][4][0], uut.cdl.cpato[0][2][4][0]);
 //				   $fwrite (sim_out, "dl0 ME4 ch 5: vl: %d th: %d cpat: %d\n", 
 //							uut.cdl.vlo[0][4][4][0], uut.cdl.tho[0][4][4][0], uut.cdl.cpato[0][4][4][0]);
-/*
-				   $fwrite(sim_out, "ph_rank: ");
-					for (iz = 0; iz < 4; iz = iz+1)
+
+					for (iz = 0; iz < 4; iz = iz+1) // zone loop
 					begin
-						for (ir = 0; ir < 3; ir = ir+1)
+						for (ir = 0; ir < ph_raw_w; ir = ir+1) // key strip loop
 						  begin
-							 $fwrite(sim_out, "%b ", uut.ph_rank[iz][ir]);
+						      if (uut.ph_rank[iz][ir] > 0)
+							     $fwrite(sim_out, "PATTERN: zone: %1d phi_num: %3d rank: %2h\n", iz, ir, uut.ph_rank[iz][ir]);
 						  end
 					end
-				   $fwrite(sim_out, "\n");
-
+/*
 				   $fwrite(sim_out, "valid: %b %b %b %d\n",
 						   uut.srts.gb.ph_zone[0].zb3.wini[0],
 						   uut.srts.gb.ph_zone[0].zb3.wini[1],
@@ -1018,7 +1042,7 @@ x        .bt_rank (bt_rank_i),
 									if (uut.vld[ibx][ist][ich][isg]) $fwrite(sim_out, "delayed stub: bx:%d st:%d ch:%d sg:%d  ph: %d\n", 
 																			 ibx,ist,ich,isg, uut.phd[ibx][ist][ich][isg]);
 */
-/*
+
 					for (iz = 0; iz < 4; iz = iz+1) // zone loop
 					begin
 						for (ip = 0; ip < 3; ip = ip+1) // best pattern number
@@ -1043,7 +1067,7 @@ x        .bt_rank (bt_rank_i),
 							end // for (ist = 0; ist < 4; ist = ist + 1)
 						end
 					end // for (iz = 0; iz < 4; iz = iz+1)
-*/
+
 /*
 					for (ip = 0; ip < 6; ip = ip+1)
 					begin
@@ -1255,6 +1279,11 @@ x        .bt_rank (bt_rank_i),
                            $fwrite(sim_out, " GMT charge: %d\n", uut.gmt_crg[ip]);
 */					
 					
+					    if (hmt_out != 0)
+					    begin
+					       $fwrite (sim_out, "HMT trigger: %b\n", hmt_out);
+					    end
+					
 						if (bt_rank[ip] != 0)
 						begin
 /*
@@ -1305,20 +1334,20 @@ x        .bt_rank (bt_rank_i),
 
 						end
 						
-                        if (nn_mode_r[ip] != 0)
-                        begin
-                            $fwrite (nn_out, "ev: %4d ip: %1d mode: %1h ", iev, ip, nn_mode_r[ip]);
-                            for (j = 0; j < 23; j++)
-                            begin
-                                $fwrite (nn_out, " %05x", nn_input[ip][j]);
-                                nn_input[ip][j] = 0;
-                            end
-//                            nn_valid_in[ip] = 0;
-                            $fwrite (nn_out, "\n");
-                        end
-                        nn_mode_r = uut.nn.mode;
-                        $fflush (nn_out);
-                        
+//                        nn_mode_r = uut.nn.mode;
+//                        if (nn_mode_r[ip] != 0)
+//                        begin
+//                            $fwrite (nn_out, "ev: %4d ip: %1d mode: %1h ", iev, ip, nn_mode_r[ip]);
+//                            for (j = 0; j < 23; j++)
+//                            begin
+//                                $fwrite (nn_out, " %05x", nn_input[ip][j]);
+//                                nn_input[ip][j] = 0;
+//                            end
+////                            nn_valid_in[ip] = 0;
+//                            $fwrite (nn_out, "\n");
+//                        end
+//                        $fflush (nn_out);
+                        #1 // to let 120M clock print inputs first
                         if (nn_pt_v[ip] != 1'b0 || uut.nn.pt_unconv_valid[ip] != 1'b0) // converted or unconverted value valid  
 //                        if (uut.nn.pt_unconv[ip] != 12'h14d || nn_pt[ip] != 8'h4 || nn_pt_v[ip] != 1'b0) // 0ec seems to be an output value when all inputs = 0 
 //                        if (nn_pt[ip] != 8'h6) // 6 seems to be an output value when all inputs = 0 
@@ -1326,6 +1355,10 @@ x        .bt_rank (bt_rank_i),
                           $fwrite (nn_out, "ev: %4d track: %1d NN_pt: %h NN_d0: %h NN_PT_V: %h NN_D0_V: %h pt_unconv: %h d0_unconv: %h\n", 
                                    iev, ip, nn_pt[ip], nn_d0[ip], nn_pt_v[ip], nn_d0_v[ip], uut.nn.pt_unconv[ip], uut.nn.d0_unconv[ip]);
                           $fflush (nn_out);
+
+                          $fwrite (sim_out, "ev: %4d track: %1d NN_pt: %h NN_d0: %h NN_PT_V: %h NN_D0_V: %h pt_unconv: %h d0_unconv: %h\n", 
+                                   iev, ip, nn_pt[ip], nn_d0[ip], nn_pt_v[ip], nn_d0_v[ip], uut.nn.pt_unconv[ip], uut.nn.d0_unconv[ip]);
+                          $fflush (sim_out);
                         end
 
 /*					   
@@ -1896,23 +1929,26 @@ x        .bt_rank (bt_rank_i),
 
     
     integer it, jt;
+    reg nn_input_val;
+    integer true_mux[2:0] = '{2,0,1};
     always @(posedge uut.nn.clk_120)
     begin
-        for (it = 0; it < 3; it++) // mux phase loop
+        nn_input_val = 0;
+        for (jt = 0; jt < 23; jt++) // input loop
         begin
+            if (uut.nn.input1_V[jt] != 0) nn_input_val = 1; 
+        end
+        if (nn_input_val)
+        begin
+
+            $fwrite (nn_out, "mux: %1d ", true_mux[uut.nn.mux_phase]);
             for (jt = 0; jt < 23; jt++) // input loop
             begin
-                if (uut.nn.input1_V[jt] != 0)
-                    nn_input[it][jt] = uut.nn.input1_V[jt];
+                $fwrite (nn_out, "%05h ", uut.nn.input1_V[jt]); 
             end
-//            if (uut.nn.valid_in != 1'b0) nn_valid_in[it] = uut.nn.valid_in;
+            $fwrite (nn_out, "\n");
         end
-//        $write ("valid_in: %h\n", uut.nn.valid_in);
-//        if (nn_valid_in != 3'b0)
-//        begin 
-//            $fwrite (nn_out, "valid_in: %03b\n", nn_valid_in);
-//            $fflush (nn_out);
-//        end
+        $fflush (nn_out);
     end
 /*    
     always @(posedge uut.nn.clk_120)

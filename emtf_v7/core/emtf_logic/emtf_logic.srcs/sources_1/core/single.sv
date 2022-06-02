@@ -1,4 +1,7 @@
 `include "vppc_macros.sv"
+`ifdef SIMULATION_DAQ
+    `include "spbits.sv"
+`endif
 
 
 module single
@@ -89,3 +92,4 @@ module single
     end
 
 endmodule
+

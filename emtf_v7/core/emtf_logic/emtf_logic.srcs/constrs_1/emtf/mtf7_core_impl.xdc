@@ -104,6 +104,8 @@ set_false_path -from [get_pins ctoc/rst_isd_reg/C] -to [get_pins ctoc/rst_isd_r_
 set_false_path -from [get_clocks pcie_clk] -to [get_clocks clk_out1_mmcm_daq]
 set_false_path -from [get_clocks clk_out1_mmcm_daq] -to [get_clocks pcie_clk]
 
+# fp[2] is not false path, this is for local trigger
+#set_max_delay -from [get_clocks CLK_OUT2_usrclk_mmcm] -to [get_ports {fp[2]}] -datapath_only 3.0
 set_false_path -to [get_ports {fp[0]}]
 set_false_path -to [get_ports {fp[1]}]
 set_false_path -to [get_ports {fp[3]}]

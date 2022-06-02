@@ -44,7 +44,7 @@ module output_delay
     output [3:0] gmt_qlt_d [2:0],
     output [2:0] gmt_crg_d,
     
-    output reg fp_trigger,
+    output fp_trigger,
 
     input clk
 );
@@ -52,7 +52,7 @@ module output_delay
 `include "../core/spbits.sv"
 
     
-    localparam bt_bw = bw_fph*3 + bw_th*3 + 6*3 + (bwr+1)*3 + (seg_ch + 2 + 4 + 1)*3*5 + 1; // all bt_ bits, last +1 at the end is for separate front panel trigger output
+    localparam bt_bw = bw_fph*3 + bw_th*3 + 6*3 + (bwr+1)*3 + (seg_ch + 2 + 4 + 1)*3*5; // all bt_ bits
     localparam pta_bw = (30 + 8 + 9 + 4 + 1)*3; // all pt addresses and gmt phi, eta, quality, and charge
     localparam bt_delay = 4; // including address formatter
     localparam pta_delay = 3; // not including address formatter
@@ -93,14 +93,13 @@ module output_delay
                 bt_ci_d[i][j]      = comb_out_out[poso +: 4];      `po(4);
             end
         end
-        // front panel trigger active when rank[0] (normal trigger) or rank[2](single) is present
-        comb_out_in[posi +: 1] = (bt_rank[0] != 7'h0 || bt_rank[2] != 7'h0) ? 1'b1 : 1'b0;
-        fp_trigger = comb_out_out[poso +: 1];   
-        
     end
 
     // PT LUT latency compensator, for all bt_ parameters
     dyn_shift #(.BW(bt_bw)) bt_dl (.CLK(clk), .CE(1'b1), .SEL(bt_delay), .SI(comb_out_in), .DO(comb_out_out));
+
+    // separate delay line for front panel trigger
+    dyn_shift #(.BW(1)) fp_dl (.CLK(clk), .CE(1'b1), .SEL(bt_delay), .SI(bt_rank[0] == 7'h0 && bt_rank[2] == 7'h0), .DO(fp_trigger));
 
     // for pt addresses and gmt parameters
     dyn_shift #(.BW(pta_bw)) pta_dl 
