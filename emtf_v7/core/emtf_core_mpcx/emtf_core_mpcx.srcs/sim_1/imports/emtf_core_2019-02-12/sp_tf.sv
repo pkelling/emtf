@@ -40,12 +40,14 @@ module sp_tf;
    
    
     // io
-    reg [seg_ch-1:0] vpf    [5:0][8:0];
+    reg [seg_ch-1:0] vpf   [5:0][8:0];
     reg [3:0]        qi    [5:0][8:0][seg_ch-1:0];
     reg [bw_wg-1:0]  wgi   [5:0][8:0][seg_ch-1:0];
     reg [bw_hs-1:0]  hstri [5:0][8:0][seg_ch-1:0];
     reg [3:0] 		 cpati [5:0][8:0][seg_ch-1:0];
     reg [3:0] 		 hmti  [5:0][8:0][seg_ch-1:0];
+    reg [3:0] 		 qsesi [5:0][8:0][seg_ch-1:0];
+    reg [seg_ch-1:0] lri   [5:0][8:0];
 
     reg [7:0] ge11_str_i [6:0][1:0][7:0];
     reg [2:0] ge11_prt_i [6:0][1:0][7:0];
@@ -62,14 +64,14 @@ module sp_tf;
 				for (gk = 0; gk < 2; gk++) // LCT loop
 				  begin
 					 assign lct_ii[gi][gj][gk].vf = vpf[gi][gj][gk];
-					 assign lct_ii[gi][gj][gk].ql = qi[gi][gj][gk];
+					 assign lct_ii[gi][gj][gk].ql = {qsesi[gi][gj][gk][1], qi[gi][gj][gk][2:0]}; // {1/4 strip=QS, q[2:0]}
 					 assign lct_ii[gi][gj][gk].wg = wgi[gi][gj][gk];
 					 assign lct_ii[gi][gj][gk].hs = hstri[gi][gj][gk];
 //					 assign lct_ii[gi][gj][gk].cp = cpati[gi][gj][gk];
 					 // zero out new parameters for now, TBD: need to take these from input file
-					 assign lct_ii[gi][gj][gk].lr  = 0;   // left-right flag
-					 assign lct_ii[gi][gj][gk].ser = 0;  // sync error
-					 assign lct_ii[gi][gj][gk].cid = 0;  // CSC ID
+					 assign lct_ii[gi][gj][gk].lr  = lri[gi][gj][gk];   // left-right flag
+					 assign lct_ii[gi][gj][gk].ser = qsesi[gi][gj][gk][0];  // 1/8 strip = ES bit
+					 assign lct_ii[gi][gj][gk].cid = cpati[gi][gj][gk];  // CSC ID carries CLCT pattern now
 					 assign lct_ii[gi][gj][gk].bc0 = 0;  
 					 if (gk == 1)
 					 begin
@@ -164,6 +166,8 @@ module sp_tf;
     reg [bw_hs-1:0]   hstrip    [max_ev-1:0][5:0][8:0][seg_ch-1:0];
     reg [3:0] 		  clctpat   [max_ev-1:0][5:0][8:0][seg_ch-1:0];
     reg [1:0] 		  hmt       [max_ev-1:0][5:0][8:0][seg_ch-1:0];
+    reg [1:0] 		  qses      [max_ev-1:0][5:0][8:0][seg_ch-1:0];
+    reg [seg_ch-1:0]  lr        [max_ev-1:0][5:0][8:0];
     
     // [subsector][chamber][hit]
     reg [10:0] rpc_ph [max_ev+rpc_delay-1:0][6:0][5:0][seg_ch-1:0];
@@ -175,7 +179,7 @@ module sp_tf;
     reg [2:0] ge11_csz [max_ev+ge11_delay-1:0][6:0][1:0][7:0];
 
     integer 	      iadr = 0, s = 0, i = 0, pi, j = 0, sn, c;
-    reg [15:0] 		  v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11;
+    reg [15:0] 		  v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13;
     reg [2:0] 		  pr_cnt      [6:0][8:0];
     reg [2:0] 		  pr_cnt_rpc  [6:0][8:0];
     reg [2:0] 		  pr_cnt_ge11 [6:0][8:0]; // second index wider than needed, but OK
@@ -193,6 +197,8 @@ module sp_tf;
     reg [3:0] 		  _pattern;
     reg [6:0] 		  _wiregroup;
     reg [1:0]         _hmt;
+    reg [1:0]         _qses;
+    reg               _lr;
     integer 	      ist, icid, ipr, code, iev, im, iz, ir;
     reg [800-1:0] 	  line;
     integer 	      in, best_tracks, vllut_in, sim_out, best_tracks_short, nn_out;
@@ -350,24 +356,7 @@ module sp_tf;
     `int k;
     `int gz, gn, gs, f, stb;
    integer 			   first_stub, station_cnt;
-
-
-
-/*
-x        .bt_phi (bt_phi),
-x        .bt_theta (bt_theta),
-x        .bt_cpattern (bt_cpattern),
-x        .bt_delta_ph (bt_delta_ph),
-x        .bt_delta_th (bt_delta_th),
-x        .bt_sign_ph (bt_sign_ph),
-x        .bt_sign_th (bt_sign_th),
-x        .bt_rank (bt_rank_i),
-        .bt_vi (bt_vi), 
-        .bt_hi (bt_hi), 
-        .bt_ci (bt_ci), 
-        .bt_si (bt_si),
-*/						
-    
+   integer tmb_revert[5:0][8:0];// [station][chamber]
 
     reg [3:0] nn_mode_r [2:0];
     reg [2:0] nn_valid_in;
@@ -395,6 +384,65 @@ x        .bt_rank (bt_rank_i),
             // write parameters to primitive converters
 	`include "fill_params.sv"
 	`include "fill_params_ge11.sv"
+//   	tmb_revert[0][0] = uut.pcs.station11[0].csc11[0].pc11.tmb_revert;
+//	tmb_revert[0][1] = uut.pcs.station11[0].csc11[1].pc11.tmb_revert;
+//	tmb_revert[0][2] = uut.pcs.station11[0].csc11[2].pc11.tmb_revert;
+//	tmb_revert[1][0] = uut.pcs.station11[1].csc11[0].pc11.tmb_revert;
+//	tmb_revert[1][1] = uut.pcs.station11[1].csc11[1].pc11.tmb_revert;
+//	tmb_revert[1][2] = uut.pcs.station11[1].csc11[2].pc11.tmb_revert;
+		        		                  
+	tmb_revert[0][3] = uut.pcs.station12[0].csc12[3].pc12.tmb_revert;
+	tmb_revert[0][4] = uut.pcs.station12[0].csc12[4].pc12.tmb_revert;
+	tmb_revert[0][5] = uut.pcs.station12[0].csc12[5].pc12.tmb_revert;
+	tmb_revert[0][6] = uut.pcs.station12[0].csc12[6].pc12.tmb_revert;
+	tmb_revert[0][7] = uut.pcs.station12[0].csc12[7].pc12.tmb_revert;
+	tmb_revert[0][8] = uut.pcs.station12[0].csc12[8].pc12.tmb_revert;
+	tmb_revert[1][3] = uut.pcs.station12[1].csc12[3].pc12.tmb_revert;
+	tmb_revert[1][4] = uut.pcs.station12[1].csc12[4].pc12.tmb_revert;
+	tmb_revert[1][5] = uut.pcs.station12[1].csc12[5].pc12.tmb_revert;
+	tmb_revert[1][6] = uut.pcs.station12[1].csc12[6].pc12.tmb_revert;
+	tmb_revert[1][7] = uut.pcs.station12[1].csc12[7].pc12.tmb_revert;
+	tmb_revert[1][8] = uut.pcs.station12[1].csc12[8].pc12.tmb_revert;
+
+	tmb_revert[2][0] = uut.pcs.station234[2].csc[0].pc.tmb_revert;
+	tmb_revert[2][1] = uut.pcs.station234[2].csc[1].pc.tmb_revert;
+	tmb_revert[2][2] = uut.pcs.station234[2].csc[2].pc.tmb_revert;
+	tmb_revert[2][3] = uut.pcs.station234[2].csc[3].pc.tmb_revert;
+	tmb_revert[2][4] = uut.pcs.station234[2].csc[4].pc.tmb_revert;
+	tmb_revert[2][5] = uut.pcs.station234[2].csc[5].pc.tmb_revert;
+	tmb_revert[2][6] = uut.pcs.station234[2].csc[6].pc.tmb_revert;
+	tmb_revert[2][7] = uut.pcs.station234[2].csc[7].pc.tmb_revert;
+	tmb_revert[2][8] = uut.pcs.station234[2].csc[8].pc.tmb_revert;
+	tmb_revert[3][0] = uut.pcs.station234[3].csc[0].pc.tmb_revert;
+	tmb_revert[3][1] = uut.pcs.station234[3].csc[1].pc.tmb_revert;
+	tmb_revert[3][2] = uut.pcs.station234[3].csc[2].pc.tmb_revert;
+	tmb_revert[3][3] = uut.pcs.station234[3].csc[3].pc.tmb_revert;
+	tmb_revert[3][4] = uut.pcs.station234[3].csc[4].pc.tmb_revert;
+	tmb_revert[3][5] = uut.pcs.station234[3].csc[5].pc.tmb_revert;
+	tmb_revert[3][6] = uut.pcs.station234[3].csc[6].pc.tmb_revert;
+	tmb_revert[3][7] = uut.pcs.station234[3].csc[7].pc.tmb_revert;
+	tmb_revert[3][8] = uut.pcs.station234[3].csc[8].pc.tmb_revert;
+	tmb_revert[4][0] = uut.pcs.station234[4].csc[0].pc.tmb_revert;
+	tmb_revert[4][1] = uut.pcs.station234[4].csc[1].pc.tmb_revert;
+	tmb_revert[4][2] = uut.pcs.station234[4].csc[2].pc.tmb_revert;
+	tmb_revert[4][3] = uut.pcs.station234[4].csc[3].pc.tmb_revert;
+	tmb_revert[4][4] = uut.pcs.station234[4].csc[4].pc.tmb_revert;
+	tmb_revert[4][5] = uut.pcs.station234[4].csc[5].pc.tmb_revert;
+	tmb_revert[4][6] = uut.pcs.station234[4].csc[6].pc.tmb_revert;
+	tmb_revert[4][7] = uut.pcs.station234[4].csc[7].pc.tmb_revert;
+	tmb_revert[4][8] = uut.pcs.station234[4].csc[8].pc.tmb_revert;
+	tmb_revert[4][0] = uut.pcs.station234[4].csc[0].pc.tmb_revert;
+
+    
+//    tmb_revert[5][0] = uut.pcs.pcn11.tmb_revert;
+    tmb_revert[5][1] = uut.pcs.cscn[1].pcn.tmb_revert;
+    tmb_revert[5][2] = uut.pcs.cscn[2].pcn.tmb_revert;
+    tmb_revert[5][3] = uut.pcs.cscn[3].pcn.tmb_revert;
+    tmb_revert[5][4] = uut.pcs.cscn[4].pcn.tmb_revert;
+    tmb_revert[5][5] = uut.pcs.cscn[5].pcn.tmb_revert;
+    tmb_revert[5][6] = uut.pcs.cscn[6].pcn.tmb_revert;
+    tmb_revert[5][7] = uut.pcs.cscn[7].pcn.tmb_revert;
+    tmb_revert[5][8] = uut.pcs.cscn[8].pcn.tmb_revert;
 
 		   // read PT LUT
 		   ptfile = $fopen ({`dpath, "/ptlut.dat"}, "rb");
@@ -412,6 +460,8 @@ x        .bt_rank (bt_rank_i),
 							quality  [iev][ist][icid][ipr] = 4'b0;
 							wiregroup[iev][ist][icid][ipr] = 7'b0;
 							hstrip   [iev][ist][icid][ipr] = 8'b0;
+							qses     [iev][ist][icid][ipr] = 2'b0;
+							lr       [iev][ist][icid][ipr] = 1'b0;
 							clctpat  [iev][ist][icid][ipr] = 4'b0;
 							hmt      [iev][ist][icid][ipr] = 2'b0;
 						end
@@ -452,11 +502,11 @@ x        .bt_rank (bt_rank_i),
 				code = $fgets(line, in);
 				//                $fwrite (sim_out, "%h\n", line);
 				// read values
-				v0 = 0; v1 = 0; v2 = 0; v3 = 0; v4 = 0; v5 = 0; v6 = 0; v7 = 0; v8 = 0; v9 = 0; v10 = 0; v11 = 0;
-				sn = $sscanf(line, "%d %d %d %d %d %d %d %d %d %d %d %d", 
-							 v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11);
-//				$fwrite(sim_out, "code %d read %d items %d %d %d %d %d %d %d %d %d %d %d %d\n", code, sn,
-//					    v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11);
+				v0 = 0; v1 = 0; v2 = 0; v3 = 0; v4 = 0; v5 = 0; v6 = 0; v7 = 0; v8 = 0; v9 = 0; v10 = 0; v11 = 0; v12 = 0; v13 = 0;
+				sn = $sscanf(line, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d", 
+							 v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13);
+//				$fwrite(sim_out, "code %d read %d items %d %d %d %d %d %d %d %d %d %d %d %d %d\n", code, sn,
+//					    v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12);
 				case (sn)
 					1: 
 						begin	// end of event
@@ -474,7 +524,7 @@ x        .bt_rank (bt_rank_i),
 							station_cnt = 0;
 							//$fwrite(sim_out, "End of event %d\n", _event);
 						end
-					12: 
+					12, 14: 
 						begin	// primitive
 						    //$fwrite (sim_out, "entering primitive *****************************************\n");
 							_hmt = v0;	
@@ -490,6 +540,10 @@ x        .bt_rank (bt_rank_i),
 							_cscid = v9;	
 							_bend = v10;
 							_halfstrip = v11;
+							if (sn == 14) _qses = v12; // updated format with qs, es, lr bits
+							else _qses = 0;
+							if (sn == 14) _lr = v13; // updated format with qs, es, lr bits
+							else _lr = 0;
 
 							// code that adds jitter, for BXA checks
 							if (first_stub == 1) old_station = _station;
@@ -535,6 +589,8 @@ x        .bt_rank (bt_rank_i),
 													quality  [_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _quality;
 													wiregroup[_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _wiregroup;
 													hstrip   [_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _halfstrip;
+													qses     [_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _qses;
+													lr       [_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _lr;
 													clctpat  [_event + _bx_jitter][_station][_cscid][pr_cnt[_station][_cscid]] = _pattern;
 													hmt      [_event + _bx_jitter][_station][_cscid][1] = _hmt; // HMT always and only in LCT1, see CMS note DN-20-016
 													// increase primitive counter
@@ -620,6 +676,9 @@ x        .bt_rank (bt_rank_i),
 							wgi[k][j][si] = 0;
 							hstri[k][j][si] = 0;
 							cpati[k][j][si] = 0;
+							hmti[k][j][si] = 0;
+							qsesi[k][j][si] = 0;
+							lri[k][j][si] = 0;
 						end
 					end
 				end
@@ -736,10 +795,14 @@ x        .bt_rank (bt_rank_i),
 								 hstri[ist][icid][si] = hstrip   [ev][ist][icid][si];
 								 cpati[ist][icid][si] = clctpat  [ev][ist][icid][si];
 								 hmti [ist][icid][si] = hmt      [ev][ist][icid][si];
+								 qsesi[ist][icid][si] = qses     [ev][ist][icid][si];
+								 lri  [ist][icid][si] = lr       [ev][ist][icid][si];
 								 if (vpf [ist][icid][si] == 1'b1)
 								 begin
-									$fwrite(sim_out, "CSC_RAW: ev: %4d st: %1d ch: %1d q: %h wg: %3d hs: %3d hmt: %h\n",
-								 			ev, ist, icid, qi [ist][icid][si], wgi [ist][icid][si], hstri [ist][icid][si], hmti [ist][icid][si]);
+								 
+									$fwrite(sim_out, "CSC_RAW: ev: %4d st: %1d ch: %1d q: %h wg: %3d hs: %3d hmt: %h qses: %h tmb_revert: %1d\n",
+								 			ev, ist, icid, qi [ist][icid][si], wgi [ist][icid][si], hstri [ist][icid][si], hmti [ist][icid][si],
+								 			qsesi[ist][icid][si], tmb_revert[ist][icid]);
 								 end
 								// check if there is chamber data, update good event station mask
 								if (qi  [ist][icid][si] > 0) good_ev[ist] = 1;
