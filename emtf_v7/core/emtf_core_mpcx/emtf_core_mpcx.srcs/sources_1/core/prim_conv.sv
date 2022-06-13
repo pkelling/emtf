@@ -274,10 +274,10 @@ module prim_conv
 
                 // convert run-3 bend into run-2 pattern only for chambers in ring 2
                 // msg from Efe 2022-01-22
-                if (station >= 2 && cscid >= 3)
-				    clctpat_r[i] = run2_patt[{lr[i], clctpat[i]}]; // convert run-3 bend into run-2 pattern
-				else
+                if (tmb_revert) // if old-type TMB
 				    clctpat_r[i] = clctpat[i]; // just propagate pattern downstream
+				else
+				    clctpat_r[i] = run2_patt[{lr[i], clctpat[i]}]; // convert run-3 bend into run-2 pattern
 				    
 			end 
 			else
