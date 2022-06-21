@@ -365,14 +365,15 @@ module mpcx_deformatter
     // link data valid if: one of the LCTs from native chamber valid, 
     // or fragment of CSCID=1 chamber is valid,
     // or BC0 signal is present from native chamber or CSCID=1 
-	lnk_val[0] = (lctvf[2][1] || lctvf[2][0] || cid1_vf[0][0] || lct_o[2][0].bc0 || cid1_bc0 [0]);
-	lnk_val[1] = (lctvf[3][1] || lctvf[3][0] || cid1_vf[0][1] || lct_o[3][0].bc0 || cid1_bc0 [1]);
-	lnk_val[2] = (lctvf[4][1] || lctvf[4][0] || cid1_vf[0][2] || lct_o[4][0].bc0 || cid1_bc0 [2]);
-	lnk_val[3] = (lctvf[5][1] || lctvf[5][0] || cid1_vf[0][3] || lct_o[5][0].bc0 || cid1_bc0 [3]);
-	lnk_val[4] = (lctvf[6][1] || lctvf[6][0] || cid1_vf[1][0] || lct_o[6][0].bc0 || cid1_bc0 [4]);
-	lnk_val[5] = (lctvf[7][1] || lctvf[7][0] || cid1_vf[1][1] || lct_o[7][0].bc0 || cid1_bc0 [5]);
-	lnk_val[6] = (lctvf[8][1] || lctvf[8][0] || cid1_vf[1][2] || lct_o[8][0].bc0 || cid1_bc0 [6]);
-	lnk_val[7] = (lctvf[9][1] || lctvf[9][0] || cid1_vf[1][3] || lct_o[9][0].bc0 || cid1_bc0 [7]);
+    // or HMT bits are non-zero from native or CSCID=1
+	lnk_val[0] = (lctvf[2][1] || lctvf[2][0] || cid1_vf[0][0] || lct_o[2][0].bc0 || cid1_bc0 [0] || lct_o[2][1].cp[3:1] != 3'b0 || lct_o[2][1].bx0);
+	lnk_val[1] = (lctvf[3][1] || lctvf[3][0] || cid1_vf[0][1] || lct_o[3][0].bc0 || cid1_bc0 [1] || lct_o[3][1].cp[3:1] != 3'b0 || lct_o[3][1].bx0);
+	lnk_val[2] = (lctvf[4][1] || lctvf[4][0] || cid1_vf[0][2] || lct_o[4][0].bc0 || cid1_bc0 [2] || lct_o[4][1].cp[3:1] != 3'b0 || lct_o[4][1].bx0);
+	lnk_val[3] = (lctvf[5][1] || lctvf[5][0] || cid1_vf[0][3] || lct_o[5][0].bc0 || cid1_bc0 [3] || lct_o[5][1].cp[3:1] != 3'b0 || lct_o[5][1].bx0);
+	lnk_val[4] = (lctvf[6][1] || lctvf[6][0] || cid1_vf[1][0] || lct_o[6][0].bc0 || cid1_bc0 [4] || lct_o[6][1].cp[3:1] != 3'b0 || lct_o[6][1].bx0);
+	lnk_val[5] = (lctvf[7][1] || lctvf[7][0] || cid1_vf[1][1] || lct_o[7][0].bc0 || cid1_bc0 [5] || lct_o[7][1].cp[3:1] != 3'b0 || lct_o[7][1].bx0);
+	lnk_val[6] = (lctvf[8][1] || lctvf[8][0] || cid1_vf[1][2] || lct_o[8][0].bc0 || cid1_bc0 [6] || lct_o[8][1].cp[3:1] != 3'b0 || lct_o[8][1].bx0 || lct_o[1][1].cp[3:1] != 3'b0); // cp[3:1] are HMT[3:1]
+	lnk_val[7] = (lctvf[9][1] || lctvf[9][0] || cid1_vf[1][3] || lct_o[9][0].bc0 || cid1_bc0 [7] || lct_o[9][1].cp[3:1] != 3'b0 || lct_o[9][1].bx0 || lct_o[1][1].bx0); // BX0 is HMT[0]
 
     for (i = 0; i < 8; i=i+1)
     begin
@@ -401,15 +402,34 @@ module mpcx_deformatter
         end
 
 		// disable link output if error was detected
-		lct_o[i+2][0].vf = lctvf[i+2][0] && (~crc_err[i]); 
-		lct_o[i+2][1].vf = lctvf[i+2][1] && (~crc_err[i]); 
+		if (crc_err[i] == 1'b0)
+		begin
+		  lct_o[i+2][0].vf = lctvf[i+2][0]; 
+		  lct_o[i+2][1].vf = lctvf[i+2][1];
+		end 
+		else
+		begin
+		  lct_o[i+2][0].vf = 1'b0; 
+		  lct_o[i+2][1].vf = 1'b0;
+		  
+          // invalidate cscid=1 fragment if this link had crc error
+		  cid1_vf[i/4][i%4] = 1'b0;
+		  
+		  // invalidate HMT bits
+		  lct_o[i+2][1].cp[3:1] = 3'b0;
+		  lct_o[i+2][1].bx0 = 1'b0;
+		end
     end
     
-    // checks for cscid=1 data fragments
+    // checks sanity of cscid=1 data fragments
     if (lct_o[1][0].hs > max_hs) cid1_vf[0][0] = 1'b0;
     if (lct_o[1][0].wg > max_wg) cid1_vf[0][1] = 1'b0;
     if (lct_o[1][1].hs > max_hs) cid1_vf[1][0] = 1'b0;
     if (lct_o[1][1].wg > max_wg) cid1_vf[1][1] = 1'b0;
+    
+    // invalidate HMT bits for cscid=1 in case of crc errors
+    if (crc_err[6] == 1'b1) lct_o[1][1].cp[3:1] = 3'b0;
+    if (crc_err[7] == 1'b1) lct_o[1][1].bx0 = 1'b0;
     
   end
 

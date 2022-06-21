@@ -134,7 +134,9 @@ module mpcx_deformatter_neighbor
             lctvf[i][0]  || 
             lct_o[i][0].bc0 || 
             cscid1_bc0[i] || 
-            cscid1_vpf[i]
+            cscid1_vpf[i] || 
+            lct_o[i][1].cp[3:1] != 3'b0 || 
+            lct_o[i][1].bx0
         );
     
         // calculate crc for each link
@@ -160,9 +162,21 @@ module mpcx_deformatter_neighbor
             crc_err[i] = 1'b1;
         end
 
-        // disable link output if error was detected
-	    lct_o[i][0].vf = lctvf[i][0] && (~crc_err[i]);
-	    lct_o[i][1].vf = lctvf[i][1] && (~crc_err[i]);
+		// disable link output if error was detected
+		if (crc_err[i] == 1'b0)
+		begin
+		  lct_o[i][0].vf = lctvf[i][0]; 
+		  lct_o[i][1].vf = lctvf[i][1];
+		end 
+		else
+		begin
+		  lct_o[i][0].vf = 1'b0; 
+		  lct_o[i][1].vf = 1'b0;
+		  
+		  // invalidate HMT bits
+		  lct_o[2][1].cp[3:1] = 3'b0;
+		  lct_o[2][1].bx0 = 1'b0;
+		end
 
 	end
   end
