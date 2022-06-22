@@ -143,6 +143,11 @@ module output_formatter
             txdata[i][62:61] = (nn_pt_v[i] == 1'b1) ? nn_d0[i][1:0] : 2'h0; // IP = dXY in specs. Sending only 2-bit value, dropping sign in MSB, according to msg from Sergo 2021-11-14
         end
 
+        // assign HMT bits according to LCTTrigger_EMTF_uGMT_v4.pptx
+        txdata[0][50] = hmt[0]; // in time
+        txdata[1][50] = hmt[1]; // out of time
+        txdata[2][50] = 1'b0; // reserved
+
         // remove outputs if there was HR recently
         if (hr_cnt > 24'h0)
         begin
@@ -158,10 +163,6 @@ module output_formatter
         txdata[2][31] = bxn[2];
         txdata[2][63] = 1'b0; // reserved
 
-        // assign HMT bits according to LCTTrigger_EMTF_uGMT_v4.pptx
-        txdata[0][50] = hmt[0]; // in time
-        txdata[1][50] = hmt[1]; // out of time
-        txdata[2][50] = 1'b0; // reserved
         
     end
 

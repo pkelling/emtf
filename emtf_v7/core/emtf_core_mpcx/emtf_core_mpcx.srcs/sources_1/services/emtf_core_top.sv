@@ -457,8 +457,6 @@ module emtf_core_top
 	wire [8*5+9-1:0] rxbyteisaligned ;
 	wire [4:0] bc0_err_period_id1; // bc0 errors from CSCID=1 chambers
 	
-//	`merge_mem_1(bc0_err_stuck_i, bc0_err_stuck, 8, 5);
-
 	wire [4:0] rxoutclk;
 	wire [2:0] prbs_sel;
     wire [7:0] prbs_err_persist [4:0];
@@ -470,30 +468,11 @@ module emtf_core_top
 	
     wire [63:0] mpc_link_use_bc0_misplaced;
     wire [23:0] hard_reset_to, mpc_link_hr_to;
-    reg mpc_links_reset;
-    reg [23:0] mpc_link_hr_cnt;
     wire [1:0] tx_rx_reset_done [8*5+9-1:0];
 	wire [8*5+9-1:0] cpll_lock ;
     wire [8*5+9-1:0] gth_tx_reset_done;
     wire [8*5+9-1:0] power_down;
     
-
-
-    // MPC link reset on hard reset logic
-    always @ (posedge clk40)
-    begin
-        if (ttc_hard_reset_rx)
-            mpc_link_hr_cnt = mpc_link_hr_to;
-        else
-        begin
-            if (mpc_link_hr_cnt != 24'h0)
-                mpc_link_hr_cnt--;
-        end
-        
-        mpc_links_reset = mpc_link_hr_cnt == 24'h0 ? 1'b0 : mpc_links_hr_en;
-    end
-	
-
     assign lat_test = rx_valid_tp[0] && lat_test_en; // send latency test pulse if any LCT from station 0 is valid, and latency test enabled
 	
 	genvar gi, gj;
