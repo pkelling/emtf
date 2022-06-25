@@ -55,7 +55,8 @@ module nn_tux
                 (
                     .endcap  (endcap), 
                     .pattern (bt_cpattern [gi][gj]),
-                    .bend    (bt_bend     [gi][gj])
+                    .bend    (bt_bend     [gi][gj]),
+                    .clk     (clk)
                 );                
             end
         end
@@ -127,10 +128,11 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
 
     
     logic [17:0] input1_V [22:0];
+    (* mark_debug *) wire [17:0] input1_w [22:0] = input1_V;
 
-    logic [11:0] layer11_out_0_V;
+    (* mark_debug *) logic [11:0] layer11_out_0_V;
     logic layer11_out_0_V_ap_vld;
-    logic [11:0] layer11_out_1_V;
+    (* mark_debug *) logic [11:0] layer11_out_1_V;
     logic layer11_out_1_V_ap_vld;
 
 
