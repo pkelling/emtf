@@ -45,6 +45,8 @@ module nn_tux
     // message from Sergo 2022-01-20
     // note that the output bend angle is not the same as bend angle reported by new TMB firmware
     wire [17:0] bt_bend [2:0][3:0];
+    reg  [17:0] bt_bend_r [2:0][3:0];
+    logic clk_120;
     genvar gi, gj;
     generate
         for (gi = 0; gi < 3; gi++) // best track loop
@@ -55,8 +57,7 @@ module nn_tux
                 (
                     .endcap  (endcap), 
                     .pattern (bt_cpattern [gi][gj]),
-                    .bend    (bt_bend     [gi][gj]),
-                    .clk     (clk)
+                    .bend    (bt_bend     [gi][gj])
                 );                
             end
         end
@@ -96,9 +97,8 @@ module nn_tux
     reg signed [17:0]  bt_delta_th_r [2:0][5:0]; // these are signed 2's complements converted from regular deltas
     reg signed [17:0]  bt_delta_ph_s [2:0][5:0]; // these are signed 2's complements converted from regular deltas
     reg signed [17:0]  bt_delta_th_s [2:0][5:0]; // these are signed 2's complements converted from regular deltas
-    reg        [17:0]  bt_bend_r [2:0][3:0];
-    reg [bw_th-1:0] bt_theta_r [2:0];
-
+    reg [bw_th-1:0]    bt_theta_r [2:0];
+    reg [3:0]          bt_cpattern_r [2:0][3:0];
     
 /*
 data_0_V => deltaPhi1,     deltaPhi 1-2
@@ -128,18 +128,16 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
 
     
     logic [17:0] input1_V [22:0];
-    (* mark_debug *) wire [17:0] input1_w [22:0] = input1_V;
 
-    (* mark_debug *) logic [11:0] layer11_out_0_V;
+    logic [11:0] layer11_out_0_V;
     logic layer11_out_0_V_ap_vld;
-    (* mark_debug *) logic [11:0] layer11_out_1_V;
+    logic [11:0] layer11_out_1_V;
     logic layer11_out_1_V_ap_vld;
 
 
     logic [1:0] mux_phase = 2'h0;
     logic [1:0] mux_phase_out [2:0] = '{2'd0, 2'd1, 2'd2}; // output multiplexor depends on exact NN latency, needs rework if latency changes 
     logic [1:0] clk_hist;
-    logic clk_120;
     
     // conversion LUTs according to Sergo's message from 2021-09-22
     // separate LUT for each best track
@@ -231,7 +229,7 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
             input1_V[12] = bt_bend_r[mux_phase][0];
             input1_V[16] = fr [sector[0]][bt_stA[mux_phase]][chA[mux_phase]];  // fr bit valid only if ME1 is present    
             input1_V[18] = ring1_0[mux_phase];  // ring valid only if ME1 is present      
-            input1_V[19] = bt_bend_r[mux_phase][0] == 18'b0; 
+            input1_V[19] = bt_cpattern_r[mux_phase][0] == 18'b0; 
         end  
         else
         begin
@@ -244,18 +242,20 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
         if (mode[mux_phase][2] == 1)
         begin
             input1_V[13] = bt_bend_r[mux_phase][1];
-            input1_V[20] = bt_bend_r[mux_phase][1] == 18'b0;
+            input1_V[20] = bt_cpattern_r[mux_phase][1] == 18'b0;
         end  
         else
         begin
             input1_V[13] = 18'b0;
-            input1_V[20] = bt_bend_r[mux_phase][1] == 18'b0;
+            // is this correct ?
+            // input1_V[20] = bt_cpattern_rr[mux_phase][1] == 18'b0;
+            input1_V[20] = 18'b0;
         end  
         
         if (mode[mux_phase][1] == 1)
         begin
             input1_V[14] = bt_bend_r[mux_phase][2];
-            input1_V[21] = bt_bend_r[mux_phase][2] == 18'b0;
+            input1_V[21] = bt_cpattern_r[mux_phase][2] == 18'b0;
         end  
         else
         begin
@@ -266,7 +266,7 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
         if (mode[mux_phase][0] == 1)
         begin
             input1_V[15] = bt_bend_r[mux_phase][3];
-            input1_V[22] = bt_bend_r[mux_phase][3] == 18'b0;
+            input1_V[22] = bt_cpattern_r[mux_phase][3] == 18'b0;
         end  
         else
         begin
@@ -275,7 +275,7 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
         end  
         
         if (mode[mux_phase] != 4'b0)
-            input1_V[17] = bt_theta[mux_phase];
+            input1_V[17] = bt_theta_r[mux_phase];
         else
             input1_V[17] = 18'b0;
         
@@ -329,12 +329,14 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
             bt_delta_ph_s [mux_phase][j] = $signed({ 5'h0, bt_delta_ph[mux_phase][j]});
             bt_delta_th_s [mux_phase][j] = $signed({11'h0, bt_delta_th[mux_phase][j]});
         
-            bt_delta_ph_r [mux_phase][j] = (bt_sign_ph[mux_phase][j] == 1'b0) ? bt_delta_ph_s[mux_phase][j] : -bt_delta_ph_s[mux_phase][j];
-            bt_delta_th_r [mux_phase][j] = (bt_sign_th[mux_phase][j] == 1'b0) ? bt_delta_th_s[mux_phase][j] : -bt_delta_th_s[mux_phase][j];
+            // signs reversed to match C++ emulator, Efe and Sergo, 2022-06-28
+            bt_delta_ph_r [mux_phase][j] = (bt_sign_ph[mux_phase][j] == 1'b1) ? bt_delta_ph_s[mux_phase][j] : -bt_delta_ph_s[mux_phase][j];
+            bt_delta_th_r [mux_phase][j] = (bt_sign_th[mux_phase][j] == 1'b1) ? bt_delta_th_s[mux_phase][j] : -bt_delta_th_s[mux_phase][j];
         end
     
-        bt_bend_r  = bt_bend;
-        bt_theta_r = bt_theta;
+        bt_theta_r   [mux_phase] = bt_theta   [mux_phase];
+        bt_cpattern_r[mux_phase] = bt_cpattern[mux_phase];
+        bt_bend_r    [mux_phase] = bt_bend    [mux_phase];
 
         if (clk_hist[0] != clk_hist[1]) // 40 M clk just rose
             mux_phase = 2'h0; // reset multiplexor phase

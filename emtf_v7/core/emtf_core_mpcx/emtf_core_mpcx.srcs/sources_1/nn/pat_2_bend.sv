@@ -5,11 +5,10 @@ module pat_2_bend
 (
   input endcap, // 0=ME+, 1=ME-
   input [3:0] pattern,
-  output reg [17:0] bend,
-  input clk
+  output reg [17:0] bend
 );
 
-always @(posedge clk) 
+always @(*) 
 begin
 
     case(pattern)
