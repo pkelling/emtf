@@ -263,7 +263,7 @@ module coord_delay
                     if (((i <= 1 && j <= 2) || // ME11 only, can be replaced with GE11
                         (i == 5 && j == 0)) && use_gem) // ME11 in neighbor sector
                     begin
-                        ge11_chm = rpc_ch[i][j]; // extract GE11 chamber number, 0..6
+                        ge11_chm = ge11_ch[i][j]; // extract GE11 chamber number, 0..6
                         
                         for (k = 0; k < 2; k++) // cluster/LCT loop 
                         begin
