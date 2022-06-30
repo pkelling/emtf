@@ -137,16 +137,15 @@ module output_formatter
             txdata[i][33] = gmt_cvl_i[i]; 
             // leave HMT bits unoccupied here, assign them outside of the loop (below)
             txdata[i][49:34] = {trk_id[3], trk_id[2], trk_id[1], trk_id[0]}; // track addresses
-            txdata[i][51]    = 1'h0; // see bit 50 assignment below
             txdata[i][59:52] = (nn_pt_v[i] == 1'b1) ? nn_pt[i] : 8'h0; // Pt unconstrained in specs 
             txdata[i][60]    = 1'h0; // reserved in specs
             txdata[i][62:61] = (nn_pt_v[i] == 1'b1) ? nn_d0[i][1:0] : 2'h0; // IP = dXY in specs. Sending only 2-bit value, dropping sign in MSB, according to msg from Sergo 2021-11-14
         end
 
-        // assign HMT bits according to LCTTrigger_EMTF_uGMT_v4.pptx
-        txdata[0][50] = hmt[0]; // in time
-        txdata[1][50] = hmt[1]; // out of time
-        txdata[2][50] = 1'b0; // reserved
+        // assign HMT bits according to EMTF-to-uGMT-format_2022-06-30.xlsx
+        txdata[0][51:50] = hmt; 
+        txdata[1][51:50] = 1'b0; // reserved
+        txdata[2][51:50] = 1'b0; // reserved
 
         // remove outputs if there was HR recently
         if (hr_cnt > 24'h0)
