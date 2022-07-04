@@ -152,7 +152,7 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
     reg [11:0] d0_unconv [2:0];
     reg [2:0] pt_unconv_valid;
     
-    localparam NN_LATENCY = 7;
+    localparam NN_LATENCY = 6;
     reg [2:0] valid_in [NN_LATENCY-1:0];
     
     initial

@@ -185,6 +185,8 @@ set_max_delay -from [get_clocks -of_objects [get_pins usrclk_mmcm_/inst/mmcm_adv
 set_max_delay -from [get_cells gmt_reclock_loop[*].gmt_tx_rc/txdata_r_reg[*][*]] -to [get_cells gmt_reclock_loop[*].gmt_tx_rc/txdata_a_reg[*][*]] -datapath_only 1.2
 set_max_delay -from [get_cells gmt_reclock_loop[*].gmt_tx_rc/txcharisk_r_reg[*][*]] -to [get_cells gmt_reclock_loop[*].gmt_tx_rc/txcharisk_a_reg[*][*]] -datapath_only 1.2
 
+# false path to NN clock
+set_false_path -from [get_clocks pcie_clk] -to [get_clocks -of_objects [get_pins core/nn/nnmcmc/inst/mmcm_adv_inst/CLKOUT0]]
 
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 set_property BITSTREAM.CONFIG.OVERTEMPPOWERDOWN ENABLE [current_design]

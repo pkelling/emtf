@@ -44,13 +44,13 @@
     <Option Name="WTVcsLaunchSim" Val="0"/>
     <Option Name="WTRivieraLaunchSim" Val="0"/>
     <Option Name="WTActivehdlLaunchSim" Val="0"/>
-    <Option Name="WTXSimExportSim" Val="33"/>
-    <Option Name="WTModelSimExportSim" Val="33"/>
-    <Option Name="WTQuestaExportSim" Val="33"/>
-    <Option Name="WTIesExportSim" Val="33"/>
-    <Option Name="WTVcsExportSim" Val="33"/>
-    <Option Name="WTRivieraExportSim" Val="33"/>
-    <Option Name="WTActivehdlExportSim" Val="33"/>
+    <Option Name="WTXSimExportSim" Val="35"/>
+    <Option Name="WTModelSimExportSim" Val="35"/>
+    <Option Name="WTQuestaExportSim" Val="35"/>
+    <Option Name="WTIesExportSim" Val="35"/>
+    <Option Name="WTVcsExportSim" Val="35"/>
+    <Option Name="WTRivieraExportSim" Val="35"/>
+    <Option Name="WTActivehdlExportSim" Val="35"/>
     <Option Name="GenerateIPUpgradeLog" Val="TRUE"/>
     <Option Name="XSimRadix" Val="hex"/>
     <Option Name="XSimTimeUnit" Val="ns"/>
@@ -115,6 +115,15 @@
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../../../cernbox/projects/vivado/emtf_v7/core/emtf_core_mbld/emtf_core_mbld.srcs/sources_1/ip/ptlut_data_mem/ptlut_data_mem.xci"/>
           <Attr Name="ImportTime" Val="1586832872"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/ip/nn_mmcm/nn_mmcm.xci">
+        <FileInfo>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../../../../cernbox/projects/vivado/emtf_v7/emtf_core+nn/emtf_core+nn.srcs/sources_1/ip/nn_mmcm/nn_mmcm.xci"/>
+          <Attr Name="ImportTime" Val="1571406164"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -1872,21 +1881,6 @@
         <Option Name="UseBlackboxStub" Val="1"/>
       </Config>
     </FileSet>
-    <FileSet Name="nn_mmcm" Type="BlockSrcs" RelSrcDir="$PSRCDIR/nn_mmcm">
-      <File Path="$PSRCDIR/sources_1/ip/nn_mmcm/nn_mmcm.xci">
-        <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../../../../../cernbox/projects/vivado/emtf_v7/emtf_core+nn/emtf_core+nn.srcs/sources_1/ip/nn_mmcm/nn_mmcm.xci"/>
-          <Attr Name="ImportTime" Val="1571406164"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <Config>
-        <Option Name="TopModule" Val="nn_mmcm"/>
-        <Option Name="UseBlackboxStub" Val="1"/>
-      </Config>
-    </FileSet>
     <FileSet Name="ge11_rx_fifo" Type="BlockSrcs" RelSrcDir="$PSRCDIR/ge11_rx_fifo">
       <File Path="$PSRCDIR/sources_1/ip/ge11_rx_fifo/ge11_rx_fifo.xci">
         <FileInfo>
@@ -2062,16 +2056,6 @@
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
     </Run>
-    <Run Id="nn_mmcm_synth_1" Type="Ft3:Synth" SrcSet="nn_mmcm" Part="xc7vx690tffg1927-2" ConstrsSet="nn_mmcm" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/nn_mmcm_synth_1" IncludeInArchive="true">
-      <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2020"/>
-        <Step Id="synth_design"/>
-      </Strategy>
-      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
-      <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2020"/>
-      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
-      <RQSFiles/>
-    </Run>
     <Run Id="ge11_rx_fifo_synth_1" Type="Ft3:Synth" SrcSet="ge11_rx_fifo" Part="xc7vx690tffg1927-2" ConstrsSet="ge11_rx_fifo" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/ge11_rx_fifo_synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2020"/>
@@ -2104,16 +2088,14 @@
     </Run>
     <Run Id="synth_perf_high" Type="Ft3:Synth" SrcSet="sources_1" Part="xc7vx690tffg1927-2" ConstrsSet="constrs_1" Description="Higher performance designs, resource sharing is turned off, the global fanout guide is set to a lower number, FSM extraction forced to one-hot, LUT combining is disabled, equivalent registers are preserved, SRL are inferred  with a larger threshold" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" State="current" Dir="$PRUNDIR/synth_perf_high" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Flow_PerfOptimized_high" Flow="Vivado Synthesis 2020">
-          <Desc>Higher performance designs, resource sharing is turned off, the global fanout guide is set to a lower number, FSM extraction forced to one-hot, LUT combining is disabled, equivalent registers are preserved, SRL are inferred  with a larger threshold</Desc>
-        </StratHandle>
+        <StratHandle Name="Flow_PerfOptimized_high" Flow="Vivado Synthesis 2020"/>
         <Step Id="synth_design">
-          <Option Id="KeepEquivalentRegisters">1</Option>
-          <Option Id="NoCombineLuts">1</Option>
           <Option Id="Directive">7</Option>
-          <Option Id="ShregMinSize">5</Option>
-          <Option Id="ResourceSharing">2</Option>
+          <Option Id="NoCombineLuts">1</Option>
           <Option Id="FsmExtraction">1</Option>
+          <Option Id="ResourceSharing">2</Option>
+          <Option Id="KeepEquivalentRegisters">1</Option>
+          <Option Id="ShregMinSize">5</Option>
         </Step>
       </Strategy>
       <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
@@ -2305,24 +2287,7 @@
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
     </Run>
-    <Run Id="nn_mmcm_impl_1" Type="Ft2:EntireDesign" Part="xc7vx690tffg1927-2" ConstrsSet="nn_mmcm" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="nn_mmcm_synth_1" IncludeInArchive="false" GenFullBitstream="true">
-      <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2020"/>
-        <Step Id="init_design"/>
-        <Step Id="opt_design"/>
-        <Step Id="power_opt_design"/>
-        <Step Id="place_design"/>
-        <Step Id="post_place_power_opt_design"/>
-        <Step Id="phys_opt_design"/>
-        <Step Id="route_design"/>
-        <Step Id="post_route_phys_opt_design"/>
-        <Step Id="write_bitstream"/>
-      </Strategy>
-      <ReportStrategy Name="Vivado Implementation Default Reports" Flow="Vivado Implementation 2020"/>
-      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
-      <RQSFiles/>
-    </Run>
-    <Run Id="impl_congest" Type="Ft2:EntireDesign" Part="xc7vx690tffg1927-2" ConstrsSet="constrs_1" Description="Spread logic throughout the device to avoid creating congested regions. (high setting: highest degree of spreading)" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="synth_3" IncludeInArchive="true" GenFullBitstream="true">
+    <Run Id="impl_congest" Type="Ft2:EntireDesign" Part="xc7vx690tffg1927-2" ConstrsSet="constrs_1" Description="Spread logic throughout the device to avoid creating congested regions. (high setting: highest degree of spreading)" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/impl_congest" SynthRun="synth_3" IncludeInArchive="true" GenFullBitstream="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Congestion_SpreadLogic_high" Flow="Vivado Implementation 2020"/>
         <Step Id="init_design"/>
@@ -2343,6 +2308,7 @@
           <Option Id="BinFile">1</Option>
         </Step>
       </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
       <ReportStrategy Name="Vivado Implementation Default Reports" Flow="Vivado Implementation 2020"/>
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
@@ -2400,9 +2366,7 @@
     </Run>
     <Run Id="impl_physopt" Type="Ft2:EntireDesign" Part="xc7vx690tffg1927-2" ConstrsSet="constrs_1" Description="Similar to Peformance_Explore, but enables the physical optimization step (phys_opt_design) with the Explore directive after routing." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" State="current" Dir="$PRUNDIR/impl_physopt" SynthRun="synth_perf_high" IncludeInArchive="true" GenFullBitstream="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Performance_ExplorePostRoutePhysOpt" Flow="Vivado Implementation 2020">
-          <Desc>Similar to Peformance_Explore, but enables the physical optimization step (phys_opt_design) with the Explore directive after routing.</Desc>
-        </StratHandle>
+        <StratHandle Name="Performance_ExplorePostRoutePhysOpt" Flow="Vivado Implementation 2020"/>
         <Step Id="init_design"/>
         <Step Id="opt_design">
           <Option Id="Directive">0</Option>
@@ -2433,9 +2397,7 @@
     </Run>
     <Run Id="impl_extra_timing" Type="Ft2:EntireDesign" Part="xc7vx690tffg1927-2" ConstrsSet="constrs_1" Description="Includes alternate algorithms for timing-driven optimization" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/impl_extra_timing" SynthRun="synth_perf_high" IncludeInArchive="true" GenFullBitstream="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Performance_ExtraTimingOpt" Flow="Vivado Implementation 2020">
-          <Desc>Includes alternate algorithms for timing-driven optimization</Desc>
-        </StratHandle>
+        <StratHandle Name="Performance_ExtraTimingOpt" Flow="Vivado Implementation 2020"/>
         <Step Id="init_design"/>
         <Step Id="opt_design"/>
         <Step Id="power_opt_design"/>
