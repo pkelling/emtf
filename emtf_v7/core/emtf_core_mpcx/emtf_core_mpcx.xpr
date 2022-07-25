@@ -1600,6 +1600,11 @@
           <Attr Name="UsedIn" Val="implementation"/>
         </FileInfo>
       </File>
+      <File Path="$PSRCDIR/constrs_1/new/tim_wiz.xdc">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="implementation"/>
+        </FileInfo>
+      </File>
       <Config>
         <Option Name="TargetConstrsFile" Val="$PSRCDIR/constrs_1/emtf/mtf7_core_debug.xdc"/>
         <Option Name="ConstrsType" Val="XDC"/>
@@ -2412,7 +2417,9 @@
           <Option Id="Directive">1</Option>
         </Step>
         <Step Id="post_route_phys_opt_design"/>
-        <Step Id="write_bitstream"/>
+        <Step Id="write_bitstream">
+          <Option Id="BinFile">1</Option>
+        </Step>
       </Strategy>
       <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
       <ReportStrategy Name="Vivado Implementation Default Reports" Flow="Vivado Implementation 2020"/>

@@ -1,3 +1,6 @@
+
+
+
 create_debug_core u_ila_0 ila
 set_property ALL_PROBE_SAME_MU true [get_debug_cores u_ila_0]
 set_property ALL_PROBE_SAME_MU_CNT 1 [get_debug_cores u_ila_0]
@@ -8,7 +11,7 @@ set_property C_INPUT_PIPE_STAGES 6 [get_debug_cores u_ila_0]
 set_property C_TRIGIN_EN false [get_debug_cores u_ila_0]
 set_property C_TRIGOUT_EN false [get_debug_cores u_ila_0]
 set_property port_width 1 [get_debug_ports u_ila_0/clk]
-connect_debug_port u_ila_0/clk [get_nets [list usrclk_mmcm_/inst/CLK_OUT2]]
+connect_debug_port u_ila_0/clk [get_nets [list clk40]]
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe0]
 set_property port_width 9 [get_debug_ports u_ila_0/probe0]
 connect_debug_port u_ila_0/probe0 [get_nets [list {bt_pt_tx[0][0]} {bt_pt_tx[0][1]} {bt_pt_tx[0][2]} {bt_pt_tx[0][3]} {bt_pt_tx[0][4]} {bt_pt_tx[0][5]} {bt_pt_tx[0][6]} {bt_pt_tx[0][7]} {bt_pt_tx[0][8]}]]

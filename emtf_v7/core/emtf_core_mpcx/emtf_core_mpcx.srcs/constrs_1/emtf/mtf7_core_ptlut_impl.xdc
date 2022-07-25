@@ -360,8 +360,10 @@ set_property IODELAY_GROUP IODEL_37 [get_cells {ptlut/idelayctrl_loop[3].delayct
 set_property IODELAY_GROUP IODEL_38 [get_cells {ptlut/idelayctrl_loop[4].delayctrl}]
 set_property IODELAY_GROUP IODEL_39 [get_cells {ptlut/idelayctrl_loop[5].delayctrl}]
 
-set_false_path -from [get_pins {crb/in_delay_tap_reg[*]/C}]
-set_false_path -from [get_pins {crb/out_delay_tap_reg[*]/C}]
+set _xlnx_shared_i0 [get_pins {crb/in_delay_tap_reg[*]/C}]
+set_false_path -from $_xlnx_shared_i0
+set _xlnx_shared_i1 [get_pins {crb/out_delay_tap_reg[*]/C}]
+set_false_path -from $_xlnx_shared_i1
 set_false_path -from [get_pins {ptlut/dq_loop[*].dqddr/pins[*].idelaye2_bus/C}]
 set_false_path -from [get_pins {ptlut/dq_loop[*].dqddr/pins[*].odelaye2_bus/C}]
 set_false_path -to [get_pins {ptlut/dq_loop[*].dqddr/pins[*].idelaye2_bus/CE}]
@@ -373,5 +375,8 @@ set_false_path -to [get_pins {ptlut/dq_loop[*].dqddr/pins[*].odelaye2_bus/LD}]
 set_false_path -from [get_pins {crb/ddr_clk_del_reg[*]/C}] -to [get_pins {ptlut/idelaye2_clk/CNTVALUEIN[*]}]
 set_false_path -from [get_pins {crb/control_reg_reg[10]/C}] -to [get_pins ptlut/idelaye2_clk/CE]
 set_false_path -from [get_pins {crb/control_reg_reg[12]/C}] -to [get_pins ptlut/idelaye2_clk/LD]
+
+
+
 
 

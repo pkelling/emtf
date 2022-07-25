@@ -569,7 +569,7 @@ module mtf7_daq
          begin
             {
                  bxn_counter_d [i][j], // actually HMT bits
-                 ptlut_addr_d [i][j],
+                 ptlut_addr_d [i][j], // carries pt lut address or NN PT
                  bt_pt_d [i][j],
                  bt_phi_d [i][j],
                  gmt_phi_d [i][j],
@@ -637,6 +637,7 @@ module mtf7_daq
             bt_valid = bt_q_d[i][j] != 4'h0;
             if (i == 0 && j == 0 && stress == 1'b1) bt_valid = 1'b1; // make one track valid for stress test
             if (bxn_counter_d[i][j][1:0] != 2'h0) bt_valid = 1'b1; // make valid if HMT bits are non-zero
+            if (use_nn_pt == 1'b1 && ptlut_addr_d[i][j][11] == 1'b1) bt_valid = 1'b1; // if NN pt is valid
 
             track_data[i][j][0] =
                                  {

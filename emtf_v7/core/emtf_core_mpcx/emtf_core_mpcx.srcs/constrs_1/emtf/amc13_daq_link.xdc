@@ -50,3 +50,6 @@ set_input_delay -clock k_rx_clk 2.000 [get_ports {k_rxnotintable[*]}]
 # preset by status signals, don't really care how long it takes
 set_false_path -to [get_pins {amc13_link_tx_/DAQ_LINK_7S_I/reset_SyncRegs_reg[*]/PRE}]
 
+
+
+

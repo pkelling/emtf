@@ -15,7 +15,7 @@ module rx_reclock
 
     reg [75:0] inreg_80;
     reg [75:0] inreg_40 [5:0];
-    reg rx_header_80 = 1'b0;
+    (* dont_touch = "TRUE" *) reg rx_header_80 = 1'b0;
     reg [2:0] del_sel = 0, del_sel_n;
     reg clk40_ff = 0;
     (* async_reg = "TRUE" *) reg [10:0] rx_header_r, rx_header_40;

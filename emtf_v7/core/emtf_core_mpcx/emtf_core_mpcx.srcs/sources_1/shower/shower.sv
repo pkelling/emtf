@@ -16,7 +16,8 @@ module shower
 
 `include "spbits.sv"
 
-    localparam DEL = 15;
+    localparam MIN_DEL = 8; // this is minimum pipe delay
+    localparam DEL = MIN_DEL + 15; // 
 
     integer i, j;
     reg [3:0] hmt [4:0][8:0]; // high-mult triggers per chamber [station][chamber]
@@ -26,7 +27,7 @@ module shower
 	reg [25:0] rate_period;
 	reg [25:0] rate_counter [1:0];
 
-    assign hmt_out = hmt_out_d[hmt_delay];
+    assign hmt_out = hmt_out_d[hmt_delay + MIN_DEL];
 
     always @(posedge clk)
     begin

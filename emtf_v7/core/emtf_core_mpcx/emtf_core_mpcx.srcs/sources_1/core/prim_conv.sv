@@ -241,8 +241,7 @@ module prim_conv
     		    end
 			end
 			
-			
-			if (vpf[i])
+			if (vpf[i] && quality[i] != 4'b0) // added quality check, Efe, July 2022. Q=0 is sent by TMB together with HMT if no other LCTs
 			begin
 				vl[i] = 1;
 				// ph conversion
