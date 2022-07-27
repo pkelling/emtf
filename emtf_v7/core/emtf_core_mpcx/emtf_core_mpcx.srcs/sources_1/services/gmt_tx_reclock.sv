@@ -57,7 +57,8 @@ module gmt_tx_reclock
     (* ASYNC_REG = "TRUE" *) reg [63:0] txdata_a [2:0];
     reg [7:0] txcharisk_r [2:0];
     (* ASYNC_REG = "TRUE" *) reg [7:0] txcharisk_a [2:0];
-    (* ASYNC_REG = "TRUE" *) reg [6:0] clk40_s;
+//    (* ASYNC_REG = "TRUE" *) reg [6:0] clk40_s;
+    (* ASYNC_REG = "TRUE" *) reg [12:0] clk40_ffs;
 
     // CRC calculator
     tx_crc tx_crc_
@@ -70,12 +71,14 @@ module gmt_tx_reclock
         .clk (CPPF_7_mmcm_clk)
     );
 
+    reg clk40_ff = 1'b0;
 
     // clock domain crossing logic
     always @(posedge CPPF_7_mmcm_clk)
     begin
 
-        if (clk40_s[1:0] == 2'b01) // clk_40 rose one clock ago
+//        if (clk40_s[1:0] == 2'b01) // clk_40 rose one clock ago
+        if (clk40_ffs[7] != clk40_ffs[6])
         begin
             txdata_a = txdata_r; // store entire data word
             txcharisk_a = txcharisk_r; 
@@ -83,31 +86,36 @@ module gmt_tx_reclock
             txcharisk_async = txcharisk_a[0][3:0];
         end
         else
-        if (clk40_s[2:1] == 2'b01) // clk_40 rose two clocks ago
+//        if (clk40_s[2:1] == 2'b01) // clk_40 rose two clocks ago
+        if (clk40_ffs[8] != clk40_ffs[7])
         begin
             txdata_async = txdata_a[0][63:32];
             txcharisk_async = txcharisk_a[0][7:4];
         end
         else
-        if (clk40_s[3:2] == 2'b01)
+//        if (clk40_s[3:2] == 2'b01)
+        if (clk40_ffs[9] != clk40_ffs[8])
         begin
             txdata_async = txdata_a[1][31:0];
             txcharisk_async = txcharisk_a[1][3:0];
         end
         else
-        if (clk40_s[4:3] == 2'b01)
+//        if (clk40_s[4:3] == 2'b01)
+        if (clk40_ffs[10] != clk40_ffs[9])
         begin
             txdata_async = txdata_a[1][63:32];
             txcharisk_async = txcharisk_a[1][7:4];
         end
         else
-        if (clk40_s[5:4] == 2'b01)
+//        if (clk40_s[5:4] == 2'b01)
+        if (clk40_ffs[11] != clk40_ffs[10])
         begin
             txdata_async = txdata_a[2][31:0];
             txcharisk_async = txcharisk_a[2][3:0];
         end
         else
-        if (clk40_s[6:5] == 2'b01)
+//        if (clk40_s[6:5] == 2'b01)
+        if (clk40_ffs[12] != clk40_ffs[11])
         begin
             txdata_async = txdata_a[2][63:32];
             txcharisk_async = txcharisk_a[2][7:4];
@@ -119,7 +127,8 @@ module gmt_tx_reclock
             txcharisk_async = 4'hf;
         end    
     
-        clk40_s = {clk40_s[5:0], !clk_40};
+//        clk40_s   = {clk40_s[5:0], !clk_40};
+        clk40_ffs = {clk40_ffs[11:0], clk40_ff};
     end
 
     integer i;
@@ -161,6 +170,8 @@ module gmt_tx_reclock
             if (bxn == LHC_ORBIT_LAST_CLK) bxn = 12'h0;
             else bxn = bxn + 12'h1;
         end
+        
+        clk40_ff = ~clk40_ff;
     end
 
 endmodule
