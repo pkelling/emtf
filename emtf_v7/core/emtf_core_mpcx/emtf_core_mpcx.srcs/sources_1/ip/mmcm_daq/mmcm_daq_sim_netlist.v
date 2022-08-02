@@ -3,8 +3,8 @@
 // Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
 // Date        : Thu Mar  3 13:24:28 2022
 // Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
-// Command     : write_verilog -force -mode funcsim
-//               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/mmcm_daq/mmcm_daq_sim_netlist.v
+// Command     : write_verilog -force -mode funcsim -rename_top mmcm_daq -prefix
+//               mmcm_daq_ mmcm_daq_sim_netlist.v
 // Design      : mmcm_daq
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -35,7 +35,6 @@ module mmcm_daq
         .reset(reset));
 endmodule
 
-(* ORIG_REF_NAME = "mmcm_daq_clk_wiz" *) 
 module mmcm_daq_mmcm_daq_clk_wiz
    (clk_out1,
     reset,

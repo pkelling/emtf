@@ -681,6 +681,7 @@ module emtf_core_top
         .en_manual         (en_manual_gem      ),
         .alg_out_range     (alg_out_range_gem  ),
         .bc0_period_err    (bc0_period_err_gem ),
+        .flag_reset        (flag_reset),
         .clk40             (clk40)
     );  
 	

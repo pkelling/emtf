@@ -50,7 +50,8 @@ entity lpgbt_loopback_test is
         rx_header_had_unlock_o  : out std_logic; -- latched high if rx_header_locked_o has ever transitioned from high to low after reset
         rx_gearbox_ready_o      : out std_logic; -- LpGBT RX gearbox is ready
         rx_correction_cnt_o     : out std_logic_vector(15 downto 0); -- count of FEC error corrections on the receiver (counts the number of clocks of rx_correction_flag_o being high)
-        rx_correction_flag_o    : out std_logic  -- set high when an error correction has been performed on the current word
+        rx_correction_flag_o    : out std_logic; -- set high when an error correction has been performed on the current word
+        flag_reset              : in  std_logic
     );
 end lpgbt_loopback_test;
 
@@ -134,7 +135,7 @@ begin
     
     i_tx_not_ready_latch : entity work.latch
         port map(
-            reset_i => reset_i,
+            reset_i => (reset_i or flag_reset),
             clk_i   => clk40_i,
             input_i => not tx_gb_ready,
             latch_o => tx_had_not_ready_o
@@ -203,7 +204,7 @@ begin
     
     i_rx_not_ready_latch : entity work.latch
         port map(
-            reset_i => reset_i,
+            reset_i => (reset_i or flag_reset),
             clk_i   => clk40_i,
             input_i => not (rx_gb_ready and rx_dp_ready),
             latch_o => rx_had_not_ready_o
@@ -211,7 +212,7 @@ begin
 
     i_rx_header_unlock_latch : entity work.latch
         port map(
-            reset_i => reset_i,
+            reset_i => (reset_i or flag_reset),
             clk_i   => clk40_i,
             input_i => not rx_header_locked,
             latch_o => rx_header_had_unlock_o
@@ -283,7 +284,7 @@ begin
         )
         port map(
             ref_clk_i => clk40_i,
-            reset_i   => reset_i,
+            reset_i   => (reset_i or flag_reset),
             en_i      => rx_corr_flags_or,
             count_o   => rx_corr_cnt
         );

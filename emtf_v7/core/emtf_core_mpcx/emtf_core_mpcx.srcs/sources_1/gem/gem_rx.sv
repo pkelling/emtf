@@ -23,6 +23,7 @@ module gem_rx
     input en_manual,
     output [1:0] alg_out_range [6:0], // [schamber=link][layer]
     output [1:0] bc0_period_err [6:0], // [schamber=link][layer]
+    input        flag_reset,
 
 	input clk40
 );
@@ -213,7 +214,8 @@ module gem_rx
                 .rx_header_had_unlock_o (lb_gbt_rx_header_had_unlock [gi]),
                 .rx_gearbox_ready_o     (lb_gbt_rx_gearbox_ready [gi]),
                 .rx_correction_cnt_o    (lb_gbt_correction_cnt [gi]),
-                .rx_correction_flag_o   (lb_gbt_correction_flag [gi])
+                .rx_correction_flag_o   (lb_gbt_correction_flag [gi]),
+                .flag_reset             (flag_reset)
             );
 
             gem_aligner gem_aligner_layer_1

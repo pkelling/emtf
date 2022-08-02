@@ -64,15 +64,17 @@ module mpcx_deformatter
     err_tst_pat_flag |= err_tst_pat;
     if (flag_reset) err_tst_pat_flag = 8'h0;
     
-// register is in reclocker now    
-//    rx_data_76_r = rx_data_76;
-    
-    for (i = 0; i < 9; i++) // chamber loop
+    for (i = 1; i < 9; i++) // chamber loop for native chambers
     begin
         // rate counter update
         if (lct_o[i+1][0].vf != 1'h0 && rate_counter[i] != 26'h3ffffff) 
-          rate_counter[i]++;
+            rate_counter[i]++;
     end
+
+    // special case of CSCID=1 rate counter
+    if (cid1_vf [0][0] != 1'h0 && rate_counter[0] != 26'h3ffffff) 
+        rate_counter[0]++;
+    
 
     if (rate_period == 26'd40078700) // 1 sec 
     begin

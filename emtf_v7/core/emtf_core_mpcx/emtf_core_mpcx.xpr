@@ -44,13 +44,13 @@
     <Option Name="WTVcsLaunchSim" Val="0"/>
     <Option Name="WTRivieraLaunchSim" Val="0"/>
     <Option Name="WTActivehdlLaunchSim" Val="0"/>
-    <Option Name="WTXSimExportSim" Val="35"/>
-    <Option Name="WTModelSimExportSim" Val="35"/>
-    <Option Name="WTQuestaExportSim" Val="35"/>
-    <Option Name="WTIesExportSim" Val="35"/>
-    <Option Name="WTVcsExportSim" Val="35"/>
-    <Option Name="WTRivieraExportSim" Val="35"/>
-    <Option Name="WTActivehdlExportSim" Val="35"/>
+    <Option Name="WTXSimExportSim" Val="38"/>
+    <Option Name="WTModelSimExportSim" Val="38"/>
+    <Option Name="WTQuestaExportSim" Val="38"/>
+    <Option Name="WTIesExportSim" Val="38"/>
+    <Option Name="WTVcsExportSim" Val="38"/>
+    <Option Name="WTRivieraExportSim" Val="38"/>
+    <Option Name="WTActivehdlExportSim" Val="38"/>
     <Option Name="GenerateIPUpgradeLog" Val="TRUE"/>
     <Option Name="XSimRadix" Val="hex"/>
     <Option Name="XSimTimeUnit" Val="ns"/>
@@ -78,6 +78,15 @@
       <File Path="$PSRCDIR/sources_1/ip/daq_rx_fifo/daq_rx_fifo.xci">
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../../../cernbox/projects/vivado/emtf_v7/core/emtf_core_mbld/emtf_core_mbld.srcs/sources_1/ip/daq_rx_fifo/daq_rx_fifo.xci"/>
+          <Attr Name="ImportTime" Val="1586832872"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/ip/mmcm_daq/mmcm_daq.xci">
+        <FileInfo>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../../../../cernbox/projects/vivado/emtf_v7/core/emtf_core_mbld/emtf_core_mbld.srcs/sources_1/ip/mmcm_daq/mmcm_daq.xci"/>
           <Attr Name="ImportTime" Val="1586832872"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -115,15 +124,6 @@
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../../../cernbox/projects/vivado/emtf_v7/core/emtf_core_mbld/emtf_core_mbld.srcs/sources_1/ip/ptlut_data_mem/ptlut_data_mem.xci"/>
           <Attr Name="ImportTime" Val="1586832872"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/ip/nn_mmcm/nn_mmcm.xci">
-        <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../../../../../cernbox/projects/vivado/emtf_v7/emtf_core+nn/emtf_core+nn.srcs/sources_1/ip/nn_mmcm/nn_mmcm.xci"/>
-          <Attr Name="ImportTime" Val="1571406164"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -822,15 +822,6 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn/nn_tux.sv">
-        <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/nn_tux.sv"/>
-          <Attr Name="ImportTime" Val="1626197177"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PSRCDIR/sources_1/services/output_delay.sv">
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../../../cernbox/projects/vivado/emtf_v7/core/emtf_core_mbld/emtf_core_mbld.srcs/sources_1/services/output_delay.sv"/>
@@ -844,13 +835,6 @@
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../../../cernbox/projects/vivado/emtf_v7/core/emtf_core_mbld/emtf_core_mbld.srcs/sources_1/services/output_formatter.sv"/>
           <Attr Name="ImportTime" Val="1591802768"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/nn/pat_2_bend.sv">
-        <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -1126,30 +1110,6 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn/dense_latency_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0.vhd">
-        <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/dense_latency_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0.vhd"/>
-          <Attr Name="ImportTime" Val="1624396207"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/nn/dense_latency_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0.vhd">
-        <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/dense_latency_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0.vhd"/>
-          <Attr Name="ImportTime" Val="1624396207"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/nn/dense_latency_ap_fixed_ap_fixed_config11_0_0_0.vhd">
-        <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/dense_latency_ap_fixed_ap_fixed_config11_0_0_0.vhd"/>
-          <Attr Name="ImportTime" Val="1624396207"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PSRCDIR/sources_1/lpgbt/lpgbt/lpgbtfpga_package.vhd">
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../../../cernbox/projects/vivado/emtf_v7/core/emtf_core_mbld/emtf_core_mbld.srcs/sources_1/lpgbt/lpgbt/lpgbtfpga_package.vhd"/>
@@ -1186,14 +1146,6 @@
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../../../cernbox/projects/vivado/emtf_v7/core/emtf_core_mbld/emtf_core_mbld.srcs/sources_1/lpgbt/lpgbt/scrDscr/descrambler_60bitOrder58.vhd"/>
           <Attr Name="ImportTime" Val="1586959739"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/nn/emtfptnn.vhd">
-        <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/emtfptnn.vhd"/>
-          <Attr Name="ImportTime" Val="1624396207"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
@@ -1270,46 +1222,6 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn/normalize_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_s.vhd">
-        <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/normalize_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_s.vhd"/>
-          <Attr Name="ImportTime" Val="1624396207"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/nn/tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config10_s.vhd">
-        <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config10_s.vhd"/>
-          <Attr Name="ImportTime" Val="1624396207"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/nn/tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config10_s_tanh_tcud.vhd">
-        <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config10_s_tanh_tcud.vhd"/>
-          <Attr Name="ImportTime" Val="1624396207"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/nn/tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config6_s.vhd">
-        <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config6_s.vhd"/>
-          <Attr Name="ImportTime" Val="1624396207"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/nn/tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config6_s_tanh_tabkb.vhd">
-        <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config6_s_tanh_tabkb.vhd"/>
-          <Attr Name="ImportTime" Val="1624396207"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PSRCDIR/sources_1/lpgbt/lpgbt/dataPath/uplink_decoder.vhd">
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../../../cernbox/projects/vivado/emtf_v7/core/emtf_core_mbld/emtf_core_mbld.srcs/sources_1/lpgbt/lpgbt/dataPath/uplink_decoder.vhd"/>
@@ -1356,6 +1268,115 @@
           <Attr Name="ImportTime" Val="1592934687"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/ip/nn_mmcm/nn_mmcm.xci">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../../../../cernbox/projects/vivado/emtf_v7/emtf_core+nn/emtf_core+nn.srcs/sources_1/ip/nn_mmcm/nn_mmcm.xci"/>
+          <Attr Name="ImportTime" Val="1571406164"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn/nn_tux.sv">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/nn_tux.sv"/>
+          <Attr Name="ImportTime" Val="1626197177"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn/pat_2_bend.sv">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn/dense_latency_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0.vhd">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/dense_latency_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0.vhd"/>
+          <Attr Name="ImportTime" Val="1624396207"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn/dense_latency_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0.vhd">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/dense_latency_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0.vhd"/>
+          <Attr Name="ImportTime" Val="1624396207"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn/dense_latency_ap_fixed_ap_fixed_config11_0_0_0.vhd">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/dense_latency_ap_fixed_ap_fixed_config11_0_0_0.vhd"/>
+          <Attr Name="ImportTime" Val="1624396207"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn/emtfptnn.vhd">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/emtfptnn.vhd"/>
+          <Attr Name="ImportTime" Val="1624396207"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn/normalize_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_s.vhd">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/normalize_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_s.vhd"/>
+          <Attr Name="ImportTime" Val="1624396207"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn/tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config10_s.vhd">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config10_s.vhd"/>
+          <Attr Name="ImportTime" Val="1624396207"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn/tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config10_s_tanh_tcud.vhd">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config10_s_tanh_tcud.vhd"/>
+          <Attr Name="ImportTime" Val="1624396207"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn/tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config6_s.vhd">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config6_s.vhd"/>
+          <Attr Name="ImportTime" Val="1624396207"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn/tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config6_s_tanh_tabkb.vhd">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../../emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/nn/tanh_ap_fixed_ap_fixed_24_11_5_3_0_tanh_config6_s_tanh_tabkb.vhd"/>
+          <Attr Name="ImportTime" Val="1624396207"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
@@ -1928,21 +1949,6 @@
         <Option Name="UseBlackboxStub" Val="1"/>
       </Config>
     </FileSet>
-    <FileSet Name="mmcm_daq" Type="BlockSrcs" RelSrcDir="$PSRCDIR/mmcm_daq">
-      <File Path="$PSRCDIR/sources_1/ip/mmcm_daq/mmcm_daq.xci">
-        <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../../../../../cernbox/projects/vivado/emtf_v7/core/emtf_core_mbld/emtf_core_mbld.srcs/sources_1/ip/mmcm_daq/mmcm_daq.xci"/>
-          <Attr Name="ImportTime" Val="1586832872"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <Config>
-        <Option Name="TopModule" Val="mmcm_daq"/>
-        <Option Name="UseBlackboxStub" Val="1"/>
-      </Config>
-    </FileSet>
   </FileSets>
   <Simulators>
     <Simulator Name="XSim">
@@ -2084,16 +2090,6 @@
       <RQSFiles/>
     </Run>
     <Run Id="usrclk_mmcm_synth_1" Type="Ft3:Synth" SrcSet="usrclk_mmcm" Part="xc7vx690tffg1927-2" ConstrsSet="usrclk_mmcm" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/usrclk_mmcm_synth_1" IncludeInArchive="true">
-      <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2020"/>
-        <Step Id="synth_design"/>
-      </Strategy>
-      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
-      <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2020"/>
-      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
-      <RQSFiles/>
-    </Run>
-    <Run Id="mmcm_daq_synth_1" Type="Ft3:Synth" SrcSet="mmcm_daq" Part="xc7vx690tffg1927-2" ConstrsSet="mmcm_daq" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/mmcm_daq_synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2020"/>
         <Step Id="synth_design"/>
@@ -2347,23 +2343,6 @@
       <RQSFiles/>
     </Run>
     <Run Id="usrclk_mmcm_impl_1" Type="Ft2:EntireDesign" Part="xc7vx690tffg1927-2" ConstrsSet="usrclk_mmcm" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="usrclk_mmcm_synth_1" IncludeInArchive="false" GenFullBitstream="true">
-      <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2020"/>
-        <Step Id="init_design"/>
-        <Step Id="opt_design"/>
-        <Step Id="power_opt_design"/>
-        <Step Id="place_design"/>
-        <Step Id="post_place_power_opt_design"/>
-        <Step Id="phys_opt_design"/>
-        <Step Id="route_design"/>
-        <Step Id="post_route_phys_opt_design"/>
-        <Step Id="write_bitstream"/>
-      </Strategy>
-      <ReportStrategy Name="Vivado Implementation Default Reports" Flow="Vivado Implementation 2020"/>
-      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
-      <RQSFiles/>
-    </Run>
-    <Run Id="mmcm_daq_impl_1" Type="Ft2:EntireDesign" Part="xc7vx690tffg1927-2" ConstrsSet="mmcm_daq" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="mmcm_daq_synth_1" IncludeInArchive="false" GenFullBitstream="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2020"/>
         <Step Id="init_design"/>
