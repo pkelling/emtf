@@ -241,9 +241,9 @@ module mtf7_daq
 
    // FIXME Convert magic numbers to constants!!
    `localpar me_data_wc  = 9*6*2;  // count of all possible segments from ME chambers*stations*segments
-   `localpar rpc_data_wc = 7*3*4;  // count of all possible RPC words
+   `localpar rpc_data_wc = 7*3*4/2;  // count of all possible RPC words, /2 because we're packing two hits into one word
    // FIXME Correct for GEM
-   `localpar gem_data_wc = 7*2*8;  // count of all possible GEM words links*layers*clusters
+   `localpar gem_data_wc = 7*2*8/2;  // count of all possible GEM words links*layers*clusters, /2 because we're packing two clusters into one word
 
    reg [RING_BW-1:0]            daq_bank [7:0];
    reg [2:0]                    daq_bank_cnt;
@@ -273,8 +273,8 @@ module mtf7_daq
    reg [4:0]                    rpc_th_d [7:0][6:0][2:0][3:0]; //
    reg [6:0]                    cppf_rx_valid_d [7:0];  // cprx data valid flags
    reg [6:0]                    cppf_crc_match_d [7:0]; // cprx crc match
-   reg [1:0]                    rpc_frm, rpc_frw;
-   reg                          rpc_val;
+   reg [1:0]                    rpc_frm, rpc_frw0, rpc_frw1;
+   reg                          rpc_val0, rpc_val1;
 
    // FIXME Correct for GEM
    /**
@@ -295,7 +295,8 @@ module mtf7_daq
 //   reg [6:0]                    gem_bx_cur_d     [7:0];                // GEM cluster data from current BX (0) or previous (1)
 //   reg                          gem_fmt_version_d[7:0];                // format version of the GEM frame
    reg [3:0]                    gem_n_clu_d      [7:0][6:0][1:0];           // GEM number valid clusters, 4 bits per layer
-   reg [3:0]                    gem_clu_id_d     [7:0];                // GEM cluster ID
+   reg [3:0]                    gem_clu_id_d0     [7:0];                // GEM cluster ID
+   reg [3:0]                    gem_clu_id_d1     [7:0];                // GEM cluster ID
    reg                          gem_val;                               // GEM cluster is valid
    reg [2:0]                    gem_tbin_ofs;                          // GEM cluster BX offset (0 for current BX, 1 for previous)
 
@@ -304,8 +305,7 @@ module mtf7_daq
    reg [2:0]                    gmt_cvl_i;
    reg [8:0]                    gmt_eta_abs [2:0];
    reg [8:0]                    bt_pt_tx [2:0];
-   reg [6:0]                    gem_bc0  [7:0];     // BC0 from layer 0          
-   reg [6:0]                    gem_bc0_ly1  [7:0]; // BC0 from layer 1               
+   reg [1:0]                    gem_bc0  [7:0][6:0];     // BC0s [link][schamber][layer]
    reg [6:0]                    gem_link_id_flag [7:0];   
    reg hmv;
 
@@ -392,26 +392,38 @@ module mtf7_daq
          for (j = 0; j < 3; j = j+1) // frame
          begin
             rpc_inp_del_in[rpc_pos +: 64] = cppf_rxd[station_][j];
-            for (k = 0; k < 4; k = k+1) // hit in frame loop
+            for (k = 0; k < 4; k = k+2) // hit in frame loop, scanning in pairs of hits so we can put two hits into one word
             begin
                for (i = 0; i < 8; i = i+1) // daq_bank word loop
                begin
-                  {rpc_th_d[i][station_][j][k], rpc_ph_d[i][station_][j][k]} = daq_bank[i][rpc_ring_pos +: 16];
+                  {rpc_th_d[i][station_][j][k  ], rpc_ph_d[i][station_][j][k  ]} = daq_bank[i][ rpc_ring_pos     +: 16];
+                  {rpc_th_d[i][station_][j][k+1], rpc_ph_d[i][station_][j][k+1]} = daq_bank[i][(rpc_ring_pos+16) +: 16];
                   // pack RPC data into daq word
                   rpc_frm = j; // frame
-                  rpc_frw = k; // word in frame
+                  rpc_frw0 = k; // word in frame
+                  rpc_frw1 = k+1; // word in frame
                   tbin = i; // timebin
-                  rpc_val = rpc_th_d[i][station_][j][k] != 5'b11111;
-                  rpc_data[i][rpcw] = {
-                                       1'b0, 11'b0, rpc_val, tbin,
-                                       1'b1, 1'b0, 2'b0, 12'h0,
-                                       1'b0, station_, rpc_frm, rpc_frw, 3'h0, rpc_th_d[i][station_][j][k],
-                                       1'b0, 4'b0, rpc_ph_d[i][station_][j][k]
-                                       };
+                  rpc_val0 = rpc_th_d[i][station_][j][k  ] != 5'b11111;
+                  rpc_val1 = rpc_th_d[i][station_][j][k+1] != 5'b11111;
+//                  rpc_data[i][rpcw] = 
+//                  {
+//                      1'b0, 11'b0, rpc_val, tbin,
+//                      1'b1, 1'b0, 2'b0, 12'h0,
+//                      1'b0, station_, rpc_frm, rpc_frw, 3'h0, rpc_th_d[i][station_][j][k],
+//                      1'b0, 4'b0, rpc_ph_d[i][station_][j][k]
+//                  };
+                                       
+                  rpc_data[i][rpcw] =
+                  {
+                      1'b0, station_, 3'b0, rpc_th_d[i][station_][j][k+1], rpc_val1, tbin,
+                      1'b1, rpc_frm, rpc_frw1, rpc_ph_d[i][station_][j][k+1],
+                      1'b0, station_, 3'b0, rpc_th_d[i][station_][j][k], rpc_val0, tbin,
+                      1'b0, rpc_frm, rpc_frw0, rpc_ph_d[i][station_][j][k]
+                  };                                       
                end
-               rpc_pos = rpc_pos + 16;
-               rpc_ring_pos = rpc_ring_pos + 16;
-               rpcw = rpcw + 1;
+               rpc_pos = rpc_pos + 16*2; // *2 because we're scanning in pairs
+               rpc_ring_pos = rpc_ring_pos + 16*2; // *2 because we're scanning in pairs
+               rpcw = rpcw + 1; // adding one word for every two hits
             end
          end
       end
@@ -472,23 +484,35 @@ module mtf7_daq
           begin
             // rework according to upgraded GEM data format. See GEX_1 Trigger Data Proposal_2022.pdf document
              
-             for (j = 0; j < N_GE11_LAY; j = j+1) // superchamber/stack layer?
+//             for (j = 0; j < N_GE11_LAY; j = j+1) // superchamber/stack layer?
+// packing both layers into one word, so no loop is needed here
              begin
                 for (k = 0; k < GEM_CLS_PER_BX; k = k+1) // cluster in layer loop
                 begin
                       // GE1/1
                       {
-                           gem_vf_d     [i][station_][j][k],     // as above
-                           gem_clu_sz_d [i][station_][j][k],     // as above
-                           gem_par_d    [i][station_][j][k],        // as above
-                           gem_str_d    [i][station_][j][k]         // as above
+                           gem_vf_d     [i][station_][0][k],     // as above
+                           gem_clu_sz_d [i][station_][0][k],     // as above
+                           gem_par_d    [i][station_][0][k],        // as above
+                           gem_str_d    [i][station_][0][k]         // as above
+                      } = daq_bank[i][gem_ring_pos +: GEM_CLU_BW]; // read by GEM_CLU_BW bits/cluster
+
+                      gem_ring_pos += GEM_CLU_BW;
+                      
+                      {
+                           gem_vf_d     [i][station_][1][k],     // as above
+                           gem_clu_sz_d [i][station_][1][k],     // as above
+                           gem_par_d    [i][station_][1][k],        // as above
+                           gem_str_d    [i][station_][1][k]         // as above
                       } = daq_bank[i][gem_ring_pos +: GEM_CLU_BW]; // read by GEM_CLU_BW bits/cluster
                       
                       gem_ring_pos += GEM_CLU_BW;
                       
-                      gem_clu_id_d[i] = {j[0], k[2:0]};                 // cluster ID 0-7 for layer1, 8-15 for layer2?
+                      gem_clu_id_d0[i] = {1'b0, k[2:0]};                 // cluster ID 0-7 for layer1, 8-15 for layer2?
+                      gem_clu_id_d1[i] = {1'b1, k[2:0]};                 // cluster ID 0-7 for layer1, 8-15 for layer2?
                       tbin            = i;                       // timebin
                       gem_tbin_ofs    = 0;                       // timebin offset
+                      gem_bc0[i][station_] = 2'b00; // not implemented at this time
 
 // FIXME: logic for out-of-time clusters is disabled so far
 // 
@@ -498,12 +522,19 @@ module mtf7_daq
 //                         tbin -= 2'h1;
 //                      end
 
+//                      gem_data[i][gemw] = 
+//                      {
+//                           1'b0, 11'b0, gem_vf_d[i][station_][j][k], tbin, // - gem_tbin_ofs,                                                        // GE11d
+//                           1'b1, gem_bc0[i][station_], gem_bc0_ly1[i][station_], 1'b0, 12'h0,                                    // GE11c
+//                           1'b1, station_, gem_clu_id_d[i], 8'h0,                                                            // GE11b
+//                           1'b1, gem_clu_sz_d[i][station_][j][k], gem_par_d[i][station_][j][k], 1'b0, gem_str_d[i][station_][j][k] // GE11a
+//                      };
                       gem_data[i][gemw] = 
                       {
-                           1'b0, 11'b0, gem_vf_d[i][station_][j][k], tbin, // - gem_tbin_ofs,                                                        // GE11d
-                           1'b1, gem_bc0[i][station_], gem_bc0_ly1[i][station_], 1'b0, 12'h0,                                    // GE11c
-                           1'b1, station_, gem_clu_id_d[i], 8'h0,                                                            // GE11b
-                           1'b1, gem_clu_sz_d[i][station_][j][k], gem_par_d[i][station_][j][k], 1'b0, gem_str_d[i][station_][j][k] // GE11a
+                           1'b0, station_, gem_clu_id_d1[i], gem_bc0[i][station_][1], 3'b00, gem_vf_d[i][station_][1][k], tbin,
+                           1'b1, gem_clu_sz_d[i][station_][1][k], gem_par_d[i][station_][1][k], gem_str_d[i][station_][1][k],
+                           1'b1, station_, gem_clu_id_d0[i], gem_bc0[i][station_][0], 3'b00, gem_vf_d[i][station_][0][k], tbin,
+                           1'b1, gem_clu_sz_d[i][station_][0][k], gem_par_d[i][station_][0][k], gem_str_d[i][station_][0][k]
                       };
                       gemw++;
                  end
@@ -1261,11 +1292,11 @@ module mtf7_daq
            SEND_RPC: // FIXME seems to be a straight copy doesn't include differences for RPC?
            begin
               // proceed with output of each RPC if:
-              // amc13_ready and RPC hit is valid, or
-              // RPC hit is invalid. In this case, we don't care about AMC13 since daq_valid = 0
-              if (amc13_ready || !rpc_data[tbc][mewc][51])
+              // amc13_ready and any RPC hit is valid, or
+              // both RPC hits are invalid. In this case, we don't care about AMC13 since daq_valid = 0
+              if (amc13_ready || ((!rpc_data[tbc][mewc][51]) && (!rpc_data[tbc][mewc][19])))
               begin
-                 daq_valid = rpc_data[tbc][mewc][51]; // valid bit, AMC13 will take the word only if set
+                 daq_valid = rpc_data[tbc][mewc][51] | rpc_data[tbc][mewc][19]; // valid bit, AMC13 will take the word only if set
                  daq_data  = rpc_data[tbc][mewc];     // stub data to output even if invalid
                  mewc      = mewc + 7'h1;             // rpc word counter
                  if (daq_valid) data_lgth = data_lgth + 20'h1; // update length
@@ -1293,11 +1324,11 @@ module mtf7_daq
            SEND_GEM:
            begin
               // proceed with output of each GEM if:
-              // amc13_ready and GEM hit is valid, or
-              // GEM hit is invalid. In this case, we don't care about AMC13 since daq_valid = 0
-              if (amc13_ready || !gem_data[tbc][mewc][51])
+              // amc13_ready and any GEM hit is valid, or
+              // both GEM hits are invalid. In this case, we don't care about AMC13 since daq_valid = 0
+              if (amc13_ready || ((!gem_data[tbc][mewc][51]) && (!gem_data[tbc][mewc][19])))
               begin
-                 daq_valid = gem_data[tbc][mewc][51]; // valid bit, AMC13 will take the word only if set
+                 daq_valid = gem_data[tbc][mewc][51] | gem_data[tbc][mewc][19]; // valid bit, AMC13 will take the word only if set
                  daq_data  = gem_data[tbc][mewc];     // stub data to output even if invalid
                  mewc      = mewc + 7'h1;             // gem word counter
                  if (daq_valid) data_lgth = data_lgth + 20'h1; // update length
