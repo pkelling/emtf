@@ -355,8 +355,8 @@ module mtf7_daq
                   csc_id = j; csc_id = csc_id + 4'h1; // chamber ID starts from 1
                   tbin = i;
 
-                  // make one LCT in each station valid in case of stress test
-                  if (stress == 1'b1) vp_d[0][station_][0][0] = 1'b1;
+                  // make one LCT valid in case of stress test
+                  if (stress == 1'b1) vp_d[0][0][0][0] = 1'b1;
                   
                   // HMT valid flag
                   hmv = 1'b0;
@@ -398,6 +398,10 @@ module mtf7_daq
                begin
                   {rpc_th_d[i][station_][j][k  ], rpc_ph_d[i][station_][j][k  ]} = daq_bank[i][ rpc_ring_pos     +: 16];
                   {rpc_th_d[i][station_][j][k+1], rpc_ph_d[i][station_][j][k+1]} = daq_bank[i][(rpc_ring_pos+16) +: 16];
+
+                  // make one hit valid in case of stress test
+                  if (stress == 1'b1) rpc_th_d[0][0][0][0] = 5'b00011;
+
                   // pack RPC data into daq word
                   rpc_frm = j; // frame
                   rpc_frw0 = k; // word in frame
@@ -413,6 +417,7 @@ module mtf7_daq
 //                      1'b0, 4'b0, rpc_ph_d[i][station_][j][k]
 //                  };
                                        
+
                   rpc_data[i][rpcw] =
                   {
                       1'b0, station_, 3'b0, rpc_th_d[i][station_][j][k+1], rpc_val1, tbin,
@@ -529,6 +534,9 @@ module mtf7_daq
 //                           1'b1, station_, gem_clu_id_d[i], 8'h0,                                                            // GE11b
 //                           1'b1, gem_clu_sz_d[i][station_][j][k], gem_par_d[i][station_][j][k], 1'b0, gem_str_d[i][station_][j][k] // GE11a
 //                      };
+                      // make one cluster valid in case of stress test
+                      if (stress == 1'b1) gem_vf_d[0][0][0][0] = 1'b1;
+
                       gem_data[i][gemw] = 
                       {
                            1'b0, station_, gem_clu_id_d1[i], gem_bc0[i][station_][1], 3'b00, gem_vf_d[i][station_][1][k], tbin,
