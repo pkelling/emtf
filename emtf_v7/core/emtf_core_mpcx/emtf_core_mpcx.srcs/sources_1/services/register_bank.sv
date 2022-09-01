@@ -239,7 +239,24 @@ module register_bank
 		prbs_sel = 3'b0;
 		endcap = 1'b0;
 		sector = 3'b0;
-		daq_config = {8'd0, 3'h5, 1'b0, 1'b0, 1'b0, 16'h0, 12'h0, 3'h0, 8'h0, 3'h0, 8'h0};
+		daq_config = 
+		{
+		  1'd1,   // stress_gem          
+		  1'd1,   // stress_rpc          
+		  2'd3,   // stress_prescale_code 0=30% 1=20%  2=10% 3=0% (events w/o data)
+		  1'd1,   // report_gem          
+		  1'd0,   // use_nn_pt           
+		  3'h5,   // rpc_late_by_bxs     
+		  1'b0,   // report_wo_track     
+		  1'b0,   // amc13_easy_en       
+		  1'b0,   // stress              
+		  16'h0,  // board_id            
+		  12'h0,  // bxn_offset          
+		  3'h0,   // valor_window        
+		  8'h0,   // valor_delay         
+		  3'h0,   // l1a_window          
+		  8'h0    // l1a_delay           
+		};
 
 		core_config = {3'h7, 1'b1, 7'h4, 1'b1, 8'h0, 7'h4};
 		// minimum user af delays

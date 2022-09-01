@@ -9,6 +9,7 @@ module valid_delay
 	delay,
 	window,
 	stress,
+	stress_prescale_code,
 	report_wo_track,
 	clk
 );
@@ -20,6 +21,7 @@ module valid_delay
 	input [7:0] delay;
 	input [2:0] window;
 	input stress;
+	input [1:0] stress_prescale_code;
 	input report_wo_track;
 	input clk;
 
@@ -29,6 +31,10 @@ module valid_delay
 	reg [7:0] val_line = 0;
 	(* mark_debug *) wire val_comb_w = val_comb;
 	(* mark_debug *) wire val_line_w = val_line;
+	
+	reg [3:0] stress_prescale = 0;
+	// stress empty event rates:               30%,  20%,  10%,  0%
+	wire [3:0] stress_prescale_lim [0:3] = '{4'd6, 4'd7, 4'd8, 4'd9};
 	
 	dyn_shift_1 dsh_bt  (.CLK (clk), .CE (1'b1), .SEL (delay),     .SI (val),     .DO (vald)); // best track valid delay
 	dyn_shift_1 dsh_lct (.CLK (clk), .CE (1'b1), .SEL (lct_delay), .SI (val_lct), .DO (vald_lct)); // lct valid delay
@@ -51,7 +57,12 @@ module valid_delay
 			3'h7: begin valor = |val_line[7:0]; end
 		endcase
 		
-		valor = valor | stress; // if stress-testing, valid all the time
+		stress_prescale++;
+		if (stress_prescale == 4'd10) stress_prescale = 4'b0;
+		
+		if (stress_prescale > stress_prescale_lim[stress_prescale_code] && stress == 1'b1)
+		    valor = 1'b1; // if stress-testing, valid 90% of the time
+		    // 90% number measured by Efe from PU=40 conditions, 2022-09-01
 	end
 
 endmodule
