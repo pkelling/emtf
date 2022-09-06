@@ -296,6 +296,11 @@ module mtf7_daq_tf;
       fiber_enable = 63'h7fff_ffff_ffff_ffff;
 
       daq_config = {
+                    1'b1,  // stress_gem,	1
+                    1'b1,  // stress_rpc,	1
+                    2'b11, // stress_prescale_code,	2
+                    1'b1,  // report_gem,	1
+                    1'b0,  // use_nn_pt,	1
                     3'h0,        // gem_late_by_bxs, by how many BXs GEM data is late relative to CSC
                     3'h2,        // rpc_late_by_bxs, by how many BXs RPC data is late relative to CSC
                     1'b0,        // report_wo_track, if =1 DAQ will report events that don't contain valid tracks but contain LCTs
