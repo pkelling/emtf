@@ -113,7 +113,133 @@ module mtf7_daq_tf;
     reg d15a, d15b, d15c;
     reg [1:0] zero2;
     reg [7:0] zero8;
+    ge11_cluster ge11_cl [6:0][1:0][7:0]();
 
+     assign ge11_cl[6][1][7].vf = 0;
+     assign ge11_cl[6][1][6].vf = 0;
+     assign ge11_cl[6][1][5].vf = 0;
+     assign ge11_cl[6][1][4].vf = 0;
+     assign ge11_cl[6][1][3].vf = 0;
+     assign ge11_cl[6][1][2].vf = 0;
+     assign ge11_cl[6][1][1].vf = 0;
+     assign ge11_cl[6][1][0].vf = 0;
+
+     assign ge11_cl[6][0][7].vf = 0;
+     assign ge11_cl[6][0][6].vf = 0;
+     assign ge11_cl[6][0][5].vf = 0;
+     assign ge11_cl[6][0][4].vf = 0;
+     assign ge11_cl[6][0][3].vf = 0;
+     assign ge11_cl[6][0][2].vf = 0;
+     assign ge11_cl[6][0][1].vf = 0;
+     assign ge11_cl[6][0][0].vf = 0;
+
+     assign ge11_cl[5][1][7].vf = 0;
+     assign ge11_cl[5][1][6].vf = 0;
+     assign ge11_cl[5][1][5].vf = 0;
+     assign ge11_cl[5][1][4].vf = 0;
+     assign ge11_cl[5][1][3].vf = 0;
+     assign ge11_cl[5][1][2].vf = 0;
+     assign ge11_cl[5][1][1].vf = 0;
+     assign ge11_cl[5][1][0].vf = 0;
+
+     assign ge11_cl[5][0][7].vf = 0;
+     assign ge11_cl[5][0][6].vf = 0;
+     assign ge11_cl[5][0][5].vf = 0;
+     assign ge11_cl[5][0][4].vf = 0;
+     assign ge11_cl[5][0][3].vf = 0;
+     assign ge11_cl[5][0][2].vf = 0;
+     assign ge11_cl[5][0][1].vf = 0;
+     assign ge11_cl[5][0][0].vf = 0;
+
+     assign ge11_cl[4][1][7].vf = 0;
+     assign ge11_cl[4][1][6].vf = 0;
+     assign ge11_cl[4][1][5].vf = 0;
+     assign ge11_cl[4][1][4].vf = 0;
+     assign ge11_cl[4][1][3].vf = 0;
+     assign ge11_cl[4][1][2].vf = 0;
+     assign ge11_cl[4][1][1].vf = 0;
+     assign ge11_cl[4][1][0].vf = 0;
+
+     assign ge11_cl[4][0][7].vf = 0;
+     assign ge11_cl[4][0][6].vf = 0;
+     assign ge11_cl[4][0][5].vf = 0;
+     assign ge11_cl[4][0][4].vf = 0;
+     assign ge11_cl[4][0][3].vf = 0;
+     assign ge11_cl[4][0][2].vf = 0;
+     assign ge11_cl[4][0][1].vf = 0;
+     assign ge11_cl[4][0][0].vf = 0;
+
+     assign ge11_cl[3][1][7].vf = 0;
+     assign ge11_cl[3][1][6].vf = 0;
+     assign ge11_cl[3][1][5].vf = 0;
+     assign ge11_cl[3][1][4].vf = 0;
+     assign ge11_cl[3][1][3].vf = 0;
+     assign ge11_cl[3][1][2].vf = 0;
+     assign ge11_cl[3][1][1].vf = 0;
+     assign ge11_cl[3][1][0].vf = 0;
+
+     assign ge11_cl[3][0][7].vf = 0;
+     assign ge11_cl[3][0][6].vf = 0;
+     assign ge11_cl[3][0][5].vf = 0;
+     assign ge11_cl[3][0][4].vf = 0;
+     assign ge11_cl[3][0][3].vf = 0;
+     assign ge11_cl[3][0][2].vf = 0;
+     assign ge11_cl[3][0][1].vf = 0;
+     assign ge11_cl[3][0][0].vf = 0;
+
+     assign ge11_cl[2][1][7].vf = 0;
+     assign ge11_cl[2][1][6].vf = 0;
+     assign ge11_cl[2][1][5].vf = 0;
+     assign ge11_cl[2][1][4].vf = 0;
+     assign ge11_cl[2][1][3].vf = 0;
+     assign ge11_cl[2][1][2].vf = 0;
+     assign ge11_cl[2][1][1].vf = 0;
+     assign ge11_cl[2][1][0].vf = 0;
+
+     assign ge11_cl[2][0][7].vf = 0;
+     assign ge11_cl[2][0][6].vf = 0;
+     assign ge11_cl[2][0][5].vf = 0;
+     assign ge11_cl[2][0][4].vf = 0;
+     assign ge11_cl[2][0][3].vf = 0;
+     assign ge11_cl[2][0][2].vf = 0;
+     assign ge11_cl[2][0][1].vf = 0;
+     assign ge11_cl[2][0][0].vf = 0;
+
+     assign ge11_cl[1][1][7].vf = 0;
+     assign ge11_cl[1][1][6].vf = 0;
+     assign ge11_cl[1][1][5].vf = 0;
+     assign ge11_cl[1][1][4].vf = 0;
+     assign ge11_cl[1][1][3].vf = 0;
+     assign ge11_cl[1][1][2].vf = 0;
+     assign ge11_cl[1][1][1].vf = 0;
+     assign ge11_cl[1][1][0].vf = 0;
+
+     assign ge11_cl[1][0][7].vf = 0;
+     assign ge11_cl[1][0][6].vf = 0;
+     assign ge11_cl[1][0][5].vf = 0;
+     assign ge11_cl[1][0][4].vf = 0;
+     assign ge11_cl[1][0][3].vf = 0;
+     assign ge11_cl[1][0][2].vf = 0;
+     assign ge11_cl[1][0][1].vf = 0;
+     assign ge11_cl[1][0][0].vf = 0;
+
+     assign ge11_cl[0][1][7].vf = 0;
+     assign ge11_cl[0][1][6].vf = 0;
+     assign ge11_cl[0][1][5].vf = 0;
+     assign ge11_cl[0][1][4].vf = 0;
+     assign ge11_cl[0][1][3].vf = 0;
+     assign ge11_cl[0][1][2].vf = 0;
+     assign ge11_cl[0][1][1].vf = 0;
+     assign ge11_cl[0][1][0].vf = 0;
+
+     assign ge11_cl[0][0][7].vf = 0;
+     assign ge11_cl[0][0][6].vf = 0;
+     assign ge11_cl[0][0][5].vf = 0;
+     assign ge11_cl[0][0][4].vf = 0;
+     assign ge11_cl[0][0][3].vf = 0;
+     assign ge11_cl[0][0][2].vf = 0;
+     assign ge11_cl[0][0][1].vf = 0;
+     assign ge11_cl[0][0][0].vf = 0;
 
    mtf7_daq uut
    (
@@ -127,7 +253,7 @@ module mtf7_daq_tf;
       .fiber_enable       (fiber_enable),
       .cppf_crc_match     (cppf_crc_match),
 
-      .gem_rxd           (gem_rxd),
+      .ge11_cl           (ge11_cl),
       .gem_rx_valid      (gem_rx_valid),
       .gem_crc_match     (gem_crc_match),
 
@@ -217,6 +343,10 @@ module mtf7_daq_tf;
    // since most of the DAQ logic runs at 80 MHz, have to print based on doubled clock inside the module
    always @(negedge uut.clk_80)
    begin
+            if (uut.st == 4'd9)
+                $write ("SEND_GEM gem_vf_d[0][0][0][0]: %b gem_data: %064b tbc: %1d mewc: %03d\n", 
+                        uut.gem_vf_d[0][0][0][0], uut.gem_data[uut.tbc][uut.mewc], uut.tbc, uut.mewc);
+            
             if ((daq_data & 64'hf000_f000_f000_f000) == 64'hf000_f000_f000_f000) // trailer
             begin
                 $write ("trailer: %h\n", daq_data);
@@ -226,6 +356,16 @@ module mtf7_daq_tf;
 //                end
             end
             
+            if ((daq_data & 64'h8000_8000_8000_8000) == 64'h0000_0000_8000_8000) // GEM data block
+            begin
+                if (daq_valid) $write ("ME data: %h mewc: %04d n: %04d\n", daq_data, uut.mewc, n);
+            end 
+            
+            if ((daq_data & 64'h8000_8000_8000_8000) == 64'h0000_8000_0000_0000) // GEM data block
+            begin
+                if (daq_valid) $write ("RPC data: %h mewc: %04d n: %04d\n", daq_data, uut.mewc, n);
+            end 
+
             if ((daq_data & 64'h8000_8000_8000_8000) == 64'h0000_8000_8000_8000) // GEM data block
             begin
 //                $write ("GEM data: %h mewc: %04d n: %04d\n", daq_data, uut.mewc, n);
@@ -298,19 +438,18 @@ module mtf7_daq_tf;
       daq_config = {
                     1'b1,  // stress_gem,	1
                     1'b1,  // stress_rpc,	1
-                    2'b11, // stress_prescale_code,	2
+                    2'b00, // stress_prescale_code,	2
                     1'b1,  // report_gem,	1
                     1'b0,  // use_nn_pt,	1
-                    3'h0,        // gem_late_by_bxs, by how many BXs GEM data is late relative to CSC
                     3'h2,        // rpc_late_by_bxs, by how many BXs RPC data is late relative to CSC
-                    1'b0,        // report_wo_track, if =1 DAQ will report events that don't contain valid tracks but contain LCTs
-                    1'b1,        // amc13_easy_en, enable reducing payload if AMC13 gets full
+                    1'b1,        // report_wo_track, if =1 DAQ will report events that don't contain valid tracks but contain LCTs
+                    1'b0,        // amc13_easy_en, enable reducing payload if AMC13 gets full
                     1'b1,        // stress, stress test mode
                     16'hbeef,    // board_id,
                     12'ha,       // bxn_offset,
-                    3'h2,        // valor_window
+                    3'h6,        // valor_window
                     8'h3,        // valor_delay
-                    3'h7,        // l1a_window, how many BXs to report on each L1A
+                    3'h5,        // l1a_window, how many BXs to report on each L1A
                     8'h1         // l1a_delay
                     };
 
@@ -343,6 +482,10 @@ module mtf7_daq_tf;
 
         for (n = 0; n < 5000; ++n)
         begin
+            if (n == 1000)
+                $write ("present: me: %08b rpc: %08b gem: %08b mask: %08b rep_gem: %1b stress_gem: %1b\n", 
+                    uut.me_present_r, uut.rpc_present_r, uut.gem_present_r, uut.present_mask, uut.report_gem, uut.stress_gem);
+
            // moved clock to top of for loop
            for (c = 0; c < 2; ++c)
            begin
@@ -422,7 +565,7 @@ module mtf7_daq_tf;
                  // segment loop
                  for (k = 0; k < seg_ch; ++k) 
                  begin
-                    lct_i[l][j][k].vf = 1;
+                    lct_i[l][j][k].vf = 0; // disabled
                     lct_i[l][j][k].lr = k;
                     lct_i[l][j][k].ql = l; // station id (0,1,2,3,4)
                     lct_i[l][j][k].wg = j;
@@ -445,12 +588,9 @@ module mtf7_daq_tf;
                  begin
                     // fill the fake data?
                     rpc_ph = l+j+k; // phi max is 6+2+3=11 (4 bits)
-                    rpc_th = l+k;   // theta max is 6+3=9 (4 bits)
-                    rpc_fr_wd[l][j][k] = {4'he,
-                                          rpc_ph,
-                                          4'hd,
-                                          rpc_th
-                                          };
+                    rpc_th = 5'b11111; //l+k;   // theta max is 6+3=9 (4 bits)
+//                    rpc_fr_wd[l][j][k] = {4'he, rpc_ph, 4'hd, rpc_th};
+                    rpc_fr_wd[l][j][k] = {rpc_th, rpc_ph};
                  end
                  cppf_rxd[l][j] = {
                                    // 16 words per link
@@ -467,6 +607,7 @@ module mtf7_daq_tf;
            nc = 0;
            for (l = 0; l < 7; ++l) 
            begin
+              
               gem_v_hits[0] = l;
               gem_v_hits[1] = l;
               gem_head = {gem_v_hits[1], gem_v_hits[0], 1'b1, 1'b1};

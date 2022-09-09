@@ -60,7 +60,7 @@ module valid_delay
 		stress_prescale++;
 		if (stress_prescale == 4'd10) stress_prescale = 4'b0;
 		
-		if (stress_prescale > stress_prescale_lim[stress_prescale_code] && stress == 1'b1)
+		if (stress_prescale <= stress_prescale_lim[stress_prescale_code] && stress == 1'b1)
 		    valor = 1'b1; // if stress-testing, valid 90% of the time
 		    // 90% number measured by Efe from PU=40 conditions, 2022-09-01
 	end

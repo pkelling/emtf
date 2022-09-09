@@ -317,6 +317,7 @@ module mtf7_daq
    reg hmv;
    reg [7:0] me_present,   rpc_present,   gem_present; // one flag per daq bank word
    reg [7:0] me_present_r, rpc_present_r, gem_present_r; // one flag per daq bank word
+   reg [7:0] me_present_rr, rpc_present_rr, gem_present_rr; // one flag per daq bank word
    wire [7:0] present_mask = (8'b1 << l1a_window_ext) - 8'h1; // relevant bits in present flags
 
    // pack data into delay lines' inputs, unpack the outputs of ring buffer
@@ -374,7 +375,6 @@ module mtf7_daq
                   if (k == 1 && (bx0_d[i][station_][j][k] == 1'b1 || cpat_d [i][station_][j][k][3:1] != 3'b0)) hmv = 1'b1;
                   
                   me_present[i] |= (vp_d[i][station_][j][k] | hmv);
-                  me_present &= present_mask; // leave only relevant time bins
 
                   // pack ME LCT into daq word
                   me_data[i][mew] = {1'h0, 1'h0, ser_d[i][station_][j][k], 1'h0, cid_d[i][station_][j][k], hmv, station_, vp_d[i][station_][j][k], tbin,
@@ -433,7 +433,7 @@ module mtf7_daq
 //                  };
                                        
                   rpc_present[i] |= (rpc_val0 | rpc_val1);
-                  rpc_present &= present_mask; // leave only relevant time bins
+
                   rpc_data[i][rpcw] =
                   {
                       1'b0, station_, 3'b0, rpc_th_d[i][station_][j][k+1], rpc_val1, tbin,
@@ -478,24 +478,28 @@ module mtf7_daq
          * ``clu_pad = clu_d[8:0]``
        */
       gem_present = 8'h0;
-      for (station_ = 0; station_ < 3'd7; station_ = station_+1) // GEM sub-sector loop
-      begin
-         // pack GEM clusters into the input delay line
-         for (j = 0; j < N_GE11_LAY; j = j+1) // superchamber/stack layer?
-         begin
-            for (k = 0; k < GEM_CLS_PER_BX; k = k+1) // cluster in layer loop
-            begin
-                gem_inp_del_in[gem_pos +: GEM_CLU_BW] = 
-                {
-                    ge11_cl[station_][j][k].vf,
-                    ge11_cl[station_][j][k].csz,
-                    ge11_cl[station_][j][k].prt,
-                    ge11_cl[station_][j][k].str
-                };
-                gem_pos += GEM_CLU_BW;
-            end
-         end
-      end
+//      for (station_ = 0; station_ < 3'd7; station_ = station_+1) // GEM sub-sector loop
+//      begin
+//         // pack GEM clusters into the input delay line
+//         for (j = 0; j < N_GE11_LAY; j = j+1) // superchamber/stack layer?
+//         begin
+//            for (k = 0; k < GEM_CLS_PER_BX; k = k+1) // cluster in layer loop
+//            begin
+//                gem_inp_del_in[gem_pos +: GEM_CLU_BW] = 
+//                {
+//                    ge11_cl[station_][j][k].vf,
+//                    ge11_cl[station_][j][k].csz,
+//                    ge11_cl[station_][j][k].prt,
+//                    ge11_cl[station_][j][k].str
+//                };
+//                gem_pos += GEM_CLU_BW;
+//            end
+//         end
+//      end
+
+// simulators don't like looped assignment above, replacing with unrolled loops 
+`include "ge11_cl_assign.sv"    
+
       gem_inp_del_in[gem_pos +: 14] = {gem_crc_match, gem_rx_valid};
          
       for (i = 0; i < 8; i = i+1) // daq_bank word loop
@@ -534,7 +538,7 @@ module mtf7_daq
                       gem_clu_id_d1[i] = {1'b1, k[2:0]};                 // cluster ID 0-7 for layer1, 8-15 for layer2?
                       tbin            = i;                       // timebin
                       gem_tbin_ofs    = 0;                       // timebin offset
-                      gem_bc0[i][station_] = 2'b00; // not implemented at this time
+                      gem_bc0[i][station_] = 2'b0; // not implemented at this time
 
 // FIXME: logic for out-of-time clusters is disabled so far
 // 
@@ -554,14 +558,13 @@ module mtf7_daq
                       // make one cluster valid in case of stress test
                       if (stress == 1'b1 && stress_gem == 1'b1) gem_vf_d[0][0][0][0] = 1'b1;
                       gem_present[i] |= (gem_vf_d[i][station_][0][k] | gem_vf_d[i][station_][1][k]);
-                      gem_present &= present_mask; // leave only relevant time bins
 
                       gem_data[i][gemw] = 
                       {
                            1'b0, station_, gem_clu_id_d1[i], gem_bc0[i][station_][1], 3'b00, gem_vf_d[i][station_][1][k], tbin,
-                           1'b1, gem_clu_sz_d[i][station_][1][k], gem_par_d[i][station_][1][k], gem_str_d[i][station_][1][k],
+                           1'b1, gem_clu_sz_d[i][station_][1][k], gem_par_d[i][station_][1][k], 1'b0, gem_str_d[i][station_][1][k],
                            1'b1, station_, gem_clu_id_d0[i], gem_bc0[i][station_][0], 3'b00, gem_vf_d[i][station_][0][k], tbin,
-                           1'b1, gem_clu_sz_d[i][station_][0][k], gem_par_d[i][station_][0][k], gem_str_d[i][station_][0][k]
+                           1'b1, gem_clu_sz_d[i][station_][0][k], gem_par_d[i][station_][0][k], 1'b0, gem_str_d[i][station_][0][k]
                       };
                       gemw++;
                  end
@@ -1252,14 +1255,17 @@ module mtf7_daq
                  begin
                     mewc = 7'h0;
                     tbc  = 4'h0;
-                    if (me_present_r  != 8'h0) st = SEND_ME;  else
-                    if (rpc_present_r != 8'h0) st = SEND_RPC; else
-                    if (gem_present_r != 8'h0) st = SEND_GEM; else
+                    if (me_present_rr  != 8'h0) st = SEND_ME;  else
+                    if (rpc_present_rr != 8'h0) st = SEND_RPC; else
+                    if (gem_present_rr != 8'h0 && report_gem == 1'b1) st = SEND_GEM; else
                     st = SEND_TRACKS;
                  end
                  wc = wc + 4'h1;
               end
               
+              me_present_rr  =  me_present_r & present_mask;
+              rpc_present_rr = rpc_present_r & present_mask;
+              gem_present_rr = gem_present_r & present_mask;
               
               // lock present flags to reduce logic levels
               me_present_r  = me_present;
@@ -1288,8 +1294,8 @@ module mtf7_daq
                        wc  = 4'h0;
                        tbc = 4'h0;
                        tw  = 1'b0;
-                       if (rpc_present_r != 8'h0) st = SEND_RPC; else
-                       if (gem_present_r != 8'h0) st = SEND_GEM; else
+                       if (rpc_present_rr != 8'h0) st = SEND_RPC; else
+                       if (gem_present_rr != 8'h0 && report_gem == 1'b1) st = SEND_GEM; else
                        st = SEND_TRACKS;
                     end
                  end
@@ -1317,7 +1323,7 @@ module mtf7_daq
                        tbc = 4'h0;
                        tw  = 1'b0;
                         
-                       if (gem_present_r != 8'h0 && report_gem == 1'b1) st = SEND_GEM; else
+                       if (gem_present_rr != 8'h0 && report_gem == 1'b1) st = SEND_GEM; else
                        st = SEND_TRACKS;
                     end
                  end
