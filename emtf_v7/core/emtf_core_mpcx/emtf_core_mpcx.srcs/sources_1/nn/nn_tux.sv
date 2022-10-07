@@ -99,36 +99,7 @@ module nn_tux
     reg signed [17:0]  bt_delta_th_s [2:0][5:0]; // these are signed 2's complements converted from regular deltas
     reg [bw_th-1:0]    bt_theta_r [2:0];
     reg [3:0]          bt_cpattern_r [2:0][3:0];
-    
-/*
-data_0_V => deltaPhi1,     deltaPhi 1-2
-data_1_V => deltaPhi2,     deltaPhi 1-3
-data_2_V => deltaPhi3,     deltaPhi 1-4
-data_3_V => deltaPhi4,    deltaPhi 2-3
-data_4_V => deltaPhi5,    deltaPhi 2-4
-data_5_V => deltaPhi6,    deltaPhi 3-4
-data_6_V => deltaTheta1,  same as Phi
-data_7_V => deltaTheta2,
-data_8_V => deltaTheta3,
-data_9_V => deltaTheta4,
-data_10_V => deltaTheta5,
-data_11_V => deltaTheta6,
-data_12_V => bend1,   -- CLCT1 
-data_13_V => bend2,  -- CLCT2
-data_14_V => bend3,   -- CLCT3
-data_15_V => bend4,  -- CLCT4 
-data_16_V => ME1_fr,  - FR bit for ME1
-data_17_V => theta,   Theta as defined in EMTF logic 
-data_18_V => ME1_ring, -- 0 for ME11 , 1 for ME12
-data_19_V => RPCbit1,   0 if CSC hit was used in station 1 , 1 if RPC 
-data_20_V => RPCbit2, 0 if CSC hit was used in station 2 , 1 if RPC 
-data_21_V => RPCbit3, 0 if CSC hit was used in station 3 , 1 if RPC 
-data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC 
-*/
-
-    
     logic [17:0] input1_V [22:0];
-
     logic [11:0] layer11_out_0_V;
     logic layer11_out_0_V_ap_vld;
     logic [11:0] layer11_out_1_V;
@@ -151,18 +122,57 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
     reg [11:0] pt_unconv [2:0];
     reg [11:0] d0_unconv [2:0];
     reg [2:0] pt_unconv_valid;
+    reg [2:0] fri;
     
-    localparam NN_LATENCY = 6;
+    localparam NN_LATENCY = 4;
     reg [2:0] valid_in [NN_LATENCY-1:0];
-    
-    initial
+
+    always @(*)
     begin
-        $readmemb("conv11to8.mem", pt_lut_0);
-        $readmemb("conv11to2.mem", d0_lut_0);
-        $readmemb("conv11to8.mem", pt_lut_1);
-        $readmemb("conv11to2.mem", d0_lut_1);
-        $readmemb("conv11to8.mem", pt_lut_2);
-        $readmemb("conv11to2.mem", d0_lut_2);
+
+
+        for (i = 0; i < 3; i++) // best track loop
+        begin
+            mode[i] = {bt_rank[i][5], bt_rank[i][3], bt_rank[i][1], bt_rank[i][0]};
+            // find valid chamber ID from station 1
+            case (mode[i])
+                 4'd1:  begin stA[i] = 3'h0; delta_valid[i] = 6'b000000; end // single hit trigger 
+                 4'd12: begin stA[i] = 3'h0; delta_valid[i] = 6'b000001; end // 1-2
+                 4'd10: begin stA[i] = 3'h0; delta_valid[i] = 6'b000010; end // 1-3
+                 4'd9:  begin stA[i] = 3'h0; delta_valid[i] = 6'b000100; end // 1-4
+                 4'd6:  begin stA[i] = 3'h1; delta_valid[i] = 6'b001000; end // 2-3
+                 4'd5:  begin stA[i] = 3'h1; delta_valid[i] = 6'b010000; end // 2-4
+                 4'd3:  begin stA[i] = 3'h2; delta_valid[i] = 6'b100000; end // 3-4
+                 4'd14: begin stA[i] = 3'h0; delta_valid[i] = 6'b001111; end // 1-2-3
+                 4'd13: begin stA[i] = 3'h0; delta_valid[i] = 6'b010101; end // 1-2-4
+                 4'd11: begin stA[i] = 3'h0; delta_valid[i] = 6'b100110; end // 1-3-4
+                 4'd7:  begin stA[i] = 3'h1; delta_valid[i] = 6'b111000; end // 2-3-4
+                 4'd15: begin stA[i] = 3'h0; delta_valid[i] = 6'b111111; end // 1-2-3-4
+                 default: begin stA[i] = 3'h0; delta_valid[i] = 6'b000000; end
+            endcase            
+    
+            if (stA[i] == 3'h0 && bt_vi[i][0] != 2'b0)
+            begin
+                bt_stA[i] = stA[i];
+                chA[i] = bt_ci[i][0];
+            end
+            else
+            begin
+                bt_stA[i] = stA[i] + 3'h1;
+                chA[i] = bt_ci[i][bt_stA[i]];
+            end
+            
+            ring1_0[i] = 1'b1;
+            if (
+                (bt_vi[i][0][0] == 1'b1 && bt_ci[i][0] <= 4'd2) ||
+                (bt_vi[i][1][0] == 1'b1 && bt_ci[i][1] <= 4'd2)    // station 1 valid and CSCID = 1,2,3 means ME1/1
+            ) 
+            begin
+                ring1_0[i] = 1'b0;
+            end  
+            
+            fri[i] = fr [sector[0]][bt_stA[i]][chA[i]];
+        end      
     end
     
     reg clk40_ff = 1'b0;
@@ -170,18 +180,8 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
     begin 
         clk40_ff = ~clk40_ff;
 
-        // output LUTs for NN, have to be in separate 40M clock for timing
-        pt_out[0] = pt_lut_0 [pt_unconv[0][10:0]];
-        d0_out[0] = d0_lut_0 [d0_unconv[0][11:1]];
-        pt_out[1] = pt_lut_1 [pt_unconv[1][10:0]];
-        d0_out[1] = d0_lut_1 [d0_unconv[1][11:1]];
-        pt_out[2] = pt_lut_2 [pt_unconv[2][10:0]];
-        d0_out[2] = d0_lut_2 [d0_unconv[2][11:1]];
-
         pt_valid = valid_in[NN_LATENCY-1]; // converted value valid
         d0_valid = valid_in[NN_LATENCY-1];
-        
-        pt_unconv_valid = valid_in[NN_LATENCY-2]; // unconverted value valid one BX before converted (for simulation only)
         
         // delay line for valid input signal matching NN latency
         // output is used as valid output flags, since NN does not provide any "valid" output flag
@@ -208,135 +208,6 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
     
     always @(posedge clk_120)
     begin
-    
-        for (i = 0; i <= 5; i++)
-        begin
-            if (delta_valid[mux_phase][i] == 1'b1)
-            begin        
-                input1_V[i]   = bt_delta_ph_r[mux_phase][i];
-                input1_V[i+6] = bt_delta_th_r[mux_phase][i];
-            end
-            else
-            begin  
-                input1_V[i]   = 18'b0;
-                input1_V[i+6] = 18'b0;
-            end     
-            
-        end
-
-        if (mode[mux_phase][3] == 1)  // mode bit 3 is station 1
-        begin
-            input1_V[12] = bt_bend_r[mux_phase][0];
-            input1_V[16] = fr [sector[0]][bt_stA[mux_phase]][chA[mux_phase]];  // fr bit valid only if ME1 is present    
-            input1_V[18] = ring1_0[mux_phase];  // ring valid only if ME1 is present      
-            input1_V[19] = bt_cpattern_r[mux_phase][0] == 18'b0; 
-        end  
-        else
-        begin
-            input1_V[12] = 18'b0;
-            input1_V[16] = 18'b0;
-            input1_V[18] = 18'b0;
-            input1_V[19] = 18'b0;
-        end  
-        
-        if (mode[mux_phase][2] == 1)
-        begin
-            input1_V[13] = bt_bend_r[mux_phase][1];
-            input1_V[20] = bt_cpattern_r[mux_phase][1] == 18'b0;
-        end  
-        else
-        begin
-            input1_V[13] = 18'b0;
-            // is this correct ?
-            // input1_V[20] = bt_cpattern_rr[mux_phase][1] == 18'b0;
-            input1_V[20] = 18'b0;
-        end  
-        
-        if (mode[mux_phase][1] == 1)
-        begin
-            input1_V[14] = bt_bend_r[mux_phase][2];
-            input1_V[21] = bt_cpattern_r[mux_phase][2] == 18'b0;
-        end  
-        else
-        begin
-            input1_V[14] = 18'b0;
-            input1_V[21] = 18'b0;
-        end  
-        
-        if (mode[mux_phase][0] == 1)
-        begin
-            input1_V[15] = bt_bend_r[mux_phase][3];
-            input1_V[22] = bt_cpattern_r[mux_phase][3] == 18'b0;
-        end  
-        else
-        begin
-            input1_V[15] = 18'b0;
-            input1_V[22] = 18'b0;
-        end  
-        
-        if (mode[mux_phase] != 4'b0)
-            input1_V[17] = bt_theta_r[mux_phase];
-        else
-            input1_V[17] = 18'b0;
-        
-        
-        pt_unconv[mux_phase_out[mux_phase]] = layer11_out_0_V[11:0];
-        d0_unconv[mux_phase_out[mux_phase]] = layer11_out_1_V[11:0];
-
-        mode[mux_phase] = {bt_rank[mux_phase][5], bt_rank[mux_phase][3], bt_rank[mux_phase][1], bt_rank[mux_phase][0]};
-        // find valid chamber ID from station 1
-        case (mode[mux_phase])
-             4'd1:  begin stA[mux_phase] = 3'h0; delta_valid[mux_phase] = 6'b000000; end // single hit trigger 
-             4'd12: begin stA[mux_phase] = 3'h0; delta_valid[mux_phase] = 6'b000001; end // 1-2
-             4'd10: begin stA[mux_phase] = 3'h0; delta_valid[mux_phase] = 6'b000010; end // 1-3
-             4'd9:  begin stA[mux_phase] = 3'h0; delta_valid[mux_phase] = 6'b000100; end // 1-4
-             4'd6:  begin stA[mux_phase] = 3'h1; delta_valid[mux_phase] = 6'b001000; end // 2-3
-             4'd5:  begin stA[mux_phase] = 3'h1; delta_valid[mux_phase] = 6'b010000; end // 2-4
-             4'd3:  begin stA[mux_phase] = 3'h2; delta_valid[mux_phase] = 6'b100000; end // 3-4
-             4'd14: begin stA[mux_phase] = 3'h0; delta_valid[mux_phase] = 6'b001111; end // 1-2-3
-             4'd13: begin stA[mux_phase] = 3'h0; delta_valid[mux_phase] = 6'b010101; end // 1-2-4
-             4'd11: begin stA[mux_phase] = 3'h0; delta_valid[mux_phase] = 6'b100110; end // 1-3-4
-             4'd7:  begin stA[mux_phase] = 3'h1; delta_valid[mux_phase] = 6'b111000; end // 2-3-4
-             4'd15: begin stA[mux_phase] = 3'h0; delta_valid[mux_phase] = 6'b111111; end // 1-2-3-4
-             default: begin stA[mux_phase] = 3'h0; delta_valid[mux_phase] = 6'b000000; end
-        endcase            
-
-        if (stA[mux_phase] == 3'h0 && bt_vi[mux_phase][0] != 2'b0)
-        begin
-            bt_stA[mux_phase] = stA[mux_phase];
-            chA[mux_phase] = bt_ci[mux_phase][0];
-        end
-        else
-        begin
-            bt_stA[mux_phase] = stA[mux_phase] + 3'h1;
-            chA[mux_phase] = bt_ci[mux_phase][bt_stA[mux_phase]];
-        end
-        // check if ME1 ring 2 stubs are present
-        ring1_0[mux_phase] = 1'b1;
-        if (
-            (bt_vi[mux_phase][0][0] == 1'b1 && bt_ci[mux_phase][0] <= 4'd2) ||
-            (bt_vi[mux_phase][1][0] == 1'b1 && bt_ci[mux_phase][1] <= 4'd2)    // station 1 valid and CSCID = 1,2,3 means ME1/1
-        ) 
-        begin
-            ring1_0[mux_phase] = 1'b0;
-        end        
-
-        // convert deltas into signed 2's complements
-        // from Sergo's message 2021-05-14:
-        // "All inputs are defined as ap_fixed<18,18> type.  The MSB (bit 17) has weight -2^(n-1), others 2^(n-1)."
-        for (j = 0; j < 6; j++) // difference loop
-        begin
-            bt_delta_ph_s [mux_phase][j] = $signed({ 5'h0, bt_delta_ph[mux_phase][j]});
-            bt_delta_th_s [mux_phase][j] = $signed({11'h0, bt_delta_th[mux_phase][j]});
-        
-            // signs reversed to match C++ emulator, Efe and Sergo, 2022-06-28
-            bt_delta_ph_r [mux_phase][j] = (bt_sign_ph[mux_phase][j] == 1'b1) ? bt_delta_ph_s[mux_phase][j] : -bt_delta_ph_s[mux_phase][j];
-            bt_delta_th_r [mux_phase][j] = (bt_sign_th[mux_phase][j] == 1'b1) ? bt_delta_th_s[mux_phase][j] : -bt_delta_th_s[mux_phase][j];
-        end
-    
-        bt_theta_r   [mux_phase] = bt_theta   [mux_phase];
-        bt_cpattern_r[mux_phase] = bt_cpattern[mux_phase];
-        bt_bend_r    [mux_phase] = bt_bend    [mux_phase];
 
         if (clk_hist[0] != clk_hist[1]) // 40 M clk just rose
             mux_phase = 2'h0; // reset multiplexor phase
@@ -358,64 +229,39 @@ data_22_V => RPCbit4 0 if CSC hit was used in station 4 , 1 if RPC
         .ap_idle (),
         .ap_ready (),
         
-        .input1_0_V_ap_vld  (1'b1),                                                                  
-        .input1_1_V_ap_vld  (1'b1),                                                                  
-        .input1_2_V_ap_vld  (1'b1),                                                                  
-        .input1_3_V_ap_vld  (1'b1),                                                                  
-        .input1_4_V_ap_vld  (1'b1),                                                                  
-        .input1_5_V_ap_vld  (1'b1),                                                                  
-          
-        .input1_6_V_ap_vld  (1'b1),                                                                  
-        .input1_7_V_ap_vld  (1'b1),                                                                  
-        .input1_8_V_ap_vld  (1'b1),                                                                  
-        .input1_9_V_ap_vld  (1'b1),                                                                  
-        .input1_10_V_ap_vld (1'b1),                                                                  
-        .input1_11_V_ap_vld (1'b1),                                                                  
-         
-        .input1_12_V_ap_vld (1'b1), // mode bit 3 is station 1                                                                 
-        .input1_13_V_ap_vld (1'b1),                                                                  
-        .input1_14_V_ap_vld (1'b1),                                                                  
-        .input1_15_V_ap_vld (1'b1),                                                                  
-         
-        .input1_16_V_ap_vld (1'b1), // fr bit valid only if ME1 is present                                                
-        .input1_17_V_ap_vld (1'b1),  
-        .input1_18_V_ap_vld (1'b1), // ring valid only if ME1 is present                                                                    
-        .input1_19_V_ap_vld (1'b1), // CLCT patterns valid only if corresponding station is present                                                         
-        .input1_20_V_ap_vld (1'b1),                                                          
-        .input1_21_V_ap_vld (1'b1),                                                          
-        .input1_22_V_ap_vld (1'b1),                                                          
-        
-        .input1_0_V  (input1_V[ 0]),
-        .input1_1_V  (input1_V[ 1]),
-        .input1_2_V  (input1_V[ 2]),
-        .input1_3_V  (input1_V[ 3]),
-        .input1_4_V  (input1_V[ 4]),
-        .input1_5_V  (input1_V[ 5]), 
-        
-        .input1_6_V  (input1_V[ 6]),
-        .input1_7_V  (input1_V[ 7]),
-        .input1_8_V  (input1_V[ 8]),
-        .input1_9_V  (input1_V[ 9]),
-        .input1_10_V (input1_V[10]),
-        .input1_11_V (input1_V[11]),
-        
-        .input1_12_V (input1_V[12]),
-        .input1_13_V (input1_V[13]),
-        .input1_14_V (input1_V[14]),
-        .input1_15_V (input1_V[15]),
-        
-        .input1_16_V (input1_V[16]),
-        .input1_17_V (input1_V[17]),
-        .input1_18_V (input1_V[18]),
-        .input1_19_V (input1_V[19]),
-        .input1_20_V (input1_V[20]),
-        .input1_21_V (input1_V[21]),
-        .input1_22_V (input1_V[22]),
-        
-        .layer11_out_0_V        (layer11_out_0_V[11:0]),
-        .layer11_out_0_V_ap_vld (layer11_out_0_V_ap_vld),
-        .layer11_out_1_V        (layer11_out_1_V[11:0]),
-        .layer11_out_1_V_ap_vld (layer11_out_1_V_ap_vld)
+        .input1_0_V  (bt_delta_ph [mux_phase][0]),
+        .input1_1_V  (bt_delta_ph [mux_phase][1]),
+        .input1_2_V  (bt_delta_ph [mux_phase][2]),
+        .input1_3_V  (bt_delta_ph [mux_phase][3]),
+        .input1_4_V  (bt_delta_ph [mux_phase][4]),
+        .input1_5_V  (bt_delta_ph [mux_phase][5]),
+        .input1_6_V  (bt_sign_ph  [mux_phase][0]),
+        .input1_7_V  (bt_sign_ph  [mux_phase][1]),
+        .input1_8_V  (bt_sign_ph  [mux_phase][2]),
+        .input1_9_V  (bt_sign_ph  [mux_phase][3]),
+        .input1_10_V (bt_sign_ph  [mux_phase][4]),
+        .input1_11_V (bt_sign_ph  [mux_phase][5]),
+        .input1_12_V (bt_delta_th [mux_phase][0]),
+        .input1_13_V (bt_delta_th [mux_phase][1]),
+        .input1_14_V (bt_delta_th [mux_phase][2]),
+        .input1_15_V (bt_delta_th [mux_phase][3]),
+        .input1_16_V (bt_delta_th [mux_phase][4]),
+        .input1_17_V (bt_delta_th [mux_phase][5]),
+        .input1_18_V (bt_sign_th  [mux_phase][0]),
+        .input1_19_V (bt_sign_th  [mux_phase][1]),
+        .input1_20_V (bt_sign_th  [mux_phase][2]),
+        .input1_21_V (bt_sign_th  [mux_phase][3]),
+        .input1_22_V (bt_sign_th  [mux_phase][4]),
+        .input1_23_V (bt_sign_th  [mux_phase][5]),
+        .input1_24_V (bt_cpattern [mux_phase][0]),
+        .input1_25_V (bt_cpattern [mux_phase][1]),
+        .input1_26_V (bt_cpattern [mux_phase][2]),
+        .input1_27_V (bt_cpattern [mux_phase][3]),
+        .input1_28_V (fri         [mux_phase]),
+        .input1_29_V (bt_theta    [mux_phase]),
+        .input1_30_V (ring1_0     [mux_phase]),
+        .layer12_out_0_V (PT),
+        .layer12_out_1_V (dXY)
     );
 
     nn_mmcm nnmcmc
