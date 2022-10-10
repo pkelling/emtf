@@ -150,17 +150,17 @@ module mpcx_deformatter_neighbor
         else crc_err[i] = 1'b0; 
 
         // check data sanity
-        if (lnk_val[i] &&
-                (
-                    lct_o[i][0].hs > max_hs ||
-                    lct_o[i][0].wg > max_wg ||
-                    lct_o[i][1].hs > max_hs ||
-                    lct_o[i][1].wg > max_wg
-                ) 
-            )
-        begin
-            crc_err[i] = 1'b1;
-        end
+//        if (lnk_val[i] &&
+//                (
+//                    lct_o[i][0].hs > max_hs ||
+//                    lct_o[i][0].wg > max_wg ||
+//                    lct_o[i][1].hs > max_hs ||
+//                    lct_o[i][1].wg > max_wg
+//                ) 
+//            )
+//        begin
+//            crc_err[i] = 1'b1;
+//        end
 
 		// disable link output if error was detected
 		if (crc_err[i] == 1'b0)

@@ -390,18 +390,18 @@ module mpcx_deformatter
         else crc_err[i] = 1'b0; 
 
 
-        // check data sanity
-        if (lnk_val[i] &&
-                (
-                    lct_o[i+2][0].hs > max_hs ||
-                    lct_o[i+2][0].wg > max_wg ||
-                    lct_o[i+2][1].hs > max_hs ||
-                    lct_o[i+2][1].wg > max_wg
-                ) 
-            )
-        begin
-            crc_err[i] = 1'b1;
-        end
+//        // check data sanity
+//        if (lnk_val[i] &&
+//                (
+//                    lct_o[i+2][0].hs > max_hs ||
+//                    lct_o[i+2][0].wg > max_wg ||
+//                    lct_o[i+2][1].hs > max_hs ||
+//                    lct_o[i+2][1].wg > max_wg
+//                ) 
+//            )
+//        begin
+//            crc_err[i] = 1'b1;
+//        end
 
 		// disable link output if error was detected
 		if (crc_err[i] == 1'b0)
@@ -424,10 +424,10 @@ module mpcx_deformatter
     end
     
     // checks sanity of cscid=1 data fragments
-    if (lct_o[1][0].hs > max_hs) cid1_vf[0][0] = 1'b0;
-    if (lct_o[1][0].wg > max_wg) cid1_vf[0][1] = 1'b0;
-    if (lct_o[1][1].hs > max_hs) cid1_vf[1][0] = 1'b0;
-    if (lct_o[1][1].wg > max_wg) cid1_vf[1][1] = 1'b0;
+//    if (lct_o[1][0].hs > max_hs) cid1_vf[0][0] = 1'b0;
+//    if (lct_o[1][0].wg > max_wg) cid1_vf[0][1] = 1'b0;
+//    if (lct_o[1][1].hs > max_hs) cid1_vf[1][0] = 1'b0;
+//    if (lct_o[1][1].wg > max_wg) cid1_vf[1][1] = 1'b0;
     
     // invalidate HMT bits for cscid=1 in case of crc errors
     if (crc_err[6] == 1'b1) lct_o[1][1].cp[3:1] = 3'b0;
