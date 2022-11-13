@@ -534,30 +534,30 @@ module sp
 
     // neural network for PT assignment
 
-//    nn_tux nn
-//    (
-//        .bt_phi (bt_phi),
-//        .bt_theta (bt_theta),
-//        .bt_cpattern (bt_cpattern),
-//        .bt_delta_ph (bt_delta_ph),
-//        .bt_delta_th (bt_delta_th),
-//        .bt_sign_ph (bt_sign_ph),
-//        .bt_sign_th (bt_sign_th),
-//        .bt_rank (bt_rank_i),
-//        .bt_vi (bt_vi), 
-//        .bt_hi (bt_hi), 
-//        .bt_ci (bt_ci), 
-//        .bt_si (bt_si),
+    nn_tux nn
+    (
+        .bt_phi (bt_phi),
+        .bt_theta (bt_theta),
+        .bt_cpattern (bt_cpattern),
+        .bt_delta_ph (bt_delta_ph),
+        .bt_delta_th (bt_delta_th),
+        .bt_sign_ph (bt_sign_ph),
+        .bt_sign_th (bt_sign_th),
+        .bt_rank (bt_rank_i),
+        .bt_vi (bt_vi), 
+        .bt_hi (bt_hi), 
+        .bt_ci (bt_ci), 
+        .bt_si (bt_si),
         
-//        .pt_out   (nn_pt),
-//        .pt_valid (nn_pt_v),
-//        .d0_out   (nn_d0),
-//        .d0_valid (nn_d0_v),
+        .pt_out   (nn_pt),
+        .pt_valid (nn_pt_v),
+        .d0_out   (nn_d0),
+        .d0_valid (nn_d0_v),
                
-//        .sector (sector),
-//        .endcap (endcap),
-//        .clk (clk)
-//    );    
+        .sector (sector),
+        .endcap (endcap),
+        .clk (clk)
+    );    
 
 
 	reg ge11_valid_any;
