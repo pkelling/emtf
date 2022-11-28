@@ -688,27 +688,26 @@ module emtf_core_top
 	wire clk_160_pll;
     reg psen, psen_r, psen_rr;
     wire psdone;
-    wire clk100, clk200, clk400;
+    wire clk120, clk200, clk400;
     wire usrclk_locked;
     reg lcd, lcdr;
     reg [15:0] unlock_cnt;
     
     usrclk_mmcm usrclk_mmcm_
 	(
-		.CLK_IN1(clk40_inb), 
-		.CLK_OUT1(clk_160),  
-		.CLK_OUT2(clk40),
-		.CLK_OUT3(clk100),
-        .CLK_OUT4(clk200),
-        .CLK_OUT5(clk400),
-        .CLK_OUT6(),    
+        .CLK_IN1  (clk40_inb),
+        .CLK_OUT1 (clk_160),
+        .CLK_OUT2 (clk40),
+        .CLK_OUT3 (clk120),
+        .CLK_OUT4 (clk200),
+        .CLK_OUT5 (clk400),
+        .RESET    (!m_aresetn),
+        .LOCKED   (usrclk_locked)
 
-        .PSCLK(clk40_inb),
-        .PSEN (1'b0), //(psen), 
-        .PSINCDEC(pt_iddr_psinc),     
-        .PSDONE(),       
-        .RESET(!m_aresetn),
-		.LOCKED(usrclk_locked)
+//        .PSCLK(clk40_inb),
+//        .PSEN (1'b0), //(psen), 
+//        .PSINCDEC(pt_iddr_psinc),     
+//        .PSDONE(),       
 	);     
 
 	always @(posedge clk40_inb)
@@ -869,6 +868,7 @@ module emtf_core_top
         .nn_d0 (nn_d0),
         
 		.clk         (clk40),
+		.clk120      (clk120),
 		.control_clk (pcie_clk_buf),
 		
 		.endcap (endcap),

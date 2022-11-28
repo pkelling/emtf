@@ -1,10 +1,10 @@
 // Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
-// Date        : Thu Mar  3 13:24:28 2022
+// Date        : Mon Nov 28 10:08:22 2022
 // Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
 // Command     : write_verilog -force -mode funcsim
-//               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/usrclk_mmcm/usrclk_mmcm_sim_netlist.v
+//               /home/madorsky/github/vivado/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/usrclk_mmcm/usrclk_mmcm_sim_netlist.v
 // Design      : usrclk_mmcm
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -19,11 +19,6 @@ module usrclk_mmcm
     CLK_OUT3,
     CLK_OUT4,
     CLK_OUT5,
-    CLK_OUT6,
-    PSCLK,
-    PSEN,
-    PSINCDEC,
-    PSDONE,
     RESET,
     LOCKED,
     CLK_IN1);
@@ -32,11 +27,6 @@ module usrclk_mmcm
   output CLK_OUT3;
   output CLK_OUT4;
   output CLK_OUT5;
-  output CLK_OUT6;
-  input PSCLK;
-  input PSEN;
-  input PSINCDEC;
-  output PSDONE;
   input RESET;
   output LOCKED;
   input CLK_IN1;
@@ -47,12 +37,7 @@ module usrclk_mmcm
   wire CLK_OUT3;
   wire CLK_OUT4;
   wire CLK_OUT5;
-  wire CLK_OUT6;
   wire LOCKED;
-  wire PSCLK;
-  wire PSDONE;
-  wire PSEN;
-  wire PSINCDEC;
   wire RESET;
 
   usrclk_mmcm_usrclk_mmcm_clk_wiz inst
@@ -62,12 +47,7 @@ module usrclk_mmcm
         .CLK_OUT3(CLK_OUT3),
         .CLK_OUT4(CLK_OUT4),
         .CLK_OUT5(CLK_OUT5),
-        .CLK_OUT6(CLK_OUT6),
         .LOCKED(LOCKED),
-        .PSCLK(PSCLK),
-        .PSDONE(PSDONE),
-        .PSEN(PSEN),
-        .PSINCDEC(PSINCDEC),
         .RESET(RESET));
 endmodule
 
@@ -78,11 +58,6 @@ module usrclk_mmcm_usrclk_mmcm_clk_wiz
     CLK_OUT3,
     CLK_OUT4,
     CLK_OUT5,
-    CLK_OUT6,
-    PSCLK,
-    PSEN,
-    PSINCDEC,
-    PSDONE,
     RESET,
     LOCKED,
     CLK_IN1);
@@ -91,11 +66,6 @@ module usrclk_mmcm_usrclk_mmcm_clk_wiz
   output CLK_OUT3;
   output CLK_OUT4;
   output CLK_OUT5;
-  output CLK_OUT6;
-  input PSCLK;
-  input PSEN;
-  input PSINCDEC;
-  output PSDONE;
   input RESET;
   output LOCKED;
   input CLK_IN1;
@@ -111,13 +81,7 @@ module usrclk_mmcm_usrclk_mmcm_clk_wiz
   wire CLK_OUT4_usrclk_mmcm;
   wire CLK_OUT5;
   wire CLK_OUT5_usrclk_mmcm;
-  wire CLK_OUT6;
-  wire CLK_OUT6_usrclk_mmcm;
   wire LOCKED;
-  wire PSCLK;
-  wire PSDONE;
-  wire PSEN;
-  wire PSINCDEC;
   wire RESET;
   wire clkfbout_buf_usrclk_mmcm;
   wire clkfbout_usrclk_mmcm;
@@ -128,8 +92,10 @@ module usrclk_mmcm_usrclk_mmcm_clk_wiz
   wire NLW_mmcm_adv_inst_CLKOUT1B_UNCONNECTED;
   wire NLW_mmcm_adv_inst_CLKOUT2B_UNCONNECTED;
   wire NLW_mmcm_adv_inst_CLKOUT3B_UNCONNECTED;
+  wire NLW_mmcm_adv_inst_CLKOUT5_UNCONNECTED;
   wire NLW_mmcm_adv_inst_CLKOUT6_UNCONNECTED;
   wire NLW_mmcm_adv_inst_DRDY_UNCONNECTED;
+  wire NLW_mmcm_adv_inst_PSDONE_UNCONNECTED;
   wire [15:0]NLW_mmcm_adv_inst_DO_UNCONNECTED;
 
   (* BOX_TYPE = "PRIMITIVE" *) 
@@ -157,41 +123,37 @@ module usrclk_mmcm_usrclk_mmcm_clk_wiz
        (.I(CLK_OUT5_usrclk_mmcm),
         .O(CLK_OUT5));
   (* BOX_TYPE = "PRIMITIVE" *) 
-  BUFG clkout6_buf
-       (.I(CLK_OUT6_usrclk_mmcm),
-        .O(CLK_OUT6));
-  (* BOX_TYPE = "PRIMITIVE" *) 
   MMCME2_ADV #(
     .BANDWIDTH("OPTIMIZED"),
-    .CLKFBOUT_MULT_F(20.000000),
+    .CLKFBOUT_MULT_F(30.000000),
     .CLKFBOUT_PHASE(0.000000),
     .CLKFBOUT_USE_FINE_PS("FALSE"),
     .CLKIN1_PERIOD(25.000000),
     .CLKIN2_PERIOD(0.000000),
-    .CLKOUT0_DIVIDE_F(5.000000),
+    .CLKOUT0_DIVIDE_F(7.500000),
     .CLKOUT0_DUTY_CYCLE(0.500000),
     .CLKOUT0_PHASE(0.000000),
     .CLKOUT0_USE_FINE_PS("FALSE"),
-    .CLKOUT1_DIVIDE(20),
+    .CLKOUT1_DIVIDE(30),
     .CLKOUT1_DUTY_CYCLE(0.500000),
     .CLKOUT1_PHASE(0.000000),
     .CLKOUT1_USE_FINE_PS("FALSE"),
-    .CLKOUT2_DIVIDE(8),
+    .CLKOUT2_DIVIDE(10),
     .CLKOUT2_DUTY_CYCLE(0.500000),
     .CLKOUT2_PHASE(0.000000),
     .CLKOUT2_USE_FINE_PS("FALSE"),
-    .CLKOUT3_DIVIDE(4),
+    .CLKOUT3_DIVIDE(6),
     .CLKOUT3_DUTY_CYCLE(0.500000),
     .CLKOUT3_PHASE(0.000000),
     .CLKOUT3_USE_FINE_PS("FALSE"),
     .CLKOUT4_CASCADE("FALSE"),
-    .CLKOUT4_DIVIDE(2),
+    .CLKOUT4_DIVIDE(3),
     .CLKOUT4_DUTY_CYCLE(0.500000),
     .CLKOUT4_PHASE(0.000000),
     .CLKOUT4_USE_FINE_PS("FALSE"),
-    .CLKOUT5_DIVIDE(4),
+    .CLKOUT5_DIVIDE(1),
     .CLKOUT5_DUTY_CYCLE(0.500000),
-    .CLKOUT5_PHASE(270.000000),
+    .CLKOUT5_PHASE(0.000000),
     .CLKOUT5_USE_FINE_PS("FALSE"),
     .CLKOUT6_DIVIDE(1),
     .CLKOUT6_DUTY_CYCLE(0.500000),
@@ -228,7 +190,7 @@ module usrclk_mmcm_usrclk_mmcm_clk_wiz
         .CLKOUT3(CLK_OUT4_usrclk_mmcm),
         .CLKOUT3B(NLW_mmcm_adv_inst_CLKOUT3B_UNCONNECTED),
         .CLKOUT4(CLK_OUT5_usrclk_mmcm),
-        .CLKOUT5(CLK_OUT6_usrclk_mmcm),
+        .CLKOUT5(NLW_mmcm_adv_inst_CLKOUT5_UNCONNECTED),
         .CLKOUT6(NLW_mmcm_adv_inst_CLKOUT6_UNCONNECTED),
         .DADDR({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .DCLK(1'b0),
@@ -238,10 +200,10 @@ module usrclk_mmcm_usrclk_mmcm_clk_wiz
         .DRDY(NLW_mmcm_adv_inst_DRDY_UNCONNECTED),
         .DWE(1'b0),
         .LOCKED(LOCKED),
-        .PSCLK(PSCLK),
-        .PSDONE(PSDONE),
-        .PSEN(PSEN),
-        .PSINCDEC(PSINCDEC),
+        .PSCLK(1'b0),
+        .PSDONE(NLW_mmcm_adv_inst_PSDONE_UNCONNECTED),
+        .PSEN(1'b0),
+        .PSINCDEC(1'b0),
         .PWRDWN(1'b0),
         .RST(RESET));
 endmodule

@@ -1,10 +1,10 @@
 -- Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
--- Date        : Thu Mar  3 13:24:28 2022
+-- Date        : Mon Nov 28 10:08:22 2022
 -- Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
 -- Command     : write_vhdl -force -mode funcsim
---               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/usrclk_mmcm/usrclk_mmcm_sim_netlist.vhdl
+--               /home/madorsky/github/vivado/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/usrclk_mmcm/usrclk_mmcm_sim_netlist.vhdl
 -- Design      : usrclk_mmcm
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -21,11 +21,6 @@ entity usrclk_mmcm_usrclk_mmcm_clk_wiz is
     CLK_OUT3 : out STD_LOGIC;
     CLK_OUT4 : out STD_LOGIC;
     CLK_OUT5 : out STD_LOGIC;
-    CLK_OUT6 : out STD_LOGIC;
-    PSCLK : in STD_LOGIC;
-    PSEN : in STD_LOGIC;
-    PSINCDEC : in STD_LOGIC;
-    PSDONE : out STD_LOGIC;
     RESET : in STD_LOGIC;
     LOCKED : out STD_LOGIC;
     CLK_IN1 : in STD_LOGIC
@@ -40,7 +35,6 @@ architecture STRUCTURE of usrclk_mmcm_usrclk_mmcm_clk_wiz is
   signal CLK_OUT3_usrclk_mmcm : STD_LOGIC;
   signal CLK_OUT4_usrclk_mmcm : STD_LOGIC;
   signal CLK_OUT5_usrclk_mmcm : STD_LOGIC;
-  signal CLK_OUT6_usrclk_mmcm : STD_LOGIC;
   signal clkfbout_buf_usrclk_mmcm : STD_LOGIC;
   signal clkfbout_usrclk_mmcm : STD_LOGIC;
   signal NLW_mmcm_adv_inst_CLKFBOUTB_UNCONNECTED : STD_LOGIC;
@@ -50,8 +44,10 @@ architecture STRUCTURE of usrclk_mmcm_usrclk_mmcm_clk_wiz is
   signal NLW_mmcm_adv_inst_CLKOUT1B_UNCONNECTED : STD_LOGIC;
   signal NLW_mmcm_adv_inst_CLKOUT2B_UNCONNECTED : STD_LOGIC;
   signal NLW_mmcm_adv_inst_CLKOUT3B_UNCONNECTED : STD_LOGIC;
+  signal NLW_mmcm_adv_inst_CLKOUT5_UNCONNECTED : STD_LOGIC;
   signal NLW_mmcm_adv_inst_CLKOUT6_UNCONNECTED : STD_LOGIC;
   signal NLW_mmcm_adv_inst_DRDY_UNCONNECTED : STD_LOGIC;
+  signal NLW_mmcm_adv_inst_PSDONE_UNCONNECTED : STD_LOGIC;
   signal NLW_mmcm_adv_inst_DO_UNCONNECTED : STD_LOGIC_VECTOR ( 15 downto 0 );
   attribute BOX_TYPE : string;
   attribute BOX_TYPE of clkf_buf : label is "PRIMITIVE";
@@ -60,7 +56,6 @@ architecture STRUCTURE of usrclk_mmcm_usrclk_mmcm_clk_wiz is
   attribute BOX_TYPE of clkout3_buf : label is "PRIMITIVE";
   attribute BOX_TYPE of clkout4_buf : label is "PRIMITIVE";
   attribute BOX_TYPE of clkout5_buf : label is "PRIMITIVE";
-  attribute BOX_TYPE of clkout6_buf : label is "PRIMITIVE";
   attribute BOX_TYPE of mmcm_adv_inst : label is "PRIMITIVE";
 begin
 clkf_buf: unisim.vcomponents.BUFG
@@ -93,43 +88,38 @@ clkout5_buf: unisim.vcomponents.BUFG
       I => CLK_OUT5_usrclk_mmcm,
       O => CLK_OUT5
     );
-clkout6_buf: unisim.vcomponents.BUFG
-     port map (
-      I => CLK_OUT6_usrclk_mmcm,
-      O => CLK_OUT6
-    );
 mmcm_adv_inst: unisim.vcomponents.MMCME2_ADV
     generic map(
       BANDWIDTH => "OPTIMIZED",
-      CLKFBOUT_MULT_F => 20.000000,
+      CLKFBOUT_MULT_F => 30.000000,
       CLKFBOUT_PHASE => 0.000000,
       CLKFBOUT_USE_FINE_PS => false,
       CLKIN1_PERIOD => 25.000000,
       CLKIN2_PERIOD => 0.000000,
-      CLKOUT0_DIVIDE_F => 5.000000,
+      CLKOUT0_DIVIDE_F => 7.500000,
       CLKOUT0_DUTY_CYCLE => 0.500000,
       CLKOUT0_PHASE => 0.000000,
       CLKOUT0_USE_FINE_PS => false,
-      CLKOUT1_DIVIDE => 20,
+      CLKOUT1_DIVIDE => 30,
       CLKOUT1_DUTY_CYCLE => 0.500000,
       CLKOUT1_PHASE => 0.000000,
       CLKOUT1_USE_FINE_PS => false,
-      CLKOUT2_DIVIDE => 8,
+      CLKOUT2_DIVIDE => 10,
       CLKOUT2_DUTY_CYCLE => 0.500000,
       CLKOUT2_PHASE => 0.000000,
       CLKOUT2_USE_FINE_PS => false,
-      CLKOUT3_DIVIDE => 4,
+      CLKOUT3_DIVIDE => 6,
       CLKOUT3_DUTY_CYCLE => 0.500000,
       CLKOUT3_PHASE => 0.000000,
       CLKOUT3_USE_FINE_PS => false,
       CLKOUT4_CASCADE => false,
-      CLKOUT4_DIVIDE => 2,
+      CLKOUT4_DIVIDE => 3,
       CLKOUT4_DUTY_CYCLE => 0.500000,
       CLKOUT4_PHASE => 0.000000,
       CLKOUT4_USE_FINE_PS => false,
-      CLKOUT5_DIVIDE => 4,
+      CLKOUT5_DIVIDE => 1,
       CLKOUT5_DUTY_CYCLE => 0.500000,
-      CLKOUT5_PHASE => 270.000000,
+      CLKOUT5_PHASE => 0.000000,
       CLKOUT5_USE_FINE_PS => false,
       CLKOUT6_DIVIDE => 1,
       CLKOUT6_DUTY_CYCLE => 0.500000,
@@ -167,7 +157,7 @@ mmcm_adv_inst: unisim.vcomponents.MMCME2_ADV
       CLKOUT3 => CLK_OUT4_usrclk_mmcm,
       CLKOUT3B => NLW_mmcm_adv_inst_CLKOUT3B_UNCONNECTED,
       CLKOUT4 => CLK_OUT5_usrclk_mmcm,
-      CLKOUT5 => CLK_OUT6_usrclk_mmcm,
+      CLKOUT5 => NLW_mmcm_adv_inst_CLKOUT5_UNCONNECTED,
       CLKOUT6 => NLW_mmcm_adv_inst_CLKOUT6_UNCONNECTED,
       DADDR(6 downto 0) => B"0000000",
       DCLK => '0',
@@ -177,10 +167,10 @@ mmcm_adv_inst: unisim.vcomponents.MMCME2_ADV
       DRDY => NLW_mmcm_adv_inst_DRDY_UNCONNECTED,
       DWE => '0',
       LOCKED => LOCKED,
-      PSCLK => PSCLK,
-      PSDONE => PSDONE,
-      PSEN => PSEN,
-      PSINCDEC => PSINCDEC,
+      PSCLK => '0',
+      PSDONE => NLW_mmcm_adv_inst_PSDONE_UNCONNECTED,
+      PSEN => '0',
+      PSINCDEC => '0',
       PWRDWN => '0',
       RST => RESET
     );
@@ -196,11 +186,6 @@ entity usrclk_mmcm is
     CLK_OUT3 : out STD_LOGIC;
     CLK_OUT4 : out STD_LOGIC;
     CLK_OUT5 : out STD_LOGIC;
-    CLK_OUT6 : out STD_LOGIC;
-    PSCLK : in STD_LOGIC;
-    PSEN : in STD_LOGIC;
-    PSINCDEC : in STD_LOGIC;
-    PSDONE : out STD_LOGIC;
     RESET : in STD_LOGIC;
     LOCKED : out STD_LOGIC;
     CLK_IN1 : in STD_LOGIC
@@ -219,12 +204,7 @@ inst: entity work.usrclk_mmcm_usrclk_mmcm_clk_wiz
       CLK_OUT3 => CLK_OUT3,
       CLK_OUT4 => CLK_OUT4,
       CLK_OUT5 => CLK_OUT5,
-      CLK_OUT6 => CLK_OUT6,
       LOCKED => LOCKED,
-      PSCLK => PSCLK,
-      PSDONE => PSDONE,
-      PSEN => PSEN,
-      PSINCDEC => PSINCDEC,
       RESET => RESET
     );
 end STRUCTURE;

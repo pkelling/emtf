@@ -33,7 +33,8 @@ module nn_tux
     output reg [2:0] d0_out [2:0],
     output reg [2:0] d0_valid,
     // clock
-    input                 clk,
+    input clk,
+    input clk_120,
     
     input endcap,
     input [2:0] sector
@@ -113,53 +114,54 @@ module nn_tux
 
     emtfptnn pt_nn 
     (
-        .ap_clk (clk_120),
-        .ap_rst (1'b0),
-        .ap_start (1'b1),
-        .ap_done (),
-        .ap_idle (),
-        .ap_ready (),
+        .ap_clk          (clk_120),
+        .ap_rst          (1'b0),
+        .ap_start        (1'b1),
+        .ap_done         (),
+        .ap_idle         (),
+        .ap_ready        (),
         
-        .input1_0_V  (bt_delta_ph [mux_phase][0]),
-        .input1_1_V  (bt_delta_ph [mux_phase][1]),
-        .input1_2_V  (bt_delta_ph [mux_phase][2]),
-        .input1_3_V  (bt_delta_ph [mux_phase][3]),
-        .input1_4_V  (bt_delta_ph [mux_phase][4]),
-        .input1_5_V  (bt_delta_ph [mux_phase][5]),
-        .input1_6_V  (bt_sign_ph  [mux_phase][0]),
-        .input1_7_V  (bt_sign_ph  [mux_phase][1]),
-        .input1_8_V  (bt_sign_ph  [mux_phase][2]),
-        .input1_9_V  (bt_sign_ph  [mux_phase][3]),
-        .input1_10_V (bt_sign_ph  [mux_phase][4]),
-        .input1_11_V (bt_sign_ph  [mux_phase][5]),
-        .input1_12_V (bt_delta_th [mux_phase][0]),
-        .input1_13_V (bt_delta_th [mux_phase][1]),
-        .input1_14_V (bt_delta_th [mux_phase][2]),
-        .input1_15_V (bt_delta_th [mux_phase][3]),
-        .input1_16_V (bt_delta_th [mux_phase][4]),
-        .input1_17_V (bt_delta_th [mux_phase][5]),
-        .input1_18_V (bt_sign_th  [mux_phase][0]),
-        .input1_19_V (bt_sign_th  [mux_phase][1]),
-        .input1_20_V (bt_sign_th  [mux_phase][2]),
-        .input1_21_V (bt_sign_th  [mux_phase][3]),
-        .input1_22_V (bt_sign_th  [mux_phase][4]),
-        .input1_23_V (bt_sign_th  [mux_phase][5]),
-        .input1_24_V (bt_cpattern [mux_phase][0]),
-        .input1_25_V (bt_cpattern [mux_phase][1]),
-        .input1_26_V (bt_cpattern [mux_phase][2]),
-        .input1_27_V (bt_cpattern [mux_phase][3]),
-        .input1_28_V (bt_theta    [mux_phase]),
+        .input1_0_V      (bt_delta_ph [mux_phase][0]),
+        .input1_1_V      (bt_delta_ph [mux_phase][1]),
+        .input1_2_V      (bt_delta_ph [mux_phase][2]),
+        .input1_3_V      (bt_delta_ph [mux_phase][3]),
+        .input1_4_V      (bt_delta_ph [mux_phase][4]),
+        .input1_5_V      (bt_delta_ph [mux_phase][5]),
+        .input1_6_V      ({12'b0, bt_sign_ph  [mux_phase][0]}),
+        .input1_7_V      ({12'b0, bt_sign_ph  [mux_phase][1]}),
+        .input1_8_V      ({12'b0, bt_sign_ph  [mux_phase][2]}),
+        .input1_9_V      ({12'b0, bt_sign_ph  [mux_phase][3]}),
+        .input1_10_V     ({12'b0, bt_sign_ph  [mux_phase][4]}),
+        .input1_11_V     ({12'b0, bt_sign_ph  [mux_phase][5]}),
+        .input1_12_V     ({6'b0 , bt_delta_th [mux_phase][0]}),
+        .input1_13_V     ({6'b0 , bt_delta_th [mux_phase][1]}),
+        .input1_14_V     ({6'b0 , bt_delta_th [mux_phase][2]}),
+        .input1_15_V     ({6'b0 , bt_delta_th [mux_phase][3]}),
+        .input1_16_V     ({6'b0 , bt_delta_th [mux_phase][4]}),
+        .input1_17_V     ({6'b0 , bt_delta_th [mux_phase][5]}),
+        .input1_18_V     ({12'b0, bt_sign_th  [mux_phase][0]}),
+        .input1_19_V     ({12'b0, bt_sign_th  [mux_phase][1]}),
+        .input1_20_V     ({12'b0, bt_sign_th  [mux_phase][2]}),
+        .input1_21_V     ({12'b0, bt_sign_th  [mux_phase][3]}),
+        .input1_22_V     ({12'b0, bt_sign_th  [mux_phase][4]}),
+        .input1_23_V     ({12'b0, bt_sign_th  [mux_phase][5]}),
+        .input1_24_V     ({9'b0 , bt_cpattern [mux_phase][0]}),
+        .input1_25_V     ({9'b0 , bt_cpattern [mux_phase][1]}),
+        .input1_26_V     ({9'b0 , bt_cpattern [mux_phase][2]}),
+        .input1_27_V     ({9'b0 , bt_cpattern [mux_phase][3]}),
+        .input1_28_V     ({6'b0 , bt_theta    [mux_phase]}),
         .layer12_out_0_V (PT),
         .layer12_out_1_V (dXY)
     );
 
-    nn_mmcm nnmcmc
-    (
-        .clk_out1(clk_120),
-        .reset(1'b0),
-        .locked(),
-        .clk_in1(clk)
-    );
+//    nn_mmcm nnmcmc
+//    (
+//        .clk_out1(clk_120),
+//        .reset(1'b0),
+//        .locked(),
+//        .clk_in1(clk)
+//    );
 
 
 endmodule
+

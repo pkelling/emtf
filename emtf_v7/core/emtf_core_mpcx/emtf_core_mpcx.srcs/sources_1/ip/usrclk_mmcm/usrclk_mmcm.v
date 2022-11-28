@@ -56,12 +56,11 @@
 //  Output     Output      Phase    Duty Cycle   Pk-to-Pk     Phase
 //   Clock     Freq (MHz)  (degrees)    (%)     Jitter (ps)  Error (ps)
 //----------------------------------------------------------------------------
-// CLK_OUT1__160.00000______0.000______50.0______190.317____208.802
-// CLK_OUT2__40.00000______0.000______50.0______273.894____208.802
-// CLK_OUT3__100.00000______0.000______50.0______212.630____208.802
-// CLK_OUT4__200.00000______0.000______50.0______182.470____208.802
-// CLK_OUT5__400.00000______0.000______50.0______163.050____208.802
-// CLK_OUT6__200.00000____270.000______50.0______182.470____208.802
+// CLK_OUT1__160.00000______0.000______50.0______142.483____166.174
+// CLK_OUT2__40.00000______0.000______50.0______185.906____166.174
+// CLK_OUT3__120.00000______0.000______50.0______148.771____166.174
+// CLK_OUT4__200.00000______0.000______50.0______137.833____166.174
+// CLK_OUT5__400.00000______0.000______50.0______124.577____166.174
 //
 //----------------------------------------------------------------------------
 // Input Clock   Freq (MHz)    Input Jitter (UI)
@@ -70,7 +69,7 @@
 
 `timescale 1ps/1ps
 
-(* CORE_GENERATION_INFO = "usrclk_mmcm,clk_wiz_v6_0_5_0_0,{component_name=usrclk_mmcm,use_phase_alignment=true,use_min_o_jitter=false,use_max_i_jitter=false,use_dyn_phase_shift=true,use_inclk_switchover=false,use_dyn_reconfig=false,enable_axi=0,feedback_source=FDBK_AUTO,PRIMITIVE=MMCM,num_out_clk=6,clkin1_period=25.000,clkin2_period=10.0,use_power_down=false,use_reset=true,use_locked=true,use_inclk_stopped=false,feedback_type=SINGLE,CLOCK_MGR_TYPE=NA,manual_override=false}" *)
+(* CORE_GENERATION_INFO = "usrclk_mmcm,clk_wiz_v6_0_5_0_0,{component_name=usrclk_mmcm,use_phase_alignment=true,use_min_o_jitter=false,use_max_i_jitter=false,use_dyn_phase_shift=false,use_inclk_switchover=false,use_dyn_reconfig=false,enable_axi=0,feedback_source=FDBK_AUTO,PRIMITIVE=MMCM,num_out_clk=5,clkin1_period=25.000,clkin2_period=10.0,use_power_down=false,use_reset=true,use_locked=true,use_inclk_stopped=false,feedback_type=SINGLE,CLOCK_MGR_TYPE=NA,manual_override=false}" *)
 
 module usrclk_mmcm 
  (
@@ -80,12 +79,6 @@ module usrclk_mmcm
   output        CLK_OUT3,
   output        CLK_OUT4,
   output        CLK_OUT5,
-  output        CLK_OUT6,
-  // Dynamic phase shift ports
-  input         PSCLK,
-  input         PSEN,
-  input         PSINCDEC,
-  output        PSDONE,
   // Status and control signals
   input         RESET,
   output        LOCKED,
@@ -101,12 +94,6 @@ module usrclk_mmcm
   .CLK_OUT3(CLK_OUT3),
   .CLK_OUT4(CLK_OUT4),
   .CLK_OUT5(CLK_OUT5),
-  .CLK_OUT6(CLK_OUT6),
-  // Dynamic phase shift ports                
-  .PSCLK(PSCLK),
-  .PSEN(PSEN),
-  .PSINCDEC(PSINCDEC),
-  .PSDONE(PSDONE),
   // Status and control signals               
   .RESET(RESET), 
   .LOCKED(LOCKED),

@@ -55,12 +55,11 @@
 //  Output     Output      Phase    Duty Cycle   Pk-to-Pk     Phase
 //   Clock     Freq (MHz)  (degrees)    (%)     Jitter (ps)  Error (ps)
 //----------------------------------------------------------------------------
-// CLK_OUT1__160.00000______0.000______50.0______190.317____208.802
-// CLK_OUT2__40.00000______0.000______50.0______273.894____208.802
-// CLK_OUT3__100.00000______0.000______50.0______212.630____208.802
-// CLK_OUT4__200.00000______0.000______50.0______182.470____208.802
-// CLK_OUT5__400.00000______0.000______50.0______163.050____208.802
-// CLK_OUT6__200.00000____270.000______50.0______182.470____208.802
+// CLK_OUT1__160.00000______0.000______50.0______142.483____166.174
+// CLK_OUT2__40.00000______0.000______50.0______185.906____166.174
+// CLK_OUT3__120.00000______0.000______50.0______148.771____166.174
+// CLK_OUT4__200.00000______0.000______50.0______137.833____166.174
+// CLK_OUT5__400.00000______0.000______50.0______124.577____166.174
 //
 //----------------------------------------------------------------------------
 // Input Clock   Freq (MHz)    Input Jitter (UI)
@@ -81,12 +80,6 @@
     .CLK_OUT3(CLK_OUT3),     // output CLK_OUT3
     .CLK_OUT4(CLK_OUT4),     // output CLK_OUT4
     .CLK_OUT5(CLK_OUT5),     // output CLK_OUT5
-    .CLK_OUT6(CLK_OUT6),     // output CLK_OUT6
-    // Dynamic phase shift ports
-    .PSCLK(PSCLK), // input PSCLK
-    .PSEN(PSEN), // input PSEN
-    .PSINCDEC(PSINCDEC),     // input PSINCDEC
-    .PSDONE(PSDONE),       // output PSDONE
     // Status and control signals
     .RESET(RESET), // input RESET
     .LOCKED(LOCKED),       // output LOCKED

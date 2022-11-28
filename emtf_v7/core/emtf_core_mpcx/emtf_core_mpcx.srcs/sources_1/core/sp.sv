@@ -80,6 +80,7 @@ module sp
     
     // clock
     input 				clk,
+    input               clk120,
 	input 				control_clk,
 	
 	input endcap,
@@ -232,255 +233,253 @@ module sp
 
     // convert CSC primitives into angular values
     prim_conv_sector pcs 
-		(
-		 .vpf    (vpf), 
-		 .q      (q), 
-		 .wg     (wg), 
-		 .hstr   (hstr),
-		 .cpat   (cpat),
-		 .lr     (lr),
-		 .qses   (qses),
-		 .ph     (ph), 
-		 .th11   (th11), 
-		 .th     (th), 
-		 .vl     (vl),
-		 .phzvl  (phzvl),
-		 .me11a  (me11a),
-		 .cpatr  (cpatr),
-		 .ph_hit (ph_hito),
-		 .cs     (pcs_cs), 
-		 .sel    (sel), 
-		 .addr   (addr), 
-		 .r_in   (r_in[12:0]), 
-		 .r_out  (r_out_m[0][12:0]), 
-		 .we     (we), 
-		 .clk    (clk),
-		 .control_clk (control_clk),
-		 .endcap (endcap),
-		 .lat_test (lat_test)
-		 );
+	(
+        .vpf         (vpf), 
+        .q           (q), 
+        .wg          (wg), 
+        .hstr        (hstr),
+        .cpat        (cpat),
+        .lr          (lr),
+        .qses        (qses),
+        .ph          (ph), 
+        .th11        (th11), 
+        .th          (th), 
+        .vl          (vl),
+        .phzvl       (phzvl),
+        .me11a       (me11a),
+        .cpatr       (cpatr),
+        .ph_hit      (ph_hito),
+        .cs          (pcs_cs), 
+        .sel         (sel), 
+        .addr        (addr), 
+        .r_in        (r_in[12:0]), 
+        .r_out       (r_out_m[0][12:0]), 
+        .we          (we), 
+        .clk         (clk),
+        .control_clk (control_clk),
+        .endcap      (endcap),
+        .lat_test    (lat_test)
+	);
 
 	// convert GE11 primitives into angular values
 	prim_conv_sector_ge11 pcs_ge11
 	(
-	  	.ge11_cl (ge11_cl),
-
-		.ph (ge11_ph), 
-		.th (ge11_th),
-		.vl (ge11_vl),
-
-		.phzvl  (ge11_phzvl), // raw hit valid flags for up to 3 ph zones
-		.ph_hit (ge11_ph_hit), // raw hits
-
-		.reg_select  (ge11_cs), // 1 = ph_init, 2 = th_mem
-		.addr        (addr), // address in memory to access. For registers, set to 0
-		.r_in        (r_in), // input data for memory or register
-		.r_out       (r_out_m[1]), // output data from memory or register
-		.we          (we), // write enable for memory or register
-		.clk         (clk), // main logic clock
-		.control_clk (control_clk), // control interface clock
-		.endcap      (endcap)
+        .ge11_cl     (ge11_cl),
+        
+        .ph          (ge11_ph), 
+        .th          (ge11_th),
+        .vl          (ge11_vl),
+        
+        .phzvl       (ge11_phzvl),  // raw hit valid flags for up to 3 ph zones
+        .ph_hit      (ge11_ph_hit), // raw hits
+        
+        .reg_select  (ge11_cs),     // 1 = ph_init, 2 = th_mem
+        .addr        (addr),        // address in memory to access. For registers, set to 0
+        .r_in        (r_in),        // input data for memory or register
+        .r_out       (r_out_m[1]),  // output data from memory or register
+        .we          (we),          // write enable for memory or register
+        .clk         (clk),         // main logic clock
+        .control_clk (control_clk), // control interface clock
+        .endcap      (endcap)
 	);
 
     // construct raw hit zones
     zones zns
-		(
-		 .phzvl   (phzvl),
-		 .ph_hit  (ph_hito), 
-		 .ph_zone (ph_zone), 
-		 .clk     (clk)
-		 );
+	(
+		.phzvl   (phzvl),
+		.ph_hit  (ph_hito), 
+		.ph_zone (ph_zone), 
+		.clk     (clk)
+	);
 
 
     // extend raw hit pulses
     extend_sector exts
-		(
-         .ph_zone   (ph_zone),
-         .ph_ext    (ph_ext),
-		 .drifttime (drifttime), 
-         .clk       (clk)
-		 );
+	(
+        .ph_zone   (ph_zone),
+        .ph_ext    (ph_ext),
+		.drifttime (drifttime), 
+        .clk       (clk)
+	);
 
     // detect ph patterns in all zones
     ph_pattern_sector phps
-		(
-         .st        (ph_ext),
-         .drifttime (drifttime),
-		 .foldn     (ph_foldn),
-         .qcode     (ph_rank),
-         .clk       (clk)
-		 );
+	(
+        .st        (ph_ext),
+        .drifttime (drifttime),
+		.foldn     (ph_foldn),
+        .qcode     (ph_rank),
+        .clk       (clk)
+	);
 	
     // find 3 best ph patterns in each zone
     sort_sector srts
-		(
-		 .ph_rank (ph_rank),
-		 .ph_num  (ph_num),
-		 .ph_q    (ph_q),
-		 .clk     (clk)
-		 );
+	(
+		.ph_rank (ph_rank),
+		.ph_num  (ph_num),
+		.ph_q    (ph_q),
+		.clk     (clk)
+	);
 
     // delay line for polar coordinates 
     coord_delay cdl 
-		(
-		 .phi   (ph), 
-		 .th11i (th11), 
-		 .thi   (th), 
-		 .vli   (vl),
-		 .me11ai(me11a),
-		 .cpati (cpatr),
-		 
-		 .ge11_ph (ge11_ph), 
-		 .ge11_th (ge11_th),
-		 .ge11_vl (ge11_vl),
-		 .use_gem (use_gem),
-		 
-		 .cppf_rxd (cppf_rxd), 
-		 .cppf_rx_valid (cppf_rx_valid),
-		 .use_rpc (use_rpc),
-
-		 
-		 .pho   (phd), 
-		 .th11o (th11d), 
-		 .tho   (thd), 
-		 .vlo_o (vld),
-		 .me11ao(me11ad),
-		 .cpato (cpatd),
-		 
-		 .clk   (clk)
-		 );
+    (
+        .phi           (ph), 
+        .th11i         (th11), 
+        .thi           (th), 
+        .vli           (vl),
+        .me11ai        (me11a),
+        .cpati         (cpatr),
+        
+        .ge11_ph       (ge11_ph), 
+        .ge11_th       (ge11_th),
+        .ge11_vl       (ge11_vl),
+        .use_gem       (use_gem),
+        
+        .cppf_rxd      (cppf_rxd), 
+        .cppf_rx_valid (cppf_rx_valid),
+        .use_rpc       (use_rpc),
+        
+        .pho           (phd), 
+        .th11o         (th11d), 
+        .tho           (thd), 
+        .vlo_o         (vld),
+        .me11ao        (me11ad),
+        .cpato         (cpatd),
+        
+        .clk           (clk)
+	);
 
 
 	// match ph patterns to segments
 	// reroute segments according to ph zones
 	match_ph_segments mphseg
     (
-     .ph_num	(ph_num), 
-	 .ph_q	    (ph_q),
-	 
-     .ph	(phd), 
-	 .vl	(vld), 
-     .th11	(th11d), 
-	 .th	(thd),
-	 .cpat  (cpatd),
-    
-     .vi	(patt_ph_vi), 
-	 .hi	(patt_ph_hi), 
-	 .ci	(patt_ph_ci),
-	 .si	(patt_ph_si),
-	 .ph_match (ph_match),
-	 .th_match (th_match),
-	 .cpat_match (cpat_match),
-	 .ph_qr (ph_qr),
-	 
-     .clk	(clk)
+        .ph_num     (ph_num), 
+        .ph_q       (ph_q),
+        
+        .ph         (phd), 
+        .vl         (vld), 
+        .th11       (th11d), 
+        .th         (thd),
+        .cpat       (cpatd),
+        
+        .vi         (patt_ph_vi), 
+        .hi         (patt_ph_hi), 
+        .ci         (patt_ph_ci),
+        .si         (patt_ph_si),
+        .ph_match   (ph_match),
+        .th_match   (th_match),
+        .cpat_match (cpat_match),
+        .ph_qr      (ph_qr),
+        
+        .clk        (clk)
      );
 
 	// delta ph and th for 12 candidates
 	deltas_sector ds
 	(
-	 .vi (patt_ph_vi), 
-	 .hi (patt_ph_hi), 
-	 .ci (patt_ph_ci), 
-	 .si (patt_ph_si),
-	 .ph_match (ph_match),
-	 .th_match (th_match),
-	 .cpat_match (cpat_match),
-	 .ph_q (ph_qr),
-	 .th_window (th_window),
-	 .th_window_z0 (th_window_z0),
-	 .two_st_tight_timing (two_st_tight_timing),
-
-	 .phi (phi),
-	 .theta (theta),
-	 .cpattern (cpattern),
-	 .delta_ph (delta_ph),
-	 .delta_th (delta_th),
-	 .sign_ph (sign_ph),
-	 .sign_th (sign_th),
-	 .rank (rank),
-	 .vir (vir), 
-	 .hir (hir), 
-	 .cir (cir), 
-	 .sir (sir),
-	 .clk (clk)
+        .vi                  (patt_ph_vi), 
+        .hi                  (patt_ph_hi), 
+        .ci                  (patt_ph_ci), 
+        .si                  (patt_ph_si),
+        .ph_match            (ph_match),
+        .th_match            (th_match),
+        .cpat_match          (cpat_match),
+        .ph_q                (ph_qr),
+        .th_window           (th_window),
+        .th_window_z0        (th_window_z0),
+        .two_st_tight_timing (two_st_tight_timing),
+        
+        .phi                 (phi),
+        .theta               (theta),
+        .cpattern            (cpattern),
+        .delta_ph            (delta_ph),
+        .delta_th            (delta_th),
+        .sign_ph             (sign_ph),
+        .sign_th             (sign_th),
+        .rank                (rank),
+        .vir                 (vir), 
+        .hir                 (hir), 
+        .cir                 (cir), 
+        .sir                 (sir),
+        .clk                 (clk)
 	);
 
 
 	// identify best three tracks 
 	best_tracks bt
     (
-     .phi (phi),
-     .theta (theta),
-	 .cpattern (cpattern),
-     .delta_ph (delta_ph),
-     .delta_th (delta_th),
-     .sign_ph (sign_ph),
-     .sign_th (sign_th),
-     .rank (rank),
-	 .vi (vir), 
-     .hi (hir), 
-     .ci (cir), 
-     .si (sir),
-
-     .bt_phi (bt_phi),
-     .bt_theta (bt_theta),
-	 .bt_cpattern (bt_cpattern),
-     .bt_delta_ph (bt_delta_ph),
-     .bt_delta_th (bt_delta_th),
-     .bt_sign_ph (bt_sign_ph),
-     .bt_sign_th (bt_sign_th),
-     .bt_rank (bt_rank_i),
-	 .bt_vi (bt_vi), 
-     .bt_hi (bt_hi), 
-     .bt_ci (bt_ci), 
-     .bt_si (bt_si),
-
-     .clk (clk)
+        .phi         (phi),
+        .theta       (theta),
+        .cpattern    (cpattern),
+        .delta_ph    (delta_ph),
+        .delta_th    (delta_th),
+        .sign_ph     (sign_ph),
+        .sign_th     (sign_th),
+        .rank        (rank),
+        .vi          (vir), 
+        .hi          (hir), 
+        .ci          (cir), 
+        .si          (sir),
+        
+        .bt_phi      (bt_phi),
+        .bt_theta    (bt_theta),
+        .bt_cpattern (bt_cpattern),
+        .bt_delta_ph (bt_delta_ph),
+        .bt_delta_th (bt_delta_th),
+        .bt_sign_ph  (bt_sign_ph),
+        .bt_sign_th  (bt_sign_th),
+        .bt_rank     (bt_rank_i),
+        .bt_vi       (bt_vi), 
+        .bt_hi       (bt_hi), 
+        .bt_ci       (bt_ci), 
+        .bt_si       (bt_si),
+        
+        .clk         (clk)
     );
 
     // single hit trigger
     // take only chambers from this sector, not neighbor 
     single sngl
     (
-        .ph   (ph[4:0]),
-        .th11 (th11[1:0]),
-        .th   (th[4:0]),
-        .vl   (vl[4:0]),
+        .ph           (ph[4:0]),
+        .th11         (th11[1:0]),
+        .th           (th[4:0]),
+        .vl           (vl[4:0]),
         .vl_single    (vl_stub[0]),
         .ph_single    (ph_stub[0]),
         .th_single    (th_stub[0]),
         .single_delay (single_delay),
         .en           (en_single),
-        .clk (clk)
+        .clk          (clk)
     );
 
     // two-muon trigger, one track + one single hit in ME1/1
     two_mu twom
     (
-       
-		.phi   (ph), 
-        .th11i (th11), 
-        .thi   (th), 
-        .vli   (vl),
-        .me11ai(me11a),
-        .cpati (cpatr),
-
-        .bt_rank_i (bt_rank_i),
-        .bt_vi (bt_vi), 
-        .bt_hi (bt_hi), 
-        .bt_ci (bt_ci), 
-        .bt_si (bt_si),
+        .phi       (ph),
+        .th11i     (th11), 
+        .thi       (th), 
+        .vli       (vl),
+        .me11ai    (me11a),
+        .cpati     (cpatr),
         
-        .vl_stub (vl_stub[1]),
-        .ph_stub (ph_stub[1]),
-        .th_stub (th_stub[1]),
+        .bt_rank_i (bt_rank_i),
+        .bt_vi     (bt_vi), 
+        .bt_hi     (bt_hi), 
+        .bt_ci     (bt_ci), 
+        .bt_si     (bt_si),
+        
+        .vl_stub   (vl_stub[1]),
+        .ph_stub   (ph_stub[1]),
+        .th_stub   (th_stub[1]),
         .cpat_stub (cpat_stub),
-    
-        .delay (delay_two_mu),
-        .en (en_two_mu),
-    
-        .clk (clk)
+        
+        .delay     (delay_two_mu),
+        .en        (en_two_mu),
+        
+        .clk       (clk)
     );
 
     // high-multiplicity trigger, a.k.a. shower
@@ -502,61 +501,62 @@ module sp
     // construct PT LUT addresses for best tracks
     ptlut_address pta
     (
-        .bt_phi_i (bt_phi),
-        .bt_theta_i (bt_theta),
-        .bt_cpattern (bt_cpattern),
-        .bt_delta_ph (bt_delta_ph),
-        .bt_delta_th (bt_delta_th),
-        .bt_sign_ph (bt_sign_ph),
-        .bt_sign_th (bt_sign_th),
-        .bt_rank_i (bt_rank_i),
-        .bt_vi (bt_vi), 
-        .bt_hi (bt_hi), 
-        .bt_ci (bt_ci), 
-        .bt_si (bt_si),       
-        .vl_single (vl_single),
-        .ph_single (ph_single),
-        .th_single (th_single),
-        .cpat_single (cpat_single),
-        .ptlut_addr (ptlut_addr),
-        .ptlut_cs (ptlut_cs),
+        .bt_phi_i       (bt_phi),
+        .bt_theta_i     (bt_theta),
+        .bt_cpattern    (bt_cpattern),
+        .bt_delta_ph    (bt_delta_ph),
+        .bt_delta_th    (bt_delta_th),
+        .bt_sign_ph     (bt_sign_ph),
+        .bt_sign_th     (bt_sign_th),
+        .bt_rank_i      (bt_rank_i),
+        .bt_vi          (bt_vi), 
+        .bt_hi          (bt_hi), 
+        .bt_ci          (bt_ci), 
+        .bt_si          (bt_si),       
+        .vl_single      (vl_single),
+        .ph_single      (ph_single),
+        .th_single      (th_single),
+        .cpat_single    (cpat_single),
+        .ptlut_addr     (ptlut_addr),
+        .ptlut_cs       (ptlut_cs),
         .ptlut_addr_val (ptlut_addr_val),
-        .bt_rank_o (bt_rank),
-        .gmt_phi (gmt_phi),
-        .gmt_eta (gmt_eta),
-        .gmt_qlt (gmt_qlt),
-        .gmt_crg (gmt_crg),
-        .sector (sector),
-        .endcap (endcap),
+        .bt_rank_o      (bt_rank),
+        .gmt_phi        (gmt_phi),
+        .gmt_eta        (gmt_eta),
+        .gmt_qlt        (gmt_qlt),
+        .gmt_crg        (gmt_crg),
+        .sector         (sector),
+        .endcap         (endcap),
         .low_th_promote (low_th_promote),
-        .clk (clk)
+        .clk            (clk)
     );    
 
     // neural network for PT assignment
 
     nn_tux nn
     (
-        .bt_phi (bt_phi),
-        .bt_theta (bt_theta),
+        .bt_phi      (bt_phi),
+        .bt_theta    (bt_theta),
         .bt_cpattern (bt_cpattern),
         .bt_delta_ph (bt_delta_ph),
         .bt_delta_th (bt_delta_th),
-        .bt_sign_ph (bt_sign_ph),
-        .bt_sign_th (bt_sign_th),
-        .bt_rank (bt_rank_i),
-        .bt_vi (bt_vi), 
-        .bt_hi (bt_hi), 
-        .bt_ci (bt_ci), 
-        .bt_si (bt_si),
+        .bt_sign_ph  (bt_sign_ph),
+        .bt_sign_th  (bt_sign_th),
+        .bt_rank     (bt_rank_i),
+        .bt_vi       (bt_vi), 
+        .bt_hi       (bt_hi), 
+        .bt_ci       (bt_ci), 
+        .bt_si       (bt_si),
         
-        .pt_out   (nn_pt),
-        .pt_valid (nn_pt_v),
-        .d0_out   (nn_d0),
-        .d0_valid (nn_d0_v),
-               
-        .sector (sector),
-        .endcap (endcap),
-        .clk (clk)
+        .pt_out      (nn_pt),
+        .pt_valid    (nn_pt_v),
+        .d0_out      (nn_d0),
+        .d0_valid    (nn_d0_v),
+        
+        .sector      (sector),
+        .endcap      (endcap),
+        .clk         (clk),
+        .clk_120     (clk120)
     );    
 
 
