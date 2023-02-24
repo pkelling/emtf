@@ -8,8 +8,8 @@
 module shower
 (
 	input csc_lct_mpcx lct_i [5:0][8:0][seg_ch-1:0], // [station][chamber]
-    output [1:0] hmt_out, // {out_of_time, in_time}
-	output reg [25:0] hmt_rate [1:0],
+    output [2:0] hmt_out, // bits = {tight, nominal, loose}
+	output reg [25:0] hmt_rate [2:0], // index = [0=loose, 1=nominal, 2=tight]
     input [3:0] hmt_delay,
     input clk
 );
@@ -22,10 +22,11 @@ module shower
     integer i, j;
     reg [3:0] hmt [4:0][8:0]; // high-mult triggers per chamber [station][chamber]
 
-    reg [1:0] hmt_out_d [DEL-1:0]; // delay line to match trigger latency
-    reg [1:0] mus;
+    reg [2:0] hmt_out_d [DEL-1:0]; // delay line to match trigger latency
+    reg [2:0] mus; // 1=loose, 2=nominal, 3=tight
 	reg [25:0] rate_period;
-	reg [25:0] rate_counter [1:0];
+	reg [25:0] rate_counter [2:0];
+	reg [1:0] ci;
 
     assign hmt_out = hmt_out_d[hmt_delay + MIN_DEL];
 
@@ -39,7 +40,7 @@ module shower
     
         hmt_out_d[0] = mus; 
     
-        mus = 2'h0;
+        mus = 3'h0;
     
         for (i = 0; i < 5; i++) // station loop - neighbor sector not used
         begin
@@ -52,23 +53,24 @@ module shower
                     lct_i[i][j][1].bx0
                 };
                 
-                // logic according to msg from Efe 2022-04-18
-                if (hmt[i][j][1:0] >= 2'b10) mus[0] = 1'b1;
-                if (hmt[i][j][1:0] == 2'b11) mus[1] = 1'b1;
+                // rework according to https://its.cern.ch/jira/browse/CMSLITDPG-1087
+                if (hmt[i][j][1:0] == 2'b01) mus[0] = 1'b1; // loose
+                if (hmt[i][j][1:0] == 2'b10) mus[1] = 1'b1; // nominal
+                if (hmt[i][j][1:0] == 2'b11) mus[2] = 1'b1; // tight
             end
         end
         
-        for (i = 0; i < 2; i++) // mus bit loop
+        for (i = 0; i < 3; i++) // mus bit loop
         begin
             // rate counter update
             if (mus[i] != 1'h0 && rate_counter[i] != 26'h3ffffff) 
               rate_counter[i]++;
         end
-    
+
         if (rate_period == 26'd40078700) // 1 sec 
         begin
             // rate period expired, store and reset all counters
-            for (i = 0; i < 2; i = i+1) // mus bit loop
+            for (i = 0; i < 3; i = i+1) // hmt code loop
             begin
               hmt_rate[i] = rate_counter[i]; 
               rate_counter[i] = 26'h0;

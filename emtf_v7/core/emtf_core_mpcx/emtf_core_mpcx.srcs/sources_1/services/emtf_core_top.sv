@@ -817,12 +817,12 @@ module emtf_core_top
     wire [8:0] gmt_eta [2:0]; // eta for gmt
     wire [3:0] gmt_qlt [2:0]; // quality for gmt
     wire [2:0] gmt_crg; // charge for gmt
-    (* mark_debug *) wire [1:0] hmt_out; // {out_of_time, in_time}
+    (* mark_debug *) wire [2:0] hmt_out; 
 	(* mark_debug *) wire [7:0] nn_pt [2:0]; // NN PT value
     (* mark_debug *) wire [2:0] nn_pt_v; // NN valid flag for PT
 	wire [2:0] nn_d0 [2:0]; // NN D0 value
     wire [2:0] nn_d0_v; // NN valid flag for D0
-    wire [25:0] hmt_rate [1:0];
+    wire [25:0] hmt_rate [2:0];
     
 `ifdef WITH_CORE    
 	sp core 

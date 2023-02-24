@@ -105,7 +105,7 @@ module register_bank
     output reg      en_manual_gem,
     input  [1:0] alg_out_range_gem [6:0],
     input  [1:0] bc0_period_err_gem [6:0],
-    input [25:0] hmt_rate [1:0]
+    input [25:0] hmt_rate [2:0]
 );
 
 
@@ -556,7 +556,7 @@ module register_bank
     assign ge11_corr_cnt[0] = {ge11_correction_cnt[3], ge11_correction_cnt[2], ge11_correction_cnt[1], ge11_correction_cnt[0]};
     assign ge11_corr_cnt[1] = {16'hbabe,               ge11_correction_cnt[6], ge11_correction_cnt[5], ge11_correction_cnt[4]};
 
-    wire [63:0] hmt_rate_comb = {hmt_rate[1], hmt_rate[0]};
+    wire [63:0] hmt_rate_comb = {hmt_rate[2], hmt_rate[1]};
 
 	// OR mux for output data
 	always @(posedge control_clk)
@@ -707,7 +707,8 @@ module register_bank
 				9'h074: begin r_out = r_out | gem_align_status[0]; end
 				9'h075: begin r_out = r_out | gem_align_status[1]; end
 				9'h076: begin r_out = r_out | {en_manual_gem, ttc_bc0_delay_gem}; end
-				9'h077: begin r_out = r_out | hmt_rate_comb; end
+				9'h077: begin r_out = r_out | hmt_rate_comb; end // {tight, nominal}
+				9'h078: begin r_out = r_out | hmt_rate[0]; end // {loose}
 				
 			endcase
 			in_delay_tap_rb_r = in_delay_tap_rb;
