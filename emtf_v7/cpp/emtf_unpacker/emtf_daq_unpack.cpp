@@ -153,7 +153,7 @@ int main (int argc, char* argv[])
 				// else
 				// 	printf ("ERROR: EMUTF block of counters does not match: %016lx %016lx\n", buffer[i], 0x0000000080000000ULL);
 
-				uint64_t me_q, me_wg, me_hs, me_cscid, me_bxn, me_tbin, me_station;
+				uint64_t me_q, me_wg, me_hs, me_cscid, me_bxn, me_tbin, me_station, me_frm, me_hmt;
 				uint64_t trk_tbin, trk_phi_inner, trk_phi_outer, trk_eta, trk_pt, trk_q;
 				uint64_t trk_me_id[4], trk_me_tbin[4], trk_pt_lut_address;
 				uint64_t rpc_ph,rpc_th,rpc_ln, rpc_fr, rpc_wr, rpc_tb;
@@ -164,15 +164,17 @@ int main (int argc, char* argv[])
 				{
 					if (b(0x8000800080008000ULL) == 0x0000000080008000ULL) // ME data
 					{
-						me_q = w(4, 4);
+						me_q = w(4, 3);
 						me_wg = w(8, 7);
 						me_hs = w(16, 8);
 						me_cscid = w(24, 4);
-						me_bxn = w(32, 12);
+						me_frm = w(44,1);
+						me_hmt = 0;
+						if (me_frm == 1) me_hmt = w(29,1); // HMT valid only in frame 1
 						me_tbin = w(48, 3);
 						me_station = w(52, 3);
-						printf ("CSC   stub: q: %ld wg: %03ld hs: %03ld cscid: %ld bxn: %03lx tbin: %ld station: %ld\n",
-								me_q, me_wg, me_hs, me_cscid, me_bxn, me_tbin, me_station);
+						printf ("CSC   stub: q: %ld wg: %03ld hs: %03ld cscid: %ld tbin: %ld station: %ld frm: %ld hmt: %ld\n",
+								me_q, me_wg, me_hs, me_cscid, me_tbin, me_station, me_frm, me_hmt);
 						if (check_range)
 						{
 							if (me_wg > 111) printf ("ERROR: me_wg out of range: %ld\n", me_wg);

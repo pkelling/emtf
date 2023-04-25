@@ -3,7 +3,7 @@
 <!--                                                         -->
 <!-- Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.   -->
 
-<Project Version="7" Minor="49" Path="/home/madorsky/github/emtf/emtf_v7/control/emtf_control_bm/emtf_control_bm.xpr">
+<Project Version="7" Minor="49" Path="/home/madorsky/github/vivado/emtf/emtf_v7/control/emtf_control_bm/emtf_control_bm.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="0cd0da0348634748bde4f67945989e9b"/>

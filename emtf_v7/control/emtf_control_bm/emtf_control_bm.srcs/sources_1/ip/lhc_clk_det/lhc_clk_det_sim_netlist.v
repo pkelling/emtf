@@ -1,10 +1,10 @@
 // Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
-// Date        : Thu Jul 30 13:23:19 2020
-// Host        : endcap-tf1.phys.ufl.edu running 64-bit CentOS Linux release 7.8.2003 (Core)
+// Date        : Fri Mar 24 18:20:27 2023
+// Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
 // Command     : write_verilog -force -mode funcsim
-//               /home/madorsky/github/emtf/emtf_v7/control/emtf_control_bm/emtf_control_bm.srcs/sources_1/ip/lhc_clk_det/lhc_clk_det_sim_netlist.v
+//               /home/madorsky/github/vivado/emtf/emtf_v7/control/emtf_control_bm/emtf_control_bm.srcs/sources_1/ip/lhc_clk_det/lhc_clk_det_sim_netlist.v
 // Design      : lhc_clk_det
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.

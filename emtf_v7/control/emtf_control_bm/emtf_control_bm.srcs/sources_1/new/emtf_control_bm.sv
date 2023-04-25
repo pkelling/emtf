@@ -96,14 +96,17 @@ module emtf_control_bm
 
 	output axi_resetn,
 	output core_phase_inc,
+
+    // ttc outputs	
 	output reg mpc_inject,
-	output l1a,
+	output reg l1a,
 	output bc0,
 	output ev_cnt_reset,
-	output ev_cnt_reset_tp,
 	output reg or_cnt_reset,
 	output reg resync,
     output reg hard_reset,
+
+	output ev_cnt_reset_tp,
     
     input ext_clk_in,
     input [13:0] ext_data_in,
@@ -467,7 +470,8 @@ module emtf_control_bm
 		.ttc_dat    ()
 	); 	 
 
-	assign l1a = L1Accept | l1a_internal;
+//	assign l1a = L1Accept | l1a_internal;
+    always @(posedge lhc_clk) l1a = L1Accept | l1a_internal;
 	
 	wire bc0_w = bc0;
 	wire resync_w = resync;
