@@ -75,7 +75,7 @@ module sp
         
 	output [7:0] nn_pt [2:0], // NN PT value
 	output [2:0] nn_pt_v, // NN valid flag for PT
-	output [2:0] nn_d0 [2:0], // NN D0 value
+	output [1:0] nn_d0 [2:0], // NN D0 value
 	output [2:0] nn_d0_v, // NN valid flag for D0
     
     // clock

@@ -820,7 +820,7 @@ module emtf_core_top
     (* mark_debug *) wire [2:0] hmt_out; 
 	(* mark_debug *) wire [7:0] nn_pt [2:0]; // NN PT value
     (* mark_debug *) wire [2:0] nn_pt_v; // NN valid flag for PT
-	wire [2:0] nn_d0 [2:0]; // NN D0 value
+	wire [1:0] nn_d0 [2:0]; // NN D0 value
     wire [2:0] nn_d0_v; // NN valid flag for D0
     wire [25:0] hmt_rate [2:0];
     
