@@ -47,7 +47,7 @@ module nn_tux
 
     logic [3:0] mode [2:0];
     logic [1:0] mux_phase = 2'h0;
-    logic [1:0] mux_phase_out [2:0] = '{2'd0, 2'd1, 2'd2}; // output multiplexor depends on exact NN latency, needs rework if latency changes 
+    logic [1:0] mux_phase_out [2:0] = '{2'd0, 2'd2, 2'd1}; // output multiplexor depends on exact NN latency, needs rework if latency changes 
     logic [1:0] clk_hist;
 
     localparam NN_LATENCY = 4;
