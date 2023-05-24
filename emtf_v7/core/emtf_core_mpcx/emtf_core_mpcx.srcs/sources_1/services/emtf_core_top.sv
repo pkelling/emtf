@@ -817,12 +817,12 @@ module emtf_core_top
     wire [8:0] gmt_eta [2:0]; // eta for gmt
     wire [3:0] gmt_qlt [2:0]; // quality for gmt
     wire [2:0] gmt_crg; // charge for gmt
-    (* mark_debug *) wire [1:0] hmt_out; // {out_of_time, in_time}
+    (* mark_debug *) wire [2:0] hmt_out; 
 	(* mark_debug *) wire [7:0] nn_pt [2:0]; // NN PT value
     (* mark_debug *) wire [2:0] nn_pt_v; // NN valid flag for PT
-	wire [2:0] nn_d0 [2:0]; // NN D0 value
+	wire [1:0] nn_d0 [2:0]; // NN D0 value
     wire [2:0] nn_d0_v; // NN valid flag for D0
-    wire [25:0] hmt_rate [1:0];
+    wire [25:0] hmt_rate [2:0];
     
 `ifdef WITH_CORE    
 	sp core 
@@ -1103,7 +1103,7 @@ module emtf_core_top
 	assign fp[1] = |rx_valid_tp; // valid bits from any input link, before any deframing, for latency measurement with scope
 //	assign fp[2] = bt_rank_d[0] == 7'h0 && bt_rank_d[2] == 7'h0; // output valid track flag for local trigger
 	assign fp[2] = fp_trigger; // output valid track flag for local trigger
-	assign fp[3] = txoutclk_async_div[3];//clk40;
+	assign fp[3] = ttc_l1a_rx; //txoutclk_async_div[3];//clk40;
 	assign resync_tp = ttc_resync_rx;
 
 	(* mark_debug *) wire ttc_l1a_w = ttc_l1a_rx;

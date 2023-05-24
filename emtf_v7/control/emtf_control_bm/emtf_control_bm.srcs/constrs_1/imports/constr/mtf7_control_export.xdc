@@ -767,3 +767,11 @@ set_false_path -from [get_clocks -of_objects [get_pins clocks_/lhc_clk_monitor/i
 set_false_path -from [get_clocks -of_objects [get_pins pcie_/pcie_7x_0_support_i/pipe_clock_i/mmcm_i/CLKOUT2]] -to [get_clocks -of_objects [get_pins clocks_/lhc_clk_monitor/inst/CLK_CORE_DRP_I/clk_inst/mmcm_adv_inst/CLKOUT0]]
 set_false_path -from [get_clocks clk50_p] -to [get_clocks -of_objects [get_pins clocks_/lhc_clk_monitor/inst/CLK_CORE_DRP_I/clk_inst/mmcm_adv_inst/CLKOUT0]]
 set_false_path -from [get_clocks -of_objects [get_pins clocks_/lhc_clk_monitor/inst/CLK_CORE_DRP_I/clk_inst/mmcm_adv_inst/CLKOUT0]] -to [get_clocks clk50_p]
+
+#set_property IOB TRUE [get_ports mpc_inject]
+set_property IOB TRUE [get_ports l1a]
+set_property IOB TRUE [get_ports bc0]
+set_property IOB TRUE [get_ports ev_cnt_reset]
+set_property IOB TRUE [get_ports or_cnt_reset]
+set_property IOB TRUE [get_ports resync]
+set_property IOB TRUE [get_ports hard_reset]

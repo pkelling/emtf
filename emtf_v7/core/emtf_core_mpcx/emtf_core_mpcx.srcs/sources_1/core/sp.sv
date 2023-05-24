@@ -70,12 +70,12 @@ module sp
     output [8:0] gmt_eta [2:0], // eta for gmt
     output [3:0] gmt_qlt [2:0], // quality for gmt
 	output [2:0] gmt_crg,
-    output [1:0] hmt_out, // {out_of_time, in_time}
-    output [25:0] hmt_rate [1:0],
+    output [2:0] hmt_out, // bits = {tight, nominal, loose}
+    output [25:0] hmt_rate [2:0], // index = [0=loose, 1=nominal, 2=tight]
         
 	output [7:0] nn_pt [2:0], // NN PT value
 	output [2:0] nn_pt_v, // NN valid flag for PT
-	output [2:0] nn_d0 [2:0], // NN D0 value
+	output [1:0] nn_d0 [2:0], // NN D0 value
 	output [2:0] nn_d0_v, // NN valid flag for D0
     
     // clock

@@ -23,10 +23,10 @@ module output_formatter
     
     input [8:0] bt_pt [2:0], // pt values for best tracks
     output reg [8:0] bt_pt_tx [2:0], // pt values for best tracks as transmitted to uGMT
-    input  [1:0] hmt,
+    input  [2:0] hmt,
     input [7:0]  nn_pt [2:0], // NN PT values
     input [2:0] nn_pt_v, // NN PT valid flags
-    input [2:0] nn_d0 [2:0], // NN dXY
+    input [1:0] nn_d0 [2:0], // NN dXY
 
     output reg [63:0] txdata [2:0],
     
@@ -139,13 +139,14 @@ module output_formatter
             txdata[i][49:34] = {trk_id[3], trk_id[2], trk_id[1], trk_id[0]}; // track addresses
             txdata[i][59:52] = (nn_pt_v[i] == 1'b1) ? nn_pt[i] : 8'h0; // Pt unconstrained in specs 
             txdata[i][60]    = 1'h0; // reserved in specs
-            txdata[i][62:61] = (nn_pt_v[i] == 1'b1) ? nn_d0[i][1:0] : 2'h0; // IP = dXY in specs. Sending only 2-bit value, dropping sign in MSB, according to msg from Sergo 2021-11-14
+            txdata[i][62:61] = (nn_pt_v[i] == 1'b1) ? nn_d0[i] : 2'h0; // IP = dXY in specs. Sendings 2 higher bits from original 7-bit value, msg from Efe 2023-05-09
         end
 
         // assign HMT bits according to EMTF-to-uGMT-format_2022-06-30.xlsx
-        txdata[0][51:50] = hmt; 
-        txdata[1][51:50] = 1'b0; // reserved
-        txdata[2][51:50] = 1'b0; // reserved
+        // rework according to https://its.cern.ch/jira/browse/CMSLITDPG-1087
+        txdata[0][51:50] = hmt[2:1]; 
+        txdata[1][51:50] = {1'b0, hmt[0]}; 
+        txdata[2][51:50] = 2'b0; // reserved
 
         // remove outputs if there was HR recently
         if (hr_cnt > 24'h0)

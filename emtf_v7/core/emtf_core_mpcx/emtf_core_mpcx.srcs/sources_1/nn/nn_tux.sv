@@ -30,7 +30,7 @@ module nn_tux
     
     output reg [7:0] pt_out [2:0],
     output reg [2:0] pt_valid,
-    output reg [2:0] d0_out [2:0],
+    output reg [1:0] d0_out [2:0],
     output reg [2:0] d0_valid,
     // clock
     input clk,
@@ -47,17 +47,86 @@ module nn_tux
 
     logic [3:0] mode [2:0];
     logic [1:0] mux_phase = 2'h0;
-    logic [1:0] mux_phase_out [2:0] = '{2'd0, 2'd1, 2'd2}; // output multiplexor depends on exact NN latency, needs rework if latency changes 
+    logic [1:0] mux_phase_out [2:0] = '{2'd0, 2'd2, 2'd1}; // output multiplexor depends on exact NN latency, needs rework if latency changes 
     logic [1:0] clk_hist;
 
     localparam NN_LATENCY = 4;
     reg [2:0] valid_in [NN_LATENCY-1:0];    
 
+    reg [bw_th-1:0]  bt_theta_r    [2:0];
+    reg [3:0]        bt_cpattern_r [2:0][3:0];
+    reg [bw_fph-1:0] bt_delta_ph_r [2:0][5:0];
+    reg [bw_th-1:0]  bt_delta_th_r [2:0][5:0]; 
+    reg [5:0]        bt_sign_ph_r  [2:0];
+    reg [5:0]        bt_sign_th_r  [2:0];
+
     always @(*)
     begin
+        bt_theta_r    = bt_theta;        
+        bt_cpattern_r = bt_cpattern;
+        bt_delta_ph_r = bt_delta_ph;
+        bt_delta_th_r = bt_delta_th; 
+        bt_sign_ph_r  = bt_sign_ph; 
+        bt_sign_th_r  = bt_sign_th;  
+    
         for (i = 0; i < 3; i++) // best track loop
         begin
+            // mode = ME{1,2,3,4}
             mode[i] = {bt_rank[i][5], bt_rank[i][3], bt_rank[i][1], bt_rank[i][0]};
+            
+            // invalidate deltas and patterns according to mode
+            if (mode[i][3] == 1'b0) // ME1 invalid
+            begin
+                bt_cpattern_r[i][0] = 0; // ME1
+                
+                bt_delta_ph_r[i][0] = {bw_fph{1'b1}}; // 12 
+                bt_delta_ph_r[i][1] = {bw_fph{1'b1}}; // 13
+                bt_delta_ph_r[i][2] = {bw_fph{1'b1}}; // 14
+                
+                bt_delta_th_r[i][0] = {bw_th{1'b1}}; // 12 
+                bt_delta_th_r[i][1] = {bw_th{1'b1}}; // 13
+                bt_delta_th_r[i][2] = {bw_th{1'b1}}; // 14
+            end
+
+            if (mode[i][2] == 1'b0) // ME2 invalid
+            begin
+                bt_cpattern_r[i][1] = 0; // ME2
+                
+                bt_delta_ph_r[i][0] = {bw_fph{1'b1}}; // 12 
+                bt_delta_ph_r[i][3] = {bw_fph{1'b1}}; // 23
+                bt_delta_ph_r[i][4] = {bw_fph{1'b1}}; // 24
+                
+                bt_delta_th_r[i][0] = {bw_th{1'b1}}; // 12 
+                bt_delta_th_r[i][3] = {bw_th{1'b1}}; // 23
+                bt_delta_th_r[i][4] = {bw_th{1'b1}}; // 24
+            end
+
+            if (mode[i][1] == 1'b0) // ME3 invalid
+            begin
+                bt_cpattern_r[i][2] = 0; // ME3
+                
+                bt_delta_ph_r[i][1] = {bw_fph{1'b1}}; // 13 
+                bt_delta_ph_r[i][3] = {bw_fph{1'b1}}; // 23
+                bt_delta_ph_r[i][5] = {bw_fph{1'b1}}; // 34
+                
+                bt_delta_th_r[i][1] = {bw_th{1'b1}}; // 13 
+                bt_delta_th_r[i][3] = {bw_th{1'b1}}; // 23
+                bt_delta_th_r[i][5] = {bw_th{1'b1}}; // 34
+            end
+
+            if (mode[i][0] == 1'b0) // ME4 invalid
+            begin
+                bt_cpattern_r[i][3] = 0; // ME4
+                
+                bt_delta_ph_r[i][2] = {bw_fph{1'b1}}; // 14 
+                bt_delta_ph_r[i][4] = {bw_fph{1'b1}}; // 24
+                bt_delta_ph_r[i][5] = {bw_fph{1'b1}}; // 34
+                
+                bt_delta_th_r[i][2] = {bw_th{1'b1}}; // 14 
+                bt_delta_th_r[i][4] = {bw_th{1'b1}}; // 24
+                bt_delta_th_r[i][5] = {bw_th{1'b1}}; // 34
+            end
+
         end
     end
 
@@ -104,7 +173,7 @@ module nn_tux
             mux_phase++;
 
         pt_out [mux_phase_out[mux_phase]] = PT;
-        d0_out [mux_phase_out[mux_phase]] = dXY[6:4];
+        d0_out [mux_phase_out[mux_phase]] = dXY[6:5];
 
         // adding delays to prevent issues in simulation
         clk_hist[1] = #1 clk_hist[0];
@@ -121,34 +190,34 @@ module nn_tux
         .ap_idle         (),
         .ap_ready        (),
         
-        .input1_0_V      (bt_delta_ph [mux_phase][0]),
-        .input1_1_V      (bt_delta_ph [mux_phase][1]),
-        .input1_2_V      (bt_delta_ph [mux_phase][2]),
-        .input1_3_V      (bt_delta_ph [mux_phase][3]),
-        .input1_4_V      (bt_delta_ph [mux_phase][4]),
-        .input1_5_V      (bt_delta_ph [mux_phase][5]),
-        .input1_6_V      ({12'b0, bt_sign_ph  [mux_phase][0]}),
-        .input1_7_V      ({12'b0, bt_sign_ph  [mux_phase][1]}),
-        .input1_8_V      ({12'b0, bt_sign_ph  [mux_phase][2]}),
-        .input1_9_V      ({12'b0, bt_sign_ph  [mux_phase][3]}),
-        .input1_10_V     ({12'b0, bt_sign_ph  [mux_phase][4]}),
-        .input1_11_V     ({12'b0, bt_sign_ph  [mux_phase][5]}),
-        .input1_12_V     ({6'b0 , bt_delta_th [mux_phase][0]}),
-        .input1_13_V     ({6'b0 , bt_delta_th [mux_phase][1]}),
-        .input1_14_V     ({6'b0 , bt_delta_th [mux_phase][2]}),
-        .input1_15_V     ({6'b0 , bt_delta_th [mux_phase][3]}),
-        .input1_16_V     ({6'b0 , bt_delta_th [mux_phase][4]}),
-        .input1_17_V     ({6'b0 , bt_delta_th [mux_phase][5]}),
-        .input1_18_V     ({12'b0, bt_sign_th  [mux_phase][0]}),
-        .input1_19_V     ({12'b0, bt_sign_th  [mux_phase][1]}),
-        .input1_20_V     ({12'b0, bt_sign_th  [mux_phase][2]}),
-        .input1_21_V     ({12'b0, bt_sign_th  [mux_phase][3]}),
-        .input1_22_V     ({12'b0, bt_sign_th  [mux_phase][4]}),
-        .input1_23_V     ({12'b0, bt_sign_th  [mux_phase][5]}),
-        .input1_24_V     ({9'b0 , bt_cpattern [mux_phase][0]}),
-        .input1_25_V     ({9'b0 , bt_cpattern [mux_phase][1]}),
-        .input1_26_V     ({9'b0 , bt_cpattern [mux_phase][2]}),
-        .input1_27_V     ({9'b0 , bt_cpattern [mux_phase][3]}),
+        .input1_0_V      (bt_delta_ph_r [mux_phase][0]),
+        .input1_1_V      (bt_delta_ph_r [mux_phase][1]),
+        .input1_2_V      (bt_delta_ph_r [mux_phase][2]),
+        .input1_3_V      (bt_delta_ph_r [mux_phase][3]),
+        .input1_4_V      (bt_delta_ph_r [mux_phase][4]),
+        .input1_5_V      (bt_delta_ph_r [mux_phase][5]),
+        .input1_6_V      ({12'b0, bt_sign_ph_r  [mux_phase][0]}),
+        .input1_7_V      ({12'b0, bt_sign_ph_r  [mux_phase][1]}),
+        .input1_8_V      ({12'b0, bt_sign_ph_r  [mux_phase][2]}),
+        .input1_9_V      ({12'b0, bt_sign_ph_r  [mux_phase][3]}),
+        .input1_10_V     ({12'b0, bt_sign_ph_r  [mux_phase][4]}),
+        .input1_11_V     ({12'b0, bt_sign_ph_r  [mux_phase][5]}),
+        .input1_12_V     ({6'b0 , bt_delta_th_r [mux_phase][0]}),
+        .input1_13_V     ({6'b0 , bt_delta_th_r [mux_phase][1]}),
+        .input1_14_V     ({6'b0 , bt_delta_th_r [mux_phase][2]}),
+        .input1_15_V     ({6'b0 , bt_delta_th_r [mux_phase][3]}),
+        .input1_16_V     ({6'b0 , bt_delta_th_r [mux_phase][4]}),
+        .input1_17_V     ({6'b0 , bt_delta_th_r [mux_phase][5]}),
+        .input1_18_V     ({12'b0, bt_sign_th_r  [mux_phase][0]}),
+        .input1_19_V     ({12'b0, bt_sign_th_r  [mux_phase][1]}),
+        .input1_20_V     ({12'b0, bt_sign_th_r  [mux_phase][2]}),
+        .input1_21_V     ({12'b0, bt_sign_th_r  [mux_phase][3]}),
+        .input1_22_V     ({12'b0, bt_sign_th_r  [mux_phase][4]}),
+        .input1_23_V     ({12'b0, bt_sign_th_r  [mux_phase][5]}),
+        .input1_24_V     ({9'b0 , bt_cpattern_r [mux_phase][0]}),
+        .input1_25_V     ({9'b0 , bt_cpattern_r [mux_phase][1]}),
+        .input1_26_V     ({9'b0 , bt_cpattern_r [mux_phase][2]}),
+        .input1_27_V     ({9'b0 , bt_cpattern_r [mux_phase][3]}),
         .input1_28_V     ({6'b0 , bt_theta    [mux_phase]}),
         .layer12_out_0_V (PT),
         .layer12_out_1_V (dXY)
