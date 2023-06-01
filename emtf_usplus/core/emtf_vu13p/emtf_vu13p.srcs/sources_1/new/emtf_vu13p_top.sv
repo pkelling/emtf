@@ -114,8 +114,8 @@ module emtf_vu13p_top
     
     c2c_gty_tux c2c_gty_i
     (
-        .mgtrefclk0_x0y6_int (refclk[0]),
-        .mgtrefclk_odiv2_b   (refclk_odiv[0]),
+        .mgtrefclk0_x0y6_int (refclk[4]),
+        .mgtrefclk_odiv2_b   (refclk_odiv[4]),
         .gtyrxn_int (c2c_rxn),
         .gtyrxp_int (c2c_rxp),
         .gtytxn_int (c2c_txn),
@@ -144,46 +144,38 @@ module emtf_vu13p_top
         .c2c_link_reset    (c2c_link_reset   )
     );
     
-	mgt_gty_rx mpc2_rx [7:0]();
-	mgt_gty_rx ge11_rx [6:0]();
-	mgt_gty_rx mpc3_rx [7:0]();
-	mgt_gty_rx mpc4_rx [7:0]();
-	mgt_gty_rx cppf_rx [6:0]();
-	mgt_gty_rx mpc1_rx [7:0]();
-	mgt_gty_rx mpc0_rx [7:0]();
-	mgt_gty_rx mpcn_rx [8:0]();
-	mgt_gty_tx gmt_tx  [17:0]();
-	mgt_gty_tx daq_tx  [0:0]();
+	mgt_gty_rx tmb_outer [34:0]();
+	mgt_gty_rx rpc       [7:0]();
+	mgt_gty_rx tmb_inner [37:0]();
+	mgt_gty_rx gem       [13:0]();
+	mgt_gty_tx daq       [0:0]();
+	mgt_gty_tx gmt       [24:0]();
+	wire cstlp_23_mmcm_clk;
+	wire cstlp_17_mmcm_clk;
+	wire cstlp_19_mmcm_clk;
+	wire slink_17_mmcm_clk;
+	wire cstlp_21_mmcm_clk;
 
-	wire pr25g_5_mmcm_clk;
-	wire pr25g_6_mmcm_clk;
-	wire pr25g_2_mmcm_clk;
-	wire pr25g_3_mmcm_clk;
-	wire pr25g_4_mmcm_clk;
 
     emtf_vu13p_gty_serial_io serial_io
     (
-        .drp_gty_fif      (drp_gty_i       ),
-        .drpclk           (drp_clk         ),
-        .refclk_p         (refclk_p        ),
-        .refclk_n         (refclk_n        ),
-        .mpc2_rx          (mpc2_rx         ),
-        .ge11_rx          (ge11_rx         ),
-        .mpc3_rx          (mpc3_rx         ),
-        .mpc4_rx          (mpc4_rx         ),
-        .cppf_rx          (cppf_rx         ),
-        .mpc1_rx          (mpc1_rx         ),
-        .mpc0_rx          (mpc0_rx         ),
-        .mpcn_rx          (mpcn_rx         ),
-        .gmt_tx           (gmt_tx          ),
-        .daq_tx           (daq_tx          ),
-        .pr25g_5_mmcm_clk (pr25g_5_mmcm_clk),
-        .pr25g_6_mmcm_clk (pr25g_6_mmcm_clk),
-        .pr25g_2_mmcm_clk (pr25g_2_mmcm_clk),
-        .pr25g_3_mmcm_clk (pr25g_3_mmcm_clk),
-        .pr25g_4_mmcm_clk (pr25g_4_mmcm_clk),
-        .refclk           (refclk          ),
-        .refclk_odiv      (refclk_odiv_b   )
+        .drp_gty_fif       (drp_gty_i        ),
+        .drpclk            (drp_clk          ),
+        .refclk_p          (refclk_p         ),
+        .refclk_n          (refclk_n         ),
+        .tmb_outer         (tmb_outer        ),
+        .rpc               (rpc              ),
+        .tmb_inner         (tmb_inner        ),
+        .gem               (gem              ),
+        .daq               (daq              ),
+        .gmt               (gmt              ),
+        .cstlp_23_mmcm_clk (cstlp_23_mmcm_clk),
+        .cstlp_17_mmcm_clk (cstlp_17_mmcm_clk),
+        .cstlp_19_mmcm_clk (cstlp_19_mmcm_clk),
+        .slink_17_mmcm_clk (slink_17_mmcm_clk),
+        .cstlp_21_mmcm_clk (cstlp_21_mmcm_clk),
+        .refclk            (refclk           ),
+        .refclk_odiv       (refclk_odiv_b    )
     );
 
 

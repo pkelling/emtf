@@ -117,20 +117,20 @@
         <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_axi_bram_ctrl_0_1/apex_blk_axi_bram_ctrl_0_1.xci">
           <Proxy FileSetName="apex_blk_axi_bram_ctrl_0_1"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_clk_wiz_0/apex_blk_clk_wiz_0.xci">
-          <Proxy FileSetName="apex_blk_clk_wiz_0"/>
+        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_axi_chip2chip_0_0/apex_blk_axi_chip2chip_0_0.xci">
+          <Proxy FileSetName="apex_blk_axi_chip2chip_0_0"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_c2c_reset_fsm_0_0/apex_blk_c2c_reset_fsm_0_0.xci">
-          <Proxy FileSetName="apex_blk_c2c_reset_fsm_0_0"/>
+        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_xbar_0/apex_blk_xbar_0.xci">
+          <Proxy FileSetName="apex_blk_xbar_0"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_axi_bram_ctrl_1_0/apex_blk_axi_bram_ctrl_1_0.xci">
-          <Proxy FileSetName="apex_blk_axi_bram_ctrl_1_0"/>
+        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_auto_us_0/apex_blk_auto_us_0.xci">
+          <Proxy FileSetName="apex_blk_auto_us_0"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_axi_bram_ctrl_0_bram1_0/apex_blk_axi_bram_ctrl_0_bram1_0.xci">
-          <Proxy FileSetName="apex_blk_axi_bram_ctrl_0_bram1_0"/>
+        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_auto_ds_0/apex_blk_auto_ds_0.xci">
+          <Proxy FileSetName="apex_blk_auto_ds_0"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_axi_bram_ctrl_0_bram_0/apex_blk_axi_bram_ctrl_0_bram_0.xci">
-          <Proxy FileSetName="apex_blk_axi_bram_ctrl_0_bram_0"/>
+        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_auto_cc_0/apex_blk_auto_cc_0.xci">
+          <Proxy FileSetName="apex_blk_auto_cc_0"/>
         </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_auto_ds_1/apex_blk_auto_ds_1.xci">
           <Proxy FileSetName="apex_blk_auto_ds_1"/>
@@ -138,20 +138,20 @@
         <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_axi_bram_ctrl_0_0/apex_blk_axi_bram_ctrl_0_0.xci">
           <Proxy FileSetName="apex_blk_axi_bram_ctrl_0_0"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_auto_cc_0/apex_blk_auto_cc_0.xci">
-          <Proxy FileSetName="apex_blk_auto_cc_0"/>
+        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_axi_bram_ctrl_0_bram_0/apex_blk_axi_bram_ctrl_0_bram_0.xci">
+          <Proxy FileSetName="apex_blk_axi_bram_ctrl_0_bram_0"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_auto_ds_0/apex_blk_auto_ds_0.xci">
-          <Proxy FileSetName="apex_blk_auto_ds_0"/>
+        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_axi_bram_ctrl_0_bram1_0/apex_blk_axi_bram_ctrl_0_bram1_0.xci">
+          <Proxy FileSetName="apex_blk_axi_bram_ctrl_0_bram1_0"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_auto_us_0/apex_blk_auto_us_0.xci">
-          <Proxy FileSetName="apex_blk_auto_us_0"/>
+        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_axi_bram_ctrl_1_0/apex_blk_axi_bram_ctrl_1_0.xci">
+          <Proxy FileSetName="apex_blk_axi_bram_ctrl_1_0"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_xbar_0/apex_blk_xbar_0.xci">
-          <Proxy FileSetName="apex_blk_xbar_0"/>
+        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_c2c_reset_fsm_0_0/apex_blk_c2c_reset_fsm_0_0.xci">
+          <Proxy FileSetName="apex_blk_c2c_reset_fsm_0_0"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_axi_chip2chip_0_0/apex_blk_axi_chip2chip_0_0.xci">
-          <Proxy FileSetName="apex_blk_axi_chip2chip_0_0"/>
+        <CompFileExtendedInfo CompFileName="apex_blk.bd" FileRelPathName="ip/apex_blk_clk_wiz_0/apex_blk_clk_wiz_0.xci">
+          <Proxy FileSetName="apex_blk_clk_wiz_0"/>
         </CompFileExtendedInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/imports/hdl/apex_blk_wrapper.v">
