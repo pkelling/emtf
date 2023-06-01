@@ -145,11 +145,14 @@ module emtf_vu13p_top
     );
     
 	mgt_gty_rx tmb_outer [34:0]();
-	mgt_gty_rx rpc       [7:0]();
 	mgt_gty_rx tmb_inner [37:0]();
+
+	mgt_gty_rx rpc       [7:0]();
 	mgt_gty_rx gem       [13:0]();
+
 	mgt_gty_tx daq       [0:0]();
 	mgt_gty_tx gmt       [24:0]();
+
 	wire cstlp_23_mmcm_clk;
 	wire cstlp_17_mmcm_clk;
 	wire cstlp_19_mmcm_clk;
