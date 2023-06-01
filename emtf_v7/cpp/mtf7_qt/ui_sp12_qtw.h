@@ -129,6 +129,7 @@ public:
     QGroupBox *groupBox_7;
     QPushButton *occup_counters_read_pb;
     QPushButton *cosmics_pb;
+    QPushButton *hmt_rates_pb;
     QGroupBox *groupBox_8;
     QSpinBox *bx_offset_spin;
     QSpinBox *valor_windows_spin;
@@ -514,7 +515,10 @@ public:
         occup_counters_read_pb->setGeometry(QRect(10, 20, 131, 21));
         cosmics_pb = new QPushButton(groupBox_7);
         cosmics_pb->setObjectName(QString::fromUtf8("cosmics_pb"));
-        cosmics_pb->setGeometry(QRect(10, 50, 131, 21));
+        cosmics_pb->setGeometry(QRect(10, 40, 101, 21));
+        hmt_rates_pb = new QPushButton(groupBox_7);
+        hmt_rates_pb->setObjectName(QString::fromUtf8("hmt_rates_pb"));
+        hmt_rates_pb->setGeometry(QRect(110, 40, 31, 21));
         groupBox_8 = new QGroupBox(frame);
         groupBox_8->setObjectName(QString::fromUtf8("groupBox_8"));
         groupBox_8->setGeometry(QRect(420, 10, 141, 191));
@@ -744,6 +748,7 @@ public:
         groupBox_7->setTitle(QApplication::translate("sp12_qtw", "Occupancy Counters", 0, QApplication::UnicodeUTF8));
         occup_counters_read_pb->setText(QApplication::translate("sp12_qtw", "Read LCT and track rates", 0, QApplication::UnicodeUTF8));
         cosmics_pb->setText(QApplication::translate("sp12_qtw", "Track rate monitor", 0, QApplication::UnicodeUTF8));
+        hmt_rates_pb->setText(QApplication::translate("sp12_qtw", "HMT", 0, QApplication::UnicodeUTF8));
         groupBox_8->setTitle(QApplication::translate("sp12_qtw", "DAQ config register", 0, QApplication::UnicodeUTF8));
         label_2->setText(QApplication::translate("sp12_qtw", "BX offset", 0, QApplication::UnicodeUTF8));
         label_3->setText(QApplication::translate("sp12_qtw", "val. wnd", 0, QApplication::UnicodeUTF8));

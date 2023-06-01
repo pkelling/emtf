@@ -155,6 +155,8 @@ private slots:
 
     void on_pushButton_6_released();
 
+    void on_hmt_rates_pb_released();
+
 private:
     Ui::sp12_qtw *ui;
 };

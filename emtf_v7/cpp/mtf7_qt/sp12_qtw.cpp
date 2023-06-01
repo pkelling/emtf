@@ -82,6 +82,7 @@ int af_read_delays(int endcap, int sector, int iterations);
 int read_ptlut_file();
 void free_ptlut_buffers();
 void cosmics_rate_monitor();
+void hmt_rate_monitor();
 
 bool ptlut_training = false;
 bool prim_conv_lut_verify = false;
@@ -402,6 +403,9 @@ protected:
 
             case '3':
                 cosmics_rate_monitor();
+                break;
+            case '5':
+                hmt_rate_monitor();
                 break;
             }
             if (key == 'Q') break;
@@ -2229,4 +2233,9 @@ void sp12_qtw::on_pushButton_6_released()
 
     log_printf ("done MPC reset count: %d\n", psen_count_abs);
 
+}
+
+void sp12_qtw::on_hmt_rates_pb_released()
+{
+    key = '5';
 }

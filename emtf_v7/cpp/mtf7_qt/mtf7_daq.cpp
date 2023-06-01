@@ -138,6 +138,62 @@ int daq_mpc_data_into_file(string mpc_data_fn, int iterations, bool only_read)
     return 0;
 }
 
+void hmt_rate_monitor()
+{
+    uint64_t sum_val;
+    int si = 0;
+    int sect_rate[13];
+    uint64_t hmt_rate[13][3];
+
+    while (1)
+    {
+        sum_val = 0;
+
+        for (int di = 0; di < 13; di++)
+        {
+            sect_rate[di] = 0;
+            if (devices_d[di] >= 0)
+            {
+
+                int fd = devices_d[di];
+                // read HMT rates
+                mread (fd, &hmt_rate[di][0], 8, 0xB63C0);
+                mread (fd, &hmt_rate[di][1], 8, 0xB63B8);
+                hmt_rate[di][2] = hmt_rate[di][1] >> 26;
+                for (int j = 0; j < 3; j++) hmt_rate[di][j] &= 0x3ffffffULL;
+
+                for (int j = 0; j < 3; j++)
+                {
+                    sum_val += hmt_rate[di][j];
+                    sect_rate[di] += hmt_rate[di][j];
+                }
+            }
+        }
+
+        usleep(1000000);
+//        log_printf ("HMT = %8d", sum_val);
+//        for (int di = 0; di < 12 ; di++) log_printf ("%8d ", (int)sect_rate[di]);
+        log_printf ("loose = ");
+        for (int di = 0; di < 12 ; di++) log_printf ("%8d ", (int)hmt_rate[di][0]);
+        log_printf ("\n");
+
+        log_printf ("nomin = ");
+        for (int di = 0; di < 12 ; di++) log_printf ("%8d ", (int)hmt_rate[di][1]);
+        log_printf ("\n");
+
+        log_printf ("tight = ");
+        for (int di = 0; di < 12 ; di++) log_printf ("%8d ", (int)hmt_rate[di][2]);
+        log_printf ("\n");
+
+        fflush(stdout);
+        si = (si+1)%4;
+        if (terminating)
+        {
+            terminating = false;
+            return;
+        }
+    }
+}
 
 void cosmics_rate_monitor()
 {
@@ -173,6 +229,8 @@ void cosmics_rate_monitor()
 //                    log_printf ("unit: %02d rate: %d\n", di, value);
             }
         }
+
+
         usleep(1000000);
 //        log_printf("\r%s     ", spin[si]);
         log_printf ("rates = %8d", sum_val);
