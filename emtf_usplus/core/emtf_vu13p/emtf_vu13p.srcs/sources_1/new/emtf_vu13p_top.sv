@@ -1,5 +1,6 @@
 `timescale 1ns / 1ps
 
+`include "cstlp_interface.sv"
 module emtf_vu13p_top
 (
     
@@ -244,5 +245,59 @@ module emtf_vu13p_top
         .probe_in30 (freq [30]),
         .probe_in31 (freq [31])
     );
+    
+    localparam CSTLP_LINK_N = 22; // $size(gem) + $size(rpc) - $size does not seem to work on arrays of interfaces
+    wire reset           ;
+    wire [CSTLP_LINK_N-1:0] reset_cnt_in    ;
+    wire [CSTLP_LINK_N-1:0] reset_latched_in;
+    wire [CSTLP_LINK_N-1:0] link_status_in  ;
+    wire [CSTLP_LINK_N-1:0] align_marker_sel_in;
+    wire [CSTLP_LINK_N-1:0] align_marker_dis_in;
+    wire [CSTLP_LINK_N-1:0] disable_ICM_in;
+
+    wire [63:0] unscrambled_data_out [CSTLP_LINK_N-1:0];
+    wire [CSTLP_LINK_N-1:0] valid_bit_out;
+    wire [CSTLP_LINK_N-1:0] rx_datavalid_out;
+    
+    wire rxram_pointer_t rxram_pointer_ctrl_in [CSTLP_LINK_N-1:0];
+    wire lword rxdata_out [CSTLP_LINK_N-1:0];
+    wire linkRxMetadata_t rxMetadata_out [CSTLP_LINK_N-1:0];
+    wire linkStatusInfo_t linkStatusInfo_out [CSTLP_LINK_N-1:0];   
+    wire ttc_clk_360M; 
+
+    // CSTLP decoders for GEM and RPC
+    cstlp_rx_tux 
+    #(
+        .N           (CSTLP_LINK_N)
+    ) cstlp_rx
+    (
+        .freerun_clk           (drp_clk              ),
+        .ttc_clk               (ttc_clk_360M         ), // must come from TCDS
+        .reset                 (reset                ),
+        .reset_cnt_in          (reset_cnt_in         ),
+        .reset_latched_in      (reset_latched_in     ),
+        .link_status_in        (link_status_in       ),
+        .align_marker_sel_in   (align_marker_sel_in  ),
+        .align_marker_dis_in   (align_marker_dis_in  ),
+        .disable_ICM_in        (disable_ICM_in       ),
+        
+        .mgtrx                 ({gem, rpc}           ),
+    
+        .unscrambled_data_out  (unscrambled_data_out ),
+        .valid_bit_out         (valid_bit_out        ),
+        .rx_datavalid_out      (rx_datavalid_out     ),
+        
+        .rxram_pointer_ctrl_in (rxram_pointer_ctrl_in),
+        .rxdata_out            (rxdata_out           ),
+        .rxMetadata_out        (rxMetadata_out       ),
+        .linkStatusInfo_out    (linkStatusInfo_out   )
+    );    
+
+    // temporary replacement for TCDS endpoint
+    ttc_clk_mmcm ttc_clk
+    (
+        .clk_out1 (ttc_clk_360M),
+        .clk_in1  (refclk_odiv [35]) // refclk[35] is 40M LHC clk from backplane
+    );     
     
 endmodule

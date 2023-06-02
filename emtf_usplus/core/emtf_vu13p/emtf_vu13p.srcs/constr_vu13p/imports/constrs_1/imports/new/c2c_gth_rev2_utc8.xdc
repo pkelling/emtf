@@ -33,7 +33,7 @@ set_property LOC AU45 [get_ports c2c_txp[1]];
 # Note: the IP core-level XDC constrains clocks produced by the core, which drive user clocks via helper blocks
 # ----------------------------------------------------------------------------------------------------------------------
 #create_clock -name clk_freerun -period 20.0 [get_ports hb_gtwiz_reset_clk_freerun_in]
-create_clock -name clk_mgtrefclk1_x0y5_p -period 6.4 [get_ports mgtrefclk1_x0y5_p]
+#create_clock -name clk_mgtrefclk1_x0y5_p -period 6.4 [get_ports mgtrefclk1_x0y5_p]
 
 
 # False path constraints
