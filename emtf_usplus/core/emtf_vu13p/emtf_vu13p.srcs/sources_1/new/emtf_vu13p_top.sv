@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-
+`include "csc_interfaces.sv"
 `include "cstlp_interface.sv"
 module emtf_vu13p_top
 (
@@ -45,13 +45,13 @@ module emtf_vu13p_top
     wire clk40; // from mmcm
     wire clk_tx; // should be 320 M
 
-    tcds_mmcm tcds_mmcm_i
-    (
-        .clk_out1 (clk40),
-        .reset    (1'b0),
-        .locked   (),
-        .clk_in1  (clk_tx)
-    );     
+//    tcds_mmcm tcds_mmcm_i
+//    (
+//        .clk_out1 (clk40),
+//        .reset    (1'b0),
+//        .locked   (),
+//        .clk_in1  (clk_tx)
+//    );     
     
     reg [8:0] cnt;
     always @(posedge clk40) cnt++;
@@ -145,8 +145,8 @@ module emtf_vu13p_top
         .c2c_link_reset    (c2c_link_reset   )
     );
     
-	mgt_gty_rx tmb_outer [34:0]();
-	mgt_gty_rx tmb_inner [37:0]();
+	mgt_gty_rx csc_outer [`CSC_LINKS_OUTER-1:0]();
+	mgt_gty_rx csc_inner [`CSC_LINKS_INNER-1:0]();
 
 	mgt_gty_rx rpc       [7:0]();
 	mgt_gty_rx gem       [13:0]();
@@ -167,9 +167,9 @@ module emtf_vu13p_top
         .drpclk            (drp_clk          ),
         .refclk_p          (refclk_p         ),
         .refclk_n          (refclk_n         ),
-        .tmb_outer         (tmb_outer        ),
+        .tmb_outer         (csc_outer        ),
         .rpc               (rpc              ),
-        .tmb_inner         (tmb_inner        ),
+        .tmb_inner         (csc_inner        ),
         .gem               (gem              ),
         .daq               (daq              ),
         .gmt               (gmt              ),
@@ -199,7 +199,6 @@ module emtf_vu13p_top
            );
         end
     endgenerate
-
 
     wire [31:0] freq [47:0];
     freq_meter #(.REF_F (32'd50000000), .N (48)) fm
@@ -245,7 +244,34 @@ module emtf_vu13p_top
         .probe_in30 (freq [30]),
         .probe_in31 (freq [31])
     );
-    
+
+    csc_outer_deformatted csc_outer_df [`CSC_OUTER-1:0];  
+    csc_inner_deformatted csc_inner_df [`CSC_INNER-1:0];  
+    wire [25:0] csc_stub_rate [`CSC_TOTAL-1:0]; // {outer[34:0], inner[18:0]} all rates, one per chamber
+    wire ttc_bc0_del;
+    csc_link_control csc_link_ctrl [`CSC_LINKS_TOTAL-1:0];
+    csc_link_monitor csc_link_mntr [`CSC_LINKS_TOTAL-1:0];
+    wire csc_flag_reset; // reset persisting flags
+    wire csc_en_manual; // enable manual delays
+
+    csc_rx_all csc_rx
+    (
+        // data from MGTs
+        .csc_outer_rx (csc_outer),    // {MEN[4:0], ME4[5:0], ME3[5:0], ME2[5:0], ME1b[5:0], ME1a[5:0]}
+        .csc_inner_rx (csc_inner),    // {MEN[7:0], ME4[5:0], ME3[5:0], ME2[5:0], ME1b[5:0], ME1a[5:0]} two links per chamber
+        .csc_outer_df (csc_outer_df), // {MEN[4:0], ME4[5:0], ME3[5:0], ME2[5:0], ME1b[5:0], ME1a[5:0]}
+        .csc_inner_df (csc_inner_df), // {MEN[3:0], ME4[2:0], ME3[2:0], ME2[2:0], ME1b[2:0], ME1a[2:0]}
+        .stub_rate    (csc_stub_rate),   // {outer[34:0], inner[18:0]} all rates, one per chamber
+        .ttc_bc0_del  (ttc_bc0_del), // delayed BC0 from TTC to align to
+        .link_control (csc_link_ctrl), 
+        .link_monitor (csc_link_mntr),
+        .flag_reset   (csc_flag_reset),  // reset persisting flags
+        .en_manual    (csc_en_manual),   // enable manual delays
+        .clk40        (clk40),
+        .pcie_clk     (drp_clk),
+        .clk320       ()
+    );
+        
     localparam CSTLP_LINK_N = 22; // $size(gem) + $size(rpc) - $size does not seem to work on arrays of interfaces
     wire reset           ;
     wire [CSTLP_LINK_N-1:0] reset_cnt_in    ;
@@ -297,6 +323,7 @@ module emtf_vu13p_top
     ttc_clk_mmcm ttc_clk
     (
         .clk_out1 (ttc_clk_360M),
+        .clk_out2 (clk40),
         .clk_in1  (refclk_odiv [35]) // refclk[35] is 40M LHC clk from backplane
     );     
     

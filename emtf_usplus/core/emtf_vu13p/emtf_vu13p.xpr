@@ -64,13 +64,13 @@
     <Option Name="WTVcsLaunchSim" Val="0"/>
     <Option Name="WTRivieraLaunchSim" Val="0"/>
     <Option Name="WTActivehdlLaunchSim" Val="0"/>
-    <Option Name="WTXSimExportSim" Val="45"/>
-    <Option Name="WTModelSimExportSim" Val="45"/>
-    <Option Name="WTQuestaExportSim" Val="45"/>
+    <Option Name="WTXSimExportSim" Val="47"/>
+    <Option Name="WTModelSimExportSim" Val="47"/>
+    <Option Name="WTQuestaExportSim" Val="47"/>
     <Option Name="WTIesExportSim" Val="35"/>
-    <Option Name="WTVcsExportSim" Val="45"/>
-    <Option Name="WTRivieraExportSim" Val="45"/>
-    <Option Name="WTActivehdlExportSim" Val="45"/>
+    <Option Name="WTVcsExportSim" Val="47"/>
+    <Option Name="WTRivieraExportSim" Val="47"/>
+    <Option Name="WTActivehdlExportSim" Val="47"/>
     <Option Name="GenerateIPUpgradeLog" Val="TRUE"/>
     <Option Name="XSimRadix" Val="hex"/>
     <Option Name="XSimTimeUnit" Val="ns"/>
@@ -313,6 +313,41 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PSRCDIR/sources_1/new/csc_interfaces.sv">
+        <FileInfo SFType="VHeader">
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+          <Attr Name="IsVisible" Val="1"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/imports/rx/csc_deformatter.sv">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/imports/rx/csc_deframer.sv">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/imports/rx/csc_rx_all.sv">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/imports/rx/csc_rx_single.sv">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PSRCDIR/sources_1/new/cstlp_interface.sv">
         <FileInfo SFType="VHeader">
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -364,6 +399,15 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PSRCDIR/sources_1/imports/rx/mpc_descrambler.sv">
+        <FileInfo>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/mpcx/rx/mpc_descrambler.sv"/>
+          <Attr Name="ImportTime" Val="1646330035"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PSRCDIR/sources_1/imports/new/pr25g_mmcm.sv">
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../apex_ku15p/apex_vu13p_link_test/apex_vu13p_link_test.srcs/sources_1/new/pr25g_mmcm.sv"/>
@@ -375,6 +419,15 @@
       </File>
       <File Path="$PSRCDIR/sources_1/imports/vu13p_25g_all/sv/quad_gty_module.sv">
         <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/imports/rx/rx_reclock.sv">
+        <FileInfo>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/mpcx/rx/rx_reclock.sv"/>
+          <Attr Name="ImportTime" Val="1658166826"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -514,8 +567,56 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PSRCDIR/sources_1/imports/rx/frame_align.vhd">
+        <FileInfo>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/mpcx/rx/frame_align.vhd"/>
+          <Attr Name="ImportTime" Val="1646330035"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PSRCDIR/sources_1/new/emtf_vu13p_top.sv">
         <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/imports/rx/dyn_shift.sv">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/mpcx/rx/dyn_shift.sv"/>
+          <Attr Name="ImportTime" Val="1646330035"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/imports/rx/mpcx_aligner_id2_9.sv">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/mpcx/rx/mpcx_aligner_id2_9.sv"/>
+          <Attr Name="ImportTime" Val="1649453493"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/imports/rx/mpcx_aligner_id1.sv">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/mpcx/rx/mpcx_aligner_id1.sv"/>
+          <Attr Name="ImportTime" Val="1646330035"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/imports/rx/mpcx_deformatter.sv">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/mpcx/rx/mpcx_deformatter.sv"/>
+          <Attr Name="ImportTime" Val="1665421255"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -827,6 +928,7 @@
     <FileSet Name="tcds_mmcm" Type="BlockSrcs" RelSrcDir="$PSRCDIR/tcds_mmcm" RelGenDir="$PGENDIR/tcds_mmcm">
       <File Path="$PSRCDIR/tcds_mmcm/ip/tcds_mmcm/tcds_mmcm.xci">
         <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../apex_ku15p/apex_vu13p_c2c_mgt/apex_vu13p_c2c_mgt.srcs/tcds_mmcm/ip/tcds_mmcm/tcds_mmcm.xci"/>
           <Attr Name="ImportTime" Val="1648060154"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1053,6 +1155,27 @@
       </File>
       <Config>
         <Option Name="TopModule" Val="cstlp_ila"/>
+        <Option Name="UseBlackboxStub" Val="1"/>
+        <Define Name="C2C_3P125G"/>
+      </Config>
+    </FileSet>
+    <FileSet Name="csc_mmcm" Type="BlockSrcs" RelSrcDir="$PSRCDIR/csc_mmcm" RelGenDir="$PGENDIR/csc_mmcm">
+      <File Path="$PSRCDIR/sources_1/ip/csc_mmcm.xcix">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/ip/csc_mmcm/csc_mmcm.xci">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <Config>
+        <Option Name="TopModule" Val="csc_mmcm"/>
         <Option Name="UseBlackboxStub" Val="1"/>
         <Define Name="C2C_3P125G"/>
       </Config>
@@ -1335,6 +1458,18 @@
       <RQSFiles/>
     </Run>
     <Run Id="cstlp_ila_synth_1" Type="Ft3:Synth" SrcSet="cstlp_ila" Part="xcvu13p-fsga2577-1-e" ConstrsSet="cstlp_ila" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/cstlp_ila_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/cstlp_ila_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/cstlp_ila_synth_1">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2022">
+          <Desc>Vivado Synthesis Defaults</Desc>
+        </StratHandle>
+        <Step Id="synth_design"/>
+      </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
+      <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2022"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="csc_mmcm_synth_1" Type="Ft3:Synth" SrcSet="csc_mmcm" Part="xcvu13p-fsga2577-1-e" ConstrsSet="csc_mmcm" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/csc_mmcm_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/csc_mmcm_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/csc_mmcm_synth_1">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2022">
           <Desc>Vivado Synthesis Defaults</Desc>
@@ -1775,6 +1910,25 @@
       <RQSFiles/>
     </Run>
     <Run Id="cstlp_ila_impl_1" Type="Ft2:EntireDesign" Part="xcvu13p-fsga2577-1-e" ConstrsSet="cstlp_ila" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="cstlp_ila_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/cstlp_ila_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/cstlp_ila_impl_1">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2022">
+          <Desc>Default settings for Implementation.</Desc>
+        </StratHandle>
+        <Step Id="init_design"/>
+        <Step Id="opt_design"/>
+        <Step Id="power_opt_design"/>
+        <Step Id="place_design"/>
+        <Step Id="post_place_power_opt_design"/>
+        <Step Id="phys_opt_design"/>
+        <Step Id="route_design"/>
+        <Step Id="post_route_phys_opt_design"/>
+        <Step Id="write_bitstream"/>
+      </Strategy>
+      <ReportStrategy Name="Vivado Implementation Default Reports" Flow="Vivado Implementation 2022"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="csc_mmcm_impl_1" Type="Ft2:EntireDesign" Part="xcvu13p-fsga2577-1-e" ConstrsSet="csc_mmcm" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="csc_mmcm_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/csc_mmcm_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/csc_mmcm_impl_1">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2022">
           <Desc>Default settings for Implementation.</Desc>
