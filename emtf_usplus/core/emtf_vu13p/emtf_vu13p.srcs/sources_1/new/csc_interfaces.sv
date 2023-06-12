@@ -15,6 +15,7 @@
 // total link count
 `define CSC_LINKS_TOTAL (`CSC_LINKS_OUTER + `CSC_LINKS_INNER)
 
+`define MK_UNION(st,stu) union packed{st s; logic [$bits(st)-1:0] comb;} stu
 
 typedef struct packed
 {
@@ -43,7 +44,7 @@ typedef struct packed
 typedef struct packed
 {
     csc_clct   clct3;
-    csc_alct   alct3;
+    csc_alct   alct2;
     logic       bc0;
     logic [7:0] crc;
 } csc_inner_l2f0; // inner rings link 2 frame 0
@@ -69,23 +70,21 @@ typedef struct packed
 
 typedef struct packed
 {
-    csc_inner_l1f0 l1f0;
-    csc_inner_l1f1 l1f1;
-    csc_inner_l2f0 l2f0;
-    csc_inner_l2f1 l2f1;
-} csc_inner_deformatted;
+    csc_inner_l1f0 f0;
+    csc_inner_l1f1 f1;
+} csc_inner_deformatted_l1; // inner rings link 1
 
 typedef struct packed
 {
-    csc_inner_l1f0 l1f0;
-    csc_inner_l1f1 l1f1;
-} csc_inner_deformatted_l1;
+    csc_inner_l2f0 f0;
+    csc_inner_l2f1 f1;
+} csc_inner_deformatted_l2; // inner rings link 1
 
 typedef struct packed
 {
-    csc_inner_l2f0 l2f0;
-    csc_inner_l2f1 l2f1;
-} csc_inner_deformatted_l2;
+    csc_inner_deformatted_l1 l1;
+    csc_inner_deformatted_l2 l2;
+} csc_inner_deformatted; // inner rings both links combined
 
 typedef struct packed
 {
@@ -126,7 +125,8 @@ typedef struct packed
     logic [2:0] station; // 1,2,3,4
     logic [1:0] ring; // 1,2,3
     logic [5:0] chamber; // 1..36
-    logic [5:0] rsv;
+    logic       ch_link; // 0,1
+    logic [4:0] rsv;
 } csc_link_id;
 
 typedef struct packed
@@ -151,6 +151,7 @@ typedef struct packed
 	logic crc_err_flag    ; // CRC error detected, persisting
     logic err_tst_pat_flag; // test counter error detected, persisting
 	csc_link_id link_id; // link ID
+	logic [25:0] stub_rate;
 } csc_link_monitor;
 
 typedef struct packed

@@ -3,7 +3,8 @@
 
 module csc_rx_single
 #(
-    parameter CSC_OUTER = "TRUE"
+    parameter CSC_OUTER = "TRUE",
+    parameter INNER_LINK = 1 // link 1 or 2 from inner chamber
 )
 (
     // data from MGT
@@ -12,10 +13,9 @@ module csc_rx_single
 	// deformatted and aligned data
 	// only one output is used depending on CSC_OUTER parameter
     output csc_outer_deformatted csc_outer_df, 
-    output csc_inner_deformatted csc_inner_df,
+    output csc_inner_deformatted_l1 csc_inner_df_l1,
+    output csc_inner_deformatted_l2 csc_inner_df_l2,
      
-    output [25:0] stub_rate,
-
     input ttc_bc0_del, // delayed BC0 from TTC to align to
     input [11:0] bxn,
 
@@ -38,7 +38,6 @@ module csc_rx_single
     localparam N_FRAMES = CSC_OUTER == "TRUE" ? 3 : 2;
     (* mark_debug *) wire [N_FRAMES*38-1:0] rx_data_o; // deframed
     // always 9 chambers from each RX, neighbor or not
-    csc_lct_mpcx lct_unaligned [9:1][1:0]; // [CSCID][stub]
 	wire [7:0] cscid1_bc0; // separate bc0 markers from CSCID=1 coming in each link
 	wire [3:0] cscid1_vf [1:0]; // separate valid flags from cid=1 coming in each link [lct0,1][link]
 
@@ -57,24 +56,44 @@ module csc_rx_single
         .pcie_clk      (pcie_clk)
     );
 
-    csc_deformatter #(.CSC_OUTER (CSC_OUTER)) csc_df
-    (
-        .rx_data_0    (rx_data_o),
-        .lct_o        (lct_unaligned),
-        .stub_rate    (stub_rate),
-
-    output csc_outer_deformatted csc_outer_df,
-    output csc_inner_deformatted_l1 csc_inner_df_l1,
-    output csc_inner_deformatted_l2 csc_inner_df_l2,
-	output reg [25:0] stub_rate,
-
-	output csc_link_id link_id,
-	input clk40
-
-    
-        .link_id      (link_id),
-        .clk40        (clk40)
-    );
+    generate    
+        if (CSC_OUTER == "TRUE")
+        begin
+            csc_deformatter #(.CSC_OUTER (CSC_OUTER), .INNER_LINK(INNER_LINK)) csc_df
+            (
+                .rx_data_o       (rx_data_o),
+                .csc_outer_df    (csc_outer_df),
+                .stub_rate       (link_monitor.stub_rate),
+                .link_id         (link_monitor.link_id),
+                .clk40           (clk40)
+            );
+        end
+        else
+        begin
+            if (INNER_LINK == 1)
+            begin
+                csc_deformatter #(.CSC_OUTER (CSC_OUTER), .INNER_LINK(INNER_LINK)) csc_df
+                (
+                    .rx_data_o       (rx_data_o),
+                    .csc_inner_df_l1 (csc_inner_df_l1),
+                    .stub_rate       (link_monitor.stub_rate),
+                    .link_id         (link_monitor.link_id),
+                    .clk40           (clk40)
+                );
+            end
+            else
+            begin
+                csc_deformatter #(.CSC_OUTER (CSC_OUTER), .INNER_LINK(INNER_LINK)) csc_df
+                (
+                    .rx_data_o       (rx_data_o),
+                    .csc_inner_df_l2 (csc_inner_df_l2),
+                    .stub_rate       (link_monitor.stub_rate),
+                    .link_id         (link_monitor.link_id),
+                    .clk40           (clk40)
+                );
+            end
+        end
+    endgenerate
 
 //                mpcx_aligner_id2_9 aligner29
 //                (

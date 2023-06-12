@@ -1,7 +1,5 @@
 `include "csc_interfaces.sv"
 
-`define MK_UNION(st,stu) union packed{st s; logic [$bits(st)-1:0] comb;} stu
-
 // deformatter for inner chambers
 module csc_deformatter 
 #(
@@ -38,26 +36,12 @@ module csc_deformatter
 	// dummy frames
     `MK_UNION(csc_dummy_frame, csc_d_u[N_FRAMES-1:0]);
     
-    generate
-        if (CSC_OUTER == "TRUE")
-        begin
-            `MK_UNION(csc_outer_deformatted, cd_u); // outer chamber, all 3 frames
-            assign csc_outer_df = cd_u.s;
-        end
-        else
-        begin
-            if (INNER_LINK == 1)
-            begin
-                `MK_UNION(csc_inner_deformatted_l1, cd_u); // inner chamber link 1, two frames
-                assign csc_inner_df_l1 = cd_u.s;
-            end
-            else
-            begin
-                `MK_UNION(csc_inner_deformatted_l2, cd_u); // inner chamber link 2, two frames
-                assign csc_inner_df_l2 = cd_u.s;
-            end
-        end
-    endgenerate
+    `MK_UNION(csc_outer_deformatted, cod_u); // outer chamber, all 3 frames
+    assign csc_outer_df    = cod_u.s;
+    `MK_UNION(csc_inner_deformatted_l1, cid_l1_u); // inner chamber link 1, two frames
+    assign csc_inner_df_l1 = cid_l1_u.s;
+    `MK_UNION(csc_inner_deformatted_l2, cid_l2_u); // inner chamber link 2, two frames
+    assign csc_inner_df_l2 = cid_l2_u.s;
     
     assign rx_data_o_r = rx_data_o;
 
@@ -77,8 +61,8 @@ module csc_deformatter
         cnt_4 ++;
     
         // rate counter update
-        if (lct_o[0].vf != 1'h0 && rate_counter != 26'h3ffffff) 
-            rate_counter++;
+//        if (lct_o[0].vf != 1'h0 && rate_counter != 26'h3ffffff) 
+//            rate_counter++;
     
         if (rate_period == 26'd40078700) // 1 sec 
         begin
@@ -97,36 +81,35 @@ module csc_deformatter
     reg [8:0] cscid1_bc0;
     reg [8:0] cscid1_vpf;
 
-  always @(*)
-  begin
-
-        cd_u.comb = rx_data_o_r; // place data word into format union
-    
+    always @(*)
+    begin
         // determine if some of the frames are valid
         if (CSC_OUTER == "TRUE")
         begin
-            lnk_val  = cd_u.s.f0.clct1.vf | cd_u.s.f1.clct2.vf; 
-            lnk_val |= cd_u.s.f0.alct1.vf | cd_u.s.f1.alct2.vf;
-            lnk_val |= cd_u.s.f2.hmt != 4'b0; 
-            lnk_val |= cd_u.s.f0.bc0 | cd_u.s.f1.bc0 | cd_u.s.f2.bc0;
+            cod_u.comb = rx_data_o_r; // place data word into format union
+            lnk_val  = cod_u.s.f0.clct1.vf | cod_u.s.f1.clct2.vf; 
+            lnk_val |= cod_u.s.f0.alct1.vf | cod_u.s.f1.alct2.vf;
+            lnk_val |= cod_u.s.f2.hmt != 4'b0; 
+            lnk_val |= cod_u.s.f0.bc0 | cod_u.s.f1.bc0 | cod_u.s.f2.bc0;
         end
         else
         begin
             if (INNER_LINK == 1)
             begin
-                lnk_val  = cd_u.s.l1f0.clct1.vf | cd_u.s.l1f1.clct2.vf; 
-                lnk_val |= cd_u.s.l1f0.alct1.vf;
-                lnk_val |= cd_u.s.l1f1.hmt != 4'b0; 
-                lnk_val |= cd_u.s.l1f0.bc0 | cd_u.s.l1f1.bc0;
+                cid_l1_u.comb = rx_data_o_r; // place data word into format union
+                lnk_val  = cid_l1_u.s.f0.clct1.vf | cid_l1_u.s.f1.clct2.vf; 
+                lnk_val |= cid_l1_u.s.f0.alct1.vf;
+                lnk_val |= cid_l1_u.s.f1.hmt != 4'b0; 
+                lnk_val |= cid_l1_u.s.f0.bc0 | cid_l1_u.s.f1.bc0;
             end
             else
             begin
-                lnk_val  = cd_u.s.l2f0.clct3.vf | cd_u.s.l2f1.clct4.vf; 
-                lnk_val |= cd_u.s.l2f0.alct2.vf;
-                lnk_val |= cd_u.s.l2f0.bc0 | cd_u.s.l2f1.bc0;
+                cid_l2_u.comb = rx_data_o_r; // place data word into format union
+                lnk_val  = cid_l2_u.s.f0.clct3.vf | cid_l2_u.s.f1.clct4.vf; 
+                lnk_val |= cid_l2_u.s.f0.alct2.vf;
+                lnk_val |= cid_l2_u.s.f0.bc0 | cid_l2_u.s.f1.bc0;
             end
         end
-        
-  end
+    end
 
 endmodule

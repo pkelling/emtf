@@ -1,4 +1,5 @@
 `timescale 1ns / 1ps
+`include "mgt_gty_interfaces.sv"
 `include "csc_interfaces.sv"
 `include "cstlp_interface.sv"
 module emtf_vu13p_top
@@ -183,93 +184,44 @@ module emtf_vu13p_top
     );
 
 
-    genvar gi;
-    generate
-        for (gi = 0; gi < 48; gi++)
-        begin
-           BUFG_GT mgtrefclk_bufg
-           (
-              .O       (refclk_odiv [gi]),  // 1-bit output: Buffer
-              .CE      (1'b1),             // 1-bit input: Buffer enable
-              .CEMASK  (1'b0),             // 1-bit input: CE Mask
-              .CLR     (1'b0),             // 1-bit input: Asynchronous clear
-              .CLRMASK (1'b0),             // 1-bit input: CLR Mask
-              .DIV     (3'h0),             // 3-bit input: Dynamic divide Value
-              .I       (refclk_odiv_b [gi]) // 1-bit input: Buffer
-           );
-        end
-    endgenerate
-
-    wire [31:0] freq [47:0];
-    freq_meter #(.REF_F (32'd50000000), .N (48)) fm
+    BUFG_GT mgtrefclk_bufg [47:0]
     (
-        .ref_clk (drp_clk),
-        .f       (refclk_odiv),
-        .freq    (freq)
-    );
-
-    vio_freq vio_fm
-    (
-        .clk        (drp_clk),
-        .probe_in0  (freq [0 ]),
-        .probe_in1  (freq [1 ]),
-        .probe_in2  (freq [2 ]),
-        .probe_in3  (freq [3 ]),
-        .probe_in4  (freq [4 ]),
-        .probe_in5  (freq [5 ]),
-        .probe_in6  (freq [6 ]),
-        .probe_in7  (freq [7 ]),
-        .probe_in8  (freq [8 ]),
-        .probe_in9  (freq [9 ]),
-        .probe_in10 (freq [10]),
-        .probe_in11 (freq [11]),
-        .probe_in12 (freq [12]),
-        .probe_in13 (freq [13]),
-        .probe_in14 (freq [14]),
-        .probe_in15 (freq [15]),
-        .probe_in16 (freq [16]),
-        .probe_in17 (freq [17]),
-        .probe_in18 (freq [18]),
-        .probe_in19 (freq [19]),
-        .probe_in20 (freq [20]),
-        .probe_in21 (freq [21]),
-        .probe_in22 (freq [22]),
-        .probe_in23 (freq [23]),
-        .probe_in24 (freq [24]),
-        .probe_in25 (freq [25]),
-        .probe_in26 (freq [26]),
-        .probe_in27 (freq [27]),
-        .probe_in28 (freq [28]),
-        .probe_in29 (freq [29]),
-        .probe_in30 (freq [30]),
-        .probe_in31 (freq [31])
+        .O       (refclk_odiv), 
+        .CE      (1'b1),        
+        .CEMASK  (1'b0),        
+        .CLR     (1'b0),        
+        .CLRMASK (1'b0),        
+        .DIV     (3'h0),        
+        .I       (refclk_odiv_b)
     );
 
     csc_outer_deformatted csc_outer_df [`CSC_OUTER-1:0];  
     csc_inner_deformatted csc_inner_df [`CSC_INNER-1:0];  
-    wire [25:0] csc_stub_rate [`CSC_TOTAL-1:0]; // {outer[34:0], inner[18:0]} all rates, one per chamber
     wire ttc_bc0_del;
-    csc_link_control csc_link_ctrl [`CSC_LINKS_TOTAL-1:0];
-    csc_link_monitor csc_link_mntr [`CSC_LINKS_TOTAL-1:0];
+    csc_link_control csc_link_ctrl_outer [`CSC_LINKS_OUTER-1:0];
+    csc_link_monitor csc_link_mntr_outer [`CSC_LINKS_OUTER-1:0];
+    csc_link_control csc_link_ctrl_inner [`CSC_LINKS_INNER-1:0];
+    csc_link_monitor csc_link_mntr_inner [`CSC_LINKS_INNER-1:0];
     wire csc_flag_reset; // reset persisting flags
     wire csc_en_manual; // enable manual delays
 
     csc_rx_all csc_rx
     (
         // data from MGTs
-        .csc_outer_rx (csc_outer),    // {MEN[4:0], ME4[5:0], ME3[5:0], ME2[5:0], ME1b[5:0], ME1a[5:0]}
-        .csc_inner_rx (csc_inner),    // {MEN[7:0], ME4[5:0], ME3[5:0], ME2[5:0], ME1b[5:0], ME1a[5:0]} two links per chamber
-        .csc_outer_df (csc_outer_df), // {MEN[4:0], ME4[5:0], ME3[5:0], ME2[5:0], ME1b[5:0], ME1a[5:0]}
-        .csc_inner_df (csc_inner_df), // {MEN[3:0], ME4[2:0], ME3[2:0], ME2[2:0], ME1b[2:0], ME1a[2:0]}
-        .stub_rate    (csc_stub_rate),   // {outer[34:0], inner[18:0]} all rates, one per chamber
-        .ttc_bc0_del  (ttc_bc0_del), // delayed BC0 from TTC to align to
-        .link_control (csc_link_ctrl), 
-        .link_monitor (csc_link_mntr),
-        .flag_reset   (csc_flag_reset),  // reset persisting flags
-        .en_manual    (csc_en_manual),   // enable manual delays
-        .clk40        (clk40),
-        .pcie_clk     (drp_clk),
-        .clk320       ()
+        .csc_outer_rx       (csc_outer),    // {MEN[4:0], ME4[5:0], ME3[5:0], ME2[5:0], ME1b[5:0], ME1a[5:0]}
+        .csc_inner_rx       (csc_inner),    // {MEN[7:0], ME4[5:0], ME3[5:0], ME2[5:0], ME1b[5:0], ME1a[5:0]} two links per chamber
+        .csc_outer_df       (csc_outer_df), // {MEN[4:0], ME4[5:0], ME3[5:0], ME2[5:0], ME1b[5:0], ME1a[5:0]}
+        .csc_inner_df       (csc_inner_df), // {MEN[3:0], ME4[2:0], ME3[2:0], ME2[2:0], ME1b[2:0], ME1a[2:0]}
+        .ttc_bc0_del        (ttc_bc0_del), // delayed BC0 from TTC to align to
+        .link_control_outer (csc_link_ctrl_outer), 
+        .link_monitor_outer (csc_link_mntr_outer),
+        .link_control_inner (csc_link_ctrl_inner), 
+        .link_monitor_inner (csc_link_mntr_inner),
+        .flag_reset         (csc_flag_reset),  // reset persisting flags
+        .en_manual          (csc_en_manual),   // enable manual delays
+        .clk40              (clk40),
+        .pcie_clk           (drp_clk),
+        .clk320             ()
     );
         
     localparam CSTLP_LINK_N = 22; // $size(gem) + $size(rpc) - $size does not seem to work on arrays of interfaces
@@ -327,4 +279,49 @@ module emtf_vu13p_top
         .clk_in1  (refclk_odiv [35]) // refclk[35] is 40M LHC clk from backplane
     );     
     
+    wire [31:0] freq [47:0];
+    freq_meter #(.REF_F (32'd50000000), .N (48)) fm
+    (
+        .ref_clk (drp_clk),
+        .f       (refclk_odiv),
+        .freq    (freq)
+    );
+
+    vio_freq vio_fm
+    (
+        .clk        (drp_clk),
+        .probe_in0  (freq [0 ]),
+        .probe_in1  (freq [1 ]),
+        .probe_in2  (freq [2 ]),
+        .probe_in3  (freq [3 ]),
+        .probe_in4  (freq [4 ]),
+        .probe_in5  (freq [5 ]),
+        .probe_in6  (freq [6 ]),
+        .probe_in7  (freq [7 ]),
+        .probe_in8  (freq [8 ]),
+        .probe_in9  (freq [9 ]),
+        .probe_in10 (freq [10]),
+        .probe_in11 (freq [11]),
+        .probe_in12 (freq [12]),
+        .probe_in13 (freq [13]),
+        .probe_in14 (freq [14]),
+        .probe_in15 (freq [15]),
+        .probe_in16 (freq [16]),
+        .probe_in17 (freq [17]),
+        .probe_in18 (freq [18]),
+        .probe_in19 (freq [19]),
+        .probe_in20 (freq [20]),
+        .probe_in21 (freq [21]),
+        .probe_in22 (freq [22]),
+        .probe_in23 (freq [23]),
+        .probe_in24 (freq [24]),
+        .probe_in25 (freq [25]),
+        .probe_in26 (freq [26]),
+        .probe_in27 (freq [27]),
+        .probe_in28 (freq [28]),
+        .probe_in29 (freq [29]),
+        .probe_in30 (freq [30]),
+        .probe_in31 (freq [31])
+    );
+
 endmodule

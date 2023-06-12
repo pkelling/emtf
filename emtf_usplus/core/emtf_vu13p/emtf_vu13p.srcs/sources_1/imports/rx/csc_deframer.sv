@@ -3,7 +3,7 @@ module csc_deframer
     parameter N_FRAMES = 2 // number of frames, 2 or 3
 )
 (
-    mgt_rx.out mgtrx,
+    mgt_gty_rx.out mgtrx,
     output [N_FRAMES*38-1:0] rx_data_o, // deframed data word
     output [N_FRAMES-1:0] crc_err, // CRC errors from each frame
     output [N_FRAMES-1:0] crc_err_flag, // persisting CRC errors from each frame
