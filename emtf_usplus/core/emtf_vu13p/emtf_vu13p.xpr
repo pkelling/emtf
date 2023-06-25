@@ -65,13 +65,13 @@
     <Option Name="WTVcsLaunchSim" Val="0"/>
     <Option Name="WTRivieraLaunchSim" Val="0"/>
     <Option Name="WTActivehdlLaunchSim" Val="0"/>
-    <Option Name="WTXSimExportSim" Val="49"/>
-    <Option Name="WTModelSimExportSim" Val="49"/>
-    <Option Name="WTQuestaExportSim" Val="49"/>
+    <Option Name="WTXSimExportSim" Val="52"/>
+    <Option Name="WTModelSimExportSim" Val="52"/>
+    <Option Name="WTQuestaExportSim" Val="52"/>
     <Option Name="WTIesExportSim" Val="35"/>
-    <Option Name="WTVcsExportSim" Val="49"/>
-    <Option Name="WTRivieraExportSim" Val="49"/>
-    <Option Name="WTActivehdlExportSim" Val="49"/>
+    <Option Name="WTVcsExportSim" Val="52"/>
+    <Option Name="WTRivieraExportSim" Val="52"/>
+    <Option Name="WTActivehdlExportSim" Val="52"/>
     <Option Name="GenerateIPUpgradeLog" Val="TRUE"/>
     <Option Name="XSimRadix" Val="hex"/>
     <Option Name="XSimTimeUnit" Val="ns"/>
@@ -1069,15 +1069,10 @@
       </Config>
     </FileSet>
     <FileSet Name="ttc_clk_mmcm" Type="BlockSrcs" RelSrcDir="$PSRCDIR/ttc_clk_mmcm" RelGenDir="$PGENDIR/ttc_clk_mmcm">
-      <File Path="$PSRCDIR/sources_1/ip/ttc_clk_mmcm.xcix">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PSRCDIR/sources_1/ip/ttc_clk_mmcm/ttc_clk_mmcm.xci">
         <FileInfo>
+          <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/ip/ttc_clk_mmcm/ttc_clk_mmcm.xci"/>
+          <Attr Name="ImportTime" Val="1686169923"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -1111,15 +1106,10 @@
       </Config>
     </FileSet>
     <FileSet Name="csc_mmcm" Type="BlockSrcs" RelSrcDir="$PSRCDIR/csc_mmcm" RelGenDir="$PGENDIR/csc_mmcm">
-      <File Path="$PSRCDIR/sources_1/ip/csc_mmcm.xcix">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PSRCDIR/sources_1/ip/csc_mmcm/csc_mmcm.xci">
         <FileInfo>
+          <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/ip/csc_mmcm/csc_mmcm.xci"/>
+          <Attr Name="ImportTime" Val="1686176806"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -1132,15 +1122,10 @@
       </Config>
     </FileSet>
     <FileSet Name="csc_ila" Type="BlockSrcs" RelSrcDir="$PSRCDIR/csc_ila" RelGenDir="$PGENDIR/csc_ila">
-      <File Path="$PSRCDIR/sources_1/ip/csc_ila.xcix">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PSRCDIR/sources_1/ip/csc_ila/csc_ila.xci">
         <FileInfo>
+          <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/ip/csc_ila/csc_ila.xci"/>
+          <Attr Name="ImportTime" Val="1686586935"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
