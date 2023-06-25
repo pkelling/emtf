@@ -79,6 +79,9 @@ module emtf_vu13p_top
     wire [31:0] mgt_tx_data;
     wire [3:0]  mgt_tx_k   ;
     wire [1:0]  realigned1_aligned0;
+    
+    wire [8191:0] control;
+    wire [8191:0] status;
 
     apex_blk_wrapper apex_blk_w
     (
@@ -108,8 +111,10 @@ module emtf_vu13p_top
         .drp_di          (drp_gty_i.drpdi  ),
         .drp_do          (drp_gty_i.drpdo  ),
         .drp_en          (drp_gty_i.drpen  ),
-//        .drp_rdy         (drp_gty_i.drprdy ),
-        .drp_we          (drp_gty_i.drpwe  )
+        .drp_we          (drp_gty_i.drpwe  ),
+        
+        .control         (control),
+        .status          (status)
     );
     
     wire [47:0] refclk, refclk_odiv, refclk_odiv_b;
@@ -128,7 +133,6 @@ module emtf_vu13p_top
         .mgt_tx_data (mgt_tx_data),
         .mgt_tx_k    (mgt_tx_k   ),
         .realigned1_aligned0 (realigned1_aligned0),
-//        .drp_clk (drp_clk),
         
         .c2c_channel_up    (c2c_channel_up   ),
         .c2c_init_clk      (c2c_init_clk     ),

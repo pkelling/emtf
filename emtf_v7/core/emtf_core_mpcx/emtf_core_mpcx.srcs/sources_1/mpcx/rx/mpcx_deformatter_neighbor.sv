@@ -6,6 +6,8 @@ module mpcx_deformatter_neighbor
     
     output csc_lct_mpcx lct_o [8:0][1:0],
 	output reg [25:0] stub_rate [8:0],
+    input [25:0] hmt_rate_limit,
+    output reg [8:0] hmt_rate_err, // [chamber] hmt rate exceeded hmt_rate_limit
 
 	output reg [8:0] crc_err,
 	output reg [8:0] crc_err_flag,
@@ -18,7 +20,7 @@ module mpcx_deformatter_neighbor
 
 	reg [1:0] rsv;
 	reg [1:0] crc [8:0];
-    reg [8:0] lnk_val;
+    reg [8:0] lnk_val, hmt_val;
     reg [1:0] crc_rx [8:0];
 //	(* async_reg = "TRUE" *) reg [75:0] rx_data_76_r [8:0];
 	wire [75:0] rx_data_76_r [8:0];
@@ -29,6 +31,7 @@ module mpcx_deformatter_neighbor
 	reg [1:0] lctvf [8:0];
 	reg [25:0] rate_period;
 	reg [25:0] rate_counter [8:0];
+	reg [25:0] hmt_rate_counter [8:0];
 
     localparam max_hs = 8'd159;
     localparam max_wg = 8'd111;
@@ -72,6 +75,8 @@ module mpcx_deformatter_neighbor
     	// rate counter update
 		if (lct_o[i][0].vf != 1'h0 && rate_counter[i] != 26'h3ffffff) 
 		  rate_counter[i]++;
+		if (hmt_val[i] != 1'h0 && hmt_rate_counter[i] != 26'h3ffffff) 
+		  hmt_rate_counter[i]++;
 	end
 
     if (rate_period == 26'd40078700) // 1 sec 
@@ -81,6 +86,12 @@ module mpcx_deformatter_neighbor
       begin
           stub_rate[i] = rate_counter[i]; 
           rate_counter[i] = 26'h0;
+
+          // check hmt rate limit
+          if (hmt_rate_counter[i] >= hmt_rate_limit) hmt_rate_err[i] = 1'b1;
+          else hmt_rate_err[i] = 1'b0;
+          hmt_rate_counter[i] = 26'h0;
+          
       end
       rate_period = 26'h0;
     end
@@ -138,7 +149,15 @@ module mpcx_deformatter_neighbor
             lct_o[i][1].cp[3:1] != 3'b0 || 
             lct_o[i][1].bx0
         );
-    
+        // hmt valid is decoded independently from lct_o structure
+        // so we can invalidate hmt in lct_o depending on rate error
+        hmt_val[i] = 
+        (
+            rx_data_76_r[i][60:58] != 3'b0 || // lct_o[i][1].cp[3:1] != 3'b0 ||
+            rx_data_76_r[i][64]               // lct_o[i][1].bx0
+        );
+        
+
         // calculate crc for each link
         // these are just parity bits for half the BX data
         crc_rx[i] = 2'b0;
@@ -148,19 +167,6 @@ module mpcx_deformatter_neighbor
         // check CRC if link data is valid
         if (lnk_val[i] && crc_rx[i] != crc[i]) crc_err[i] = 1'b1;
         else crc_err[i] = 1'b0; 
-
-        // check data sanity
-//        if (lnk_val[i] &&
-//                (
-//                    lct_o[i][0].hs > max_hs ||
-//                    lct_o[i][0].wg > max_wg ||
-//                    lct_o[i][1].hs > max_hs ||
-//                    lct_o[i][1].wg > max_wg
-//                ) 
-//            )
-//        begin
-//            crc_err[i] = 1'b1;
-//        end
 
 		// disable link output if error was detected
 		if (crc_err[i] == 1'b0)
@@ -174,8 +180,16 @@ module mpcx_deformatter_neighbor
 		  lct_o[i][1].vf = 1'b0;
 		  
 		  // invalidate HMT bits
-		  lct_o[2][1].cp[3:1] = 3'b0;
-		  lct_o[2][1].bx0 = 1'b0;
+		  lct_o[i][1].cp[3:1] = 3'b0;
+		  lct_o[i][1].bx0 = 1'b0;
+		end
+		
+		// disable HMT if rate is too high
+		if (hmt_rate_err[i] == 1'b1)
+		begin
+		  // invalidate HMT bits
+		  lct_o[i][1].cp[3:1] = 3'b0;
+		  lct_o[i][1].bx0 = 1'b0;
 		end
 
 	end

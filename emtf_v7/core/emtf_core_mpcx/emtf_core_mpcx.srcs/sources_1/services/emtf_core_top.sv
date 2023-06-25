@@ -568,6 +568,8 @@ module emtf_core_top
     assign link_id_n = {link_id_na[8], link_id_na[7], link_id_na[6], link_id_na[5], link_id_na[4], link_id_na[3], link_id_na[2], link_id_na[1], link_id_na[0]};
     wire clk320;
 	wire af_enable;
+    wire [25:0] hmt_rate_limit;
+    wire [8:0] hmt_rate_err [5:0]; // [station][chamber] hmt rate exceeded hmt_rate_limit
 
     // upgraded MPCX module
     emtf_mpcx_rx_all mpcx_rx_i
@@ -602,6 +604,8 @@ module emtf_core_top
         .flag_reset          (flag_reset         ),
         .fiber_enable        (fiber_enable[48:0] ),
 	    .link_id_n           (link_id_na         ),
+        .hmt_rate_limit      (hmt_rate_limit),
+        .hmt_rate_err        (hmt_rate_err), // [station][chamber] hmt rate exceeded hmt_rate_limit
         .clk40               (clk40              ),
         .pcie_clk            (pcie_clk_buf       ),
         .clk320              (clk320             )
@@ -1082,7 +1086,9 @@ module emtf_core_top
         .en_manual_gem       (en_manual_gem      ),
         .alg_out_range_gem   (alg_out_range_gem  ),
         .bc0_period_err_gem  (bc0_period_err_gem ),
-        .hmt_rate            (hmt_rate)
+        .hmt_rate            (hmt_rate),
+        .hmt_rate_limit  (hmt_rate_limit),
+        .hmt_rate_err    (hmt_rate_err) // [station][chamber] hmt rate exceeded hmt_rate_limit
     );
 
 	wire [8*5+9-1:0] bc0_mrg;

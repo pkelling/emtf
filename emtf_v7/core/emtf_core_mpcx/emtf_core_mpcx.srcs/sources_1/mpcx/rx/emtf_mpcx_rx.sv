@@ -42,6 +42,8 @@ module emtf_mpcx_rx #(parameter NEIGHBOR = "FALSE")
     input               flag_reset, // reset persisting flags
 	output [9:0] link_id [nlinks-1:0], // link ID
 	input  [nlinks-1:0] fiber_enable,
+    input [25:0] hmt_rate_limit,
+    output [8:0] hmt_rate_err, // [chamber] hmt rate exceeded hmt_rate_limit
 
 	input clk40,
 	input clk320,
@@ -82,6 +84,8 @@ module emtf_mpcx_rx #(parameter NEIGHBOR = "FALSE")
                 .rx_data_76 (rx_data_76),
                 .lct_o      (lct_unaligned),
                 .stub_rate  (stub_rate),
+                .hmt_rate_limit      (hmt_rate_limit),
+                .hmt_rate_err        (hmt_rate_err  ), // hmt rate exceeded hmt_rate_limit
             
                 .crc_err      (crc_err),
                 .crc_err_flag (crc_err_flag),
@@ -116,6 +120,8 @@ module emtf_mpcx_rx #(parameter NEIGHBOR = "FALSE")
                 .rx_data_76 (rx_data_76),
                 .lct_o      (lct_unaligned),
                 .stub_rate  (stub_rate),
+                .hmt_rate_limit      (hmt_rate_limit),
+                .hmt_rate_err        (hmt_rate_err  ), // hmt rate exceeded hmt_rate_limit
             
                 .cid1_bc0     (cscid1_bc0), // separate bc0 markers from CSCID=1 coming in each link
                 .cid1_vf      (cscid1_vf),

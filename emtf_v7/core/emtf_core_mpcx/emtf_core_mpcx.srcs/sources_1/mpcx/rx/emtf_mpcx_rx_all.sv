@@ -62,6 +62,8 @@ module emtf_mpcx_rx_all
 	output [9:0] link_id_n [8:0], // link ID [link]
 
     input en_manual, // enable manual delays
+    input [25:0] hmt_rate_limit,
+    output [8:0] hmt_rate_err [5:0], // [station][chamber] hmt rate exceeded hmt_rate_limit
 
 	input  clk40,
     input  pcie_clk,
@@ -96,7 +98,9 @@ module emtf_mpcx_rx_all
                 .flag_reset          (flag_reset              ),
 	            .link_id             (link_id             [gi]),
 	            .fiber_enable        (fiber_enable [gi*8 +: 8]),
-
+                .hmt_rate_limit      (hmt_rate_limit),
+                .hmt_rate_err        (hmt_rate_err        [gi]), // [station][chamber] hmt rate exceeded hmt_rate_limit
+        
                 .clk40               (clk40                   ),
                 .clk320              (clk320                  ),
                 .pcie_clk            (pcie_clk                )
@@ -122,6 +126,8 @@ module emtf_mpcx_rx_all
         .flag_reset          (flag_reset         ),
 	    .link_id             (link_id_n          ),
         .fiber_enable        (fiber_enable [48:40]),
+        .hmt_rate_limit      (hmt_rate_limit),
+        .hmt_rate_err        (hmt_rate_err     [5]), // [station][chamber] hmt rate exceeded hmt_rate_limit
 
         .clk40               (clk40              ),
         .clk320              (clk320             ),

@@ -6,6 +6,8 @@ module mpcx_deformatter
     
     output csc_lct_mpcx lct_o [9:1][1:0],
 	output reg [25:0] stub_rate [8:0],
+    input [25:0] hmt_rate_limit,
+    output reg [8:0] hmt_rate_err, // [chamber] hmt rate exceeded hmt_rate_limit
 
 	output reg [7:0] cid1_bc0, // separate bc0 markers from cid=1 coming in each link
 	output reg [3:0] cid1_vf [1:0], // separate valid flags from cid=1 coming in each link [lct0,1][link]
@@ -21,6 +23,7 @@ module mpcx_deformatter
 	reg [3:0] rsv;
 	reg [1:0] crc [7:0];
     reg [7:0] lnk_val;
+    reg [8:0] hmt_val;
     reg [1:0] crc_rx [7:0];
 	integer i, j;
 //	(* async_reg = "TRUE" *) reg [75:0] rx_data_76_r [7:0];
@@ -30,6 +33,7 @@ module mpcx_deformatter
 	reg [1:0] lctvf [9:2];
 	reg [25:0] rate_period;
 	reg [25:0] rate_counter [8:0];
+	reg [25:0] hmt_rate_counter [8:0];
 
     assign rx_data_76_r = rx_data_76;
 
@@ -69,6 +73,8 @@ module mpcx_deformatter
         // rate counter update
         if (lct_o[i+1][0].vf != 1'h0 && rate_counter[i] != 26'h3ffffff) 
             rate_counter[i]++;
+		if (hmt_val[i] != 1'h0 && hmt_rate_counter[i] != 26'h3ffffff) 
+		  hmt_rate_counter[i]++;
     end
 
     // special case of CSCID=1 rate counter
@@ -83,6 +89,10 @@ module mpcx_deformatter
       begin
           stub_rate[i] = rate_counter[i]; 
           rate_counter[i] = 26'h0;
+          // check hmt rate limit
+          if (hmt_rate_counter[i] >= hmt_rate_limit) hmt_rate_err[i] = 1'b1;
+          else hmt_rate_err[i] = 1'b0;
+          hmt_rate_counter[i] = 26'h0;
       end
       rate_period = 26'h0;
     end
@@ -377,6 +387,33 @@ module mpcx_deformatter
 	lnk_val[6] = (lctvf[8][1] || lctvf[8][0] || cid1_vf[1][2] || lct_o[8][0].bc0 || cid1_bc0 [6] || lct_o[8][1].cp[3:1] != 3'b0 || lct_o[8][1].bx0 || lct_o[1][1].cp[3:1] != 3'b0); // cp[3:1] are HMT[3:1]
 	lnk_val[7] = (lctvf[9][1] || lctvf[9][0] || cid1_vf[1][3] || lct_o[9][0].bc0 || cid1_bc0 [7] || lct_o[9][1].cp[3:1] != 3'b0 || lct_o[9][1].bx0 || lct_o[1][1].bx0); // BX0 is HMT[0]
 
+
+    for (i = 0; i < 9; i=i+1)
+    begin
+        // hmt valid is decoded independently from lct_o structure
+        // so we can invalidate hmt in lct_o depending on rate error
+        if (i < 8) // native chambers
+            hmt_val[i] = 
+            (
+                rx_data_76_r[i][60:58] != 3'b0 || // lct_o[i][1].cp[3:1] != 3'b0 ||
+                rx_data_76_r[i][64]               // lct_o[i][1].bx0
+            );
+        else // CSCID=1
+            hmt_val[i] = 
+            (
+                rx_data_76_r[6][73:71] != 3'b0 || // lct_o[i][1].cp[3:1] != 3'b0 ||
+                rx_data_76_r[7][72]               // lct_o[i][1].bx0
+            );
+            
+		// disable HMT if rate is too high
+		if (hmt_rate_err[i] == 1'b1)
+		begin
+		  // invalidate HMT bits
+		  lct_o[i][1].cp[3:1] = 3'b0;
+		  lct_o[i][1].bx0 = 1'b0;
+		end
+    end
+
     for (i = 0; i < 8; i=i+1)
     begin
         // calculate crc for each link
@@ -388,20 +425,6 @@ module mpcx_deformatter
         // check CRC if link data is valid
         if (lnk_val[i] && crc_rx[i] != crc[i]) crc_err[i] = 1'b1;
         else crc_err[i] = 1'b0; 
-
-
-//        // check data sanity
-//        if (lnk_val[i] &&
-//                (
-//                    lct_o[i+2][0].hs > max_hs ||
-//                    lct_o[i+2][0].wg > max_wg ||
-//                    lct_o[i+2][1].hs > max_hs ||
-//                    lct_o[i+2][1].wg > max_wg
-//                ) 
-//            )
-//        begin
-//            crc_err[i] = 1'b1;
-//        end
 
 		// disable link output if error was detected
 		if (crc_err[i] == 1'b0)
@@ -422,12 +445,6 @@ module mpcx_deformatter
 		  lct_o[i+2][1].bx0 = 1'b0;
 		end
     end
-    
-    // checks sanity of cscid=1 data fragments
-//    if (lct_o[1][0].hs > max_hs) cid1_vf[0][0] = 1'b0;
-//    if (lct_o[1][0].wg > max_wg) cid1_vf[0][1] = 1'b0;
-//    if (lct_o[1][1].hs > max_hs) cid1_vf[1][0] = 1'b0;
-//    if (lct_o[1][1].wg > max_wg) cid1_vf[1][1] = 1'b0;
     
     // invalidate HMT bits for cscid=1 in case of crc errors
     if (crc_err[6] == 1'b1) lct_o[1][1].cp[3:1] = 3'b0;

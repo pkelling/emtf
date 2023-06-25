@@ -105,7 +105,10 @@ module register_bank
     output reg      en_manual_gem,
     input  [1:0] alg_out_range_gem [6:0],
     input  [1:0] bc0_period_err_gem [6:0],
-    input [25:0] hmt_rate [2:0]
+    input [25:0] hmt_rate [2:0],
+    output reg [25:0] hmt_rate_limit,
+    input [8:0] hmt_rate_err [5:0] // [station][chamber] hmt rate exceeded hmt_rate_limit
+    
 );
 
 
@@ -273,6 +276,7 @@ module register_bank
 		control_reg[19] = 1'b1; // mpc_links_hr_en
 		gem_data_del_comb[0] = {7{5'h1}};
 		gem_data_del_comb[1] = {7{5'h1}};
+		hmt_rate_limit = 26'd100; // default hmt rate limit
 	end
 
 	wire [8:0] reg_addr = {sel, addr}; // combined address
@@ -317,6 +321,15 @@ module register_bank
     assign rates_w[28] = {6'd28, stub_rate [5][7], 6'h00, stub_rate[5][6]};
     assign rates_w[29] = {6'd29, track_rate[2]   , 6'h00, stub_rate[5][8]};
     
+	wire [63:0] hmt_rate_err_w = 
+	{
+	   hmt_rate_err[5],
+	   hmt_rate_err[4],
+	   hmt_rate_err[3],
+	   hmt_rate_err[2],
+	   hmt_rate_err[1],
+	   hmt_rate_err[0]
+	};
 		
 	// write logic
 	always @(posedge control_clk)
@@ -393,6 +406,7 @@ module register_bank
 				9'h072: begin gem_data_del_comb[0] = r_in; end
 				9'h073: begin gem_data_del_comb[1] = r_in; end
 				9'h076: begin {en_manual_gem, ttc_bc0_delay_gem} = r_in; end
+				9'h079: begin hmt_rate_limit = r_in; end
 			endcase
 		end
 		else
@@ -709,6 +723,8 @@ module register_bank
 				9'h076: begin r_out = r_out | {en_manual_gem, ttc_bc0_delay_gem}; end
 				9'h077: begin r_out = r_out | hmt_rate_comb; end // {tight, nominal}
 				9'h078: begin r_out = r_out | hmt_rate[0]; end // {loose}
+				9'h079: begin r_out = r_out | hmt_rate_limit; end
+				9'h07a: begin r_out = r_out | hmt_rate_err_w; end
 				
 			endcase
 			in_delay_tap_rb_r = in_delay_tap_rb;

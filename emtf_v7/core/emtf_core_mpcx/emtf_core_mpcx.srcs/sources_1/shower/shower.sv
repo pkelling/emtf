@@ -54,9 +54,10 @@ module shower
                 };
                 
                 // rework according to https://its.cern.ch/jira/browse/CMSLITDPG-1087
-                if (hmt[i][j][1:0] == 2'b01) mus[0] = 1'b1; // loose
-                if (hmt[i][j][1:0] == 2'b10) mus[1] = 1'b1; // nominal
-                if (hmt[i][j][1:0] == 2'b11) mus[2] = 1'b1; // tight
+                // corrected according to msg from Efe/Sergo 2023-06-07
+                if (hmt[i][j][1:0] >= 2'b01) mus[0] = 1'b1; // loose
+                if (hmt[i][j][1:0] >= 2'b10) mus[1] = 1'b1; // nominal
+                if (hmt[i][j][1:0] == 2'b11) mus[2] = 1'b1; // tight            
             end
         end
         
