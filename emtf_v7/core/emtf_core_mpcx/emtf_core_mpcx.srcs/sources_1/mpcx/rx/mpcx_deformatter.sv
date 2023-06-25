@@ -80,6 +80,8 @@ module mpcx_deformatter
     // special case of CSCID=1 rate counter
     if (cid1_vf [0][0] != 1'h0 && rate_counter[0] != 26'h3ffffff) 
         rate_counter[0]++;
+    if (hmt_val[0] != 1'h0 && hmt_rate_counter[0] != 26'h3ffffff) 
+      hmt_rate_counter[0]++;
     
 
     if (rate_period == 26'd40078700) // 1 sec 
@@ -395,22 +397,22 @@ module mpcx_deformatter
         if (i < 8) // native chambers
             hmt_val[i] = 
             (
-                rx_data_76_r[i][60:58] != 3'b0 || // lct_o[i][1].cp[3:1] != 3'b0 ||
-                rx_data_76_r[i][64]               // lct_o[i][1].bx0
+                rx_data_76_r[i][60:58] != 3'b0 || // lct_o[i+1][1].cp[3:1] != 3'b0 ||
+                rx_data_76_r[i][64]               // lct_o[i+1][1].bx0
             );
         else // CSCID=1
             hmt_val[i] = 
             (
-                rx_data_76_r[6][73:71] != 3'b0 || // lct_o[i][1].cp[3:1] != 3'b0 ||
-                rx_data_76_r[7][72]               // lct_o[i][1].bx0
+                rx_data_76_r[6][73:71] != 3'b0 || // lct_o[i+1][1].cp[3:1] != 3'b0 ||
+                rx_data_76_r[7][72]               // lct_o[i+1][1].bx0
             );
             
 		// disable HMT if rate is too high
 		if (hmt_rate_err[i] == 1'b1)
 		begin
 		  // invalidate HMT bits
-		  lct_o[i][1].cp[3:1] = 3'b0;
-		  lct_o[i][1].bx0 = 1'b0;
+		  lct_o[i+1][1].cp[3:1] = 3'b0;
+		  lct_o[i+1][1].bx0 = 1'b0;
 		end
     end
 
