@@ -1208,6 +1208,10 @@ uint64_t read_link_ids(int endcap, int sector)
 	mread(fd, &value, 8, saddr);
 	log_printf ("Test pattern errors :  %016llx\n", value);
 
+	saddr = MEM_BASE + (ch << 12) + (0x7a << 3) ;
+	mread(fd, &value, 8, saddr);
+	log_printf ("HMT rate errors     :  %016llx\n", value);
+
 	saddr = MEM_BASE + (ch << 12) + (0x70 << 3) ;
 	mread(fd, &value, 8, saddr);
 	log_printf ("GE1/1 errors [3:0]  :  %016llx\n", value);
