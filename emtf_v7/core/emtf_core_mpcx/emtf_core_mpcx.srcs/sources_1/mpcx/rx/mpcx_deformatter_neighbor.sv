@@ -7,7 +7,7 @@ module mpcx_deformatter_neighbor
     output csc_lct_mpcx lct_o [8:0][1:0],
 	output reg [25:0] stub_rate [8:0],
     input [25:0] hmt_rate_limit,
-    output reg [8:0] hmt_rate_err, // [chamber] hmt rate exceeded hmt_rate_limit
+    output reg [8:0] hmt_rate_err = 0, // [chamber] hmt rate exceeded hmt_rate_limit
 
 	output reg [8:0] crc_err,
 	output reg [8:0] crc_err_flag,
@@ -29,9 +29,9 @@ module mpcx_deformatter_neighbor
 	reg [3:0] dum4_2 [8:0];
 	reg [18:0] cnt_19 [8:0];
 	reg [1:0] lctvf [8:0];
-	reg [25:0] rate_period;
-	reg [25:0] rate_counter [8:0];
-	reg [25:0] hmt_rate_counter [8:0];
+	reg [25:0] rate_period = 0;
+	reg [25:0] rate_counter [8:0] = '{0,0,0,0,0,0,0,0,0};
+	reg [25:0] hmt_rate_counter [8:0] = '{0,0,0,0,0,0,0,0,0};
 
     localparam max_hs = 8'd159;
     localparam max_wg = 8'd111;

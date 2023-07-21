@@ -7,7 +7,7 @@ module mpcx_deformatter
     output csc_lct_mpcx lct_o [9:1][1:0],
 	output reg [25:0] stub_rate [8:0],
     input [25:0] hmt_rate_limit,
-    output reg [8:0] hmt_rate_err, // [chamber] hmt rate exceeded hmt_rate_limit
+    output reg [8:0] hmt_rate_err = 0, // [chamber] hmt rate exceeded hmt_rate_limit
 
 	output reg [7:0] cid1_bc0, // separate bc0 markers from cid=1 coming in each link
 	output reg [3:0] cid1_vf [1:0], // separate valid flags from cid=1 coming in each link [lct0,1][link]
@@ -31,9 +31,9 @@ module mpcx_deformatter
 	reg [18:0] cnt_19 [7:0];
 	reg [18:0] cnt_19_rx [7:0];
 	reg [1:0] lctvf [9:2];
-	reg [25:0] rate_period;
-	reg [25:0] rate_counter [8:0];
-	reg [25:0] hmt_rate_counter [8:0];
+	reg [25:0] rate_period = 0;
+	reg [25:0] rate_counter [8:0] = '{0,0,0,0,0,0,0,0,0};
+	reg [25:0] hmt_rate_counter [8:0] = '{0,0,0,0,0,0,0,0,0};
 
     assign rx_data_76_r = rx_data_76;
 
@@ -390,17 +390,17 @@ module mpcx_deformatter
 	lnk_val[7] = (lctvf[9][1] || lctvf[9][0] || cid1_vf[1][3] || lct_o[9][0].bc0 || cid1_bc0 [7] || lct_o[9][1].cp[3:1] != 3'b0 || lct_o[9][1].bx0 || lct_o[1][1].bx0); // BX0 is HMT[0]
 
 
-    for (i = 0; i < 9; i=i+1)
+    for (i = 0; i < 9; i=i+1) // chamber loop, 0 --> CSCID=1
     begin
         // hmt valid is decoded independently from lct_o structure
         // so we can invalidate hmt in lct_o depending on rate error
-        if (i < 8) // native chambers
+        if (i > 0) // native chambers
             hmt_val[i] = 
             (
-                rx_data_76_r[i][60:58] != 3'b0 || // lct_o[i+1][1].cp[3:1] != 3'b0 ||
-                rx_data_76_r[i][64]               // lct_o[i+1][1].bx0
+                rx_data_76_r[i-1][60:58] != 3'b0 || // lct_o[i+1][1].cp[3:1] != 3'b0 ||
+                rx_data_76_r[i-1][64]               // lct_o[i+1][1].bx0
             );
-        else // CSCID=1
+        else // i == 0 --> CSCID=1
             hmt_val[i] = 
             (
                 rx_data_76_r[6][73:71] != 3'b0 || // lct_o[i+1][1].cp[3:1] != 3'b0 ||
@@ -451,6 +451,13 @@ module mpcx_deformatter
     // invalidate HMT bits for cscid=1 in case of crc errors
     if (crc_err[6] == 1'b1) lct_o[1][1].cp[3:1] = 3'b0;
     if (crc_err[7] == 1'b1) lct_o[1][1].bx0 = 1'b0;
+    
+    // unused bits in CSCID=1 structure. Actual valid bits and bc0 
+    // sent out in separate signals: cid1_bc0 and cid1_vf
+    lct_o[1][0].vf  = 0;
+    lct_o[1][0].bc0 = 0;
+    lct_o[1][1].vf  = 0;
+    lct_o[1][1].bc0 = 0;
     
   end
 
