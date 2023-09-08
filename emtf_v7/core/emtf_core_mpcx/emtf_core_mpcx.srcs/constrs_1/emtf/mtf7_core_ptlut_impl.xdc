@@ -376,6 +376,9 @@ set_false_path -from [get_pins {crb/ddr_clk_del_reg[*]/C}] -to [get_pins {ptlut/
 set_false_path -from [get_pins {crb/control_reg_reg[10]/C}] -to [get_pins ptlut/idelaye2_clk/CE]
 set_false_path -from [get_pins {crb/control_reg_reg[12]/C}] -to [get_pins ptlut/idelaye2_clk/LD]
 
+# attempt to fix PTLUT timing with NN version 2023-09-05-v2
+set_max_delay -from [get_pins {ptlut/am_addr_reg[*]/C}] -to [get_pins {ptlut/cs_reg[*]/D}] 4.0
+
 
 
 

@@ -201,308 +201,399 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_10ns_25s_35_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_d0_LUT.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_10s_25s_35_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_hybrid_activation_LUT.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_11ns_25s_36_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_10ns_14ns_23_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_11s_18s_29_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_10ns_15ns_24_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_11s_25s_36_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_10s_13ns_23_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_12ns_18s_30_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_10s_14ns_24_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_12ns_25s_37_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_10s_15ns_25_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_12s_18s_30_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_11ns_14ns_24_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_12s_25s_37_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_11ns_15ns_25_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_13ns_18s_31_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_11ns_7ns_17_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_13ns_25s_38_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_11s_14ns_25_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_13s_18s_31_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_11s_15ns_26_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_13s_25s_38_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_11s_7ns_18_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_14ns_18s_32_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_12ns_14ns_25_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_14ns_25s_39_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_12ns_15ns_26_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_14s_18s_32_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_12ns_7ns_18_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_14s_25s_39_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_12s_14ns_26_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_15ns_18s_33_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_12s_15ns_27_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_15ns_25s_40_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_13ns_14ns_26_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_15s_18s_33_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_13ns_15ns_27_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_15s_25s_40_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_13s_14ns_27_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_16ns_18s_34_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_13s_15ns_28_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_16ns_25s_41_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_14ns_14ns_27_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_16s_18s_34_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_14ns_15ns_28_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_16s_25s_41_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_14s_14ns_28_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_17ns_18s_35_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_14s_15ns_29_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_17ns_25s_42_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_15ns_13ns_27_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_17s_18s_35_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_15ns_14ns_28_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_17s_25s_42_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_15ns_15ns_29_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_18ns_18s_36_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_15s_13ns_28_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_18ns_25s_43_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_15s_14ns_29_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_18s_18s_36_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_15s_15ns_30_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_19ns_18s_37_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_16ns_13ns_28_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_19s_18s_37_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_16ns_14ns_29_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_20ns_18s_38_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_16s_13ns_29_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_20s_18s_38_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_16s_14ns_30_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_21ns_18s_39_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_16s_15ns_31_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_21s_18s_39_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_17ns_13ns_29_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_8ns_25s_33_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_17ns_14ns_30_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_8s_25s_33_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_17s_13ns_30_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_9ns_18s_27_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_17s_14ns_31_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_9ns_25s_34_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_6ns_13ns_18_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/emtfnn_wrapper_mul_mul_9s_25s_34_1_1.v">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_6s_13ns_19_1_1.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_7ns_13ns_19_1_1.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_7ns_15ns_21_1_1.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_7s_13ns_20_1_1.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_7s_15ns_22_1_1.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_8ns_13ns_20_1_1.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_8ns_15ns_22_1_1.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_8s_13ns_21_1_1.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_8s_15ns_23_1_1.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_9ns_13ns_21_1_1.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_9ns_14ns_22_1_1.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_9ns_15ns_23_1_1.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_9s_13ns_22_1_1.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/emtfnn_wrapper_mul_mul_9s_15ns_24_1_1.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -558,13 +649,6 @@
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../../../cernbox/projects/vivado/emtf_v7/core/emtf_core_mbld/emtf_core_mbld.srcs/sources_1/lpgbt/lpgbt/lpgbt_asic_emul/gf_multBy3_5.v"/>
           <Attr Name="ImportTime" Val="1586959739"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/normalize_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_s.v">
-        <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -1143,7 +1227,7 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/nn_2023-06-15/nn_tux.sv">
+      <File Path="$PSRCDIR/sources_1/nn_2023-09-05-v2/nn_tux.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -2213,11 +2297,9 @@
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
     </Run>
-    <Run Id="synth_3" Type="Ft3:Synth" SrcSet="sources_1" Part="xc7vx690tffg1927-2" ConstrsSet="constrs_1" Description="Default options plus the FewerCarryChains directive for less inference of carry chains, turning off the LUT combining, resource sharing off, retaining equivalent registers" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" State="current" Dir="$PRUNDIR/synth_3" IncludeInArchive="true">
+    <Run Id="synth_3" Type="Ft3:Synth" SrcSet="sources_1" Part="xc7vx690tffg1927-2" ConstrsSet="constrs_1" Description="Default options plus the FewerCarryChains directive for less inference of carry chains, turning off the LUT combining, resource sharing off, retaining equivalent registers" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/synth_3" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Flow_PerfThresholdCarry" Flow="Vivado Synthesis 2020">
-          <Desc>Default options plus the FewerCarryChains directive for less inference of carry chains, turning off the LUT combining, resource sharing off, retaining equivalent registers</Desc>
-        </StratHandle>
+        <StratHandle Name="Flow_PerfThresholdCarry" Flow="Vivado Synthesis 2020"/>
         <Step Id="synth_design">
           <Option Id="ResourceSharing">2</Option>
           <Option Id="NoCombineLuts">1</Option>
@@ -2330,16 +2412,16 @@
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
     </Run>
-    <Run Id="synth_perf_high" Type="Ft3:Synth" SrcSet="sources_1" Part="xc7vx690tffg1927-2" ConstrsSet="constrs_1" Description="Higher performance designs, resource sharing is turned off, the global fanout guide is set to a lower number, FSM extraction forced to one-hot, LUT combining is disabled, equivalent registers are preserved, SRL are inferred  with a larger threshold" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/synth_perf_high" IncludeInArchive="true">
+    <Run Id="synth_perf_high" Type="Ft3:Synth" SrcSet="sources_1" Part="xc7vx690tffg1927-2" ConstrsSet="constrs_1" Description="Higher performance designs, resource sharing is turned off, the global fanout guide is set to a lower number, FSM extraction forced to one-hot, LUT combining is disabled, equivalent registers are preserved, SRL are inferred  with a larger threshold" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" State="current" Dir="$PRUNDIR/synth_perf_high" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Flow_PerfOptimized_high" Flow="Vivado Synthesis 2020"/>
         <Step Id="synth_design">
+          <Option Id="KeepEquivalentRegisters">1</Option>
+          <Option Id="ShregMinSize">5</Option>
+          <Option Id="NoCombineLuts">1</Option>
+          <Option Id="Directive">7</Option>
           <Option Id="ResourceSharing">2</Option>
           <Option Id="FsmExtraction">1</Option>
-          <Option Id="ShregMinSize">5</Option>
-          <Option Id="KeepEquivalentRegisters">1</Option>
-          <Option Id="Directive">7</Option>
-          <Option Id="NoCombineLuts">1</Option>
         </Step>
       </Strategy>
       <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
@@ -2364,11 +2446,9 @@
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
     </Run>
-    <Run Id="impl_expl_remap" Type="Ft2:EntireDesign" Part="xc7vx690tffg1927-2" ConstrsSet="constrs_1" Description="Similar to Performance_ExplorePostRoutePhysOpt, but enables logic optimization step (opt_design) with the ExploreWithRemap directive." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" State="current" Dir="$PRUNDIR/impl_expl_remap" SynthRun="synth_3" IncludeInArchive="true" GenFullBitstream="true">
+    <Run Id="impl_expl_remap" Type="Ft2:EntireDesign" Part="xc7vx690tffg1927-2" ConstrsSet="constrs_1" Description="Similar to Performance_ExplorePostRoutePhysOpt, but enables logic optimization step (opt_design) with the ExploreWithRemap directive." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/impl_expl_remap" SynthRun="synth_3" IncludeInArchive="true" GenFullBitstream="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Performance_ExploreWithRemap" Flow="Vivado Implementation 2020">
-          <Desc>Similar to Performance_ExplorePostRoutePhysOpt, but enables logic optimization step (opt_design) with the ExploreWithRemap directive.</Desc>
-        </StratHandle>
+        <StratHandle Name="Performance_ExploreWithRemap" Flow="Vivado Implementation 2020"/>
         <Step Id="init_design"/>
         <Step Id="opt_design">
           <Option Id="Directive">6</Option>
@@ -2533,7 +2613,7 @@
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
     </Run>
-    <Run Id="impl_congest" Type="Ft2:EntireDesign" Part="xc7vx690tffg1927-2" ConstrsSet="constrs_1" Description="Spread logic throughout the device to avoid creating congested regions. (high setting: highest degree of spreading)" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="synth_3" IncludeInArchive="true" GenFullBitstream="true">
+    <Run Id="impl_congest" Type="Ft2:EntireDesign" Part="xc7vx690tffg1927-2" ConstrsSet="constrs_1" Description="Spread logic throughout the device to avoid creating congested regions. (high setting: highest degree of spreading)" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/impl_congest" SynthRun="synth_3" IncludeInArchive="true" GenFullBitstream="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Congestion_SpreadLogic_high" Flow="Vivado Implementation 2020"/>
         <Step Id="init_design"/>
@@ -2554,6 +2634,7 @@
           <Option Id="BinFile">1</Option>
         </Step>
       </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
       <ReportStrategy Name="Vivado Implementation Default Reports" Flow="Vivado Implementation 2020"/>
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
@@ -2622,7 +2703,7 @@
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
     </Run>
-    <Run Id="impl_extra_timing" Type="Ft2:EntireDesign" Part="xc7vx690tffg1927-2" ConstrsSet="constrs_1" Description="Includes alternate algorithms for timing-driven optimization" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/impl_extra_timing" SynthRun="synth_perf_high" IncludeInArchive="true" GenFullBitstream="true">
+    <Run Id="impl_extra_timing" Type="Ft2:EntireDesign" Part="xc7vx690tffg1927-2" ConstrsSet="constrs_1" Description="Includes alternate algorithms for timing-driven optimization" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" State="current" Dir="$PRUNDIR/impl_extra_timing" SynthRun="synth_perf_high" IncludeInArchive="true" GenFullBitstream="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Performance_ExtraTimingOpt" Flow="Vivado Implementation 2020"/>
         <Step Id="init_design"/>
