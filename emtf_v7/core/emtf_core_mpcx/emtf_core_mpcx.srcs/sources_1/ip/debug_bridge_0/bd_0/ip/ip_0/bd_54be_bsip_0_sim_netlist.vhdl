@@ -3,8 +3,8 @@
 -- Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
 -- Date        : Thu Mar  3 13:24:31 2022
 -- Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
--- Command     : write_vhdl -force -mode funcsim
---               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/debug_bridge_0/bd_0/ip/ip_0/bd_54be_bsip_0_sim_netlist.vhdl
+-- Command     : write_vhdl -force -mode funcsim -rename_top bd_54be_bsip_0 -prefix
+--               bd_54be_bsip_0_ bd_54be_bsip_0_sim_netlist.vhdl
 -- Design      : bd_54be_bsip_0
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -26,8 +26,6 @@ entity bd_54be_bsip_0_bsip_v1_1_0_jtag_reg is
     capir_lcl : in STD_LOGIC;
     tap_tdi : in STD_LOGIC
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of bd_54be_bsip_0_bsip_v1_1_0_jtag_reg : entity is "bsip_v1_1_0_jtag_reg";
 end bd_54be_bsip_0_bsip_v1_1_0_jtag_reg;
 
 architecture STRUCTURE of bd_54be_bsip_0_bsip_v1_1_0_jtag_reg is
@@ -619,8 +617,6 @@ entity bd_54be_bsip_0_bsip_v1_1_0_jtag_tapctl is
     TDO_O_reg : in STD_LOGIC;
     tap_tms : in STD_LOGIC
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of bd_54be_bsip_0_bsip_v1_1_0_jtag_tapctl : entity is "bsip_v1_1_0_jtag_tapctl";
 end bd_54be_bsip_0_bsip_v1_1_0_jtag_tapctl;
 
 architecture STRUCTURE of bd_54be_bsip_0_bsip_v1_1_0_jtag_tapctl is
@@ -1010,8 +1006,6 @@ entity bd_54be_bsip_0_bsip_v1_1_0_jtag_tap is
     tdo : in STD_LOGIC;
     tap_tms : in STD_LOGIC
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of bd_54be_bsip_0_bsip_v1_1_0_jtag_tap : entity is "bsip_v1_1_0_jtag_tap";
 end bd_54be_bsip_0_bsip_v1_1_0_jtag_tap;
 
 architecture STRUCTURE of bd_54be_bsip_0_bsip_v1_1_0_jtag_tap is
@@ -1161,8 +1155,6 @@ entity bd_54be_bsip_0_bsip_v1_1_0_bscan_tap is
     tap_tdi : in STD_LOGIC;
     tdo : in STD_LOGIC
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of bd_54be_bsip_0_bsip_v1_1_0_bscan_tap : entity is "bsip_v1_1_0_bscan_tap";
 end bd_54be_bsip_0_bsip_v1_1_0_bscan_tap;
 
 architecture STRUCTURE of bd_54be_bsip_0_bsip_v1_1_0_bscan_tap is
@@ -1269,8 +1261,6 @@ entity bd_54be_bsip_0_bsip_v1_1_0_bsip is
   attribute C_USER_SCAN_CHAIN of bd_54be_bsip_0_bsip_v1_1_0_bsip : entity is 1;
   attribute C_USE_SOFTBSCAN : integer;
   attribute C_USE_SOFTBSCAN of bd_54be_bsip_0_bsip_v1_1_0_bsip : entity is 1;
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of bd_54be_bsip_0_bsip_v1_1_0_bsip : entity is "bsip_v1_1_0_bsip";
 end bd_54be_bsip_0_bsip_v1_1_0_bsip;
 
 architecture STRUCTURE of bd_54be_bsip_0_bsip_v1_1_0_bsip is

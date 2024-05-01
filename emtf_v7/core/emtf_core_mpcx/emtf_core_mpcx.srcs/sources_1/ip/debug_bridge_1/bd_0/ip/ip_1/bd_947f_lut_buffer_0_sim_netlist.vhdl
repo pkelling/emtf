@@ -1,10 +1,10 @@
 -- Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
--- Date        : Thu Mar  3 13:24:24 2022
+-- Date        : Thu Mar  3 13:24:23 2022
 -- Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
--- Command     : write_vhdl -force -mode funcsim
---               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/debug_bridge_1/bd_0/ip/ip_1/bd_947f_lut_buffer_0_sim_netlist.vhdl
+-- Command     : write_vhdl -force -mode funcsim -rename_top bd_947f_lut_buffer_0 -prefix
+--               bd_947f_lut_buffer_0_ bd_947f_lut_buffer_0_sim_netlist.vhdl
 -- Design      : bd_947f_lut_buffer_0
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -45,8 +45,6 @@ entity bd_947f_lut_buffer_0_lut_buffer_v2_0_0_lut_buffer is
   );
   attribute C_EN_BSCANID_VEC : integer;
   attribute C_EN_BSCANID_VEC of bd_947f_lut_buffer_0_lut_buffer_v2_0_0_lut_buffer : entity is 0;
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of bd_947f_lut_buffer_0_lut_buffer_v2_0_0_lut_buffer : entity is "lut_buffer_v2_0_0_lut_buffer";
   attribute dont_touch : string;
   attribute dont_touch of bd_947f_lut_buffer_0_lut_buffer_v2_0_0_lut_buffer : entity is "true";
 end bd_947f_lut_buffer_0_lut_buffer_v2_0_0_lut_buffer;

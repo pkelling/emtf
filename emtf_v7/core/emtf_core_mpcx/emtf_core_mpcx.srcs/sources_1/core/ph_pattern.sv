@@ -101,8 +101,8 @@ module ph_pattern
 			
 			if 
 			(
-			    bx[mi][foldn][2] == 1'b0 && // if drift time is up, find quality of this pattern
-                bx[mi][foldn][1] == 1'b1 && 
+			    bx[mi][foldn][1] == 1'b0 && // if drift time is up, find quality of this pattern
+                bx[mi][foldn][0] == 1'b1 && 
 				// remove single-layer and ME3-4 hit patterns
 				more_than_one
 			)
@@ -112,19 +112,19 @@ module ph_pattern
 			
 			
 		   // process bx shifter
-            bx[mi][foldn][2] = bx[mi][foldn][1];
-            bx[mi][foldn][1] = bx[mi][foldn][0];
-            bx[mi][foldn][0] = more_than_zero; // put 1 in shifter when one layer is hit 
+            bx[mi][foldn][2] <= bx[mi][foldn][1];
+            bx[mi][foldn][1] <= bx[mi][foldn][0];
+            bx[mi][foldn][0] <= more_than_zero; // put 1 in shifter when one layer is hit 
         end
 
-        qcode = 0;
+        //qcode = 0;
 		// find max quality on each clock
 		comp1[0] = qcode_p[0] > qcode_p[1] ? qcode_p[0] : qcode_p[1];
 		comp1[1] = qcode_p[2] > qcode_p[3] ? qcode_p[2] : qcode_p[3];
 
 		comp2 = comp1[0] > comp1[1] ? comp1[0] : comp1[1];
 
-		qcode = comp2 > qcode_p[4] ? comp2 : qcode_p[4];
+		qcode <= comp2 > qcode_p[4] ? comp2 : qcode_p[4];
 
     end
 endmodule

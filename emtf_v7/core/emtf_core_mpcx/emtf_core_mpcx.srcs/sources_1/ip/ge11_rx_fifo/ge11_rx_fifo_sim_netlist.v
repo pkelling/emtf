@@ -3,8 +3,8 @@
 // Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
 // Date        : Thu Mar  3 13:24:44 2022
 // Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
-// Command     : write_verilog -force -mode funcsim
-//               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/ge11_rx_fifo/ge11_rx_fifo_sim_netlist.v
+// Command     : write_verilog -force -mode funcsim -rename_top ge11_rx_fifo -prefix
+//               ge11_rx_fifo_ ge11_rx_fifo_sim_netlist.v
 // Design      : ge11_rx_fifo
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -610,10 +610,10 @@ module ge11_rx_fifo
         .wr_rst_busy(wr_rst_busy));
 endmodule
 
-(* DEST_SYNC_FF = "2" *) (* INIT_SYNC_FF = "0" *) (* ORIG_REF_NAME = "xpm_cdc_gray" *) 
-(* REG_OUTPUT = "1" *) (* SIM_ASSERT_CHK = "0" *) (* SIM_LOSSLESS_GRAY_CHK = "0" *) 
-(* VERSION = "0" *) (* WIDTH = "6" *) (* XPM_MODULE = "TRUE" *) 
-(* keep_hierarchy = "true" *) (* xpm_cdc = "GRAY" *) 
+(* DEST_SYNC_FF = "2" *) (* INIT_SYNC_FF = "0" *) (* REG_OUTPUT = "1" *) 
+(* SIM_ASSERT_CHK = "0" *) (* SIM_LOSSLESS_GRAY_CHK = "0" *) (* VERSION = "0" *) 
+(* WIDTH = "6" *) (* XPM_MODULE = "TRUE" *) (* keep_hierarchy = "true" *) 
+(* xpm_cdc = "GRAY" *) 
 module ge11_rx_fifo_xpm_cdc_gray
    (src_clk,
     src_in_bin,
@@ -1170,9 +1170,9 @@ module ge11_rx_fifo_xpm_cdc_gray__2
         .R(1'b0));
 endmodule
 
-(* DEST_SYNC_FF = "5" *) (* INIT_SYNC_FF = "0" *) (* ORIG_REF_NAME = "xpm_cdc_single" *) 
-(* SIM_ASSERT_CHK = "0" *) (* SRC_INPUT_REG = "0" *) (* VERSION = "0" *) 
-(* XPM_MODULE = "TRUE" *) (* keep_hierarchy = "true" *) (* xpm_cdc = "SINGLE" *) 
+(* DEST_SYNC_FF = "5" *) (* INIT_SYNC_FF = "0" *) (* SIM_ASSERT_CHK = "0" *) 
+(* SRC_INPUT_REG = "0" *) (* VERSION = "0" *) (* XPM_MODULE = "TRUE" *) 
+(* keep_hierarchy = "true" *) (* xpm_cdc = "SINGLE" *) 
 module ge11_rx_fifo_xpm_cdc_single
    (src_clk,
     src_in,
@@ -1301,9 +1301,8 @@ module ge11_rx_fifo_xpm_cdc_single__2
 endmodule
 
 (* DEF_VAL = "1'b1" *) (* DEST_SYNC_FF = "5" *) (* INIT = "1" *) 
-(* INIT_SYNC_FF = "0" *) (* ORIG_REF_NAME = "xpm_cdc_sync_rst" *) (* SIM_ASSERT_CHK = "0" *) 
-(* VERSION = "0" *) (* XPM_MODULE = "TRUE" *) (* keep_hierarchy = "true" *) 
-(* xpm_cdc = "SYNC_RST" *) 
+(* INIT_SYNC_FF = "0" *) (* SIM_ASSERT_CHK = "0" *) (* VERSION = "0" *) 
+(* XPM_MODULE = "TRUE" *) (* keep_hierarchy = "true" *) (* xpm_cdc = "SYNC_RST" *) 
 module ge11_rx_fifo_xpm_cdc_sync_rst
    (src_rst,
     dest_clk,
@@ -1500,7 +1499,6 @@ module ge11_rx_fifo_xpm_cdc_sync_rst__parameterized2
         .R(1'b0));
 endmodule
 
-(* ORIG_REF_NAME = "blk_mem_gen_generic_cstr" *) 
 module ge11_rx_fifo_blk_mem_gen_generic_cstr
    (dout,
     wr_clk,
@@ -3659,7 +3657,6 @@ module ge11_rx_fifo_blk_mem_gen_generic_cstr
         .wr_en(wr_en));
 endmodule
 
-(* ORIG_REF_NAME = "blk_mem_gen_prim_width" *) 
 module ge11_rx_fifo_blk_mem_gen_prim_width
    (D,
     rd_clk,
@@ -4020,7 +4017,6 @@ module ge11_rx_fifo_blk_mem_gen_prim_width__parameterized2
         .wr_en(wr_en));
 endmodule
 
-(* ORIG_REF_NAME = "blk_mem_gen_prim_wrapper" *) 
 module ge11_rx_fifo_blk_mem_gen_prim_wrapper
    (D,
     rd_clk,
@@ -5125,7 +5121,6 @@ module ge11_rx_fifo_blk_mem_gen_prim_wrapper__parameterized2
         .O(tmp_ram_rd_std));
 endmodule
 
-(* ORIG_REF_NAME = "blk_mem_gen_top" *) 
 module ge11_rx_fifo_blk_mem_gen_top
    (dout,
     wr_clk,
@@ -5192,7 +5187,6 @@ module ge11_rx_fifo_blk_mem_gen_top
         .wr_en(wr_en));
 endmodule
 
-(* ORIG_REF_NAME = "blk_mem_gen_v8_4_4" *) 
 module ge11_rx_fifo_blk_mem_gen_v8_4_4
    (dout,
     wr_clk,
@@ -5259,7 +5253,6 @@ module ge11_rx_fifo_blk_mem_gen_v8_4_4
         .wr_en(wr_en));
 endmodule
 
-(* ORIG_REF_NAME = "blk_mem_gen_v8_4_4_synth" *) 
 module ge11_rx_fifo_blk_mem_gen_v8_4_4_synth
    (dout,
     wr_clk,
@@ -5326,7 +5319,6 @@ module ge11_rx_fifo_blk_mem_gen_v8_4_4_synth
         .wr_en(wr_en));
 endmodule
 
-(* ORIG_REF_NAME = "clk_x_pntrs" *) 
 module ge11_rx_fifo_clk_x_pntrs
    (ram_full_i0,
     WR_PNTR_RD,
@@ -5459,7 +5451,6 @@ module ge11_rx_fifo_clk_x_pntrs
         .src_in_bin(\src_gray_ff_reg[5] ));
 endmodule
 
-(* ORIG_REF_NAME = "fifo_generator_ramfifo" *) 
 module ge11_rx_fifo_fifo_generator_ramfifo
    (SR,
     wr_rst_busy,
@@ -5571,7 +5562,6 @@ module ge11_rx_fifo_fifo_generator_ramfifo
         .wr_rst_busy(wr_rst_busy));
 endmodule
 
-(* ORIG_REF_NAME = "fifo_generator_top" *) 
 module ge11_rx_fifo_fifo_generator_top
    (SR,
     wr_rst_busy,
@@ -5693,7 +5683,7 @@ endmodule
 (* C_WR_DEPTH_WRCH = "16" *) (* C_WR_FREQ = "1" *) (* C_WR_PNTR_WIDTH = "6" *) 
 (* C_WR_PNTR_WIDTH_AXIS = "10" *) (* C_WR_PNTR_WIDTH_RACH = "4" *) (* C_WR_PNTR_WIDTH_RDCH = "10" *) 
 (* C_WR_PNTR_WIDTH_WACH = "4" *) (* C_WR_PNTR_WIDTH_WDCH = "10" *) (* C_WR_PNTR_WIDTH_WRCH = "4" *) 
-(* C_WR_RESPONSE_LATENCY = "1" *) (* ORIG_REF_NAME = "fifo_generator_v13_2_5" *) 
+(* C_WR_RESPONSE_LATENCY = "1" *) 
 module ge11_rx_fifo_fifo_generator_v13_2_5
    (backup,
     backup_marker,
@@ -6702,7 +6692,6 @@ module ge11_rx_fifo_fifo_generator_v13_2_5
         .wr_rst_busy(wr_rst_busy));
 endmodule
 
-(* ORIG_REF_NAME = "fifo_generator_v13_2_5_synth" *) 
 module ge11_rx_fifo_fifo_generator_v13_2_5_synth
    (SR,
     wr_rst_busy,
@@ -6757,7 +6746,6 @@ module ge11_rx_fifo_fifo_generator_v13_2_5_synth
         .wr_rst_busy(wr_rst_busy));
 endmodule
 
-(* ORIG_REF_NAME = "memory" *) 
 module ge11_rx_fifo_memory
    (tmp_ram_rd_en_d1,
     dout,
@@ -6841,7 +6829,6 @@ module ge11_rx_fifo_memory
         .R(SR));
 endmodule
 
-(* ORIG_REF_NAME = "rd_bin_cntr" *) 
 module ge11_rx_fifo_rd_bin_cntr
    (\ngwrdrst.grst.g7serrst.gsckt_wrst.gic_rst.sckt_rd_rst_ic_reg ,
     Q,
@@ -7085,7 +7072,6 @@ module ge11_rx_fifo_rd_bin_cntr
         .O(ram_empty_i_i_7_n_0));
 endmodule
 
-(* ORIG_REF_NAME = "rd_handshaking_flags" *) 
 module ge11_rx_fifo_rd_handshaking_flags
    (valid,
     SR,
@@ -7129,7 +7115,6 @@ module ge11_rx_fifo_rd_handshaking_flags
         .R(SR));
 endmodule
 
-(* ORIG_REF_NAME = "rd_logic" *) 
 module ge11_rx_fifo_rd_logic
    (empty,
     out,
@@ -7186,7 +7171,6 @@ module ge11_rx_fifo_rd_logic
         .rd_en(rd_en));
 endmodule
 
-(* ORIG_REF_NAME = "rd_status_flags_as" *) 
 module ge11_rx_fifo_rd_status_flags_as
    (empty,
     out,
@@ -7249,7 +7233,6 @@ module ge11_rx_fifo_rd_status_flags_as
         .R(1'b0));
 endmodule
 
-(* ORIG_REF_NAME = "reset_blk_ramfifo" *) 
 module ge11_rx_fifo_reset_blk_ramfifo
    (\ngwrdrst.grst.g7serrst.gsckt_wrst.gic_rst.sckt_wr_rst_ic_reg_0 ,
     SR,
@@ -7518,7 +7501,6 @@ module ge11_rx_fifo_reset_blk_ramfifo
         .src_rst(rst));
 endmodule
 
-(* ORIG_REF_NAME = "wr_bin_cntr" *) 
 module ge11_rx_fifo_wr_bin_cntr
    (Q,
     \gic0.gc0.count_d1_reg[5]_0 ,
@@ -7736,7 +7718,6 @@ module ge11_rx_fifo_wr_bin_cntr
         .R(\gic0.gc0.count_d2_reg[0]_0 ));
 endmodule
 
-(* ORIG_REF_NAME = "wr_logic" *) 
 module ge11_rx_fifo_wr_logic
    (full,
     FULL_FB,
@@ -7787,7 +7768,6 @@ module ge11_rx_fifo_wr_logic
         .wr_clk(wr_clk));
 endmodule
 
-(* ORIG_REF_NAME = "wr_status_flags_as" *) 
 module ge11_rx_fifo_wr_status_flags_as
    (full,
     FULL_FB,

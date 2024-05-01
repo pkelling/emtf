@@ -33,13 +33,14 @@ module extender (inp, outp, drifttime, clk);
     begin
 //        d4 = d3;
 //        d3 = d2;
-        d2 = d1;
-        d1 = inp;
+        d2 <= d1;
+        d1 <= inp;
     end
     
     // output logic combinatorial, to reduce latency
     always @(*)
     begin
-        outp = inp | d1 | d2;
+        // outp = inp | d1 | d2;
+        outp = d1 | d2;
     end
 endmodule

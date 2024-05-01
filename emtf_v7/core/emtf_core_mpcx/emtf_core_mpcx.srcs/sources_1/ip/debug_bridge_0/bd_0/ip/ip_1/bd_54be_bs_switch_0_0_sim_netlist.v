@@ -3,8 +3,8 @@
 // Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
 // Date        : Thu Mar  3 13:24:26 2022
 // Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
-// Command     : write_verilog -force -mode funcsim
-//               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/debug_bridge_0/bd_0/ip/ip_1/bd_54be_bs_switch_0_0_sim_netlist.v
+// Command     : write_verilog -force -mode funcsim -rename_top bd_54be_bs_switch_0_0 -prefix
+//               bd_54be_bs_switch_0_0_ bd_54be_bs_switch_0_0_sim_netlist.v
 // Design      : bd_54be_bs_switch_0_0
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -491,8 +491,7 @@ module bd_54be_bs_switch_0_0
 endmodule
 
 (* C_NUM_BS_MASTER = "1" *) (* C_ONLY_PRIMITIVE = "0" *) (* C_USER_SCAN_CHAIN = "1" *) 
-(* C_USE_EXT_BSCAN = "1" *) (* C_XDEVICEFAMILY = "virtex7" *) (* ORIG_REF_NAME = "bs_switch_v1_0_0_bs_switch" *) 
-(* dont_touch = "true" *) 
+(* C_USE_EXT_BSCAN = "1" *) (* C_XDEVICEFAMILY = "virtex7" *) (* dont_touch = "true" *) 
 module bd_54be_bs_switch_0_0_bs_switch_v1_0_0_bs_switch
    (s_bscan_drck,
     s_bscan_reset,
@@ -1167,8 +1166,8 @@ module bd_54be_bs_switch_0_0_bs_switch_v1_0_0_bs_switch
 endmodule
 
 (* ERROR = "7" *) (* FORWARD = "4" *) (* IDLE = "0" *) 
-(* ORIG_REF_NAME = "bs_switch_v1_0_0_core" *) (* PORTS = "1" *) (* PORT_SELECT = "3" *) 
-(* SWITCH_SELECT = "2" *) (* XILINX_JEP106_ID = "12'b000001001001" *) (* dont_touch = "true" *) 
+(* PORTS = "1" *) (* PORT_SELECT = "3" *) (* SWITCH_SELECT = "2" *) 
+(* XILINX_JEP106_ID = "12'b000001001001" *) (* dont_touch = "true" *) 
 module bd_54be_bs_switch_0_0_bs_switch_v1_0_0_core
    (s_bscan_drck,
     s_bscan_reset,

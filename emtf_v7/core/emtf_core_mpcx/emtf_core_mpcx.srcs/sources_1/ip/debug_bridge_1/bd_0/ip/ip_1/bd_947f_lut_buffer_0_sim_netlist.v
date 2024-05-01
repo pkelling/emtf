@@ -1,10 +1,10 @@
 // Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
-// Date        : Thu Mar  3 13:24:24 2022
+// Date        : Thu Mar  3 13:24:23 2022
 // Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
-// Command     : write_verilog -force -mode funcsim
-//               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/debug_bridge_1/bd_0/ip/ip_1/bd_947f_lut_buffer_0_sim_netlist.v
+// Command     : write_verilog -force -mode funcsim -rename_top bd_947f_lut_buffer_0 -prefix
+//               bd_947f_lut_buffer_0_ bd_947f_lut_buffer_0_sim_netlist.v
 // Design      : bd_947f_lut_buffer_0
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -122,7 +122,7 @@ module bd_947f_lut_buffer_0
         .update_o(update_o));
 endmodule
 
-(* C_EN_BSCANID_VEC = "0" *) (* ORIG_REF_NAME = "lut_buffer_v2_0_0_lut_buffer" *) (* dont_touch = "true" *) 
+(* C_EN_BSCANID_VEC = "0" *) (* dont_touch = "true" *) 
 module bd_947f_lut_buffer_0_lut_buffer_v2_0_0_lut_buffer
    (tms_i,
     tdi_i,

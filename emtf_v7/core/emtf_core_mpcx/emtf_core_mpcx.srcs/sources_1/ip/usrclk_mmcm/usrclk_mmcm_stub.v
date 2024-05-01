@@ -1,10 +1,10 @@
 // Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
-// Date        : Mon Nov 28 10:08:22 2022
+// Date        : Mon Nov 28 10:08:21 2022
 // Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
-// Command     : write_verilog -force -mode synth_stub
-//               /home/madorsky/github/vivado/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/usrclk_mmcm/usrclk_mmcm_stub.v
+// Command     : write_verilog -force -mode synth_stub -rename_top usrclk_mmcm -prefix
+//               usrclk_mmcm_ usrclk_mmcm_stub.v
 // Design      : usrclk_mmcm
 // Purpose     : Stub declaration of top-level module interface
 // Device      : xc7vx690tffg1927-2

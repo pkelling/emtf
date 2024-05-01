@@ -3,8 +3,8 @@
 // Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
 // Date        : Thu Mar  3 13:24:31 2022
 // Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
-// Command     : write_verilog -force -mode funcsim
-//               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/debug_bridge_0/bd_0/ip/ip_0/bd_54be_bsip_0_sim_netlist.v
+// Command     : write_verilog -force -mode funcsim -rename_top bd_54be_bsip_0 -prefix
+//               bd_54be_bsip_0_ bd_54be_bsip_0_sim_netlist.v
 // Design      : bd_54be_bsip_0
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -103,7 +103,6 @@ module bd_54be_bsip_0
         .update(update));
 endmodule
 
-(* ORIG_REF_NAME = "bsip_v1_1_0_bscan_tap" *) 
 module bd_54be_bsip_0_bsip_v1_1_0_bscan_tap
    (AR,
     tap_tdo,
@@ -186,7 +185,6 @@ endmodule
 (* C_CHIP_ID = "0" *) (* C_DEVICE_FAMILY = "0" *) (* C_EN_MUX = "0" *) 
 (* C_EN_MUX_EXT_BS = "0" *) (* C_IR_ID_INSTR = "0" *) (* C_IR_USER1_INSTR = "0" *) 
 (* C_IR_WIDTH = "0" *) (* C_USER_SCAN_CHAIN = "1" *) (* C_USE_SOFTBSCAN = "1" *) 
-(* ORIG_REF_NAME = "bsip_v1_1_0_bsip" *) 
 module bd_54be_bsip_0_bsip_v1_1_0_bsip
    (drck,
     reset,
@@ -280,7 +278,6 @@ module bd_54be_bsip_0_bsip_v1_1_0_bsip
         .O(tck));
 endmodule
 
-(* ORIG_REF_NAME = "bsip_v1_1_0_jtag_reg" *) 
 module bd_54be_bsip_0_bsip_v1_1_0_jtag_reg
    (D,
     Q,
@@ -751,7 +748,6 @@ module bd_54be_bsip_0_bsip_v1_1_0_jtag_reg__parameterized3
         .R(\sh_reg_reg[31]_0 ));
 endmodule
 
-(* ORIG_REF_NAME = "bsip_v1_1_0_jtag_tap" *) 
 module bd_54be_bsip_0_bsip_v1_1_0_jtag_tap
    (out,
     tap_tdo,
@@ -893,7 +889,6 @@ module bd_54be_bsip_0_bsip_v1_1_0_jtag_tap
         .O(dr_tdo_inferred_i_3_n_0));
 endmodule
 
-(* ORIG_REF_NAME = "bsip_v1_1_0_jtag_tapctl" *) 
 module bd_54be_bsip_0_bsip_v1_1_0_jtag_tapctl
    (AS,
     capir_lcl,

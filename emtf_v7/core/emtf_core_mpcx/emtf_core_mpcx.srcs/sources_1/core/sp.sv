@@ -131,7 +131,7 @@ module sp
     wire two_st_tight_timing      = core_config[23];
     wire [2:0] single_delay       = core_config[26:24];
     wire [3:0] hmt_delay          = core_config[30:27];
-    wire use_gem                  = core_config[31];
+    wire use_gem                  = core_config[31]; 
 
     // fold numbers for multiplexed pattern detectors
     wire [2:0] 			ph_foldn = 0;

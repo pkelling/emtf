@@ -3,8 +3,8 @@
 -- Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
 -- Date        : Thu Mar  3 13:24:44 2022
 -- Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
--- Command     : write_vhdl -force -mode funcsim
---               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/ge11_rx_fifo/ge11_rx_fifo_sim_netlist.vhdl
+-- Command     : write_vhdl -force -mode funcsim -rename_top ge11_rx_fifo -prefix
+--               ge11_rx_fifo_ ge11_rx_fifo_sim_netlist.vhdl
 -- Design      : ge11_rx_fifo
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -25,8 +25,6 @@ entity ge11_rx_fifo_xpm_cdc_gray is
   attribute DEST_SYNC_FF of ge11_rx_fifo_xpm_cdc_gray : entity is 2;
   attribute INIT_SYNC_FF : integer;
   attribute INIT_SYNC_FF of ge11_rx_fifo_xpm_cdc_gray : entity is 0;
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_xpm_cdc_gray : entity is "xpm_cdc_gray";
   attribute REG_OUTPUT : integer;
   attribute REG_OUTPUT of ge11_rx_fifo_xpm_cdc_gray : entity is 1;
   attribute SIM_ASSERT_CHK : integer;
@@ -797,8 +795,6 @@ entity ge11_rx_fifo_xpm_cdc_single is
   attribute DEST_SYNC_FF of ge11_rx_fifo_xpm_cdc_single : entity is 5;
   attribute INIT_SYNC_FF : integer;
   attribute INIT_SYNC_FF of ge11_rx_fifo_xpm_cdc_single : entity is 0;
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_xpm_cdc_single : entity is "xpm_cdc_single";
   attribute SIM_ASSERT_CHK : integer;
   attribute SIM_ASSERT_CHK of ge11_rx_fifo_xpm_cdc_single : entity is 0;
   attribute SRC_INPUT_REG : integer;
@@ -996,8 +992,6 @@ entity ge11_rx_fifo_xpm_cdc_sync_rst is
   attribute INIT of ge11_rx_fifo_xpm_cdc_sync_rst : entity is "1";
   attribute INIT_SYNC_FF : integer;
   attribute INIT_SYNC_FF of ge11_rx_fifo_xpm_cdc_sync_rst : entity is 0;
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_xpm_cdc_sync_rst : entity is "xpm_cdc_sync_rst";
   attribute SIM_ASSERT_CHK : integer;
   attribute SIM_ASSERT_CHK of ge11_rx_fifo_xpm_cdc_sync_rst : entity is 0;
   attribute VERSION : integer;
@@ -1310,8 +1304,6 @@ entity ge11_rx_fifo_blk_mem_gen_prim_wrapper is
     din : in STD_LOGIC_VECTOR ( 71 downto 0 );
     E : in STD_LOGIC_VECTOR ( 0 to 0 )
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_blk_mem_gen_prim_wrapper : entity is "blk_mem_gen_prim_wrapper";
 end ge11_rx_fifo_blk_mem_gen_prim_wrapper;
 
 architecture STRUCTURE of ge11_rx_fifo_blk_mem_gen_prim_wrapper is
@@ -2535,8 +2527,6 @@ entity ge11_rx_fifo_rd_bin_cntr is
     E : in STD_LOGIC_VECTOR ( 0 to 0 );
     rd_clk : in STD_LOGIC
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_rd_bin_cntr : entity is "rd_bin_cntr";
 end ge11_rx_fifo_rd_bin_cntr;
 
 architecture STRUCTURE of ge11_rx_fifo_rd_bin_cntr is
@@ -2845,8 +2835,6 @@ entity ge11_rx_fifo_rd_handshaking_flags is
     ram_valid_i : in STD_LOGIC;
     rd_clk : in STD_LOGIC
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_rd_handshaking_flags : entity is "rd_handshaking_flags";
 end ge11_rx_fifo_rd_handshaking_flags;
 
 architecture STRUCTURE of ge11_rx_fifo_rd_handshaking_flags is
@@ -2901,8 +2889,6 @@ entity ge11_rx_fifo_rd_status_flags_as is
     rd_clk : in STD_LOGIC;
     rd_en : in STD_LOGIC
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_rd_status_flags_as : entity is "rd_status_flags_as";
 end ge11_rx_fifo_rd_status_flags_as;
 
 architecture STRUCTURE of ge11_rx_fifo_rd_status_flags_as is
@@ -2976,8 +2962,6 @@ entity ge11_rx_fifo_wr_bin_cntr is
     E : in STD_LOGIC_VECTOR ( 0 to 0 );
     wr_clk : in STD_LOGIC
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_wr_bin_cntr : entity is "wr_bin_cntr";
 end ge11_rx_fifo_wr_bin_cntr;
 
 architecture STRUCTURE of ge11_rx_fifo_wr_bin_cntr is
@@ -3268,8 +3252,6 @@ entity ge11_rx_fifo_wr_status_flags_as is
     wr_clk : in STD_LOGIC;
     wr_en : in STD_LOGIC
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_wr_status_flags_as : entity is "wr_status_flags_as";
 end ge11_rx_fifo_wr_status_flags_as;
 
 architecture STRUCTURE of ge11_rx_fifo_wr_status_flags_as is
@@ -3339,8 +3321,6 @@ entity ge11_rx_fifo_blk_mem_gen_prim_width is
     din : in STD_LOGIC_VECTOR ( 71 downto 0 );
     E : in STD_LOGIC_VECTOR ( 0 to 0 )
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_blk_mem_gen_prim_width : entity is "blk_mem_gen_prim_width";
 end ge11_rx_fifo_blk_mem_gen_prim_width;
 
 architecture STRUCTURE of ge11_rx_fifo_blk_mem_gen_prim_width is
@@ -3680,8 +3660,6 @@ entity ge11_rx_fifo_clk_x_pntrs is
     rd_clk : in STD_LOGIC;
     \src_gray_ff_reg[5]_0\ : in STD_LOGIC_VECTOR ( 5 downto 0 )
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_clk_x_pntrs : entity is "clk_x_pntrs";
 end ge11_rx_fifo_clk_x_pntrs;
 
 architecture STRUCTURE of ge11_rx_fifo_clk_x_pntrs is
@@ -3835,8 +3813,6 @@ entity ge11_rx_fifo_rd_logic is
     rd_en : in STD_LOGIC;
     WR_PNTR_RD : in STD_LOGIC_VECTOR ( 5 downto 0 )
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_rd_logic : entity is "rd_logic";
 end ge11_rx_fifo_rd_logic;
 
 architecture STRUCTURE of ge11_rx_fifo_rd_logic is
@@ -3891,8 +3867,6 @@ entity ge11_rx_fifo_reset_blk_ramfifo is
     rd_clk : in STD_LOGIC;
     tmp_ram_rd_en_d1 : in STD_LOGIC
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_reset_blk_ramfifo : entity is "reset_blk_ramfifo";
 end ge11_rx_fifo_reset_blk_ramfifo;
 
 architecture STRUCTURE of ge11_rx_fifo_reset_blk_ramfifo is
@@ -4263,8 +4237,6 @@ entity ge11_rx_fifo_wr_logic is
     wr_clk : in STD_LOGIC;
     wr_en : in STD_LOGIC
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_wr_logic : entity is "wr_logic";
 end ge11_rx_fifo_wr_logic;
 
 architecture STRUCTURE of ge11_rx_fifo_wr_logic is
@@ -4313,8 +4285,6 @@ entity ge11_rx_fifo_blk_mem_gen_generic_cstr is
     wr_en : in STD_LOGIC;
     \mux_b_wire.mux_reg.ce_pri.doutb_i_reg[255]_0\ : in STD_LOGIC_VECTOR ( 0 to 0 )
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_blk_mem_gen_generic_cstr : entity is "blk_mem_gen_generic_cstr";
 end ge11_rx_fifo_blk_mem_gen_generic_cstr;
 
 architecture STRUCTURE of ge11_rx_fifo_blk_mem_gen_generic_cstr is
@@ -7226,8 +7196,6 @@ entity ge11_rx_fifo_blk_mem_gen_top is
     wr_en : in STD_LOGIC;
     \mux_b_wire.mux_reg.ce_pri.doutb_i_reg[255]\ : in STD_LOGIC_VECTOR ( 0 to 0 )
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_blk_mem_gen_top : entity is "blk_mem_gen_top";
 end ge11_rx_fifo_blk_mem_gen_top;
 
 architecture STRUCTURE of ge11_rx_fifo_blk_mem_gen_top is
@@ -7273,8 +7241,6 @@ entity ge11_rx_fifo_blk_mem_gen_v8_4_4_synth is
     wr_en : in STD_LOGIC;
     \mux_b_wire.mux_reg.ce_pri.doutb_i_reg[255]\ : in STD_LOGIC_VECTOR ( 0 to 0 )
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_blk_mem_gen_v8_4_4_synth : entity is "blk_mem_gen_v8_4_4_synth";
 end ge11_rx_fifo_blk_mem_gen_v8_4_4_synth;
 
 architecture STRUCTURE of ge11_rx_fifo_blk_mem_gen_v8_4_4_synth is
@@ -7320,8 +7286,6 @@ entity ge11_rx_fifo_blk_mem_gen_v8_4_4 is
     wr_en : in STD_LOGIC;
     \mux_b_wire.mux_reg.ce_pri.doutb_i_reg[255]\ : in STD_LOGIC_VECTOR ( 0 to 0 )
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_blk_mem_gen_v8_4_4 : entity is "blk_mem_gen_v8_4_4";
 end ge11_rx_fifo_blk_mem_gen_v8_4_4;
 
 architecture STRUCTURE of ge11_rx_fifo_blk_mem_gen_v8_4_4 is
@@ -7367,8 +7331,6 @@ entity ge11_rx_fifo_memory is
     wr_en : in STD_LOGIC;
     \mux_b_wire.mux_reg.ce_pri.doutb_i_reg[255]\ : in STD_LOGIC_VECTOR ( 0 to 0 )
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_memory : entity is "memory";
 end ge11_rx_fifo_memory;
 
 architecture STRUCTURE of ge11_rx_fifo_memory is
@@ -7436,8 +7398,6 @@ entity ge11_rx_fifo_fifo_generator_ramfifo is
     din : in STD_LOGIC_VECTOR ( 255 downto 0 );
     wr_en : in STD_LOGIC
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_fifo_generator_ramfifo : entity is "fifo_generator_ramfifo";
 end ge11_rx_fifo_fifo_generator_ramfifo;
 
 architecture STRUCTURE of ge11_rx_fifo_fifo_generator_ramfifo is
@@ -7544,8 +7504,6 @@ entity ge11_rx_fifo_fifo_generator_top is
     din : in STD_LOGIC_VECTOR ( 255 downto 0 );
     wr_en : in STD_LOGIC
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_fifo_generator_top : entity is "fifo_generator_top";
 end ge11_rx_fifo_fifo_generator_top;
 
 architecture STRUCTURE of ge11_rx_fifo_fifo_generator_top is
@@ -7585,8 +7543,6 @@ entity ge11_rx_fifo_fifo_generator_v13_2_5_synth is
     din : in STD_LOGIC_VECTOR ( 255 downto 0 );
     wr_en : in STD_LOGIC
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_fifo_generator_v13_2_5_synth : entity is "fifo_generator_v13_2_5_synth";
 end ge11_rx_fifo_fifo_generator_v13_2_5_synth;
 
 architecture STRUCTURE of ge11_rx_fifo_fifo_generator_v13_2_5_synth is
@@ -8249,8 +8205,6 @@ entity ge11_rx_fifo_fifo_generator_v13_2_5 is
   attribute C_WR_PNTR_WIDTH_WRCH of ge11_rx_fifo_fifo_generator_v13_2_5 : entity is 4;
   attribute C_WR_RESPONSE_LATENCY : integer;
   attribute C_WR_RESPONSE_LATENCY of ge11_rx_fifo_fifo_generator_v13_2_5 : entity is 1;
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of ge11_rx_fifo_fifo_generator_v13_2_5 : entity is "fifo_generator_v13_2_5";
 end ge11_rx_fifo_fifo_generator_v13_2_5;
 
 architecture STRUCTURE of ge11_rx_fifo_fifo_generator_v13_2_5 is

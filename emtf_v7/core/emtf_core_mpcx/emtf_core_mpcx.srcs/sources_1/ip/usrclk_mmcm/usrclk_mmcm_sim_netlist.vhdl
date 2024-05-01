@@ -1,10 +1,10 @@
 -- Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
--- Date        : Mon Nov 28 10:08:22 2022
+-- Date        : Mon Nov 28 10:08:21 2022
 -- Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
--- Command     : write_vhdl -force -mode funcsim
---               /home/madorsky/github/vivado/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/usrclk_mmcm/usrclk_mmcm_sim_netlist.vhdl
+-- Command     : write_vhdl -force -mode funcsim -rename_top usrclk_mmcm -prefix
+--               usrclk_mmcm_ usrclk_mmcm_sim_netlist.vhdl
 -- Design      : usrclk_mmcm
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -25,8 +25,6 @@ entity usrclk_mmcm_usrclk_mmcm_clk_wiz is
     LOCKED : out STD_LOGIC;
     CLK_IN1 : in STD_LOGIC
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of usrclk_mmcm_usrclk_mmcm_clk_wiz : entity is "usrclk_mmcm_clk_wiz";
 end usrclk_mmcm_usrclk_mmcm_clk_wiz;
 
 architecture STRUCTURE of usrclk_mmcm_usrclk_mmcm_clk_wiz is

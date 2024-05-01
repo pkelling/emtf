@@ -3,8 +3,8 @@
 // Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
 // Date        : Thu Mar  3 13:25:01 2022
 // Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
-// Command     : write_verilog -force -mode funcsim
-//               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/debug_bridge_0/debug_bridge_0_sim_netlist.v
+// Command     : write_verilog -force -mode funcsim -rename_top debug_bridge_0 -prefix
+//               debug_bridge_0_ debug_bridge_0_sim_netlist.v
 // Design      : debug_bridge_0
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -12,80 +12,7 @@
 // --------------------------------------------------------------------------------
 `timescale 1 ps / 1 ps
 
-(* CHECK_LICENSE_TYPE = "debug_bridge_0,bd_54be,{}" *) (* DowngradeIPIdentifiedWarnings = "yes" *) (* X_CORE_INFO = "bd_54be,Vivado 2020.1.1_AR73018" *) 
-(* NotValidForBitStream *)
-module debug_bridge_0
-   (jtag_tdi,
-    jtag_tdo,
-    jtag_tms,
-    jtag_tck,
-    m0_bscan_bscanid_en,
-    m0_bscan_capture,
-    m0_bscan_drck,
-    m0_bscan_reset,
-    m0_bscan_runtest,
-    m0_bscan_sel,
-    m0_bscan_shift,
-    m0_bscan_tck,
-    m0_bscan_tdi,
-    m0_bscan_tdo,
-    m0_bscan_tms,
-    m0_bscan_update);
-  input jtag_tdi;
-  output jtag_tdo;
-  input jtag_tms;
-  input jtag_tck;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan BSCANID_en" *) output m0_bscan_bscanid_en;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan CAPTURE" *) output m0_bscan_capture;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan DRCK" *) output m0_bscan_drck;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan RESET" *) output m0_bscan_reset;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan RUNTEST" *) output m0_bscan_runtest;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan SEL" *) output m0_bscan_sel;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan SHIFT" *) output m0_bscan_shift;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan TCK" *) output m0_bscan_tck;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan TDI" *) output m0_bscan_tdi;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan TDO" *) input m0_bscan_tdo;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan TMS" *) output m0_bscan_tms;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan UPDATE" *) output m0_bscan_update;
-
-  wire jtag_tck;
-  wire jtag_tdi;
-  wire jtag_tdo;
-  wire jtag_tms;
-  wire m0_bscan_bscanid_en;
-  wire m0_bscan_capture;
-  wire m0_bscan_drck;
-  wire m0_bscan_reset;
-  wire m0_bscan_runtest;
-  wire m0_bscan_sel;
-  wire m0_bscan_shift;
-  wire m0_bscan_tck;
-  wire m0_bscan_tdi;
-  wire m0_bscan_tdo;
-  wire m0_bscan_tms;
-  wire m0_bscan_update;
-
-  (* HW_HANDOFF = "debug_bridge_0.hwdef" *) 
-  debug_bridge_0_bd_54be inst
-       (.jtag_tck(jtag_tck),
-        .jtag_tdi(jtag_tdi),
-        .jtag_tdo(jtag_tdo),
-        .jtag_tms(jtag_tms),
-        .m0_bscan_bscanid_en(m0_bscan_bscanid_en),
-        .m0_bscan_capture(m0_bscan_capture),
-        .m0_bscan_drck(m0_bscan_drck),
-        .m0_bscan_reset(m0_bscan_reset),
-        .m0_bscan_runtest(m0_bscan_runtest),
-        .m0_bscan_sel(m0_bscan_sel),
-        .m0_bscan_shift(m0_bscan_shift),
-        .m0_bscan_tck(m0_bscan_tck),
-        .m0_bscan_tdi(m0_bscan_tdi),
-        .m0_bscan_tdo(m0_bscan_tdo),
-        .m0_bscan_tms(m0_bscan_tms),
-        .m0_bscan_update(m0_bscan_update));
-endmodule
-
-(* HW_HANDOFF = "debug_bridge_0.hwdef" *) (* ORIG_REF_NAME = "bd_54be" *) 
+(* HW_HANDOFF = "debug_bridge_0.hwdef" *) 
 module debug_bridge_0_bd_54be
    (jtag_tck,
     jtag_tdi,
@@ -193,7 +120,7 @@ module debug_bridge_0_bd_54be
         .update(bsip_m_bscan_UPDATE));
 endmodule
 
-(* ORIG_REF_NAME = "bd_54be_bs_switch_0_0" *) (* X_CORE_INFO = "bs_switch_v1_0_0_bs_switch,Vivado 2020.1.1_AR73018" *) 
+(* X_CORE_INFO = "bs_switch_v1_0_0_bs_switch,Vivado 2020.1.1_AR73018" *) 
 module debug_bridge_0_bd_54be_bs_switch_0_0
    (s_bscan_drck,
     s_bscan_reset,
@@ -247,7 +174,7 @@ module debug_bridge_0_bd_54be_bs_switch_0_0
 
 endmodule
 
-(* ORIG_REF_NAME = "bd_54be_bsip_0" *) (* X_CORE_INFO = "bsip_v1_1_0_bsip,Vivado 2020.1.1_AR73018" *) 
+(* X_CORE_INFO = "bsip_v1_1_0_bsip,Vivado 2020.1.1_AR73018" *) 
 module debug_bridge_0_bd_54be_bsip_0
    (drck,
     reset,
@@ -281,6 +208,79 @@ module debug_bridge_0_bd_54be_bsip_0
   input tap_tck;
 
 
+endmodule
+
+(* CHECK_LICENSE_TYPE = "debug_bridge_0,bd_54be,{}" *) (* DowngradeIPIdentifiedWarnings = "yes" *) (* X_CORE_INFO = "bd_54be,Vivado 2020.1.1_AR73018" *) 
+(* NotValidForBitStream *)
+module debug_bridge_0
+   (jtag_tdi,
+    jtag_tdo,
+    jtag_tms,
+    jtag_tck,
+    m0_bscan_bscanid_en,
+    m0_bscan_capture,
+    m0_bscan_drck,
+    m0_bscan_reset,
+    m0_bscan_runtest,
+    m0_bscan_sel,
+    m0_bscan_shift,
+    m0_bscan_tck,
+    m0_bscan_tdi,
+    m0_bscan_tdo,
+    m0_bscan_tms,
+    m0_bscan_update);
+  input jtag_tdi;
+  output jtag_tdo;
+  input jtag_tms;
+  input jtag_tck;
+  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan BSCANID_en" *) output m0_bscan_bscanid_en;
+  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan CAPTURE" *) output m0_bscan_capture;
+  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan DRCK" *) output m0_bscan_drck;
+  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan RESET" *) output m0_bscan_reset;
+  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan RUNTEST" *) output m0_bscan_runtest;
+  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan SEL" *) output m0_bscan_sel;
+  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan SHIFT" *) output m0_bscan_shift;
+  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan TCK" *) output m0_bscan_tck;
+  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan TDI" *) output m0_bscan_tdi;
+  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan TDO" *) input m0_bscan_tdo;
+  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan TMS" *) output m0_bscan_tms;
+  (* X_INTERFACE_INFO = "xilinx.com:interface:bscan:1.0 m0_bscan UPDATE" *) output m0_bscan_update;
+
+  wire jtag_tck;
+  wire jtag_tdi;
+  wire jtag_tdo;
+  wire jtag_tms;
+  wire m0_bscan_bscanid_en;
+  wire m0_bscan_capture;
+  wire m0_bscan_drck;
+  wire m0_bscan_reset;
+  wire m0_bscan_runtest;
+  wire m0_bscan_sel;
+  wire m0_bscan_shift;
+  wire m0_bscan_tck;
+  wire m0_bscan_tdi;
+  wire m0_bscan_tdo;
+  wire m0_bscan_tms;
+  wire m0_bscan_update;
+
+  (* HW_HANDOFF = "debug_bridge_0.hwdef" *) 
+  debug_bridge_0_bd_54be inst
+       (.jtag_tck(jtag_tck),
+        .jtag_tdi(jtag_tdi),
+        .jtag_tdo(jtag_tdo),
+        .jtag_tms(jtag_tms),
+        .m0_bscan_bscanid_en(m0_bscan_bscanid_en),
+        .m0_bscan_capture(m0_bscan_capture),
+        .m0_bscan_drck(m0_bscan_drck),
+        .m0_bscan_reset(m0_bscan_reset),
+        .m0_bscan_runtest(m0_bscan_runtest),
+        .m0_bscan_sel(m0_bscan_sel),
+        .m0_bscan_shift(m0_bscan_shift),
+        .m0_bscan_tck(m0_bscan_tck),
+        .m0_bscan_tdi(m0_bscan_tdi),
+        .m0_bscan_tdo(m0_bscan_tdo),
+        .m0_bscan_tms(m0_bscan_tms),
+        .m0_bscan_update(m0_bscan_update));
 endmodule
 `ifndef GLBL
 `define GLBL

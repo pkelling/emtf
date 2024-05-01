@@ -37,6 +37,10 @@ module find_segment
 //    `localpar nodiff = station == 1 ? 9'h1ff : station == 2 ? 5'h1f : 8'hff; // invalid difference
     `localpar nodiff = station == 1 ? 9'h1ff : 8'hff; // invalid difference
 	
+	// history order: (X, current, -1)
+	// Sorting order in sw: (current, -1, X)
+	localparam int sorting_bx_mapping[max_drift] = {1, 2, 0}; // {0,1,2}; to go back
+
 	input [bpow:0] ph_pat_p; // ph detected in pattern
 	input [5:0]	   ph_pat_q_p; // pattern valid
 	// ph from segments [bx_history][chamber][segment]
@@ -138,10 +142,10 @@ module find_segment
 			begin
 				for (k = 0; k < seg_ch; k = k+1) // segment loop
 				begin
-				    ph_segr = ph_seg[i][j][k];
+				    ph_segr = ph_seg[sorting_bx_mapping[i]][j][k];
 
 					// get abs difference
-					if (ph_seg_v[i][j][k] && ph_pat_v)
+					if (ph_seg_v[sorting_bx_mapping[i]][j][k] && ph_pat_v)
  					    ph_diff_tmp = (ph_pat > ph_segr) ? ph_pat - ph_segr : ph_segr - ph_pat;
 					else
 						ph_diff_tmp = nodiff; // if segment invalid put max value into diff
@@ -151,8 +155,7 @@ module find_segment
 				    else
 				 	    ph_diff[i*zone_cham*seg_ch + j*seg_ch + k] = ph_diff_tmp[bw_phdiff-1:0];
 				   
-
-					ri = i;
+					ri = sorting_bx_mapping[i] ;
 					rj = j;
 					rk = k;
 					// diffi variables carry track indexes

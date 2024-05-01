@@ -3,8 +3,8 @@
 -- Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
 -- Date        : Thu Mar  3 13:24:26 2022
 -- Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
--- Command     : write_vhdl -force -mode funcsim
---               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/debug_bridge_0/bd_0/ip/ip_1/bd_54be_bs_switch_0_0_sim_netlist.vhdl
+-- Command     : write_vhdl -force -mode funcsim -rename_top bd_54be_bs_switch_0_0 -prefix
+--               bd_54be_bs_switch_0_0_ bd_54be_bs_switch_0_0_sim_netlist.vhdl
 -- Design      : bd_54be_bs_switch_0_0
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -47,8 +47,6 @@ entity bd_54be_bs_switch_0_0_bs_switch_v1_0_0_core is
   attribute FORWARD of bd_54be_bs_switch_0_0_bs_switch_v1_0_0_core : entity is 4;
   attribute IDLE : integer;
   attribute IDLE of bd_54be_bs_switch_0_0_bs_switch_v1_0_0_core : entity is 0;
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of bd_54be_bs_switch_0_0_bs_switch_v1_0_0_core : entity is "bs_switch_v1_0_0_core";
   attribute PORTS : integer;
   attribute PORTS of bd_54be_bs_switch_0_0_bs_switch_v1_0_0_core : entity is 1;
   attribute PORT_SELECT : integer;
@@ -3285,8 +3283,6 @@ entity bd_54be_bs_switch_0_0_bs_switch_v1_0_0_bs_switch is
   attribute C_USE_EXT_BSCAN of bd_54be_bs_switch_0_0_bs_switch_v1_0_0_bs_switch : entity is 1;
   attribute C_XDEVICEFAMILY : string;
   attribute C_XDEVICEFAMILY of bd_54be_bs_switch_0_0_bs_switch_v1_0_0_bs_switch : entity is "virtex7";
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of bd_54be_bs_switch_0_0_bs_switch_v1_0_0_bs_switch : entity is "bs_switch_v1_0_0_bs_switch";
   attribute dont_touch : string;
   attribute dont_touch of bd_54be_bs_switch_0_0_bs_switch_v1_0_0_bs_switch : entity is "true";
 end bd_54be_bs_switch_0_0_bs_switch_v1_0_0_bs_switch;

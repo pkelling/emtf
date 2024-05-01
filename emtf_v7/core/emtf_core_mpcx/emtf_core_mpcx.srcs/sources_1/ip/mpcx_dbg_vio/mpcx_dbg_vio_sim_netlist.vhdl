@@ -1,10 +1,10 @@
 -- Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
--- Date        : Thu Mar  3 13:24:29 2022
+-- Date        : Thu Mar  3 13:24:28 2022
 -- Host        : endcap-tf2 running 64-bit Ubuntu 18.04.6 LTS
--- Command     : write_vhdl -force -mode funcsim
---               /home/madorsky/github/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.srcs/sources_1/ip/mpcx_dbg_vio/mpcx_dbg_vio_sim_netlist.vhdl
+-- Command     : write_vhdl -force -mode funcsim -rename_top mpcx_dbg_vio -prefix
+--               mpcx_dbg_vio_ mpcx_dbg_vio_sim_netlist.vhdl
 -- Design      : mpcx_dbg_vio
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -35,8 +35,6 @@ entity mpcx_dbg_vio_vio_v3_0_19_decoder is
     \Bus_data_out_reg[9]_0\ : in STD_LOGIC_VECTOR ( 3 downto 0 );
     \probe_out_modified_reg[15]_0\ : in STD_LOGIC_VECTOR ( 15 downto 0 )
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of mpcx_dbg_vio_vio_v3_0_19_decoder : entity is "vio_v3_0_19_decoder";
 end mpcx_dbg_vio_vio_v3_0_19_decoder;
 
 architecture STRUCTURE of mpcx_dbg_vio_vio_v3_0_19_decoder is
@@ -848,8 +846,6 @@ entity mpcx_dbg_vio_vio_v3_0_19_probe_out_one is
     \Probe_out_reg[2]_0\ : in STD_LOGIC;
     clk : in STD_LOGIC
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of mpcx_dbg_vio_vio_v3_0_19_probe_out_one : entity is "vio_v3_0_19_probe_out_one";
 end mpcx_dbg_vio_vio_v3_0_19_probe_out_one;
 
 architecture STRUCTURE of mpcx_dbg_vio_vio_v3_0_19_probe_out_one is
@@ -2348,8 +2344,6 @@ entity mpcx_dbg_vio_vio_v3_0_19_probe_width is
     s_rst_o : in STD_LOGIC;
     \out\ : in STD_LOGIC
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of mpcx_dbg_vio_vio_v3_0_19_probe_width : entity is "vio_v3_0_19_probe_width";
 end mpcx_dbg_vio_vio_v3_0_19_probe_width;
 
 architecture STRUCTURE of mpcx_dbg_vio_vio_v3_0_19_probe_width is
@@ -2545,8 +2539,6 @@ entity mpcx_dbg_vio_xsdbs_v1_0_2_xsdbs is
   attribute C_XDEVICEFAMILY of mpcx_dbg_vio_xsdbs_v1_0_2_xsdbs : entity is "virtex7";
   attribute C_XSDB_SLAVE_TYPE : integer;
   attribute C_XSDB_SLAVE_TYPE of mpcx_dbg_vio_xsdbs_v1_0_2_xsdbs : entity is 33;
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of mpcx_dbg_vio_xsdbs_v1_0_2_xsdbs : entity is "xsdbs_v1_0_2_xsdbs";
   attribute dont_touch : string;
   attribute dont_touch of mpcx_dbg_vio_xsdbs_v1_0_2_xsdbs : entity is "true";
 end mpcx_dbg_vio_xsdbs_v1_0_2_xsdbs;
@@ -5527,8 +5519,6 @@ entity mpcx_dbg_vio_vio_v3_0_19_probe_out_all is
     Q : in STD_LOGIC_VECTOR ( 3 downto 0 );
     xsdb_addr_2_0_p1 : in STD_LOGIC_VECTOR ( 2 downto 0 )
   );
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of mpcx_dbg_vio_vio_v3_0_19_probe_out_all : entity is "vio_v3_0_19_probe_out_all";
 end mpcx_dbg_vio_vio_v3_0_19_probe_out_all;
 
 architecture STRUCTURE of mpcx_dbg_vio_vio_v3_0_19_probe_out_all is
@@ -9531,8 +9521,6 @@ entity mpcx_dbg_vio_vio_v3_0_19_vio is
   attribute LC_TOTAL_PROBE_IN_WIDTH of mpcx_dbg_vio_vio_v3_0_19_vio : entity is 0;
   attribute LC_TOTAL_PROBE_OUT_WIDTH : integer;
   attribute LC_TOTAL_PROBE_OUT_WIDTH of mpcx_dbg_vio_vio_v3_0_19_vio : entity is 42;
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of mpcx_dbg_vio_vio_v3_0_19_vio : entity is "vio_v3_0_19_vio";
   attribute dont_touch : string;
   attribute dont_touch of mpcx_dbg_vio_vio_v3_0_19_vio : entity is "true";
 end mpcx_dbg_vio_vio_v3_0_19_vio;
