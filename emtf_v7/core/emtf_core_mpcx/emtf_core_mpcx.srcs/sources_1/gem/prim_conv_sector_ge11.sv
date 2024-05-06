@@ -1,7 +1,3 @@
-`ifdef SIMULATION_DAQ
-    `include "spbits.sv"
-`endif
-
 module prim_conv_sector_ge11
 (
  	ge11_cluster.in ge11_cl [6:0][1:0][7:0],

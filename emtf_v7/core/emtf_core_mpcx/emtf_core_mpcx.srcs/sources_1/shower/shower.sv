@@ -1,9 +1,6 @@
 `include "vppc_macros.sv"
 `include "interfaces.sv"
 `include "mpcx_interface.sv"
-`ifdef SIMULATION_DAQ
-    `include "spbits.sv"
-`endif
 
 module shower
 (
