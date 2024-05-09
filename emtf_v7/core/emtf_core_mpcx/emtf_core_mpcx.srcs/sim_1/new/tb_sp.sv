@@ -29,10 +29,10 @@ module tb_sp();
     `include "../../sources_1/mpcx/mpcx_interface.sv"
     `include "../../sources_1/core/spbits.sv"
     
-    `param max_ev = 50; //200000; //220000; //13000;
+    `param max_ev = 10000; //200000; //220000; //13000;
 
     `param endcap_p = 1;
-    `param sector_p = 3;
+    `param sector_p = 1;
     `param rpc_delay = 6; // delay of rpc data relative to csc
     `param ge11_delay = 3; // delay of ge11 data relative to csc
    
@@ -933,6 +933,8 @@ module tb_sp();
 						  end
 					end
 
+                    /*
+                    // Standard Matching 
 					for (iz = 0; iz < 4; iz = iz+1) // zone loop
 					begin
 						for (ip = 0; ip < 3; ip = ip+1) // best pattern number
@@ -951,8 +953,33 @@ module tb_sp();
 							end // for (ist = 0; ist < 4; ist = ist + 1)
 						end
 					end // for (iz = 0; iz < 4; iz = iz+1)
+                    */
+                
+                    
+                    /*
+                    // Pipelined Matching
+					for (iz = 0; iz < 4; iz = iz+1) // zone loop
+					begin
+						for (ip = 0; ip < 3; ip = ip+1) // best pattern number
+						begin
+							for (ist = 0; ist < 4; ist = ist + 1) // station
+							begin
+								if (uut.ser_phmatch_and_deltas.sim_vi[ip][iz][ist] > 0)
+								begin
 
-
+										$fwrite(sim_out, "match seg: z: %d pat: %d st: %d   vi: %b hi: %d ci: %d si: %d ph: %d  th  : %d %d\n", 
+											   iz, ip, ist, uut.ser_phmatch_and_deltas.sim_vi[ip][iz][ist], uut.ser_phmatch_and_deltas.sim_hi[ip][iz][ist], uut.ser_phmatch_and_deltas.sim_ci[ip][iz][ist], 
+												uut.ser_phmatch_and_deltas.sim_si[ip][iz][ist], uut.ser_phmatch_and_deltas.sim_ph_match[ip][iz][ist],
+											    uut.ser_phmatch_and_deltas.sim_th_match[ip][iz][ist][0], uut.ser_phmatch_and_deltas.sim_th_match[ip][iz][ist][1]);
+										
+								end
+							end // for (ist = 0; ist < 4; ist = ist + 1)
+						end
+					end // for (iz = 0; iz < 4; iz = iz+1)
+                    */
+                    
+                    
+                    /*
                     for (iz = 0; iz < 4; iz = iz+1)
 	                begin
 						for (ip = 0; ip < 3; ip = ip+1)
@@ -965,7 +992,7 @@ module tb_sp();
 								);
 						end
 					end
-					
+					*/
 					
 
 
