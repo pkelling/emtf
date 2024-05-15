@@ -20,6 +20,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
+//`define dpath "/home/patrick/Desktop/VivadoProjects/Run3/emtf_tmp/emtf_v7/core/emtf_data/"
+`define dpath "../../../../../emtf_data/"
 
 
 module tb_sp();
@@ -308,8 +310,6 @@ module tb_sp();
 `define fes fes_str
 `define fest fest_str
    
-
-`define dpath "/home/patrick/Desktop/VivadoProjects/Run3/myfork_emtf/emtf_v7/core/emtf_data/"
 
    wire [63:0] 	  core_config;
 	assign core_config[bw_th-1:0] = 8;// wire [bw_th-1:0] th_window
