@@ -353,7 +353,6 @@ module sp
 
 	// match ph patterns to segments
 	// reroute segments according to ph zones
-	/*
 	match_ph_segments mphseg
     (
         .ph_num     (ph_num), 
@@ -439,8 +438,9 @@ module sp
         
         .clk         (clk)
     );
-    */
 
+    
+    /*
 	serialized_matching_and_deltas ser_phmatch_and_deltas(
         // Ph Matching inputs
         .ph_num     (ph_num), 
@@ -474,6 +474,7 @@ module sp
         .clk40(clk), 
         .clk120(clk120)
     );
+    */
     
 
     // single hit trigger

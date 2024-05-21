@@ -112,9 +112,11 @@ module find_segment_serialized(
 	reg [bw_phdiff-1:0] ph_diff [tot_diff+3-1:0]; // create longer array here to provide padding for 3-input comparators
 	
 	reg [1:0] 	 rcomp_stg1;
+	reg [1:0] 	 rcomp_stg2[stage2];
 	reg [1:0] 	 rcomp;
 
 	seg_match_t 	 diffi0      [tot_diff+3-1:0]; // create longer array here to provide padding for 3-input comparators
+	reg [bw_phdiff-1:0] cmp1_tmp [stage1-1:0];
 	reg [bw_phdiff-1:0] cmp1 [stage1-1:0];
 	seg_match_t 	 diffi1      [stage1-1:0];
 	reg [bw_phdiff-1:0] cmp2 [stage2-1:0];
@@ -209,34 +211,21 @@ module find_segment_serialized(
 			rcomp_stg1 = comp3(ph_diff[i*3], ph_diff[i*3+1], ph_diff[i*3+2]);
 			// fill outputs
 			case (rcomp_stg1)
-				0: begin cmp1[i] = ph_diff[i*3+0]; diffi1[i] = diffi0[i*3+0]; end
-				1: begin cmp1[i] = ph_diff[i*3+1]; diffi1[i] = diffi0[i*3+1]; end
-				2: begin cmp1[i] = ph_diff[i*3+2]; diffi1[i] = diffi0[i*3+2]; end
-				default: begin cmp1[i] = ph_diff[i*3+2]; diffi1[i] = diffi0[i*3+2]; end
+				0: begin cmp1_tmp[i] = ph_diff[i*3+0]; diffi1[i] <= diffi0[i*3+0]; end
+				1: begin cmp1_tmp[i] = ph_diff[i*3+1]; diffi1[i] <= diffi0[i*3+1]; end
+				2: begin cmp1_tmp[i] = ph_diff[i*3+2]; diffi1[i] <= diffi0[i*3+2]; end
+				default: begin cmp1_tmp[i] = ph_diff[i*3+2]; diffi1[i] <= diffi0[i*3+2]; end
 			endcase
 		end	 
+		cmp1 <= cmp1_tmp;
 		
-		// second stage
-		for (i = 0; i < (stage2 == 6 ? 5 : stage2); i = i+1)
-		begin
+		// Do comp for next stage
+	   	for (i = 0; i < (stage2 == 6 ? 5 : stage2); i = i+1) begin
 			// compare 3 values
-			rcomp = comp3(cmp1[i*3], cmp1[i*3+1], cmp1[i*3+2]);
-			// fill outputs
-			case (rcomp)
-				0: begin cmp2[i] <= cmp1[i*3+0]; diffi2[i] <= diffi1[i*3+0]; end
-				1: begin cmp2[i] <= cmp1[i*3+1]; diffi2[i] <= diffi1[i*3+1]; end
-				2: begin cmp2[i] <= cmp1[i*3+2]; diffi2[i] <= diffi1[i*3+2]; end
-				default: begin cmp2[i] <= cmp1[i*3+2]; diffi2[i] <= diffi1[i*3+2]; end
-			endcase
-		end
+			rcomp_stg2[i] <= comp3(cmp1_tmp[i*3], cmp1_tmp[i*3+1], cmp1_tmp[i*3+2]);
+        end
+        
 
-        // fill unused comparator output in case of 7-chamber unit 
-        if (stage2 == 6)
-        begin 
-            cmp2[5] <= nodiff;
-            diffi2[5] <= '0;
-        end 
-		
 	   // Hold onto Pattern Validity
 	   rr_ph_pat_v  <= r_ph_pat_v;
     end 
@@ -245,7 +234,28 @@ module find_segment_serialized(
 
 
     ///////////////// 3rd Clock ////////////////////////    
-    always @(posedge clk) begin    
+    always @(posedge clk) begin 
+    
+        // second stage
+		for (i = 0; i < (stage2 == 6 ? 5 : stage2); i = i+1)
+		begin
+			// compare 3 values
+			//rcomp = comp3(cmp1[i*3], cmp1[i*3+1], cmp1[i*3+2]);
+			// fill outputs
+			case (rcomp_stg2[i])
+				0: begin cmp2[i] = cmp1[i*3+0]; diffi2[i] = diffi1[i*3+0]; end
+				1: begin cmp2[i] = cmp1[i*3+1]; diffi2[i] = diffi1[i*3+1]; end
+				2: begin cmp2[i] = cmp1[i*3+2]; diffi2[i] = diffi1[i*3+2]; end
+				default: begin cmp2[i] = cmp1[i*3+2]; diffi2[i] = diffi1[i*3+2]; end
+			endcase
+		end
+
+        // fill unused comparator output in case of 7-chamber unit 
+        if (stage2 == 6)
+        begin 
+            cmp2[5] = nodiff;
+            diffi2[5] = '0;
+        end    
 
 		// third stage
 		for (i = 0; i < stage3; i = i+1)

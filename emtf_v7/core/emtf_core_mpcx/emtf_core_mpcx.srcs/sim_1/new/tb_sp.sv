@@ -995,7 +995,7 @@ module tb_sp();
 					*/
 					
 
-
+					
 				   if (uut.twom.bt_rank_i[0] != 0)
 					 $fwrite (sim_out, "2mu track: rank: %d\n", uut.twom.bt_rank_i[0]);
 				   
@@ -1072,6 +1072,11 @@ module tb_sp();
 									ip, bt_rank[ip], bt_phi[ip], bt_theta[ip]);
 
 						end
+						
+						if (nn_pt_v[ip] != 1'b0) begin
+                          $fwrite (nn_out, "ev: %4d track: %1d NN_pt: %h NN_d0: %h NN_PT_V: %h NN_D0_V: %h \n", 
+                                   iev, ip, nn_pt[ip], nn_d0[ip], nn_pt_v[ip], nn_d0_v[ip]);
+                        end
 					end // for (ip = 0; ip < 3; ip = ip+1)
 				end
 			end
