@@ -30,6 +30,9 @@ module GTHE2_CHANNEL_tux
 	wire [31:0] wire_ [ 6: 5];
 	initial
 	begin
+	       reg_[0][5] = 1'b1;
+	       reg_[0][7:6] = 2'b11;
+	       reg_[0][10:9] = 2'b11;
 	end
     reg         int_reg_rdy;
     reg  [31:0] drpdo_reg;
