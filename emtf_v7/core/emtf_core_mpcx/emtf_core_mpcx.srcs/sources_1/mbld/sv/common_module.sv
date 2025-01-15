@@ -22,6 +22,7 @@ module GTHE2_COMMON_tux
 	wire [31:0] wire_ [ 1: 1];
 	initial
 	begin
+	   reg_[0][0] = 1'b1; // manual addition: power down everything by default
 	end
     reg         int_reg_rdy;
     reg  [31:0] drpdo_reg;
