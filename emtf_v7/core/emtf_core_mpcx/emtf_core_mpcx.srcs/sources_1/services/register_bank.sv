@@ -115,7 +115,7 @@ module register_bank
     input irpc_crc_match,
     input irpc_aligned,
     output reg irpc_me13_replacement,
-    output reg irpc_fiber_enbale
+    output reg irpc_fiber_enable
     
 );
 
@@ -287,7 +287,7 @@ module register_bank
 		hmt_rate_limit = 26'd100; // default hmt rate limit
 		
 		irpc_me13_replacement = 1'b0;
-        irpc_fiber_enbale = 1'b0;
+        irpc_fiber_enable = 1'b0;
     
 	end
 
@@ -421,7 +421,7 @@ module register_bank
 				9'h079: begin hmt_rate_limit = r_in; end
 				
 				9'h080: begin irpc_me13_replacement = r_in; end 
-				9'h081: begin irpc_fiber_enbale = r_in; end
+				9'h081: begin irpc_fiber_enable = r_in; end
 				
 			endcase
 		end
@@ -743,7 +743,7 @@ module register_bank
 				9'h07a: begin r_out = r_out | hmt_rate_err_w; end
 				
 				9'h080: begin r_out = r_out | irpc_me13_replacement; end 
-				9'h081: begin r_out = r_out | irpc_fiber_enbale; end
+				9'h081: begin r_out = r_out | irpc_fiber_enable; end
 				9'h082: begin r_out = r_out | {irpc_aligned, irpc_crc_match, irpc_link_id}; end
 				
 			endcase

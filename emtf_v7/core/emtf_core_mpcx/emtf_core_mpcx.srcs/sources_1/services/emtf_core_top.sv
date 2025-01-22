@@ -1120,7 +1120,7 @@ module emtf_core_top
         .irpc_crc_match(irpc_crc_match),
         .irpc_aligned(irpc_link_aligned),
         .irpc_me13_replacement(irpc_me13_replacement),
-        .irpc_fiber_enbale(irpc_fiber_enable)
+        .irpc_fiber_enable(irpc_fiber_enable)
     );
 
 	wire [8*5+9-1:0] bc0_mrg;
