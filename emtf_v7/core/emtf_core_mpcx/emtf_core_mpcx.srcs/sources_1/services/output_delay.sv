@@ -10,13 +10,15 @@ module output_delay
     input [5:0]        bt_sign_ph[2:0],
     // ranks [best_track_num]
     input [bwr:0]      bt_rank [2:0],
+    input [2:0]        bt_promote_pT,
+    
     // segment IDs
     // [best_track_num][station 0-3]
     input [seg_ch-1:0] bt_vi [2:0][4:0], // valid
     input [1:0]        bt_hi [2:0][4:0], // bx index
     input [3:0]        bt_ci [2:0][4:0], // chamber
     input [4:0]        bt_si [2:0], // segment
-
+    
 	input [29:0] ptlut_addr [2:0], // memory addresses formed by core
 	input [7:0] gmt_phi [2:0],
     input [8:0] gmt_eta [2:0],
@@ -31,6 +33,7 @@ module output_delay
     output reg [5:0]        bt_sign_ph_d[2:0],
     // ranks [best_track_num]
     output reg [bwr:0]      bt_rank_d [2:0],
+    output [2:0]        bt_promote_pT_d,
     // segment IDs
     // [best_track_num][station 0-3]
     output reg [seg_ch-1:0] bt_vi_d [2:0][4:0], // valid
@@ -97,6 +100,10 @@ module output_delay
 
     // PT LUT latency compensator, for all bt_ parameters
     dyn_shift #(.BW(bt_bw)) bt_dl (.CLK(clk), .CE(1'b1), .SEL(bt_delay), .SI(comb_out_in), .DO(comb_out_out));
+    
+    dyn_shift #(.BW(3)) bt_promotion_dl (.CLK(clk), .CE(1'b1), .SEL(bt_delay), .SI(bt_promote_pT), .DO(bt_promote_pT_d)); // Delay promotion logic along with the bt values
+    
+    
 
     // separate delay line for front panel trigger
     dyn_shift #(.BW(1)) fp_dl (.CLK(clk), .CE(1'b1), .SEL(bt_delay), .SI(bt_rank[0] == 7'h0 && bt_rank[2] == 7'h0), .DO(fp_trigger));

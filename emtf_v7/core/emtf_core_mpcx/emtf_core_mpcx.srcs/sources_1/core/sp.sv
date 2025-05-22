@@ -48,6 +48,9 @@ module sp
 	output [bw_th-1:0] 	bt_theta [2:0],
 	// [best_track_num][station]
 	output [3:0] 		bt_cpattern [2:0][3:0],
+	    
+    output [1:0] 		bt_hmt_num [2:0][3:0], // Keep track of hmt numbers associated with track hits
+	
 	// ph and th deltas from best stations
 	// [best_track_num], last index: 0=12, 1=13, 2=14, 3=23, 4=24, 5=34
 	output [bw_fph-1:0] bt_delta_ph [2:0][5:0],
@@ -56,6 +59,7 @@ module sp
 	output [5:0] 		bt_sign_th[2:0],
 	// ranks [best_track_num]
 	output [bwr:0] 		bt_rank [2:0],
+	output [2:0]        bt_promote_pT,
 	// segment IDs
 	// [best_track_num][station 0-3]
 	output [seg_ch-1:0] bt_vi [2:0][4:0], // valid
@@ -87,7 +91,9 @@ module sp
 	input endcap,
 	input [2:0] sector,
 	input lat_test,
-	input [63:0] core_config
+	input [63:0] core_config,
+	
+	input mode7_promote
 
  );
 
@@ -103,6 +109,7 @@ module sp
     wire [2:0] 			phzvl[5:0][8:0];
 	wire [seg_ch-1:0] 	me11a [2:0][2:0];
     wire [3:0] 			cpatr [5:0][8:0][seg_ch-1:0];
+    wire [1:0] 			hmtr [5:0][8:0][seg_ch-1:0];
 
 	// numbers of best ranks [zone][num]
 	(* mark_debug = "TRUE" *) wire [bpow:0] ph_num [3:0][2:0]; 
@@ -149,11 +156,8 @@ module sp
     wire [seg_ch-1:0] 	vld   [max_drift-1:0][5:0][8:0];
 	wire [seg_ch-1:0] 	me11ad [max_drift-1:0][2:0][2:0];
     wire [3:0] 			cpatd [max_drift-1:0][5:0][8:0][seg_ch-1:0];
+    wire [1:0] 			hmtd [max_drift-1:0][5:0][8:0][seg_ch-1:0];
     
-    (* mark_debug = "TRUE" *) wire [seg_ch-1:0] 	vld_w   [5:0][8:0];
-    (* mark_debug = "TRUE" *) wire [3:0]        	cpatd_w [5:0][8:0][seg_ch-1:0];
-    assign vld_w = vld[0];
-    assign cpatd_w = cpatd[0];
 
 	// find_segment outputs, in terms of segments match in zones [zone][pattern_num][station 0-3]
 	wire [seg_ch-1:0] patt_ph_vi [3:0][2:0][3:0]; // valid
@@ -163,10 +167,12 @@ module sp
 	(* mark_debug = "TRUE" *) wire [bw_fph-1:0]	ph_match [3:0][2:0][3:0]; // matching ph
 	wire [bw_th-1:0]	th_match   [3:0][2:0][3:0][seg_ch-1:0]; // matching th, 2 segments 
 	wire [3:0] 			cpat_match [3:0][2:0][3:0]; // matching pattern
+	wire [1:0] 			hmt_match [3:0][2:0][3:0]; // matching hmt
 
 	wire [bw_fph-1:0] phi [3:0][2:0];
 	wire [bw_th-1:0] theta [3:0][2:0];
 	wire [3:0] cpattern [3:0][2:0][3:0];
+	wire [1:0] hmt_num [3:0][2:0][3:0];
 	// ph and th deltas from best stations
 	// [zone][pattern_num], last index: 0=12, 1=13, 2=14, 3=23, 4=24, 5=34
 	wire [bw_fph-1:0] 	delta_ph [3:0][2:0][5:0];
@@ -198,6 +204,7 @@ module sp
     wire [bw_hs-1:0]  hstr [5:0][8:0][seg_ch-1:0];
     wire [1:0]        qses [5:0][8:0][seg_ch-1:0]; // {qs, es} bits
     wire [3:0]        cpat [5:0][8:0][seg_ch-1:0]; // bend angles
+    wire [1:0]        hmt  [5:0][8:0][seg_ch-1:0]; // high multiplicity number
     wire [seg_ch-1:0] lr   [5:0][8:0]; // left-right bits
 
 	(* mark_debug *) wire [bw_fph-1:0] ge11_ph [6:0][1:0][7:0]; 
@@ -206,6 +213,7 @@ module sp
 
 	(* mark_debug *) wire [2:0] ge11_phzvl [6:0][1:0][7:0]; // raw hit valid flags for up to 3 ph zones
 	(* mark_debug *) wire [ph_hit_w-1:0] ge11_ph_hit [6:0][1:0][7:0]; // raw hits
+
 
 	wire [63:0] r_out_m [1:0];
 	assign r_out = r_out_m[0] | r_out_m[1];
@@ -226,6 +234,7 @@ module sp
                     // ql[3] repurposed as qs, ser repurposed as es
                     assign qses[gi][gj][gk] = {lct_i[gi][gj][gk].ql[3], lct_i[gi][gj][gk].ser} ;  
                     assign cpat[gi][gj][gk] = lct_i[gi][gj][gk].cid; // CSCID repurposed as bend angle, using CLCT pattern field for that
+                    assign hmt[gi][gj][gk] = {lct_i[gi][gj][1].cp[1], lct_i[gi][gj][1].bx0}; // Number, not bit -> {0=none, 1=loose, 2=nominal, 3=tight} - both segments get hmt bits
                     assign lr  [gi][gj][gk] = lct_i[gi][gj][gk].lr;
                 end
             end
@@ -240,6 +249,7 @@ module sp
         .wg          (wg), 
         .hstr        (hstr),
         .cpat        (cpat),
+        .hmt         (hmt),
         .lr          (lr),
         .qses        (qses),
         .ph          (ph), 
@@ -249,6 +259,7 @@ module sp
         .phzvl       (phzvl),
         .me11a       (me11a),
         .cpatr       (cpatr),
+        .hmtr        (hmtr),
         .ph_hit      (ph_hito),
         .cs          (pcs_cs), 
         .sel         (sel), 
@@ -346,6 +357,7 @@ module sp
         .vli           (vl),
         .me11ai        (me11a),
         .cpati         (cpatr),
+        .hmti         (hmtr),
         
         .ge11_ph       (ge11_ph), 
         .ge11_th       (ge11_th),
@@ -362,6 +374,7 @@ module sp
         .vlo_o         (vld),
         .me11ao        (me11ad),
         .cpato         (cpatd),
+        .hmto          (hmtd),
         
         .clk           (clk)
 	);
@@ -458,7 +471,6 @@ module sp
     */
 
     
-
 	serialized_matching_and_deltas ser_phmatch_and_deltas(
         // Ph Matching inputs
         .ph_num     (ph_num), 
@@ -467,7 +479,8 @@ module sp
         .vl         (vld), 
         .th11       (th11d), 
         .th         (thd),
-        .cpat       (cpatd),	   
+        .cpat       (cpatd),	 
+        .hmt        (hmtd),	   
 
         // Config Inputs
         .th_window           (th_window),
@@ -478,6 +491,7 @@ module sp
         .bt_phi      (bt_phi),
         .bt_theta    (bt_theta),
         .bt_cpattern (bt_cpattern),
+        .bt_hmt_num  (bt_hmt_num),
         .bt_delta_ph (bt_delta_ph),
         .bt_delta_th (bt_delta_th),
         .bt_sign_ph  (bt_sign_ph),
@@ -560,6 +574,7 @@ module sp
         .bt_phi_i       (bt_phi),
         .bt_theta_i     (bt_theta),
         .bt_cpattern    (bt_cpattern),
+        .bt_hmt_num     (bt_hmt_num),
         .bt_delta_ph    (bt_delta_ph),
         .bt_delta_th    (bt_delta_th),
         .bt_sign_ph     (bt_sign_ph),
@@ -577,6 +592,7 @@ module sp
         .ptlut_cs       (ptlut_cs),
         .ptlut_addr_val (ptlut_addr_val),
         .bt_rank_o      (bt_rank),
+        .bt_promote_pT  (bt_promote_pT),
         .gmt_phi        (gmt_phi),
         .gmt_eta        (gmt_eta),
         .gmt_qlt        (gmt_qlt),
@@ -584,6 +600,7 @@ module sp
         .sector         (sector),
         .endcap         (endcap),
         .low_th_promote (low_th_promote),
+        .mode7_promote  (mode7_promote),
         .clk            (clk)
     );    
 

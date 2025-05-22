@@ -7,6 +7,10 @@ module output_formatter
     // ph and th deltas from best stations
     // [best_track_num], last index: 0=12, 1=13, 2=14, 3=23, 4=24, 5=34
     input [5:0]        bt_sign_ph[2:0],
+    
+    input [2:0] bt_promote_pT, 
+    input hmt_promote_en, // enable hmt promotion
+    
     // ranks [best_track_num]
     input [bwr:0]      bt_rank [2:0],
     // track parameters in gmt scales
@@ -113,7 +117,25 @@ module output_formatter
             gmt_qlt_i[i] = gmt_qlt[i];
             gmt_crg_i[i] = gmt_crg[i];
             gmt_cvl_i[i] = 1'b1;
+            
+            // **************  Promotion Logic *********************
+            // W/out HMT Promotion
             bt_pt_tx[i] = (qcode[i] == 4'h0) ? 9'h0 : bt_pt[i];
+            
+            // pT w/ HMT Promotion
+            /*
+            if( qcode[i] == 4'h0) begin
+                bt_pt_tx[i] = 9'h0;
+            end 
+            else begin
+                if(hmt_promote_en == 1'b1 && bt_promote_pT[i] == 1'b1)
+                    bt_pt_tx[i] = '1; // GMT pT promoted value = max value
+                else
+                    bt_pt_tx[i] = bt_pt[i];
+            end
+            */
+            ////////////////////////////////////////////////////////
+            
             
             // single LCT track logic according to Andrew's message from 2017-08-09
             if (qcode[i] == 4'b1) // single LCT track

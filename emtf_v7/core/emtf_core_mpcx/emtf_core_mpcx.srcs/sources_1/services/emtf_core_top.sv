@@ -195,8 +195,10 @@ module emtf_core_top
 	// [best_track_num]
 	wire [bw_fph-1:0] bt_phi [2:0];
 	wire [bw_th-1:0] 	bt_theta [2:0];
+	
 	// [best_track_num][station]
 	wire [3:0] 		bt_cpattern [2:0][3:0];
+	
 	// ph and th deltas from best stations
 	// [best_track_num], last index: 0=12, 1=13, 2=14, 3=23, 4=24, 5=34
 	wire [bw_fph-1:0] bt_delta_ph [2:0][5:0];
@@ -228,6 +230,7 @@ module emtf_core_top
     wire [4:0]        bt_si_d [2:0]; // segment
 
 	(* mark_debug = "TRUE" *)  wire [29:0] ptlut_addr_d [2:0]; // delayed ptlut memory addresses formed by core
+	(* mark_debug = "TRUE" *)  wire [2:0] promote_pT_d;
 	(* mark_debug = "TRUE" *) wire [7:0] gmt_phi_d [2:0]; // phi for gmt
     (* mark_debug = "TRUE" *) wire [8:0] gmt_eta_d [2:0]; // eta for gmt
     (* mark_debug = "TRUE" *) wire [3:0] gmt_qlt_d [2:0]; // quality for gmt
@@ -838,6 +841,7 @@ module emtf_core_top
     wire [29:0] ptlut_addr [2:0]; // memory addresses for pt lut modules
     wire [31:0] ptlut_cs [2:0]; // pre-decoded chip selects
     wire [2:0] ptlut_addr_val; // valid flags for memory addresses
+    wire [2:0] promote_pT; // Flags to promote the pT values
     wire endcap;
     wire [2:0] sector;
 	wire [7:0] gmt_phi [2:0]; // phi for gmt
@@ -850,6 +854,9 @@ module emtf_core_top
 	wire [1:0] nn_d0 [2:0]; // NN D0 value
     wire [2:0] nn_d0_v; // NN valid flag for D0
     wire [25:0] hmt_rate [2:0];
+    
+    wire mode7_promote;
+    wire hmt_promote_en;
     
 `ifdef WITH_CORE    
 	sp core 
@@ -875,6 +882,7 @@ module emtf_core_top
 		.bt_sign_ph  (bt_sign_ph),
 		.bt_sign_th  (bt_sign_th),
 		.bt_rank     (bt_rank),
+		.bt_promote_pT(bt_promote_pT),
 		.bt_vi (bt_vi), 
 		.bt_hi (bt_hi), 
 		.bt_ci (bt_ci), 
@@ -901,7 +909,9 @@ module emtf_core_top
 		
 		.endcap (endcap),
 		.sector (sector),
-		.core_config (core_config)
+		.core_config (core_config),
+		
+		.mode7_promote(mode7_promote)
 	);
 `endif
 
@@ -913,6 +923,7 @@ module emtf_core_top
         .bt_theta (bt_theta),
         .bt_sign_ph(bt_sign_ph),
         .bt_rank (bt_rank),
+        .bt_promote_pT (bt_promote_pT),
         .bt_vi (bt_vi), // valid
         .bt_hi (bt_hi), // bx index
         .bt_ci (bt_ci), // chamber
@@ -928,6 +939,7 @@ module emtf_core_top
         .bt_theta_d (bt_theta_d),
         .bt_sign_ph_d(bt_sign_ph_d),
         .bt_rank_d (bt_rank_d),
+        .bt_promote_pT_d (bt_promote_pT_d),
         .bt_vi_d (bt_vi_d), // valid
         .bt_hi_d (bt_hi_d), // bx index
         .bt_ci_d (bt_ci_d), // chamber
@@ -952,6 +964,9 @@ module emtf_core_top
    
 //        .bt_theta (bt_theta_d),
 //        .bt_sign_ph (bt_sign_ph_d),
+        
+        .bt_promote_pT (bt_promote_pT_d),
+        .hmt_promote_en(hmt_promote_en),
         
         .bt_rank (bt_rank_d),
         .gmt_phi (gmt_phi_d),
@@ -1120,7 +1135,10 @@ module emtf_core_top
         .irpc_crc_match(irpc_crc_match),
         .irpc_aligned(irpc_link_aligned),
         .irpc_me13_replacement(irpc_me13_replacement),
-        .irpc_fiber_enable(irpc_fiber_enable)
+        .irpc_fiber_enable(irpc_fiber_enable),
+        
+        .mode7_promote(mode7_promote),
+        .hmt_promote(hmt_promote_en)
     );
 
 	wire [8*5+9-1:0] bc0_mrg;
@@ -1249,6 +1267,11 @@ module emtf_core_top
     // *******  Overwrite ME13 neighbor with iRPC for DAQ. *******************
     csc_lct_mpcx lct_aligned_overwrite  [5:0][9:1][1:0]; // [station][CSCID][stub]
     
+    always @(*) begin 
+        lct_aligned_overwrite = lct_aligned;
+    end 
+    
+    /* // Code to overwrite ME13 if enabled
     always @(*) begin
         for(int st=0; st<=5; st++) begin
             for(int ch=1; ch<=9; ch++) begin
@@ -1265,6 +1288,7 @@ module emtf_core_top
             end // ch
         end // st
     end // always @(*)
+    */
     
     
     mtf7_daq daq

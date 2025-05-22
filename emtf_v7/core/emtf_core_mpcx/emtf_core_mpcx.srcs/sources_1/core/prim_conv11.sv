@@ -21,8 +21,8 @@
 
 module prim_conv11
 (
-	vpf, quality, wiregroup, hstrip, clctpat, lr, qses,
-	ph, th, vl, phzvl, me11a, clctpat_r,
+	vpf, quality, wiregroup, hstrip, clctpat, hmt, lr, qses,
+	ph, th, vl, phzvl, me11a, clctpat_r, hmt_r,
     ph_hit, 
 	sel, addr, r_in, r_out, we,
 	clk,
@@ -39,6 +39,7 @@ module prim_conv11
 	input [bw_wg-1:0] wiregroup [seg_ch-1:0]; // wiregroup numbers
 	input [bw_hs-1:0] hstrip    [seg_ch-1:0]; // halfstrip numbers
 	input [3:0] 	  clctpat   [seg_ch-1:0]; // clct pattern numbers
+	input [1:0] 	  hmt       [seg_ch-1:0]; // hmt numbers
 	input [seg_ch-1:0] lr;                    // left-right
 	input [1:0] 	  qses      [seg_ch-1:0]; // qs, es bits
 
@@ -54,6 +55,7 @@ module prim_conv11
 	output reg [2:0] 		phzvl; // raw hit valid flags for up to 3 ph zones
 	output reg [seg_ch-1:0] me11a;
 	output reg [3:0] 		clctpat_r [seg_ch-1:0]; // clct pattern numbers
+	output reg [1:0] 		hmt_r [seg_ch-1:0]; // hmt numbers
 
 	// ph and th raw hits
 	output reg [ph_hit_w-1:0] ph_hit;
@@ -186,7 +188,7 @@ module prim_conv11
 		// zero outputs
 		vl = 0;
 		phzvl = 0;
-		for (i = 0; i < seg_ch; i = i+1) begin fph[i] = 0; clctpat_r[i] = 0; end
+		for (i = 0; i < seg_ch; i = i+1) begin fph[i] = 0; clctpat_r[i] = 0; hmt_r[i] = 0; end
 		for (i = 0; i < th_ch;  i = i+1) th[i] = 0;
 		ph_hit = 0;
 
@@ -281,6 +283,7 @@ module prim_conv11
 				end
 				//clctpat_r[i] = clctpat[i]; // just propagate pattern downstream
 				clctpat_r[i] = run2_patt[{lr[i], clctpat[i]}]; // convert run-3 bend into run-2 pattern
+				hmt_r[i] = hmt[i];
 			end 
 			
 			ph[i] = fph[i];

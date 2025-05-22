@@ -31,10 +31,10 @@ module tb_sp();
     `include "../../sources_1/mpcx/mpcx_interface.sv"
     `include "../../sources_1/core/spbits.sv"
     
-    `param max_ev = 10000; //200000; //220000; //13000;
+    `param max_ev = 1000; //10000; //200000; //220000; //13000;
 
     `param endcap_p = 1;
-    `param sector_p = 1;
+    `param sector_p = 5;
     `param rpc_delay = 6; // delay of rpc data relative to csc
     `param ge11_delay = 3; // delay of ge11 data relative to csc
    
@@ -276,6 +276,8 @@ module tb_sp();
 	wire [bw_fph-1:0] 	bt_phi [2:0];
 	wire [bw_th-1:0] 	bt_theta [2:0];
 	wire [3:0] 			bt_cpattern [2:0][3:0];
+	wire [1:0] 			bt_hmt_num [2:0][3:0];
+
 	// ph and th deltas from best stations
 	// [best_track_num], last index: [0] - best pair of stations, [1] - second best pair
 	wire [bw_fph-1:0] 	bt_delta_ph [2:0][5:0];
@@ -322,6 +324,13 @@ module tb_sp();
    reg [2:0] sector; // sector #-1
    reg [20*8-1:0] fes_str, fest_str;
    wire [1:0] hmt_out; // {out_of_time, in_time}
+   
+   wire [2:0] bt_promote_pT;     
+   
+   wire mode7_promote;
+   assign mode7_promote = 1'b0;
+   
+   
 `define fes fes_str
 `define fest fest_str
    
@@ -356,11 +365,13 @@ module tb_sp();
 		 .bt_phi (bt_phi),
 		 .bt_theta (bt_theta),
 		 .bt_cpattern (bt_cpattern),
+		 .bt_hmt_num (bt_hmt_num),
 		 .bt_delta_ph (bt_delta_ph),
 		 .bt_delta_th (bt_delta_th),
 		 .bt_sign_ph (bt_sign_ph),
 		 .bt_sign_th (bt_sign_th),
 		 .bt_rank (bt_rank),
+		 .bt_promote_pT(bt_promote_pT),
 		 .bt_vi (bt_vi), 
 		 .bt_hi (bt_hi), 
 		 .bt_ci (bt_ci), 
@@ -388,8 +399,10 @@ module tb_sp();
 		 .endcap (endcap),
 		 .sector (sector),
 		 .lat_test (lat_test),
-		 .core_config (core_config) // en_2mu, en_single, delay_2mu, th_window 
+		 .core_config (core_config), // en_2mu, en_single, delay_2mu, th_window 
 //		 .core_config ({1'b0, 1'b0, 4'h9, 8'h8}) // en_2mu, en_single, delay_2mu, th_window 
+
+         .mode7_promote(1'b0)
 		 );
 
 
@@ -427,6 +440,8 @@ module tb_sp();
 		   $sformat (fest_str, "_endcap_%0d_sect_%0d", endcap_p, sector_p);
 		   
 		   $fwrite (sim_out, "endcap: %d sector: %d strings: %s %s\n", endcap, sector, `fes, `fest);
+		   
+		   uut.pcs.station234[3].csc[1].pc.th_mem = '{default: '0};
 		   
             // write parameters to primitive converters
 			`include "fill_params.sv"
@@ -532,6 +547,13 @@ module tb_sp();
 						end
 			end
 			
+			
+			/*
+			// Read theta memory for a chamber
+			for(int thlut_addr=0; thlut_addr<128; thlut_addr=thlut_addr+1) begin
+			     $fwrite(sim_out, "Theta LUT: %d\n", uut.pcs.station234[3].csc[1].pc.th_mem[thlut_addr]);
+			end
+			*/
 
 			// read events - (fill event storage)
 			in = $fopen({`dpath, "data.dat"}, "r");
@@ -605,7 +627,7 @@ module tb_sp();
 							begin
 								//								_bx_jitter = 0;
 							end
-
+                                
 							// increase stub counter only when station changes
 							old_station = _station;
 							// end of BX jitter code
@@ -753,11 +775,11 @@ module tb_sp();
 								 hmti [ist][icid][si] = hmt      [ev][ist][icid][si];
 								 qsesi[ist][icid][si] = qses     [ev][ist][icid][si];
 								 lri  [ist][icid][si] = lr       [ev][ist][icid][si];
-								 if (vpf [ist][icid][si] == 1'b1)
+								 if (vpf [ist][icid][si] == 1'b1 || hmti[ist][icid][si] != 0)
 								 begin
 								 
-									$fwrite(sim_out, "CSC_RAW: ev: %4d st: %1d ch: %1d q: %h wg: %3d hs: %3d hmt: %h qses: %h tmb_revert: %1d cpatt: %0d\n",
-								 			ev, ist, icid, qi [ist][icid][si], wgi [ist][icid][si], hstri [ist][icid][si], hmti [ist][icid][si],
+									$fwrite(sim_out, "CSC_RAW: ev: %4d st: %1d ch: %1d seg: %1d q: %h wg: %3d hs: %3d hmt: %h qses: %h tmb_revert: %1d cpatt: %0d\n",
+								 			ev, ist, icid, si, qi [ist][icid][si], wgi [ist][icid][si], hstri [ist][icid][si], hmti [ist][icid][si],
 								 			qsesi[ist][icid][si], tmb_revert[ist][icid], cpati[ist][icid][si]);
 								 end
 								// check if there is chamber data, update good event station mask
@@ -779,7 +801,7 @@ module tb_sp();
 							   cppf_rxd[ist][f][stb*16 +: 16] = {rpc_th [ev][ist][icid][si], rpc_ph [ev][ist][icid][si]};
 							   //cppf_rxd[ist][f][stb*16 +: 16] = 16'hffff;
                                if( (rpc_th [ev][ist][icid][si] != '1) && (rpc_ph [ev][ist][icid][si])) begin
-                                    $fwrite(sim_out, "RPC_RAW: phi: %d  th: %d\n", rpc_th [ev][ist][icid][si], rpc_ph [ev][ist][icid][si]);
+                                    $fwrite(sim_out, "RPC_RAW: phi: %d  th: %d\n", rpc_ph [ev][ist][icid][si], rpc_th [ev][ist][icid][si]);
                                end
 							end
 						end // for (icid = 0; icid < 9; icid=icid+1)
@@ -845,7 +867,8 @@ module tb_sp();
 						end
 					end
 					*/
-					/*				   
+					
+				    /*		   
 					for (si = 0; si < 4; si = si+1)
 					for (ip = 0; ip < 6; ip = ip+1)
 					begin
@@ -867,6 +890,7 @@ module tb_sp();
 						end
 					end
 					*/
+					
 
 					// Print CSC Stubs
 					for (ip = 0; ip < 6; ip = ip+1) // station
@@ -875,6 +899,7 @@ module tb_sp();
 						begin
 							for (k = 0; k < 2; k = k+1) // segment
 							begin
+							    
 								if (uut.vl[ip][j][k] != 0)
 								begin
 								
@@ -882,17 +907,17 @@ module tb_sp();
 								
 									if (ip <= 1 && j < 3) // ME11
 								    begin
-										$fwrite(sim_out, "CSC_STUB: st: %1d ch: %1d ph: %d  th: %d %d ph_zone: %d cpattern: %d\n", 
-												ip, j, uut.ph[ip][j][k], uut.th11[ip][j][k*2], uut.th11[ip][j][k*2+1],uut.phzvl[ip][j], uut.cpatr[ip][j][k]);
+										$fwrite(sim_out, "CSC_STUB: st: %1d ch: %1d ph: %d  th: %d %d ph_zone: %d cpattern: %d hmt_num: %d \n", 
+												ip, j, uut.ph[ip][j][k], uut.th11[ip][j][k*2], uut.th11[ip][j][k*2+1],uut.phzvl[ip][j], uut.cpatr[ip][j][k], uut.hmtr[ip][j][k]);
 										 ph_high_prec = uut.ph[ip][j][k];
 									end
 									else if (ip == 5 && j == 0) // ME11 neighbor
-                                        $fwrite(sim_out, "CSC_STUB: st: %1d ch: %1d ph: %d  th: %d %d ph_zone: %d cpattern: %d\n", 
-												ip, j, uut.ph[ip][j][k], uut.th11[2][0][k*2], uut.th11[2][0][k*2+1],uut.phzvl[ip][j][k], uut.cpatr[ip][j][k]);
+                                        $fwrite(sim_out, "CSC_STUB: st: %1d ch: %1d ph: %d  th: %d %d ph_zone: %d cpattern: %d, hmt_num: %d \n", 
+												ip, j, uut.ph[ip][j][k], uut.th11[2][0][k*2], uut.th11[2][0][k*2+1],uut.phzvl[ip][j][k], uut.cpatr[ip][j][k], uut.hmtr[ip][j][k]);
 									else
 									begin
-										$fwrite(sim_out, "CSC_STUB: st: %1d ch: %1d ph: %d  th: %d ph_zone: %d cpattern: %d\n", 
-												ip, j, uut.ph[ip][j][k], uut.th[ip][j][k],uut.phzvl[ip][j][k], uut.cpatr[ip][j][k]);//uut.ph_hit[ip][j][k],uut.ph_zone[ip][j][k]);
+										$fwrite(sim_out, "CSC_STUB: st: %1d ch: %1d ph: %d  th: %d ph_zone: %d cpattern: %d, hmt_num: %d \n", 
+												ip, j, uut.ph[ip][j][k], uut.th[ip][j][k],uut.phzvl[ip][j][k], uut.cpatr[ip][j][k], uut.hmtr[ip][j][k]);//uut.ph_hit[ip][j][k],uut.ph_zone[ip][j][k]);
 										 ph_high_prec = uut.ph[ip][j][k];
 									end
 								end
@@ -917,21 +942,7 @@ module tb_sp();
 	                    end
 	                end
 
-					// Output patterns w/ quality over 0
-					for (iz = 0; iz < 4; iz = iz+1) // zone loop
-					begin
-						for (ir = 0; ir < 3; ir = ir+1) // sorted pattern number
-						begin
-							if (uut.ph_q[iz][ir] > 0)
-								$fwrite(sim_out, "PATTERN BEST: zone: %1d best_index: %1d ph_num: %3d rank: %2h ly: %b%b%b str: %b%b%b\n", 
-								iz, ir, uut.ph_num[iz][ir], uut.ph_q[iz][ir],
-								uut.ph_q[iz][ir][4], uut.ph_q[iz][ir][2], uut.ph_q[iz][ir][0], 
-								uut.ph_q[iz][ir][5], uut.ph_q[iz][ir][3], uut.ph_q[iz][ir][1]
-								);
-						end
-					end // for (iz = 0; iz < 4; iz = iz+1)
-
-
+                    /*
 					for (iz = 0; iz < 4; iz = iz+1) // zone loop
 					begin
 						for (ir = 1; ir <= 4; ir = ir+1) // station loop
@@ -939,7 +950,8 @@ module tb_sp();
 						      if (uut.ph_ext[iz][ir] > 0)
 							     $fwrite(sim_out, "Ph Extended: zone: %d st: %d Val: %h\n", iz, ir, uut.ph_ext[iz][ir]);
 						  end 
-                    end 
+                    end
+                    */
                     
 					for (iz = 0; iz < 4; iz = iz+1) // zone loop
 					begin
@@ -958,31 +970,52 @@ module tb_sp();
 							     $fwrite(sim_out, "PATTERN: zone: %1d phi_num: %3d rank: %2h\n", iz, ir, uut.ph_rank[iz][ir]);
 						  end
 					end
-
-                    /*
-                    // Standard Matching 
+					
+					
+					// Output patterns w/ quality over 0
 					for (iz = 0; iz < 4; iz = iz+1) // zone loop
 					begin
-						for (ip = 0; ip < 3; ip = ip+1) // best pattern number
+						for (ir = 0; ir < 3; ir = ir+1) // sorted pattern number
 						begin
-							for (ist = 0; ist < 4; ist = ist + 1) // station
-							begin
-								if (uut.patt_ph_vi[iz][ip][ist] > 0)
-								begin
-
-										$fwrite(sim_out, "match seg: z: %d pat: %d st: %d   vi: %b hi: %d ci: %d si: %d ph: %d  th  : %d %d\n", 
-											   iz, ip, ist, uut.patt_ph_vi[iz][ip][ist], uut.patt_ph_hi[iz][ip][ist], uut.patt_ph_ci[iz][ip][ist], 
-												uut.patt_ph_si[iz][ip][ist], uut.ph_match[iz][ip][ist],
-											    uut.th_match[iz][ip][ist][0], uut.th_match[iz][ip][ist][1]);
-										
-								end
-							end // for (ist = 0; ist < 4; ist = ist + 1)
+							if (uut.ph_q[iz][ir] > 0)
+								$fwrite(sim_out, "PATTERN BEST: zone: %1d best_index: %1d ph_num: %3d rank: %2h ly: %b%b%b str: %b%b%b\n", 
+								iz, ir, uut.ph_num[iz][ir], uut.ph_q[iz][ir],
+								uut.ph_q[iz][ir][4], uut.ph_q[iz][ir][2], uut.ph_q[iz][ir][0], 
+								uut.ph_q[iz][ir][5], uut.ph_q[iz][ir][3], uut.ph_q[iz][ir][1]
+								);
 						end
 					end // for (iz = 0; iz < 4; iz = iz+1)
-                    */
-                
+
                     
-                    /*
+					// Print delayed CSC Stubs
+					for (int idrift=0; idrift < 3; idrift++) begin
+                        for (ip = 0; ip < 6; ip = ip+1) begin // station
+                            for (j = 0; j < 9; j = j+1) begin // chamber
+                                for (k = 0; k < 2; k = k+1) begin // segment	    
+                                    if (uut.vld[idrift][ip][j][k] != 0) begin
+                                        //$fwrite (sim_out, "STUB valid: st: %d ch: %d seg: %d\n", ip, j, k);
+                                    
+                                        if (ip <= 1 && j < 3) // ME11
+                                        begin
+                                            $fwrite(sim_out, "STUB Delay: bx: %d st: %1d ch: %1d ph: %d  th: %d %d  cpattern: %d hmt_num: %d \n", 
+                                                    idrift, ip, j, uut.phd[idrift][ip][j][k], uut.th11d[idrift][ip][j][k*2], uut.th11d[idrift][ip][j][k*2+1], uut.cpatd[idrift][ip][j][k], uut.hmtd[idrift][ip][j][k]);
+                                        end
+                                        else if (ip == 5 && j == 0) // ME11 neighbor
+                                            $fwrite(sim_out, "STUB Delay: bx: %d st: %1d ch: %1d ph: %d  th: %d %d  cpattern: %d, hmt_num: %d \n", 
+                                                    idrift, ip, j, uut.phd[idrift][ip][j][k], uut.th11d[idrift][2][0][k*2], uut.th11d[idrift][2][0][k*2+1], uut.cpatd[idrift][ip][j][k], uut.hmtd[idrift][ip][j][k]);
+                                        else
+                                        begin
+                                            $fwrite(sim_out, "STUB Delay: bx: %d st: %1d ch: %1d ph: %d  th: %d  cpattern: %d, hmt_num: %d \n", 
+                                                    idrift, ip, j, uut.phd[idrift][ip][j][k], uut.thd[idrift][ip][j][k], uut.cpatd[idrift][ip][j][k], uut.hmtd[idrift][ip][j][k]);
+                                        end
+                                    end
+                                end
+                            end
+                        end // for (ip = 0; ip < 6; ip = ip+1)
+                    end
+
+                    
+                    
                     // Pipelined Matching
 					for (iz = 0; iz < 4; iz = iz+1) // zone loop
 					begin
@@ -1002,10 +1035,31 @@ module tb_sp();
 							end // for (ist = 0; ist < 4; ist = ist + 1)
 						end
 					end // for (iz = 0; iz < 4; iz = iz+1)
-                    */
+					
                     
-                    
-                    /*
+                    /*       
+                    // Standard Matching 
+					for (iz = 0; iz < 4; iz = iz+1) // zone loop
+					begin
+						for (ip = 0; ip < 3; ip = ip+1) // best pattern number
+						begin
+							for (ist = 0; ist < 4; ist = ist + 1) // station
+							begin
+								if (uut.patt_ph_vi[iz][ip][ist] > 0)
+								begin
+
+										$fwrite(sim_out, "match seg: z: %d pat: %d st: %d   vi: %b hi: %d ci: %d si: %d ph: %d  th  : %d %d\n", 
+											   iz, ip, ist, uut.patt_ph_vi[iz][ip][ist], uut.patt_ph_hi[iz][ip][ist], uut.patt_ph_ci[iz][ip][ist], 
+												uut.patt_ph_si[iz][ip][ist], uut.ph_match[iz][ip][ist],
+											    uut.th_match[iz][ip][ist][0], uut.th_match[iz][ip][ist][1]);
+										
+								end
+							end // for (ist = 0; ist < 4; ist = ist + 1)
+						end
+					end // for (iz = 0; iz < 4; iz = iz+1)
+					
+					
+                    // Standard Deltas
                     for (iz = 0; iz < 4; iz = iz+1)
 	                begin
 						for (ip = 0; ip < 3; ip = ip+1)
@@ -1060,24 +1114,30 @@ module tb_sp();
 							if (bt_rank[ip][3]) $fwrite(sim_out, "-2");
 							if (bt_rank[ip][1]) $fwrite(sim_out, "-3");
 							if (bt_rank[ip][0]) $fwrite(sim_out, "-4");
-							$fwrite(sim_out, " track: %d  rank: %h ly: %d ph_deltas: %d %d %d %d %d %d th_deltas: %d %d %d %d %d %d phi: %d,  theta: %d cpat: %d %d %d %d\n\thcs:", 
+							$fwrite(sim_out, " track: %d  rank: %h ly: %d promote pT: %d ph_deltas: %d %d %d %d %d %d th_deltas: %d %d %d %d %d %d phi: %d,  theta: %d cpat: %d %d %d %d hmt_num: %d %d %d %d \n\thcs:", 
 									ip, bt_rank[ip],
 									{bt_rank[ip][5], bt_rank[ip][3], bt_rank[ip][1], bt_rank[ip][0]},
+									bt_promote_pT[ip],
 									bt_delta_ph[ip][0], bt_delta_ph[ip][1], bt_delta_ph[ip][2], bt_delta_ph[ip][3], bt_delta_ph[ip][4], bt_delta_ph[ip][5], 
 									bt_delta_th[ip][0], bt_delta_th[ip][1], bt_delta_th[ip][2], bt_delta_th[ip][3], bt_delta_th[ip][4], bt_delta_th[ip][5], 
-									bt_phi[ip], bt_theta[ip], bt_cpattern[ip][0], bt_cpattern[ip][1], bt_cpattern[ip][2], bt_cpattern[ip][3]);
+									bt_phi[ip], bt_theta[ip], bt_cpattern[ip][0], bt_cpattern[ip][1], bt_cpattern[ip][2], bt_cpattern[ip][3],
+									bt_hmt_num[ip][0], bt_hmt_num[ip][1], bt_hmt_num[ip][2], bt_hmt_num[ip][3]
+									);
 
 							$fwrite(best_tracks, "ev: %d ME ", iev);
 						    if (bt_rank[ip][5]) $fwrite(best_tracks, "-1"); else $fwrite(best_tracks, "  ");
 						    if (bt_rank[ip][3]) $fwrite(best_tracks, "-2"); else $fwrite(best_tracks, "  ");
 						    if (bt_rank[ip][1]) $fwrite(best_tracks, "-3"); else $fwrite(best_tracks, "  ");
 						    if (bt_rank[ip][0]) $fwrite(best_tracks, "-4"); else $fwrite(best_tracks, "  ");
-							$fwrite(best_tracks, " track: %d  rank: %h ly: %d ph_deltas: %d %d %d %d %d %d th_deltas: %d %d %d %d %d %d phi: %d,  theta: %d cpat: %d hcs:", 
+							$fwrite(best_tracks, " track: %d  rank: %h ly: %d promote pT: %d ph_deltas: %d %d %d %d %d %d th_deltas: %d %d %d %d %d %d phi: %d,  theta: %d cpat: %d hmt: %d %d %d %d hcs:", 
 									ip, bt_rank[ip], 
 									{bt_rank[ip][5], bt_rank[ip][3], bt_rank[ip][1], bt_rank[ip][0]},
+									bt_promote_pT[ip],
 									bt_delta_ph[ip][0], bt_delta_ph[ip][1], bt_delta_ph[ip][2], bt_delta_ph[ip][3], bt_delta_ph[ip][4], bt_delta_ph[ip][5], 
 									bt_delta_th[ip][0], bt_delta_th[ip][1], bt_delta_th[ip][2], bt_delta_th[ip][3], bt_delta_th[ip][4], bt_delta_th[ip][5], 
-									bt_phi[ip], bt_theta[ip], bt_cpattern[ip][0]);
+									bt_phi[ip], bt_theta[ip], bt_cpattern[ip][0],
+									bt_hmt_num[ip][0], bt_hmt_num[ip][1], bt_hmt_num[ip][2], bt_hmt_num[ip][3]
+									);
 						   
 						   for (j = 0; j < 5; j = j+1)
 						   begin

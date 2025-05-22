@@ -5,6 +5,7 @@ module ptlut_address
     bt_phi_i,
     bt_theta_i,
     bt_cpattern,
+    bt_hmt_num,
     bt_delta_ph,
     bt_delta_th,
     bt_sign_ph,
@@ -24,6 +25,7 @@ module ptlut_address
     ptlut_cs,
     ptlut_addr_val,
     bt_rank_o,
+    bt_promote_pT,
     
     gmt_phi,
     gmt_eta,
@@ -34,6 +36,7 @@ module ptlut_address
     endcap,
     
     low_th_promote,
+    mode7_promote,
     
     clk
 
@@ -47,6 +50,7 @@ module ptlut_address
 	input [bw_th-1:0] 	bt_theta_i [2:0];
 	// [best_track_num][station 0-3]
 	input [3:0] 		bt_cpattern [2:0][3:0];
+	input [1:0] 		bt_hmt_num [2:0][3:0];
 	// ph and th deltas from best stations
 	// [best_track_num], last index: 0=12, 1=13, 2=14, 3=23, 4=24, 5=34
 	input [bw_fph-1:0] bt_delta_ph [2:0][5:0];
@@ -70,6 +74,7 @@ module ptlut_address
 	output reg [31:0] ptlut_cs [2:0];
 	output reg [2:0] ptlut_addr_val;
 	output [bwr:0] 	 bt_rank_o [2:0];
+	output reg [2:0]     bt_promote_pT;
 	
 	output reg [7:0] gmt_phi [2:0];
 	output reg [8:0] gmt_eta [2:0];
@@ -79,6 +84,7 @@ module ptlut_address
 	input [2:0] sector;
 	input endcap;
 	input low_th_promote;
+	input mode7_promote;
 	
 	input clk;
 
@@ -309,6 +315,46 @@ module ptlut_address
     assign bt_rank_o[0] = bt_rank_i[0];
     assign bt_rank_o[1] = bt_rank_i[1];
     assign bt_rank_o[2] = (bt_rank_i[2] == 0 && vl_single == 1'b1) ? 1 : bt_rank_i[2];
+    
+     
+     
+    // ******************* Promotion Logic ********************* //
+    //  Not registered, follows same path as bt_rank_o
+    
+    // HMT Promotion: 2 loose or 1 nominal (or more)
+    // HMT bit for pTLUT Address: 1 loose (or more)
+    reg [2:0] hmt_bit;
+    
+    always @(*) begin 
+        for(int itrk=0; itrk<3; itrk++) begin // best track loop
+            
+            reg [2:0] loose_cnt;
+            reg [3:0] tmp_mode;
+            tmp_mode = {bt_rank_i[itrk][5], bt_rank_i[itrk][3], bt_rank_i[itrk][1], bt_rank_i[itrk][0]};
+
+            loose_cnt = 0;
+
+            // default to no HMT
+            bt_promote_pT[itrk] = 1'b0;
+            
+            if(tmp_mode == 4'd15 || tmp_mode == 4'd14 || tmp_mode == 4'd13 || tmp_mode == 4'd11) begin 
+                for(int ist=0; ist<4; ist++) begin 
+                    if(tmp_mode[3-ist] == 1'b1 && bt_hmt_num[itrk][ist] > 0)
+                        loose_cnt++;
+                    
+                    if(tmp_mode[3-ist] == 1'b1 && bt_hmt_num[itrk][ist] > 1)
+                        bt_promote_pT[itrk] = 1'b1; // 1 nominal
+                end
+                
+                if(loose_cnt > 1)
+                    bt_promote_pT[itrk] |= 1'b1;
+            end
+        end
+    end
+    
+            
+            
+            
 
 
     always @(posedge clk)
@@ -352,6 +398,14 @@ module ptlut_address
             if (endcap == 1'b1) gmt_eta[i] = ~gmt_eta[i]; // if negative endcap invert eta
         
             mode[i] = {bt_rank[i][5], bt_rank[i][3], bt_rank[i][1], bt_rank[i][0]};
+            
+            
+            // HMT Bit
+            hmt_bit[i] = 1'b0;
+            for(int ist=0; ist<4; ist++) begin 
+                if(mode[i][3-ist] == 1'b1 && bt_hmt_num[i][ist] > 0)
+                    hmt_bit[i] |= 1'b1; // Any loose bits
+            end
             
             
             ptlut_addr_val[i] = bt_rank[i] != 0; // address valid if rank is non-zero
@@ -530,7 +584,8 @@ module ptlut_address
                             theta_5b[i],
                             rpc_2b[i],
                             clct_2b_A[i],
-                            fr [sector[0]][bt_stB][chB],
+                            fr [sector[0]][bt_stB][chB], // Remove if you add new hmt promotion logic
+                            // hmt_bit[i], // New hmt bit (>= 1 loose shower)
                             fr [sector[0]][bt_stA][chA],
                             dth_3b[i],
                             sphBC[i],
@@ -605,6 +660,13 @@ module ptlut_address
             // convert mode to quality using LUT (Andrew 2018-4-30)
             gmt_lut_addr[i][4] = bt_theta[i] > 7'd88 ? 1'b1 : 1'b0;
             gmt_lut_addr[i][3:0] = mode[i];
+            
+            // Mode 7 promotion logic
+            if(mode7_promote == 1'b1) begin 
+                if(mode[i] == 4'd7 && bt_theta[i] <= 50)
+                    gmt_lut_addr[i][3:0] = 4'd15;
+            end
+            
             gmt_qlt[i] = mode_to_gmt_qlt[gmt_lut_addr[i]]; 
 
             // Matt's code for GMT charge assignment, message from 2016-04-21
@@ -628,7 +690,8 @@ module ptlut_address
 
             if (i == 2 && vl_single) gmt_qlt[i] = cpat_single; // for single LCT, quality == CLCT pattern
 
-        end
+            
+        end // Best Track Loop
             
         // remove worst track if it addresses the same bank as one of two best tracks
         if (`sb(0,2) || `sb(1,2)) ptlut_addr_val[2] = 1'b0;       

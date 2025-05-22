@@ -29,6 +29,7 @@ module find_segment_serialized(
      ph_seg_v_p,
      th_seg_p,
      cpat_seg_p,
+     hmt_seg_p,
      vid,
      hid,
      cid,
@@ -36,6 +37,7 @@ module find_segment_serialized(
      ph_match,
      th_match,
      cpat_match,
+     hmt_match,
      clk
 );
 
@@ -75,6 +77,7 @@ module find_segment_serialized(
 	input [seg_ch-1:0] ph_seg_v_p [max_drift-1:0][zone_cham-1:0];
 	input [bw_th-1:0]  th_seg_p [max_drift-1:0][zone_cham-1:0][zone_seg-1:0]; // theta
 	input [3:0] 	   cpat_seg_p [max_drift-1:0][zone_cham-1:0][seg_ch-1:0]; // patterns
+	input [1:0] 	   hmt_seg_p [max_drift-1:0][zone_cham-1:0][seg_ch-1:0]; // hmt
 
 	// indexes of best match
 	output reg [seg_ch-1:0] vid; // match valid, each flag shows validity of th coord
@@ -86,7 +89,8 @@ module find_segment_serialized(
 	// rework per Jia Fu request 2016-10-18
 	output reg [bw_th-1:0] 	th_match [seg_ch-1:0]; 
 	output reg [3:0] cpat_match; // pattern from matching segment
-
+    output reg [1:0] hmt_match;
+    
 	input 			  clk;
 	
 	typedef struct packed {
@@ -98,6 +102,7 @@ module find_segment_serialized(
        logic [bw_th-1:0] 	th0; // theta1
        logic [bw_th-1:0] 	th1; // theta2
        logic [3:0]          cpat; // clc pattern 
+       logic [1:0]          hmt; // hmt
     } seg_match_t;
 	
 	`int i,j,k,di;
@@ -107,6 +112,7 @@ module find_segment_serialized(
 	reg [seg_ch-1:0] ph_seg_v [max_drift-1:0][zone_cham-1:0];
 	reg [bw_th-1:0]  th_seg [max_drift-1:0][zone_cham-1:0][zone_seg-1:0];
 	reg [3:0] 		 cpat_seg [max_drift-1:0][zone_cham-1:0][seg_ch-1:0];
+	reg [1:0] 		 hmt_seg [max_drift-1:0][zone_cham-1:0][seg_ch-1:0];
     reg [bw_fph-1:0] ph_segr;
 	reg [bw_fph-1:0] ph_diff_tmp;
 	reg [bw_phdiff-1:0] ph_diff [tot_diff+3-1:0]; // create longer array here to provide padding for 3-input comparators
@@ -141,6 +147,7 @@ module find_segment_serialized(
 		ph_seg_v = ph_seg_v_p;
 		th_seg = th_seg_p;
 		cpat_seg = cpat_seg_p;
+		hmt_seg = hmt_seg_p;
 		
 		// fill unused differences with max values
 		ph_diff[tot_diff+2] <= nodiff;
@@ -179,6 +186,7 @@ module find_segment_serialized(
                     diffi0[i*zone_cham*seg_ch + j*seg_ch + k].si <= k; // segment
                     diffi0[i*zone_cham*seg_ch + j*seg_ch + k].ph <= ph_seg[sorting_bx_mapping[i]][j][k]; // phi
                     diffi0[i*zone_cham*seg_ch + j*seg_ch + k].cpat <= cpat_seg[sorting_bx_mapping[i]][j][k]; // clc pattern 
+                    diffi0[i*zone_cham*seg_ch + j*seg_ch + k].hmt <= hmt_seg[sorting_bx_mapping[i]][j][k];
                     
                     if (zone_seg == seg_ch) begin
                         diffi0[i*zone_cham*seg_ch + j*seg_ch + k].th0 <= th_seg[sorting_bx_mapping[i]][j][0]; // theta1
@@ -300,7 +308,8 @@ module find_segment_serialized(
         ph_match <= diffi4.ph;
         th_match[0] <= diffi4.th0;
         th_match[1] <= diffi4.th1;
-        cpat_match <= diffi4.cpat;      
+        cpat_match <= diffi4.cpat; 
+        hmt_match <= diffi4.hmt;      
 		  
 	end
 

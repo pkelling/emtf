@@ -26,12 +26,13 @@ module match_ph_segs_serialized(
 
      ph_num, ph_q,
      ph, vl,
-	 th11, th, cpat,
+	 th11, th, cpat, hmt,
 
 	 vi, hi, ci, si,
 	 ph_match,
 	 th_match,
 	 cpat_match,
+	 hmt_match,
 	 ph_qr,
      clk120
 );
@@ -53,6 +54,7 @@ module match_ph_segs_serialized(
     input [bw_th-1:0] 	th11 [max_drift-1:0][2:0][2:0][th_ch11-1:0];
     input [bw_th-1:0] 	th   [max_drift-1:0][5:0][8:0][seg_ch-1:0];
     input [3:0] 		cpat [max_drift-1:0][5:0][8:0][seg_ch-1:0];
+    input [1:0] 		hmt  [max_drift-1:0][5:0][8:0][seg_ch-1:0];
     
 	// find_segment outputs, in terms of segments match in zones [zone][station 0-3]
 	output [seg_ch-1:0] vi [3:0][3:0]; // valid (for each segment in chamber, so we can identify which th to use later)
@@ -64,6 +66,7 @@ module match_ph_segs_serialized(
 	// [zone][pattern_num][station 0-3][segment]
 	output [bw_th-1:0]	th_match   [3:0][3:0][seg_ch-1:0]; // matching th, 2 segments 
 	output [3:0] 		cpat_match [3:0][3:0]; // matching patterns
+	output [1:0] 		hmt_match  [3:0][3:0]; // matching hmt
     // best ranks [zone][rank number]
     output reg [5:0] 	ph_qr [3:0]; 
 
@@ -152,6 +155,28 @@ module match_ph_segs_serialized(
 	reg [3:0] cpat_seg___z3_s2 [max_drift-1:0][6:0][seg_ch-1:0];
 	reg [3:0] cpat_seg___z3_s3 [max_drift-1:0][6:0][seg_ch-1:0];
 
+	
+	reg [1:0] hmt_seg___z0_s0 [max_drift-1:0][6:0][seg_ch-1:0];
+	reg [1:0] hmt_seg___z0_s1 [max_drift-1:0][3:0][seg_ch-1:0];
+	reg [1:0] hmt_seg___z0_s2 [max_drift-1:0][3:0][seg_ch-1:0];
+	reg [1:0] hmt_seg___z0_s3 [max_drift-1:0][3:0][seg_ch-1:0];
+	
+	reg [1:0] hmt_seg___z1_s0 [max_drift-1:0][6:0][seg_ch-1:0];
+	reg [1:0] hmt_seg___z1_s1 [max_drift-1:0][3:0][seg_ch-1:0];
+	reg [1:0] hmt_seg___z1_s2 [max_drift-1:0][6:0][seg_ch-1:0];
+	reg [1:0] hmt_seg___z1_s3 [max_drift-1:0][6:0][seg_ch-1:0];
+	
+	reg [1:0] hmt_seg___z2_s0 [max_drift-1:0][6:0][seg_ch-1:0];
+	reg [1:0] hmt_seg___z2_s1 [max_drift-1:0][6:0][seg_ch-1:0];
+	reg [1:0] hmt_seg___z2_s2 [max_drift-1:0][6:0][seg_ch-1:0];
+	reg [1:0] hmt_seg___z2_s3 [max_drift-1:0][6:0][seg_ch-1:0];
+	
+	reg [1:0] hmt_seg___z3_s0 [max_drift-1:0][6:0][seg_ch-1:0];
+	reg [1:0] hmt_seg___z3_s1 [max_drift-1:0][6:0][seg_ch-1:0];
+	reg [1:0] hmt_seg___z3_s2 [max_drift-1:0][6:0][seg_ch-1:0];
+	reg [1:0] hmt_seg___z3_s3 [max_drift-1:0][6:0][seg_ch-1:0];
+	
+
 	`int i, j, k;
 	always @(*)
 	begin
@@ -217,6 +242,25 @@ module match_ph_segs_serialized(
 					cpat_seg___z3_s1[i][j][k] = (j == 0) ? cpat[i][5][4][k] : cpat[i][2][j+2][k]; // 19
 					cpat_seg___z3_s2[i][j][k] = (j == 0) ? cpat[i][5][6][k] : cpat[i][3][j+2][k]; // 20
 				    cpat_seg___z3_s3[i][j][k] = 0; // no station 4 in zone 3
+				    
+				    
+				    hmt_seg___z0_s0[i][j][k] = (j == 0) ? hmt[i][5][0][k] : (j < 4) ? hmt[i][0][j-1][k] : hmt[i][1][j-4][k]; // 2
+
+					hmt_seg___z1_s0[i][j][k] = (j == 0) ? hmt[i][5][0][k] : (j < 4) ? hmt[i][0][j-1][k] : hmt[i][1][j-4][k]; // 7
+					hmt_seg___z1_s2[i][j][k] = (j == 0) ? hmt[i][5][6][k] : hmt[i][3][j+2][k]; // 9
+					hmt_seg___z1_s3[i][j][k] = (j == 0) ? hmt[i][5][8][k] : hmt[i][4][j+2][k]; // 10
+
+					hmt_seg___z2_s0[i][j][k] = (j == 0) ? hmt[i][5][1][k] : (j < 4) ? hmt[i][0][j+2][k] : hmt[i][1][j-1][k]; // 12
+					hmt_seg___z2_s1[i][j][k] = (j == 0) ? hmt[i][5][4][k] : hmt[i][2][j+2][k]; // 13
+					hmt_seg___z2_s2[i][j][k] = (j == 0) ? hmt[i][5][6][k] : hmt[i][3][j+2][k]; // 14
+					hmt_seg___z2_s3[i][j][k] = (j == 0) ? hmt[i][5][8][k] : hmt[i][4][j+2][k]; // 15 
+
+					hmt_seg___z3_s0[i][j][k] = (j == 0) ? hmt[i][5][2][k] : (j < 4) ? hmt[i][0][j+5][k] : hmt[i][1][j+2][k]; // 18
+					hmt_seg___z3_s1[i][j][k] = (j == 0) ? hmt[i][5][4][k] : hmt[i][2][j+2][k]; // 19
+					hmt_seg___z3_s2[i][j][k] = (j == 0) ? hmt[i][5][6][k] : hmt[i][3][j+2][k]; // 20
+				    hmt_seg___z3_s3[i][j][k] = 0; // no station 4 in zone 3
+				    
+   
 					
 					th_seg___z1_s2[i][j][k] = (j == 0) ? th[i][5][6][k] : th[i][3][j+2][k]; // 9
 					th_seg___z1_s3[i][j][k] = (j == 0) ? th[i][5][8][k] : th[i][4][j+2][k]; // 10
@@ -255,6 +299,13 @@ module match_ph_segs_serialized(
 					cpat_seg___z0_s3[i][j][k] = (j == 0) ? cpat[i][5][7][k] : cpat[i][4][j-1][k]; // 5
 
 					cpat_seg___z1_s1[i][j][k] = (j == 0) ? cpat[i][5][3][k] : cpat[i][2][j-1][k]; // 8
+					
+					
+					hmt_seg___z0_s1[i][j][k] = (j == 0) ? hmt[i][5][3][k] : hmt[i][2][j-1][k]; // 3
+					hmt_seg___z0_s2[i][j][k] = (j == 0) ? hmt[i][5][5][k] : hmt[i][3][j-1][k]; // 4
+					hmt_seg___z0_s3[i][j][k] = (j == 0) ? hmt[i][5][7][k] : hmt[i][4][j-1][k]; // 5
+
+					hmt_seg___z1_s1[i][j][k] = (j == 0) ? hmt[i][5][3][k] : hmt[i][2][j-1][k]; // 8
 
 
 					th_seg___z0_s1[i][j][k] = (j == 0) ? th[i][5][3][k] : th[i][2][j-1][k]; // 3
@@ -279,25 +330,25 @@ module match_ph_segs_serialized(
 	
 	
      // name = fs_zone_station
-    find_segment_serialized #(.zone_cham (7), .zone_seg (th_ch11), .station (1)) fs_00(.ph_pat_p (ph_num[0]), .ph_pat_q_p (ph_q[0]), .ph_seg_p(ph_seg___z0_s0), .ph_seg_v_p(ph_seg_v_z0_s0), .th_seg_p(th_seg___z0_s0), .cpat_seg_p(cpat_seg___z0_s0), .vid(vi[0][0]), .hid(hi[0][0]), .cid(ci[0][0]), .sid(si[0][0]), .ph_match(ph_match[0][0]), .th_match(th_match[0][0]), .cpat_match(cpat_match[0][0]), .clk(clk120));
-    find_segment_serialized #(.zone_cham (4), .zone_seg (seg_ch),  .station (2)) fs_01(.ph_pat_p (ph_num[0]), .ph_pat_q_p (ph_q[0]), .ph_seg_p(ph_seg___z0_s1), .ph_seg_v_p(ph_seg_v_z0_s1), .th_seg_p(th_seg___z0_s1), .cpat_seg_p(cpat_seg___z0_s1), .vid(vi[0][1]), .hid(hi[0][1]), .cid(ci[0][1]), .sid(si[0][1]), .ph_match(ph_match[0][1]), .th_match(th_match[0][1]), .cpat_match(cpat_match[0][1]), .clk(clk120));
-    find_segment_serialized #(.zone_cham (4), .zone_seg (seg_ch),  .station (3)) fs_02(.ph_pat_p (ph_num[0]), .ph_pat_q_p (ph_q[0]), .ph_seg_p(ph_seg___z0_s2), .ph_seg_v_p(ph_seg_v_z0_s2), .th_seg_p(th_seg___z0_s2), .cpat_seg_p(cpat_seg___z0_s2), .vid(vi[0][2]), .hid(hi[0][2]), .cid(ci[0][2]), .sid(si[0][2]), .ph_match(ph_match[0][2]), .th_match(th_match[0][2]), .cpat_match(cpat_match[0][2]), .clk(clk120));
-    find_segment_serialized #(.zone_cham (4), .zone_seg (seg_ch),  .station (4)) fs_03(.ph_pat_p (ph_num[0]), .ph_pat_q_p (ph_q[0]), .ph_seg_p(ph_seg___z0_s3), .ph_seg_v_p(ph_seg_v_z0_s3), .th_seg_p(th_seg___z0_s3), .cpat_seg_p(cpat_seg___z0_s3), .vid(vi[0][3]), .hid(hi[0][3]), .cid(ci[0][3]), .sid(si[0][3]), .ph_match(ph_match[0][3]), .th_match(th_match[0][3]), .cpat_match(cpat_match[0][3]), .clk(clk120));
+    find_segment_serialized #(.zone_cham (7), .zone_seg (th_ch11), .station (1)) fs_00(.ph_pat_p (ph_num[0]), .ph_pat_q_p (ph_q[0]), .ph_seg_p(ph_seg___z0_s0), .ph_seg_v_p(ph_seg_v_z0_s0), .th_seg_p(th_seg___z0_s0), .cpat_seg_p(cpat_seg___z0_s0), .hmt_seg_p(hmt_seg___z0_s0), .vid(vi[0][0]), .hid(hi[0][0]), .cid(ci[0][0]), .sid(si[0][0]), .ph_match(ph_match[0][0]), .th_match(th_match[0][0]), .cpat_match(cpat_match[0][0]), .hmt_match(hmt_match[0][0]), .clk(clk120));
+    find_segment_serialized #(.zone_cham (4), .zone_seg (seg_ch),  .station (2)) fs_01(.ph_pat_p (ph_num[0]), .ph_pat_q_p (ph_q[0]), .ph_seg_p(ph_seg___z0_s1), .ph_seg_v_p(ph_seg_v_z0_s1), .th_seg_p(th_seg___z0_s1), .cpat_seg_p(cpat_seg___z0_s1), .hmt_seg_p(hmt_seg___z0_s1), .vid(vi[0][1]), .hid(hi[0][1]), .cid(ci[0][1]), .sid(si[0][1]), .ph_match(ph_match[0][1]), .th_match(th_match[0][1]), .cpat_match(cpat_match[0][1]), .hmt_match(hmt_match[0][1]),  .clk(clk120));
+    find_segment_serialized #(.zone_cham (4), .zone_seg (seg_ch),  .station (3)) fs_02(.ph_pat_p (ph_num[0]), .ph_pat_q_p (ph_q[0]), .ph_seg_p(ph_seg___z0_s2), .ph_seg_v_p(ph_seg_v_z0_s2), .th_seg_p(th_seg___z0_s2), .cpat_seg_p(cpat_seg___z0_s2), .hmt_seg_p(hmt_seg___z0_s2), .vid(vi[0][2]), .hid(hi[0][2]), .cid(ci[0][2]), .sid(si[0][2]), .ph_match(ph_match[0][2]), .th_match(th_match[0][2]), .cpat_match(cpat_match[0][2]), .hmt_match(hmt_match[0][2]),  .clk(clk120));
+    find_segment_serialized #(.zone_cham (4), .zone_seg (seg_ch),  .station (4)) fs_03(.ph_pat_p (ph_num[0]), .ph_pat_q_p (ph_q[0]), .ph_seg_p(ph_seg___z0_s3), .ph_seg_v_p(ph_seg_v_z0_s3), .th_seg_p(th_seg___z0_s3), .cpat_seg_p(cpat_seg___z0_s3), .hmt_seg_p(hmt_seg___z0_s3), .vid(vi[0][3]), .hid(hi[0][3]), .cid(ci[0][3]), .sid(si[0][3]), .ph_match(ph_match[0][3]), .th_match(th_match[0][3]), .cpat_match(cpat_match[0][3]), .hmt_match(hmt_match[0][3]),  .clk(clk120));
                                                                                                                                                                                                                                                                                                                                                                                                                                 
-    find_segment_serialized #(.zone_cham (7), .zone_seg (th_ch11), .station (1)) fs_10(.ph_pat_p (ph_num[1]), .ph_pat_q_p (ph_q[1]), .ph_seg_p(ph_seg___z1_s0), .ph_seg_v_p(ph_seg_v_z1_s0), .th_seg_p(th_seg___z1_s0), .cpat_seg_p(cpat_seg___z1_s0), .vid(vi[1][0]), .hid(hi[1][0]), .cid(ci[1][0]), .sid(si[1][0]), .ph_match(ph_match[1][0]), .th_match(th_match[1][0]), .cpat_match(cpat_match[1][0]), .clk(clk120));
-    find_segment_serialized #(.zone_cham (4), .zone_seg (seg_ch),  .station (2)) fs_11(.ph_pat_p (ph_num[1]), .ph_pat_q_p (ph_q[1]), .ph_seg_p(ph_seg___z1_s1), .ph_seg_v_p(ph_seg_v_z1_s1), .th_seg_p(th_seg___z1_s1), .cpat_seg_p(cpat_seg___z1_s1), .vid(vi[1][1]), .hid(hi[1][1]), .cid(ci[1][1]), .sid(si[1][1]), .ph_match(ph_match[1][1]), .th_match(th_match[1][1]), .cpat_match(cpat_match[1][1]), .clk(clk120));
-    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (3)) fs_12(.ph_pat_p (ph_num[1]), .ph_pat_q_p (ph_q[1]), .ph_seg_p(ph_seg___z1_s2), .ph_seg_v_p(ph_seg_v_z1_s2), .th_seg_p(th_seg___z1_s2), .cpat_seg_p(cpat_seg___z1_s2), .vid(vi[1][2]), .hid(hi[1][2]), .cid(ci[1][2]), .sid(si[1][2]), .ph_match(ph_match[1][2]), .th_match(th_match[1][2]), .cpat_match(cpat_match[1][2]), .clk(clk120));
-    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (4)) fs_13(.ph_pat_p (ph_num[1]), .ph_pat_q_p (ph_q[1]), .ph_seg_p(ph_seg___z1_s3), .ph_seg_v_p(ph_seg_v_z1_s3), .th_seg_p(th_seg___z1_s3), .cpat_seg_p(cpat_seg___z1_s3), .vid(vi[1][3]), .hid(hi[1][3]), .cid(ci[1][3]), .sid(si[1][3]), .ph_match(ph_match[1][3]), .th_match(th_match[1][3]), .cpat_match(cpat_match[1][3]), .clk(clk120));
+    find_segment_serialized #(.zone_cham (7), .zone_seg (th_ch11), .station (1)) fs_10(.ph_pat_p (ph_num[1]), .ph_pat_q_p (ph_q[1]), .ph_seg_p(ph_seg___z1_s0), .ph_seg_v_p(ph_seg_v_z1_s0), .th_seg_p(th_seg___z1_s0), .cpat_seg_p(cpat_seg___z1_s0), .hmt_seg_p(hmt_seg___z1_s0), .vid(vi[1][0]), .hid(hi[1][0]), .cid(ci[1][0]), .sid(si[1][0]), .ph_match(ph_match[1][0]), .th_match(th_match[1][0]), .cpat_match(cpat_match[1][0]), .hmt_match(hmt_match[1][0]),  .clk(clk120));
+    find_segment_serialized #(.zone_cham (4), .zone_seg (seg_ch),  .station (2)) fs_11(.ph_pat_p (ph_num[1]), .ph_pat_q_p (ph_q[1]), .ph_seg_p(ph_seg___z1_s1), .ph_seg_v_p(ph_seg_v_z1_s1), .th_seg_p(th_seg___z1_s1), .cpat_seg_p(cpat_seg___z1_s1), .hmt_seg_p(hmt_seg___z1_s1), .vid(vi[1][1]), .hid(hi[1][1]), .cid(ci[1][1]), .sid(si[1][1]), .ph_match(ph_match[1][1]), .th_match(th_match[1][1]), .cpat_match(cpat_match[1][1]), .hmt_match(hmt_match[1][1]),  .clk(clk120));
+    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (3)) fs_12(.ph_pat_p (ph_num[1]), .ph_pat_q_p (ph_q[1]), .ph_seg_p(ph_seg___z1_s2), .ph_seg_v_p(ph_seg_v_z1_s2), .th_seg_p(th_seg___z1_s2), .cpat_seg_p(cpat_seg___z1_s2), .hmt_seg_p(hmt_seg___z1_s2), .vid(vi[1][2]), .hid(hi[1][2]), .cid(ci[1][2]), .sid(si[1][2]), .ph_match(ph_match[1][2]), .th_match(th_match[1][2]), .cpat_match(cpat_match[1][2]), .hmt_match(hmt_match[1][2]),  .clk(clk120));
+    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (4)) fs_13(.ph_pat_p (ph_num[1]), .ph_pat_q_p (ph_q[1]), .ph_seg_p(ph_seg___z1_s3), .ph_seg_v_p(ph_seg_v_z1_s3), .th_seg_p(th_seg___z1_s3), .cpat_seg_p(cpat_seg___z1_s3), .hmt_seg_p(hmt_seg___z1_s3), .vid(vi[1][3]), .hid(hi[1][3]), .cid(ci[1][3]), .sid(si[1][3]), .ph_match(ph_match[1][3]), .th_match(th_match[1][3]), .cpat_match(cpat_match[1][3]), .hmt_match(hmt_match[1][3]),  .clk(clk120));
                                                                                                                                                                                                                                                                                                                                                                                                                                 
-    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (1)) fs_20(.ph_pat_p (ph_num[2]), .ph_pat_q_p (ph_q[2]), .ph_seg_p(ph_seg___z2_s0), .ph_seg_v_p(ph_seg_v_z2_s0), .th_seg_p(th_seg___z2_s0), .cpat_seg_p(cpat_seg___z2_s0), .vid(vi[2][0]), .hid(hi[2][0]), .cid(ci[2][0]), .sid(si[2][0]), .ph_match(ph_match[2][0]), .th_match(th_match[2][0]), .cpat_match(cpat_match[2][0]), .clk(clk120));
-    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (2)) fs_21(.ph_pat_p (ph_num[2]), .ph_pat_q_p (ph_q[2]), .ph_seg_p(ph_seg___z2_s1), .ph_seg_v_p(ph_seg_v_z2_s1), .th_seg_p(th_seg___z2_s1), .cpat_seg_p(cpat_seg___z2_s1), .vid(vi[2][1]), .hid(hi[2][1]), .cid(ci[2][1]), .sid(si[2][1]), .ph_match(ph_match[2][1]), .th_match(th_match[2][1]), .cpat_match(cpat_match[2][1]), .clk(clk120));
-    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (3)) fs_22(.ph_pat_p (ph_num[2]), .ph_pat_q_p (ph_q[2]), .ph_seg_p(ph_seg___z2_s2), .ph_seg_v_p(ph_seg_v_z2_s2), .th_seg_p(th_seg___z2_s2), .cpat_seg_p(cpat_seg___z2_s2), .vid(vi[2][2]), .hid(hi[2][2]), .cid(ci[2][2]), .sid(si[2][2]), .ph_match(ph_match[2][2]), .th_match(th_match[2][2]), .cpat_match(cpat_match[2][2]), .clk(clk120));
-    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (4)) fs_23(.ph_pat_p (ph_num[2]), .ph_pat_q_p (ph_q[2]), .ph_seg_p(ph_seg___z2_s3), .ph_seg_v_p(ph_seg_v_z2_s3), .th_seg_p(th_seg___z2_s3), .cpat_seg_p(cpat_seg___z2_s3), .vid(vi[2][3]), .hid(hi[2][3]), .cid(ci[2][3]), .sid(si[2][3]), .ph_match(ph_match[2][3]), .th_match(th_match[2][3]), .cpat_match(cpat_match[2][3]), .clk(clk120));
+    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (1)) fs_20(.ph_pat_p (ph_num[2]), .ph_pat_q_p (ph_q[2]), .ph_seg_p(ph_seg___z2_s0), .ph_seg_v_p(ph_seg_v_z2_s0), .th_seg_p(th_seg___z2_s0), .cpat_seg_p(cpat_seg___z2_s0), .hmt_seg_p(hmt_seg___z2_s0), .vid(vi[2][0]), .hid(hi[2][0]), .cid(ci[2][0]), .sid(si[2][0]), .ph_match(ph_match[2][0]), .th_match(th_match[2][0]), .cpat_match(cpat_match[2][0]), .hmt_match(hmt_match[2][0]),  .clk(clk120));
+    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (2)) fs_21(.ph_pat_p (ph_num[2]), .ph_pat_q_p (ph_q[2]), .ph_seg_p(ph_seg___z2_s1), .ph_seg_v_p(ph_seg_v_z2_s1), .th_seg_p(th_seg___z2_s1), .cpat_seg_p(cpat_seg___z2_s1), .hmt_seg_p(hmt_seg___z2_s1), .vid(vi[2][1]), .hid(hi[2][1]), .cid(ci[2][1]), .sid(si[2][1]), .ph_match(ph_match[2][1]), .th_match(th_match[2][1]), .cpat_match(cpat_match[2][1]), .hmt_match(hmt_match[2][1]),  .clk(clk120));
+    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (3)) fs_22(.ph_pat_p (ph_num[2]), .ph_pat_q_p (ph_q[2]), .ph_seg_p(ph_seg___z2_s2), .ph_seg_v_p(ph_seg_v_z2_s2), .th_seg_p(th_seg___z2_s2), .cpat_seg_p(cpat_seg___z2_s2), .hmt_seg_p(hmt_seg___z2_s2), .vid(vi[2][2]), .hid(hi[2][2]), .cid(ci[2][2]), .sid(si[2][2]), .ph_match(ph_match[2][2]), .th_match(th_match[2][2]), .cpat_match(cpat_match[2][2]), .hmt_match(hmt_match[2][2]),  .clk(clk120));
+    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (4)) fs_23(.ph_pat_p (ph_num[2]), .ph_pat_q_p (ph_q[2]), .ph_seg_p(ph_seg___z2_s3), .ph_seg_v_p(ph_seg_v_z2_s3), .th_seg_p(th_seg___z2_s3), .cpat_seg_p(cpat_seg___z2_s3), .hmt_seg_p(hmt_seg___z2_s3), .vid(vi[2][3]), .hid(hi[2][3]), .cid(ci[2][3]), .sid(si[2][3]), .ph_match(ph_match[2][3]), .th_match(th_match[2][3]), .cpat_match(cpat_match[2][3]), .hmt_match(hmt_match[2][3]),  .clk(clk120));
                                                                                                                                                                                                                                                                                                                                                                                                                                 
-    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (1)) fs_30(.ph_pat_p (ph_num[3]), .ph_pat_q_p (ph_q[3]), .ph_seg_p(ph_seg___z3_s0), .ph_seg_v_p(ph_seg_v_z3_s0), .th_seg_p(th_seg___z3_s0), .cpat_seg_p(cpat_seg___z3_s0), .vid(vi[3][0]), .hid(hi[3][0]), .cid(ci[3][0]), .sid(si[3][0]), .ph_match(ph_match[3][0]), .th_match(th_match[3][0]), .cpat_match(cpat_match[3][0]), .clk(clk120));
-    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (2)) fs_31(.ph_pat_p (ph_num[3]), .ph_pat_q_p (ph_q[3]), .ph_seg_p(ph_seg___z3_s1), .ph_seg_v_p(ph_seg_v_z3_s1), .th_seg_p(th_seg___z3_s1), .cpat_seg_p(cpat_seg___z3_s1), .vid(vi[3][1]), .hid(hi[3][1]), .cid(ci[3][1]), .sid(si[3][1]), .ph_match(ph_match[3][1]), .th_match(th_match[3][1]), .cpat_match(cpat_match[3][1]), .clk(clk120));
-    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (3)) fs_32(.ph_pat_p (ph_num[3]), .ph_pat_q_p (ph_q[3]), .ph_seg_p(ph_seg___z3_s2), .ph_seg_v_p(ph_seg_v_z3_s2), .th_seg_p(th_seg___z3_s2), .cpat_seg_p(cpat_seg___z3_s2), .vid(vi[3][2]), .hid(hi[3][2]), .cid(ci[3][2]), .sid(si[3][2]), .ph_match(ph_match[3][2]), .th_match(th_match[3][2]), .cpat_match(cpat_match[3][2]), .clk(clk120));
-    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (4)) fs_33(.ph_pat_p (ph_num[3]), .ph_pat_q_p (ph_q[3]), .ph_seg_p(ph_seg___z3_s3), .ph_seg_v_p(ph_seg_v_z3_s3), .th_seg_p(th_seg___z3_s3), .cpat_seg_p(cpat_seg___z3_s3), .vid(vi[3][3]), .hid(hi[3][3]), .cid(ci[3][3]), .sid(si[3][3]), .ph_match(ph_match[3][3]), .th_match(th_match[3][3]), .cpat_match(cpat_match[3][3]), .clk(clk120));
+    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (1)) fs_30(.ph_pat_p (ph_num[3]), .ph_pat_q_p (ph_q[3]), .ph_seg_p(ph_seg___z3_s0), .ph_seg_v_p(ph_seg_v_z3_s0), .th_seg_p(th_seg___z3_s0), .cpat_seg_p(cpat_seg___z3_s0), .hmt_seg_p(hmt_seg___z3_s0), .vid(vi[3][0]), .hid(hi[3][0]), .cid(ci[3][0]), .sid(si[3][0]), .ph_match(ph_match[3][0]), .th_match(th_match[3][0]), .cpat_match(cpat_match[3][0]), .hmt_match(hmt_match[3][0]),  .clk(clk120));
+    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (2)) fs_31(.ph_pat_p (ph_num[3]), .ph_pat_q_p (ph_q[3]), .ph_seg_p(ph_seg___z3_s1), .ph_seg_v_p(ph_seg_v_z3_s1), .th_seg_p(th_seg___z3_s1), .cpat_seg_p(cpat_seg___z3_s1), .hmt_seg_p(hmt_seg___z3_s1), .vid(vi[3][1]), .hid(hi[3][1]), .cid(ci[3][1]), .sid(si[3][1]), .ph_match(ph_match[3][1]), .th_match(th_match[3][1]), .cpat_match(cpat_match[3][1]), .hmt_match(hmt_match[3][1]),  .clk(clk120));
+    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (3)) fs_32(.ph_pat_p (ph_num[3]), .ph_pat_q_p (ph_q[3]), .ph_seg_p(ph_seg___z3_s2), .ph_seg_v_p(ph_seg_v_z3_s2), .th_seg_p(th_seg___z3_s2), .cpat_seg_p(cpat_seg___z3_s2), .hmt_seg_p(hmt_seg___z3_s2), .vid(vi[3][2]), .hid(hi[3][2]), .cid(ci[3][2]), .sid(si[3][2]), .ph_match(ph_match[3][2]), .th_match(th_match[3][2]), .cpat_match(cpat_match[3][2]), .hmt_match(hmt_match[3][2]),  .clk(clk120));
+    find_segment_serialized #(.zone_cham (7), .zone_seg (seg_ch),  .station (4)) fs_33(.ph_pat_p (ph_num[3]), .ph_pat_q_p (ph_q[3]), .ph_seg_p(ph_seg___z3_s3), .ph_seg_v_p(ph_seg_v_z3_s3), .th_seg_p(th_seg___z3_s3), .cpat_seg_p(cpat_seg___z3_s3), .hmt_seg_p(hmt_seg___z3_s3), .vid(vi[3][3]), .hid(hi[3][3]), .cid(ci[3][3]), .sid(si[3][3]), .ph_match(ph_match[3][3]), .th_match(th_match[3][3]), .cpat_match(cpat_match[3][3]), .hmt_match(hmt_match[3][3]),  .clk(clk120));
 
 	
 endmodule

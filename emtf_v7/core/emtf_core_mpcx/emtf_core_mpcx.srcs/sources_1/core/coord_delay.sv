@@ -23,11 +23,11 @@
 
 module coord_delay 
 (
-	phi, th11i, thi, vli, me11ai, cpati,
+	phi, th11i, thi, vli, me11ai, cpati, hmti,
 	ge11_ph, ge11_th, ge11_vl, use_gem,
 	cppf_rxd, cppf_rx_valid,
 	use_rpc,
-	pho, th11o, tho, vlo_o, me11ao, cpato,
+	pho, th11o, tho, vlo_o, me11ao, cpato, hmto,
 	clk
 );
 `include "spbits.sv"
@@ -38,6 +38,7 @@ module coord_delay
 	`localpar mem_vl_bw    = 6*9*seg_ch;
 	`localpar mem_me11a_bw = 3*3*seg_ch;
 	`localpar mem_cpat_bw  = 4*6*9*seg_ch;
+	`localpar mem_hmt_bw  = 2*6*9*seg_ch;
 
 	// pulse length
 	`param pulse_l = 3;
@@ -49,6 +50,7 @@ module coord_delay
 	input [seg_ch-1:0] 	vli   [5:0][8:0];
 	input [seg_ch-1:0] 	me11ai [2:0][2:0];
 	input [3:0] 		cpati  [5:0][8:0][seg_ch-1:0];
+	input [1:0] 		hmti  [5:0][8:0][seg_ch-1:0];
 
     // GE11 data [schamber][layer][cluster]
   	input [bw_fph-1:0] ge11_ph [6:0][1:0][7:0]; 
@@ -68,6 +70,7 @@ module coord_delay
 	output     [seg_ch-1:0] vlo_o   [max_drift-1:0][5:0][8:0];
 	output reg [seg_ch-1:0] me11ao [max_drift-1:0][2:0][2:0];
 	output reg [3:0] 		cpato  [max_drift-1:0][5:0][8:0][seg_ch-1:0];
+	output reg [1:0] 		hmto  [max_drift-1:0][5:0][8:0][seg_ch-1:0];
 
 	input 				clk;
 
@@ -75,6 +78,7 @@ module coord_delay
 	reg [bw_th-1:0]  tho_csc   [5:0][8:0][seg_ch-1:0];
 	reg [seg_ch-1:0] vlo_csc   [5:0][8:0];
 	reg [3:0] 		 cpato_csc [5:0][8:0][seg_ch-1:0];
+	reg [1:0] 		 hmto_csc [5:0][8:0][seg_ch-1:0];
 	
 	reg [bw_fph-1:0] pho_rpc   [5:0][8:0][seg_ch-1:0];
     reg [bw_th-1:0]  tho_rpc   [5:0][8:0][seg_ch-1:0];
@@ -112,6 +116,10 @@ module coord_delay
 
 	reg  [mem_cpat_bw-1:0] mem_cpat_in;
 	reg  [mem_cpat_bw-1:0] mem_cpat_out;
+	
+	reg  [mem_hmt_bw-1:0] mem_hmt_in;
+	reg  [mem_hmt_bw-1:0] mem_hmt_out;
+	
 	// BRAM
 	reg [mem_ph_bw-1:0]    mem_ph [511:0];
 	reg [mem_th_bw-1:0]    mem_th [511:0];
@@ -119,6 +127,7 @@ module coord_delay
 	reg [mem_vl_bw-1:0]    mem_vl [511:0];
 	reg [mem_me11a_bw-1:0] mem_me11a [511:0];
 	reg [mem_cpat_bw-1:0]  mem_cpat [511:0];
+	reg [mem_hmt_bw-1:0]  mem_hmt [511:0];
 	// read address
 	reg [8:0] 		  ra = 0;
 	// write address
@@ -238,11 +247,14 @@ module coord_delay
                 tho[0][i][j][0] =   0; 
                 vlo[0][i][j][0] =   0; 
                 cpato[0][i][j][0] = 0;
+                hmto[0][i][j][0] = 0;
+                
                 
                 pho[0][i][j][1] =   0;
                 tho[0][i][j][1] =   0; 
                 vlo[0][i][j][1] =   0; 
                 cpato[0][i][j][1] = 0;
+                hmto[0][i][j][1] = 0;
 
                 
                 if (vlo_csc[i][j] != 2'b0) // any CSC hit is present
@@ -252,11 +264,13 @@ module coord_delay
                     tho[0][i][j][0] =   tho_csc[i][j][0]; 
                     vlo[0][i][j][0] =   vlo_csc[i][j][0]; 
                     cpato[0][i][j][0] = cpato_csc[i][j][0];
+                    hmto[0][i][j][0] = hmto_csc[i][j][0];
                     
                     pho[0][i][j][1] =   pho_csc[i][j][1];
                     tho[0][i][j][1] =   tho_csc[i][j][1]; 
                     vlo[0][i][j][1] =   vlo_csc[i][j][1]; 
                     cpato[0][i][j][1] = cpato_csc[i][j][1];
+                    hmto[0][i][j][1] = hmto_csc[i][j][1];
                 end
                 else
                 begin
@@ -276,6 +290,7 @@ module coord_delay
                                 tho  [0][i][j][k] = ge11_th[ge11_chm][0][k*4];
                                 vlo  [0][i][j][k] = ge11_vl[ge11_chm][0][k*4];
                                 cpato[0][i][j][k] = 4'h0; // this marks GE11 stub, same as RPC stubs. Distinguishing between RPC and GE11 is done using station/chamber 
+                                hmto[0][i][j][k] = 0;
                             end
                             // layer 1
                             else if (ge11_vl[ge11_chm][1][k*4] == 1'b1) // check only clusters 0 and 4 since they are filled first
@@ -285,6 +300,7 @@ module coord_delay
                                 tho  [0][i][j][k] = ge11_th[ge11_chm][1][k*4];
                                 vlo  [0][i][j][k] = ge11_vl[ge11_chm][1][k*4];
                                 cpato[0][i][j][k] = 4'h0; // this marks GE11 stub, same as RPC stubs. Distinguishing between RPC and GE11 is done using station/chamber 
+                                hmto[0][i][j][k] = 0;
                             end
                         end
                     end
@@ -315,6 +331,7 @@ module coord_delay
                                     tho  [0][i][j][k] = rpc_th[rpc_sub][rpc_chm][k];
                                     vlo  [0][i][j][k] = rpc_vl[rpc_sub][rpc_chm][k];
                                     cpato[0][i][j][k] = 4'h0; // this marks RPC stub
+                                    hmto[0][i][j][k] = 0;
                                 end
                             end
                         end
@@ -339,6 +356,7 @@ module coord_delay
 					mem_th_in[(i*9*seg_ch+j*seg_ch+k)*bw_th +: bw_th] = thi[i][j][k]; 
 					mem_vl_in[i*9*seg_ch+j*seg_ch+k] = vli[i][j][k]; 
 				    mem_cpat_in[(i*9*seg_ch+j*seg_ch+k)*4 +: 4] = cpati[i][j][k]; 
+				    mem_hmt_in[(i*9*seg_ch+j*seg_ch+k)*2 +: 2] = hmti[i][j][k]; 
 				end
 		// ME1/1 merge inputs
 		for (i = 0; i < 3; i = i+1) // station loop
@@ -358,6 +376,7 @@ module coord_delay
 		mem_vl_out   = mem_vl  [ra];
 		mem_me11a_out= mem_me11a  [ra];
 		mem_cpat_out = mem_cpat   [ra];
+		mem_hmt_out  = mem_hmt    [ra];
 		
 		// write all input bits into memory on each clock
 		mem_ph  [wa] = mem_ph_in;
@@ -366,6 +385,8 @@ module coord_delay
 		mem_vl  [wa] = mem_vl_in;
 		mem_me11a [wa] = mem_me11a_in;
 		mem_cpat  [wa] = mem_cpat_in;
+		mem_hmt   [wa] = mem_hmt_in;
+
 
 		wa = (ra + latency + 1);
 		ra = (ra + 1);
@@ -381,6 +402,7 @@ module coord_delay
 						tho[d][i][j][k] = tho[d-1][i][j][k]; 
 						vlo[d][i][j][k] = vlo[d-1][i][j][k];
 						cpato[d][i][j][k] = cpato[d-1][i][j][k]; 
+						hmto[d][i][j][k] = hmto[d-1][i][j][k]; 
 					end                 
 
 			for (i = 0; i < 3; i = i+1) // station loop
@@ -402,6 +424,7 @@ module coord_delay
 					tho_csc[i][j][k] = mem_th_out[(i*9*seg_ch+j*seg_ch+k)*bw_th +: bw_th]; 
 					vlo_csc[i][j][k] = mem_vl_out[i*9*seg_ch+j*seg_ch+k]; 
 				    cpato_csc[i][j][k] = mem_cpat_out[(i*9*seg_ch+j*seg_ch+k)*4 +: 4];
+				    hmto_csc[i][j][k] = mem_hmt_out[(i*9*seg_ch+j*seg_ch+k)*2 +: 2];
  				end
  
 		// split outputs

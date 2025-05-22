@@ -25,7 +25,7 @@ module serialized_matching_and_deltas(
     // Ph Matching inputs
     ph_num, ph_q,
     ph, vl,
-    th11, th, cpat,
+    th11, th, cpat, hmt,
     
     
     // Config Inputs
@@ -38,6 +38,7 @@ module serialized_matching_and_deltas(
     phi,
     theta,
     cpattern,
+    hmt_num,
     delta_ph,
     delta_th,
     sign_ph,
@@ -49,6 +50,7 @@ module serialized_matching_and_deltas(
     bt_phi,
     bt_theta,
     bt_cpattern,
+    bt_hmt_num,
     bt_delta_ph,
     bt_delta_th,
     bt_sign_ph,
@@ -75,6 +77,7 @@ module serialized_matching_and_deltas(
     input [bw_th-1:0] 	th11 [max_drift-1:0][2:0][2:0][th_ch11-1:0];
     input [bw_th-1:0] 	th   [max_drift-1:0][5:0][8:0][seg_ch-1:0];
     input [3:0] 		cpat [max_drift-1:0][5:0][8:0][seg_ch-1:0];
+    input [1:0] 		hmt  [max_drift-1:0][5:0][8:0][seg_ch-1:0];
     
     input 				clk40;
     input               clk120;
@@ -90,6 +93,7 @@ module serialized_matching_and_deltas(
 	output reg [bw_th-1:0] 	theta [3:0][2:0];
 	// [zone][pattern_num][station]
 	output reg [3:0] 		cpattern [3:0][2:0][3:0];
+	output reg [1:0] 		hmt_num  [3:0][2:0][3:0];
 	// ph and th deltas from best stations
 	// [zone][pattern_num], last index: 0=12, 1=13, 2=14, 3=23, 4=24, 5=34
 	output reg [bw_fph-1:0] delta_ph [3:0][2:0][5:0];
@@ -110,6 +114,7 @@ module serialized_matching_and_deltas(
 	output reg [bw_th-1:0] 	bt_theta [2:0];
 	// [best_track_num][station]
 	output reg [3:0] 		bt_cpattern [2:0][3:0];
+	output reg [1:0] 		bt_hmt_num  [2:0][3:0];
 	// ph and th deltas from best stations
 	// [best_track_num], last index: 0=12, 1=13, 2=14, 3=23, 4=24, 5=34
 	output reg [bw_fph-1:0] bt_delta_ph [2:0][5:0];
@@ -137,6 +142,7 @@ module serialized_matching_and_deltas(
 	// [zone][pattern_num][station 0-3][segment]
 	wire [bw_th-1:0]	th_match   [3:0][3:0][seg_ch-1:0]; // matching th, 2 segments 
 	wire [3:0] 		cpat_match [3:0][3:0]; // matching patterns
+	wire [1:0] 		hmt_match [3:0][3:0]; // matching hmt
     // best ranks [zone][rank number]
     wire [5:0] 	ph_qr [3:0]; 
     
@@ -145,6 +151,7 @@ module serialized_matching_and_deltas(
 	wire [bw_fph-1:0]   w_phi [3:0];
 	wire [bw_th-1:0] 	w_theta [3:0];
 	wire [3:0] 		    w_cpattern [3:0][3:0];
+	wire [1:0] 		    w_hmt_num  [3:0][3:0];
 	wire [bw_fph-1:0]   w_delta_ph [3:0][5:0];
 	wire [bw_th-1:0] 	w_delta_th [3:0][5:0]; 
 	wire [5:0] 		    w_sign_ph[3:0];
@@ -160,6 +167,7 @@ module serialized_matching_and_deltas(
 	reg [bw_fph-1:0] r120_phi [3:0][2:0];
 	reg [bw_th-1:0] 	r120_theta [3:0][2:0];
 	reg [3:0] 		r120_cpattern [3:0][2:0][3:0];
+	reg [1:0] 		r120_hmt_num  [3:0][2:0][3:0];
 	reg [bw_fph-1:0] r120_delta_ph [3:0][2:0][5:0];
 	reg [bw_th-1:0] 	r120_delta_th [3:0][2:0][5:0]; 
 	reg [5:0] 		r120_sign_ph[3:0][2:0];
@@ -183,6 +191,7 @@ module serialized_matching_and_deltas(
 	wire [bw_fph-1:0] w_bt_phi [2:0];
 	wire [bw_th-1:0] 	w_bt_theta [2:0];
 	wire [3:0] 		w_bt_cpattern [2:0][3:0];
+	wire [1:0] 		w_bt_hmt_num  [2:0][3:0];
 	wire [bw_fph-1:0] w_bt_delta_ph [2:0][5:0];
 	wire [bw_th-1:0] 	w_bt_delta_th [2:0][5:0]; 
 	wire [5:0] 		w_bt_sign_ph[2:0];
@@ -221,6 +230,7 @@ module serialized_matching_and_deltas(
             r120_phi[izone][2] <= w_phi[izone];
             r120_theta[izone][2] <= w_theta[izone];
             r120_cpattern[izone][2] <= w_cpattern[izone];
+            r120_hmt_num[izone][2] <= w_hmt_num[izone];
             r120_delta_ph[izone][2] <= w_delta_ph[izone];
             r120_delta_th[izone][2] <= w_delta_th[izone];
             r120_sign_ph[izone][2] <= w_sign_ph[izone];
@@ -236,6 +246,7 @@ module serialized_matching_and_deltas(
                 r120_phi[izone][ipatt] <=       r120_phi[izone][ipatt+1]; 
                 r120_theta[izone][ipatt] <=     r120_theta[izone][ipatt+1];
                 r120_cpattern[izone][ipatt] <=  r120_cpattern[izone][ipatt+1];
+                r120_hmt_num[izone][ipatt] <=  r120_hmt_num[izone][ipatt+1];
                 r120_delta_ph[izone][ipatt] <=  r120_delta_ph[izone][ipatt+1];
                 r120_delta_th[izone][ipatt] <=  r120_delta_th[izone][ipatt+1];
                 r120_sign_ph[izone][ipatt] <=   r120_sign_ph[izone][ipatt+1];
@@ -256,6 +267,7 @@ module serialized_matching_and_deltas(
         bt_phi      <= w_bt_phi;
         bt_theta    <= w_bt_theta;
         bt_cpattern <= w_bt_cpattern;
+        bt_hmt_num <= w_bt_hmt_num;
         bt_delta_ph <= w_bt_delta_ph;
         bt_delta_th <= w_bt_delta_th;
         bt_sign_ph <= w_bt_sign_ph;
@@ -320,12 +332,13 @@ module serialized_matching_and_deltas(
     match_ph_segs_serialized i_match_ph_segs_serialized(
         curr_ph_num, curr_ph_q,
         ph, vl,
-        th11, th, cpat,
+        th11, th, cpat, hmt,
         
         vi, hi, ci, si,  
         ph_match,
         th_match,
         cpat_match,
+        hmt_match,
         ph_qr,
         clk120
     );
@@ -337,6 +350,7 @@ module serialized_matching_and_deltas(
         ph_match,
         th_match,
         cpat_match,
+        hmt_match,
         ph_qr,
         th_window,
         th_window_z0,
@@ -345,6 +359,7 @@ module serialized_matching_and_deltas(
         w_phi,
         w_theta,
         w_cpattern,
+        w_hmt_num,
         w_delta_ph,
         w_delta_th,
         w_sign_ph,
@@ -363,6 +378,7 @@ module serialized_matching_and_deltas(
         .phi         (r120_phi),
         .theta       (r120_theta),
         .cpattern    (r120_cpattern),
+        .hmt_num     (r120_hmt_num),
         .delta_ph    (r120_delta_ph),
         .delta_th    (r120_delta_th),
         .sign_ph     (r120_sign_ph),
@@ -376,6 +392,7 @@ module serialized_matching_and_deltas(
         .bt_phi      (w_bt_phi),
         .bt_theta    (w_bt_theta),
         .bt_cpattern (w_bt_cpattern),
+        .bt_hmt_num  (w_bt_hmt_num),
         .bt_delta_ph (w_bt_delta_ph),
         .bt_delta_th (w_bt_delta_th),
         .bt_sign_ph  (w_bt_sign_ph),

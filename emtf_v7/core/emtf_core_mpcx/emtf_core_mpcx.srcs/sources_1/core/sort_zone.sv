@@ -38,7 +38,8 @@ module zone_best
 
 	reg [bwr-1:0] 	cmp [bpow:0][cnr-1:0];
 	reg [bpow-1:0] ranki [bpow:0][cnr-1:0]; // rank index
-	
+	reg [bwr-1:0] rank_tmp [cnr-1:0]; // temporary ranks w/ winner removed
+		
 	`int i, j, ncomp;
 	always @(posedge clk_nx)
 	begin
@@ -70,13 +71,14 @@ module zone_best
 			end
 		end
 
-		// pick up winner and index from top of the tree
-		winner = cmp[bpow][0];
-		wini = ranki[bpow][0];
-
 		// put ranks to output for next stage, except the winner
-		rankr = rank;
-		rankr[wini] = 0;
+		rank_tmp = rank;
+		rank_tmp[ranki[bpow][0]] = 0;
+		
+		// pick up winner and index from top of the tree, register all outputs
+		winner <= cmp[bpow][0];
+		wini <= ranki[bpow][0];
+		rankr <= rank_tmp;
 
 	end
 	

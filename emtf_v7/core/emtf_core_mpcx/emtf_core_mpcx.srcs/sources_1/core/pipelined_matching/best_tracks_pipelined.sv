@@ -26,6 +26,7 @@ module best_tracks_pipelined(
      phi,
      theta,
      cpattern,
+     hmt_num,
      delta_ph,
      delta_th,
      sign_ph,
@@ -39,6 +40,7 @@ module best_tracks_pipelined(
      bt_phi,
      bt_theta,
      bt_cpattern,
+     bt_hmt_num,
      bt_delta_ph,
      bt_delta_th,
      bt_sign_ph,
@@ -62,6 +64,7 @@ module best_tracks_pipelined(
 	input [bw_th-1:0]  theta [3:0][2:0];
 	// [zone][pattern_num][station]
 	input [3:0] 	   cpattern [3:0][2:0][3:0];
+	input [1:0] 	   hmt_num  [3:0][2:0][3:0];
 	// ph and th deltas from best stations
 	// [zone][pattern_num], last index: 0=12, 1=13, 2=14, 3=23, 4=24, 5=34
 	input [bw_fph-1:0] delta_ph [3:0][2:0][5:0];
@@ -82,6 +85,7 @@ module best_tracks_pipelined(
 	output wire [bw_th-1:0] 	bt_theta [2:0];
 	// [best_track_num][station]
 	output wire [3:0] 		bt_cpattern [2:0][3:0];
+	output wire [1:0] 		bt_hmt_num  [2:0][3:0];
 	// ph and th deltas from best stations
 	// [best_track_num], last index: 0=12, 1=13, 2=14, 3=23, 4=24, 5=34
 	output wire [bw_fph-1:0] bt_delta_ph [2:0][5:0];
@@ -131,6 +135,7 @@ module best_tracks_pipelined(
 	reg [bw_fph-1:0] stg2_phi [3:0][2:0];   // [zone][pattern_num]
 	reg [bw_th-1:0]  stg2_theta [3:0][2:0];
 	reg [3:0] 	     stg2_cpattern [3:0][2:0][3:0]; // [zone][pattern_num][station]
+	reg [1:0] 	     stg2_hmt_num  [3:0][2:0][3:0]; // [zone][pattern_num][station]
 	reg [bw_fph-1:0] stg2_delta_ph [3:0][2:0][5:0];
 	reg [bw_th-1:0]  stg2_delta_th [3:0][2:0][5:0]; 
 	reg [5:0] 	     stg2_sign_ph[3:0][2:0];
@@ -143,6 +148,7 @@ module best_tracks_pipelined(
         .phi(stg2_phi),
         .theta(stg2_theta),
         .cpattern(stg2_cpattern),
+        .hmt_num(stg2_hmt_num),
         .delta_ph(stg2_delta_ph),
         .delta_th(stg2_delta_th),
         .sign_ph(stg2_sign_ph),
@@ -157,6 +163,7 @@ module best_tracks_pipelined(
         .bt_phi(bt_phi),
         .bt_theta(bt_theta),
         .bt_cpattern(bt_cpattern),
+        .bt_hmt_num(bt_hmt_num),
         .bt_delta_ph(bt_delta_ph),
         .bt_delta_th(bt_delta_th),
         .bt_sign_ph(bt_sign_ph),
@@ -176,6 +183,7 @@ module best_tracks_pipelined(
        stg2_phi     <= 	phi; 	  
        stg2_theta   <=  theta;  
        stg2_cpattern<=  cpattern; 
+       stg2_hmt_num <=  hmt_num;
        stg2_delta_ph<=  delta_ph; 
        stg2_delta_th<=  delta_th; 
        stg2_sign_ph <= 	sign_ph;

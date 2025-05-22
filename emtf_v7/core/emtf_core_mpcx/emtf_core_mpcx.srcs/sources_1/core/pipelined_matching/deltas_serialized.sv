@@ -26,6 +26,7 @@ module deltas_serialized(
 	 ph_match,
 	 th_match,
      cpat_match,
+     hmt_match,
      ph_q,
      th_window,
      two_st_tight_timing,
@@ -33,6 +34,7 @@ module deltas_serialized(
      phi,
      theta,
      cpattern,
+     hmt_num,
      delta_ph,
      delta_th,
      sign_ph,
@@ -58,6 +60,7 @@ module deltas_serialized(
 	input [bw_th-1:0]  th_match [3:0][seg_ch-1:0]; 
 	// ME11 duplicated thetas [segment]
 	input [3:0] cpat_match [3:0]; // matching pattern
+	input [1:0] hmt_match [3:0]; // matching pattern
 	input [bwr-1:0]    ph_q; // pattern rank, carries straigtness and ph station information
 	input [bw_th-1:0]  th_window; // max th diff
 	input two_st_tight_timing; // check 2-station tracks for tight stub timing
@@ -67,6 +70,7 @@ module deltas_serialized(
 	output reg [bw_th-1:0]  theta; 
 	// [station]
 	output reg [3:0] 		cpattern [3:0]; 
+	output reg [1:0]        hmt_num  [3:0];
 	// ph and th deltas from best stations 
 	// indexes: 0=12, 1=13, 2=14, 3=23, 4=24, 5=34
 	output reg [bw_fph-1:0] delta_ph [5:0];
@@ -235,6 +239,7 @@ module deltas_serialized(
 	reg [bw_fph-1:0] r_ph_match [3:0]; // matching ph
 	reg [bw_th-1:0]  r_th_match [3:0][seg_ch-1:0]; 
 	reg [3:0] r_cpat_match [3:0]; // matching pattern
+	reg [1:0] r_hmt_match [3:0];
 	reg [bwr-1:0]    r_ph_q; // pattern rank, carries straigtness and ph station information
 
 
@@ -283,6 +288,7 @@ module deltas_serialized(
         r_ph_match <= ph_match; 
         r_th_match <= th_match; 
         r_cpat_match <= cpat_match; 
+        r_hmt_match <= hmt_match;
         r_ph_q <= ph_q; // pattern rank, carries straigtness and ph station information
 	
 	end // always @()
@@ -381,6 +387,7 @@ module deltas_serialized(
 			rank = 0;
 
 		cpattern = r_cpat_match; // take all CLCT patterns
+		hmt_num = r_hmt_match;
 
 	end
 

@@ -22,6 +22,9 @@ module zone_best3
 	reg [bpow-1:0] winiw [2:0];
 	reg [cnrex-1:0]  valid [2:0]; // valid flags
 
+    reg [bwr-1:0] winner_tmp [2:0];
+    reg [bpow:0] wini_tmp [2:0];
+    
 	`int j;
 	
 	`genv i;
@@ -59,31 +62,30 @@ module zone_best3
 
 		// assign winner outputs from delay lines for each winner
 		// delay lines are of different length to compensate for sorter stages
-		winner[0] = winnerd[1][0]; wini[0][bpow:1] = winid[1][0];
-		winner[1] = winnerd[0][1]; wini[1][bpow:1] = winid[0][1];
-		winner[2] = winnerw[2];    wini[2][bpow:1] = winiw[2];
+		winner_tmp[0] = winnerd[1][0]; wini_tmp[0] = {winid[1][0], 1'b0};
+		winner_tmp[1] = winnerd[0][1]; wini_tmp[1] = {winid[0][1], 1'b0};
+		winner_tmp[2] = winnerw[2];    wini_tmp[2] = {winiw[2],    1'b0};
 
-		wini[0][0] = 0;
-		wini[1][0] = 0;
-		wini[2][0] = 0;
-		
 		// find LSBs of wini outputs using valid bits
-        for (j = 0; j < 3; j = j+1)
-        begin
-            if (winner[j] > 0)
-                wini[j][0] = !valid[2][wini[j]];
+        for (j = 0; j < 3; j = j+1) begin
+            if (winner_tmp[j] > 0)
+                wini_tmp[j][0] = !valid[2][wini_tmp[j]];
             else
-                wini[j] = 7'b1111111;
+                wini_tmp[j] = 7'b1111111;
         end        
+        
+        // Register Outputs
+        winner <= winner_tmp;
+        wini <= wini_tmp;
 
 		// winner delay line
-		winnerd[1] = winnerd[0];   winid[1] = winid[0];
-		winnerd[0] = winnerw;      winid[0] = winiw;
+		winnerd[1] <= winnerd[0];   winid[1] <= winid[0];
+		winnerd[0] <= winnerw;      winid[0] <= winiw;
 
 		// delay line for valid bits
-		valid[2] = valid[1];
-		valid[1] = valid[0];
+		valid[2] <= valid[1];
+		valid[1] <= valid[0];
 		for (j = 0; j < cnrex; j = j+1)
-			valid[0][j] = rank_ex[j] != 0;
+			valid[0][j] <= rank_ex[j] != 0;
 	end
 endmodule
