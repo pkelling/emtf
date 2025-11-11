@@ -31,10 +31,10 @@ module tb_sp();
     `include "../../sources_1/mpcx/mpcx_interface.sv"
     `include "../../sources_1/core/spbits.sv"
     
-    `param max_ev = 1000; //10000; //200000; //220000; //13000;
+    `param max_ev = 100; //10000; //200000; //220000; //13000;
 
     `param endcap_p = 1;
-    `param sector_p = 5;
+    `param sector_p = 1;
     `param rpc_delay = 6; // delay of rpc data relative to csc
     `param ge11_delay = 3; // delay of ge11 data relative to csc
    
@@ -1017,6 +1017,7 @@ module tb_sp();
                     
                     
                     // Pipelined Matching
+                    /*
 					for (iz = 0; iz < 4; iz = iz+1) // zone loop
 					begin
 						for (ip = 0; ip < 3; ip = ip+1) // best pattern number
@@ -1035,7 +1036,7 @@ module tb_sp();
 							end // for (ist = 0; ist < 4; ist = ist + 1)
 						end
 					end // for (iz = 0; iz < 4; iz = iz+1)
-					
+					*/
                     
                     /*       
                     // Standard Matching 
@@ -1159,8 +1160,29 @@ module tb_sp();
 
 						end
 						
+						
+						
+						
+				
+                      if(uut.nn.mode[ip] != 0) begin		
+                            $fwrite (nn_out, "ev: %4d track: %1d Features: %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d  \n", 
+                                       iev, ip,  
+                                       uut.nn.bt_delta_ph[ip][0], uut.nn.bt_delta_ph[ip][1], uut.nn.bt_delta_ph[ip][2], uut.nn.bt_delta_ph[ip][3], uut.nn.bt_delta_ph[ip][4], uut.nn.bt_delta_ph[ip][5],
+                                       uut.nn.bt_sign_ph[ip][0], uut.nn.bt_sign_ph[ip][1], uut.nn.bt_sign_ph[ip][2], uut.nn.bt_sign_ph[ip][3], uut.nn.bt_sign_ph[ip][4], uut.nn.bt_sign_ph[ip][5],
+                                       uut.nn.bt_delta_th[ip][0], uut.nn.bt_delta_th[ip][1], uut.nn.bt_delta_th[ip][2], uut.nn.bt_delta_th[ip][3], uut.nn.bt_delta_th[ip][4], uut.nn.bt_delta_th[ip][5],
+                                       uut.nn.bt_sign_th[ip][0], uut.nn.bt_sign_th[ip][1], uut.nn.bt_sign_th[ip][2], uut.nn.bt_sign_th[ip][3], uut.nn.bt_sign_th[ip][4], uut.nn.bt_sign_th[ip][5],  
+                                       uut.nn.bt_cpattern[ip][0], uut.nn.bt_cpattern[ip][1], uut.nn.bt_cpattern[ip][2], uut.nn.bt_cpattern[ip][3],                                  
+                                       uut.nn.bt_theta[ip]
+                            );
+                        end
+                                
+                                
+                               
+                                   
+                                            
+						
 						if (nn_pt_v[ip] != 1'b0) begin
-                          $fwrite (nn_out, "ev: %4d track: %1d NN_pt: %h NN_d0: %h NN_PT_V: %h NN_D0_V: %h \n", 
+                          $fwrite (nn_out, "ev: %4d track: %1d NN_pt: %d NN_d0: %h NN_PT_V: %h NN_D0_V: %h \n", 
                                    iev, ip, nn_pt[ip], nn_d0[ip], nn_pt_v[ip], nn_d0_v[ip]);
                         end
 					end // for (ip = 0; ip < 3; ip = ip+1)

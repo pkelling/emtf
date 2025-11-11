@@ -37,7 +37,7 @@
     <Option Name="IPUserFilesDir" Val="$PPRDIR/../../../../../../../madorsky/github/vivado/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.ip_user_files"/>
     <Option Name="IPStaticSourceDir" Val="$PPRDIR/../../../../../../../madorsky/github/vivado/emtf/emtf_v7/core/emtf_core_mpcx/emtf_core_mpcx.ip_user_files/ipstatic"/>
     <Option Name="EnableBDX" Val="FALSE"/>
-    <Option Name="WTXSimLaunchSim" Val="528"/>
+    <Option Name="WTXSimLaunchSim" Val="536"/>
     <Option Name="WTModelSimLaunchSim" Val="0"/>
     <Option Name="WTQuestaLaunchSim" Val="0"/>
     <Option Name="WTIesLaunchSim" Val="0"/>
