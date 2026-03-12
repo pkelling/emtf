@@ -48,5 +48,27 @@ module irpc_link
             irpc_lcts = '{default: '0};
         end
     end     
+    
+    
+    
+    ila_irpc_raw_data ila_irpc_raw_data_inst(
+        .clk(clk40),
+        .probe0(rx_data[0]),
+        .probe1(rx_data[1]),
+        .probe2(rx_data[2]),
+        .probe3(link_id),
+        .probe4(crc_match)
+    );
+    
+    
+    // irpc data in our format
+    ila_irpc_lct_format ila_irpc_lct_format_inst(
+        .clk(clk40),
+        .probe0(irpc_lcts[0].vf),
+        .probe1(irpc_lcts[0]),
+        .probe2(irpc_lcts[1].vf),
+        .probe3(irpc_lcts[1])
+    );
+    
 
 endmodule
