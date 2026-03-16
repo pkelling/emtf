@@ -51,23 +51,41 @@ module irpc_link
     
     
     
+    
+    // Add ILA and register values for extra time
+    logic [63:0] rx_data_ila[2:0];
+    logic [7:0] link_id_ila;
+    logic crc_match_ila;
+    logic rx_valid_ila;
+    csc_lct_mpcx irpc_lcts_ila[1:0];
+    
+    
+    always @(posedge clk_40) begin
+        rx_data_ila <= rx_data;
+        rx_valid_ila <= rx_valid;
+        link_id_ila <= link_id;
+        crc_match_ila <= crc_match;
+        irpc_lcts_ila <= irpc_lcts;
+    end
+    
     ila_irpc_raw_data ila_irpc_raw_data_inst(
-        .clk(clk40),
-        .probe0(rx_data[0]),
-        .probe1(rx_data[1]),
-        .probe2(rx_data[2]),
-        .probe3(link_id),
-        .probe4(crc_match)
+        .clk(clk_40),
+        .probe0(rx_data_ila[0]),
+        .probe1(rx_data_ila[1]),
+        .probe2(rx_data_ila[2]),
+        .probe3(link_id_ila),
+        .probe4(crc_match_ila),
+        .probe5(rx_valid_ila)
     );
     
     
     // irpc data in our format
     ila_irpc_lct_format ila_irpc_lct_format_inst(
-        .clk(clk40),
-        .probe0(irpc_lcts[0].vf),
-        .probe1(irpc_lcts[0]),
-        .probe2(irpc_lcts[1].vf),
-        .probe3(irpc_lcts[1])
+        .clk(clk_40),
+        .probe0(irpc_lcts_ila[0].vf),
+        .probe1(irpc_lcts_ila[0]),
+        .probe2(irpc_lcts_ila[1].vf),
+        .probe3(irpc_lcts_ila[1])
     );
     
 

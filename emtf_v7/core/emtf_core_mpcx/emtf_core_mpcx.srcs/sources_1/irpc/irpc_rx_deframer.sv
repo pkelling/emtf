@@ -222,5 +222,14 @@ module irpc_rx_deframer
         rxdata_in_r = rxdata_in;
         rxcharisk_in_r = rxcharisk_in;
     end
+    
+    
+    ila_irpc_deframe inst_ila_irpc_deframe(
+        .clk(clk_250),
+        .probe0(rxdata_del),
+        .probe1(rxcharisk_del)
+    );
+    
+    
 
 endmodule

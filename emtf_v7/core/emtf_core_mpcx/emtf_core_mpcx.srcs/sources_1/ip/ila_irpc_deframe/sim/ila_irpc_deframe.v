@@ -45,30 +45,20 @@
 // PART OF THIS FILE AT ALL TIMES.
 //
 // DO NOT MODIFY THIS FILE.
+`timescale 1ns / 1ps
+module ila_irpc_deframe (
+clk,
 
 
-// The following must be inserted into your Verilog file for this
-// core to be instantiated. Change the instance name and port connections
-// (in parentheses) to your own signal names.
-
-//----------- Begin Cut here for INSTANTIATION Template ---// INST_TAG
-
-ila_irpc_raw_data your_instance_name (
-	.clk(clk), // input wire clk
-
-
-	.probe0(probe0), // input wire [63:0]  probe0  
-	.probe1(probe1), // input wire [63:0]  probe1 
-	.probe2(probe2), // input wire [63:0]  probe2 
-	.probe3(probe3), // input wire [7:0]  probe3 
-	.probe4(probe4), // input wire [0:0]  probe4 
-	.probe5(probe5) // input wire [0:0]  probe5
+probe0,
+probe1
 );
 
-// INST_TAG_END ------ End INSTANTIATION Template ---------
-
-// You must compile the wrapper file ila_irpc_raw_data when simulating
-// the core, ila_irpc_raw_data. When compiling the wrapper file, be sure to
-// reference the Verilog simulation library.
+input clk;
 
 
+input [31 : 0] probe0;
+input [3 : 0] probe1;
+
+
+endmodule
