@@ -95,29 +95,9 @@ module irpc_rx_deframer
         valid_rr = valid_r;
         valid_r = valid_s;
         
-        if (data_del == 1'b0)
-        begin 
-            rxdata = rxdata_r; // no delay
-            valid = valid_r;
-        end 
-        else
-        begin                  
-            rxdata = rxdata_rr; // one BX delay
-            valid = valid_rr;
-        end
-        
-        // refresh data_del on each orbit
-        if (ttc_bc0_del && !bc0_r) // bc0 just rose
-        begin
-            if (valid_r && !valid_rr) // valid bit also just rose
-            begin
-                data_del = 1'b1;// need to delay, data early by one BX
-            end
-            else
-            begin
-                data_del = 1'b0;// no need to delay
-            end
-        end
+        // Just output the data, RPC BX delay method won't work
+        rxdata = rxdata_r;
+        valid = valid_r;
 
         bc0_r = ttc_bc0_del;
     end
@@ -227,7 +207,17 @@ module irpc_rx_deframer
     ila_irpc_deframe inst_ila_irpc_deframe(
         .clk(clk_250),
         .probe0(rxdata_del),
-        .probe1(rxcharisk_del)
+        .probe1(rxcharisk_del),
+        .probe2(adata_del_cnt),
+        .probe3(adata_del),
+        .probe4(clk_40_rr),
+        .probe5(rxdata_s[0]),
+        .probe6(rxdata_s[1]),
+        .probe7(rxdata_s[2]),
+        .probe8(rxcharisk_s[0]),
+        .probe9(rxcharisk_s[1]),
+        .probe10(rxcharisk_s[2]),
+        .probe11(valid_s)
     );
     
     

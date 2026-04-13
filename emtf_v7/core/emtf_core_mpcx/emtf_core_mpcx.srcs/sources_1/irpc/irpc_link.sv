@@ -50,6 +50,32 @@ module irpc_link
     end     
     
     
+    wire crc_cnt_rst_vio;
+    logic [63:0] crc_err_cnt;
+    logic [63:0] crc_err_dur_cnt;
+    logic crc_cnt_rst;
+    logic crc_match_r;
+    
+    always @(posedge clk_40) begin
+        if (crc_cnt_rst_vio && !crc_cnt_rst) begin
+            // Reset Counters
+            crc_err_cnt <= 64'b0;
+            crc_err_dur_cnt <= 64'b0;
+        end
+        else begin 
+            if (!crc_match && crc_match_r) begin
+                crc_err_cnt <= crc_err_cnt + 1;
+            end
+            
+            if (!crc_match) begin
+                crc_err_dur_cnt <= crc_err_dur_cnt + 1;
+            end
+        end
+        
+        crc_cnt_rst <= crc_cnt_rst_vio;
+        crc_match_r <= crc_match;
+    end
+    
     
     
     // Add ILA and register values for extra time
@@ -58,6 +84,11 @@ module irpc_link
     logic crc_match_ila;
     logic rx_valid_ila;
     csc_lct_mpcx irpc_lcts_ila[1:0];
+    logic ttc_bc0_del_ila;
+    
+    logic [63:0] crc_err_cnt_ila;
+    logic [63:0] crc_err_dur_cnt_ila;
+
     
     
     always @(posedge clk_40) begin
@@ -66,7 +97,17 @@ module irpc_link
         link_id_ila <= link_id;
         crc_match_ila <= crc_match;
         irpc_lcts_ila <= irpc_lcts;
+        ttc_bc0_del_ila <= ttc_bc0_del;
+        crc_err_cnt_ila <= crc_err_cnt;
+        crc_err_dur_cnt_ila <= crc_err_dur_cnt;
     end
+    
+    
+    vio_0 vio_irpc_raw_data_rst_inst(
+        .clk(clk_40),
+        .probe_out0(crc_cnt_rst_vio)
+    );
+    
     
     ila_irpc_raw_data ila_irpc_raw_data_inst(
         .clk(clk_40),
@@ -75,7 +116,10 @@ module irpc_link
         .probe2(rx_data_ila[2]),
         .probe3(link_id_ila),
         .probe4(crc_match_ila),
-        .probe5(rx_valid_ila)
+        .probe5(rx_valid_ila),
+        .probe6(ttc_bc0_del_ila),
+        .probe7(crc_err_cnt_ila),
+        .probe8(crc_err_dur_cnt_ila)
     );
     
     

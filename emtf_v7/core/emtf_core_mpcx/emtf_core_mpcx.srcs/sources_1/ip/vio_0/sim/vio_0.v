@@ -1,4 +1,4 @@
-// (c) Copyright 1995-2012 Xilinx, Inc. All rights reserved.
+// (c) Copyright 1995-2013 Xilinx, Inc. All rights reserved.
 //
 // This file contains confidential and proprietary information
 // of Xilinx, Inc. and is protected under U.S. and
@@ -46,33 +46,15 @@
 //
 // DO NOT MODIFY THIS FILE.
 `timescale 1ns / 1ps
-module ila_irpc_raw_data (
+module vio_0 (
 clk,
 
-
-probe0,
-probe1,
-probe2,
-probe3,
-probe4,
-probe5,
-probe6,
-probe7,
-probe8
+probe_out0
 );
 
 input clk;
 
-
-input [63 : 0] probe0;
-input [63 : 0] probe1;
-input [63 : 0] probe2;
-input [7 : 0] probe3;
-input [0 : 0] probe4;
-input [0 : 0] probe5;
-input [0 : 0] probe6;
-input [63 : 0] probe7;
-input [63 : 0] probe8;
+output reg [0 : 0] probe_out0 = 'h0 ;
 
 
 endmodule
